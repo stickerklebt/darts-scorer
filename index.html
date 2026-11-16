@@ -232,6 +232,32 @@ th.win{color:var(--accent)}
 .toast{position:fixed;left:50%;top:calc(var(--sat) + 64px);transform:translateX(-50%);z-index:60;padding:12px 20px;border-radius:999px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;white-space:nowrap;animation:pop .25s ease-out;
   background:rgba(40,40,44,.75)}
 .toast i{width:8px;height:8px;border-radius:50%;background:var(--red)}
+/* Meilenstein 1: Teams, Profilauswahl, Einzeldart-Tastatur */
+.teamtag{font-weight:800;letter-spacing:.04em;color:var(--accent)}
+.cname.team,.rn.team{white-space:normal;font-size:15px;line-height:1.25}
+.who-now{font-size:14px;font-weight:600;color:var(--accent);margin-top:3px}
+.whob{color:var(--accent)!important}
+.teamchip{height:30px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:700;flex:none;color:#000}
+.tc0{background:#ff453a}.tc1{background:#0a84ff;color:#fff}.tc2{background:#ffd60a}.tc3{background:#30d158}.tc4{background:#bf5af2;color:#fff}.tc5{background:#f2e8d5}
+.addrow{display:flex;gap:8px;margin-top:10px}
+.addrow input{flex:1;min-width:0;height:48px;border-radius:14px;border:0;outline:none;background:var(--elev);padding:0 16px;font-size:17px}
+.addrow input:focus{box-shadow:0 0 0 2px var(--accent)}
+.addrow button{width:48px;height:48px;border-radius:14px;background:var(--elev);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.pchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pchips button{height:36px;padding:0 14px;border-radius:999px;background:var(--elev2);font-size:15px;font-weight:500}
+.pchips button:active{background:var(--elev3)}
+.restlbl{font-size:15px;color:var(--label2);font-weight:400}
+.slots{display:grid;grid-template-columns:repeat(3,1fr) 1.1fr;gap:6px}
+.slot{height:40px;border-radius:12px;background:var(--elev);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;color:var(--label3)}
+.slot.filled{color:var(--label);background:var(--elev2)}
+.slot.sum{color:var(--accent)}
+.dgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.dk{height:clamp(40px,5.8dvh,70px);border-radius:12px;background:var(--elev);font-size:21px;font-weight:500}
+.dk:active{background:var(--elev3)}
+.dk.bull{color:var(--accent)}
+.dk.miss{color:var(--red);font-size:17px}
+.dk.back{grid-column:span 2;display:flex;align-items:center;justify-content:center}
+@media (min-width:820px) and (orientation:landscape){.dk{height:clamp(50px,8.5dvh,84px);font-size:24px}}
 @keyframes fade{from{opacity:0}}
 @keyframes up{from{transform:translateY(40px);opacity:0}}
 @keyframes pop{from{opacity:0;transform:translate(-50%,-8px) scale(.96)}}
@@ -239,6 +265,6 @@ th.win{color:var(--accent)}
 </head>
 <body>
 <div id="app"></div>
-<script src="app.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>

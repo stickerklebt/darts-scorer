@@ -1,6 +1,10 @@
 // Offline-Cache: App startet ohne Internet, Updates werden im Hintergrund geladen.
-const CACHE = 'dartscorer-v2';
-const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-180.png', './icon-512.png'];
+const CACHE = 'dartscorer-v3';
+const ASSETS = [
+  './', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png',
+  './js/main.js', './js/store.js', './js/match.js', './js/checkout.js', './js/x01.js',
+  './js/party.js', './js/stats.js', './js/games.js', './js/ui/views.js',
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
