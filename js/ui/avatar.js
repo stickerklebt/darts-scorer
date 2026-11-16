@@ -1,22 +1,22 @@
-/* Bot-Bilder: lädt bots/<bot-id>.png bzw. .jpg, falls vorhanden – sonst gestalteter Platzhalter. */
+/* Bot-Bilder: bots/<bot-id>.png bzw. .jpg, eingetragen in bots/bilder.json – sonst gestalteter Platzhalter. */
 import { BOTS, bot } from '../bots.js';
 import { COLORS, sparkPath } from './svg.js';
 
 const found = new Map(); // id → URL oder null
 
-/** Einmal beim Start prüfen, welche Bilder es gibt. onDone wird aufgerufen, wenn sich etwas ändert. */
-export function probeBotImages(onDone) {
-  if (typeof Image === 'undefined') return;
-  for (const b of BOTS) {
-    const tryUrl = (exts) => {
-      if (!exts.length) { found.set(b.id, null); return; }
-      const url = `bots/${b.id}.${exts[0]}`, img = new Image();
-      img.onload = () => { found.set(b.id, url); onDone?.(); };
-      img.onerror = () => tryUrl(exts.slice(1));
-      img.src = url;
-    };
-    tryUrl(['png', 'jpg']);
-  }
+/** Einmal beim Start die Bilderliste bots/bilder.json lesen (keine 404-Fehler für fehlende Bilder). */
+export async function probeBotImages(onDone) {
+  try {
+    const r = await fetch('bots/bilder.json', { cache: 'no-cache' });
+    if (!r.ok) return;
+    const list = await r.json();
+    let changed = false;
+    for (const b of BOTS) {
+      const file = list[b.id];
+      if (typeof file === 'string' && /^[\w.-]+\.(png|jpe?g)$/i.test(file)) { found.set(b.id, `bots/${file}`); changed = true; }
+    }
+    if (changed) onDone?.();
+  } catch (e) { /* offline oder keine Liste: Platzhalter */ }
 }
 
 /** Platzhalter: Initialen in Bot-Farbe, Stein-Körnung, Zebra-Kante, Funke. */

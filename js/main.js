@@ -7,7 +7,6 @@ import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
 import { onboardView, tabsBar, playView } from './ui/play.js';
 import { statsView } from './ui/stats-view.js';
-import { statsExtras } from './ui/stats-extra.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
@@ -34,7 +33,7 @@ function render() {
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
-  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView(statsExtras) : playView()); }
+  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
@@ -312,6 +311,7 @@ const actions = {
   statsWho() { ui.modal = { type: 'pickStats' }; render(); },
   statsPick(el) { S.statsPid = el.dataset.v; ui.modal = null; ui.heatSel = null; render(); },
   period(el) { S.statsPeriod = el.dataset.v; render(); },
+  statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
   heatSort(el) { ui.heatSort = el.dataset.v; render(); },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },

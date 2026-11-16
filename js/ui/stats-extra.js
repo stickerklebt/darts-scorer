@@ -5,10 +5,8 @@ import { label } from '../checkout.js';
 import { lineChart, barChart } from './charts.js';
 import { x01Table } from './result.js';
 import { esc, fmt, pcVars } from './common.js';
-import { divider } from './svg.js';
 import { dateStr } from './stats-view.js';
 
-const section = (title, body, extra = '') => `<section class="pg ${extra}"><h2 class="pg-h"><span>${title}</span></h2>${divider()}${body}</section>`;
 
 function legsDetail(m) {
   return m.legs.filter((l) => l.turns.length).map((l, li) => {
@@ -32,15 +30,21 @@ function legsDetail(m) {
   }).join('');
 }
 
-export function statsExtras(st) {
+const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {});
+
+/** Verlauf: Average und Doppelquote pro Match */
+export function historyCharts(st) {
   const avgs = st.series.map((s) => s.avg);
   const dbl = st.series.map((s) => (s.dbl === null ? null : s.dbl * 100));
-  const ends = st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {};
-  const charts = section('Verlauf', `
-    <h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), ends)}
-    <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends, maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}
-    <h3 class="ch-h">Verteilung der Aufnahmen</h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`, 'wide');
-  const list = section('Matches', `<div class="mlist">${st.list.map((r) => {
+  return `<h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), ends(st))}
+    <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
+}
+/** Scoring: Verteilung der Aufnahmen */
+export const distChart = (st) => `<h3 class="ch-h">Verteilung der Aufnahmen</h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`;
+
+/** Aufklappbare Matchliste */
+export function matchList(st) {
+  return `<div class="mlist">${st.list.map((r) => {
     const open = ui.openMatch === r.id;
     const m = open ? S.matches.find((x) => x.id === r.id) : null;
     return `<div class="ml ${open ? 'open' : ''}">
@@ -51,6 +55,5 @@ export function statsExtras(st) {
       </button>
       ${m ? `<div class="ml-detail">${x01Table(m)}<h2 class="label">Aufnahmen</h2>${legsDetail(m)}</div>` : ''}
     </div>`;
-  }).join('')}</div>`, 'wide');
-  return charts + list;
+  }).join('')}</div>`;
 }

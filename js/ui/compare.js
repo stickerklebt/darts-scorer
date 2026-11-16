@@ -3,7 +3,7 @@ import { S, nameOf, profile } from '../store.js';
 import { fullStats, is501 } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
 import { icon } from './svg.js';
-import { PERIOD_OPTS, pct, statsPid } from './stats-view.js';
+import { PERIOD_OPTS, pct, statsPid, doublesBlock } from './stats-view.js';
 
 export function comparePair() {
   const a = S.cmpA && profile(S.cmpA) ? S.cmpA : statsPid();
@@ -81,6 +81,9 @@ export function compareView() {
     ${seg('period', 'v', PERIOD_OPTS, S.statsPeriod)}
     <div class="cm-table">${rows}</div>
     <p class="foot">Gold = besserer Wert. Grundlage: abgeschlossene 501-Matches im gewählten Zeitraum.</p>
+    <h2 class="label">Doppelfelder</h2>
+    <div class="cm-dbl">${[[a, A, ca], [b, B, cb]].map(([pid, st, cv]) => `<div class="cm-dcol"><div class="cm-dname" style="${cv}">${esc(nameOf(pid))}</div>${st.matches ? doublesBlock(st, null, false) : '<p class="foot">Keine 501-Matches im Zeitraum.</p>'}</div>`).join('')}</div>
+    <p class="foot">Jede Scheibe ist relativ zur eigenen Doppelquote des Spielers eingefärbt.</p>
   </main>`;
 }
 

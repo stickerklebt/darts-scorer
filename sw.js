@@ -1,5 +1,5 @@
 // Offline-Cache: App startet ohne Internet, Updates werden im Hintergrund geladen.
-const CACHE = 'dartscorer-v12';
+const CACHE = 'dartscorer-v14';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png',
   './css/tokens.css', './css/base.css', './css/screens.css', './css/fx.css',
@@ -7,7 +7,7 @@ const ASSETS = [
   './js/main.js', './js/store.js', './js/match.js', './js/checkout.js', './js/x01.js', './js/party.js', './js/stats.js', './js/games.js', './js/bots.js', './js/bulloff.js', './js/fx.js', './js/botsim.js',
   './js/ui/common.js', './js/ui/svg.js', './js/ui/board.js', './js/ui/play.js', './js/ui/setup.js', './js/ui/game.js',
   './js/ui/moments.js', './js/ui/result.js', './js/ui/sheets.js', './js/ui/stats-view.js', './js/ui/stats-extra.js', './js/ui/charts.js', './js/ui/compare.js', './js/ui/avatar.js', './js/ui/bulloff-view.js',
-  './js/ui/fx.js', './js/ui/fx-core.js', './js/ui/fx-anims.js', './js/ui/fx-art.js',
+  './js/ui/fx.js', './js/ui/fx-core.js', './js/ui/fx-anims.js', './js/ui/fx-art.js', './bots/bilder.json',
 ];
 
 self.addEventListener('install', (e) => {

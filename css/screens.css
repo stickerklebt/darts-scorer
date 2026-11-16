@@ -327,12 +327,6 @@
 .pg { margin-top: 30px; }
 .pg-h { margin: 0; text-align: center; font-family: var(--f-display); font-weight: 900; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
 .pg > .divider { max-width: 260px; margin: 4px auto 14px; }
-.kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-@media (min-width: 700px) { .kv { grid-template-columns: repeat(4, 1fr); } }
-.kv-c { background: var(--panel); border: 1px solid var(--line2); border-top: 2px solid var(--gold); padding: 8px 10px; min-width: 0; }
-.kv-c small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); line-height: 1.2; min-height: 2.4em; }
-.kv-c b { display: block; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.kv-c em { display: block; font-style: normal; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 /* Rekord-Karten: heller Kreidestein mit Rissen, gravierte Schrift (Monument) */
 .record, .rlist, .empty-card { position: relative; color: #1f2523; margin-bottom: 10px; border-radius: var(--r-panel); padding: 8px;
   background-color: #a9aea3; background-image: var(--tex-cracks), var(--tex-grain), var(--tex-stone); background-blend-mode: normal, overlay, normal;
@@ -357,7 +351,7 @@
 .heatboard .hn { fill: var(--cream); font-family: var(--f-num); font-weight: 800; font-size: 13px; }
 .heat-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
 .heat-legend i { display: inline-block; width: 12px; height: 12px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--ink); }
-.heat-legend i.none { background: var(--cream); background-image: var(--tex-engrave); }
+.heat-legend i.none, .dot.none { background: var(--cream); background-image: var(--tex-engrave); }
 .heat-sel { width: 100%; min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--panel); border: 1px solid var(--line2); border-left: 4px solid var(--gold); padding: 6px 12px; color: var(--muted); }
 .heat-sel b { font-size: 26px; font-weight: 800; color: var(--cream); }
 .heat-sel span { font-variant-numeric: tabular-nums; }
@@ -550,3 +544,42 @@
 .endlines { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
 .endline { position: relative; display: flex; align-items: flex-start; gap: 14px; }
 .endline .speech { position: relative; left: 0; top: 0; right: auto; flex: 1; }
+
+/* ================= Statistik: Unter-Reiter, ruhiger Satz ================= */
+.subtabs { display: flex; gap: 0; margin: 14px -16px 0; padding: 0 16px; overflow-x: auto; scrollbar-width: none; position: relative; }
+.subtabs::-webkit-scrollbar { display: none; }
+.subtabs::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--tex-zebra); opacity: .14; pointer-events: none; }
+.subtabs button { flex: 1 0 auto; height: 46px; padding: 0 7px; font-size: 14px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--dim); border-radius: 0; border-bottom: 4px solid transparent; position: relative; z-index: 1; }
+.subtabs button.on { color: var(--cream); border-bottom-color: var(--red); }
+.subbody { padding-top: 18px; animation: fade .2s; }
+.sblock { margin-top: 26px; }
+.sblock:first-child { margin-top: 4px; }
+.sblock > .label { margin-top: 0; }
+.hero-stat { text-align: center; padding: 22px 12px 18px; border-radius: var(--r-panel); background-color: var(--panel); background-image: var(--tex-cracks), var(--tex-grain), var(--tex-stone);
+  background-blend-mode: normal, overlay, normal; border: 1px solid var(--line2); margin-bottom: 14px; }
+.hero-stat small { display: block; font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.hero-stat b { display: block; font-size: clamp(72px, 24vw, 120px); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; margin: 6px 0 4px;
+  text-shadow: -2px 0 0 rgba(82,228,255,.5), 2px 0 0 rgba(255,79,179,.45); }
+.hero-stat em { font-style: normal; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kv.three { grid-template-columns: repeat(3, 1fr); }
+.kv.four { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 560px) { .kv { grid-template-columns: repeat(4, 1fr); } .kv.three { grid-template-columns: repeat(3, 1fr); } .kv.four { grid-template-columns: repeat(4, 1fr); } }
+.kv-c { padding: 14px 14px 12px; min-width: 0; border-radius: var(--r-panel); background-color: var(--panel); background-image: var(--tex-grain); background-blend-mode: overlay; border: 1px solid var(--line); }
+.kv-c small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); line-height: 1.2; }
+.kv-c b { display: block; margin-top: 6px; font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
+.kv-c em { display: block; margin-top: 4px; font-style: normal; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.minirow { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.minirow span { padding: 10px 6px; text-align: center; }
+.minirow span + span { border-left: 1px solid var(--line); }
+.minirow small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.minirow b { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.heatboard .htop { fill: #ffd45c; font-family: var(--f-num); font-weight: 800; font-size: 13px; }
+.topm { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 8px; border-radius: 50%; background: var(--ink); color: #ffd45c; border: 1.5px solid #ffd45c; font-size: 11px; font-weight: 800; vertical-align: 2px; }
+.heat-legend .topm { margin: 0 5px 0 0; vertical-align: -1px; }
+.heat-note { text-align: center; margin: 0; }
+.cm-dbl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cm-dcol { min-width: 0; }
+.cm-dname { margin-bottom: 8px; padding: 4px 8px; background: var(--pc); color: var(--pi); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cm-dbl .heat-legend, .cm-dbl .heat-note { display: none; }
+.cm-dbl .heat-board { padding: 5px; }

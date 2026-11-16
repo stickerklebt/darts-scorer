@@ -25,6 +25,7 @@ const DEF = () => ({
   tab: 'play',
   statsPid: null,
   statsPeriod: 'all',
+  statsSub: 'overview',
   cmpA: null,
   cmpB: null,
   game: 'x01',

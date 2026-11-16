@@ -1,20 +1,23 @@
-/* Tab „Statistiken“ im Programmheft-Stil */
+/* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
+   Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
-import { divider, icon, stars } from './svg.js';
-import { heatBoard, HEAT_STEPS, heatColor } from './board.js';
+import { icon, stars } from './svg.js';
+import { heatBoard, TIER_COLORS, tierColor } from './board.js';
+import { historyCharts, distChart, matchList } from './stats-extra.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
+export const SUBTABS = [['overview', 'Überblick'], ['scoring', 'Scoring'], ['checkout', 'Checkout'], ['doubles', 'Doppel'], ['history', 'Verlauf']];
 export const pct = (x) => (x === null || x === undefined ? '–' : `${fmt(x * 100)} %`);
 export const dateStr = (t) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const oppStr = (ids) => ids.map(nameOf).join(' · ');
 
 export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
 
-const section = (title, body, extra = '') => `<section class="pg ${extra}">
-  <h2 class="pg-h"><span>${title}</span></h2>${divider()}${body}</section>`;
-const kv = (items) => `<div class="kv">${items.map(([k, v, sub]) => `<div class="kv-c"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
+/** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
+const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub]) => `<div class="kv-c"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
 const record = (title, value, sub) => `<div class="record"><div><small>${title}</small><b>${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows) => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<div class="rl"><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></div>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
@@ -24,28 +27,63 @@ export function statsHeader(pid) {
   return `<div class="st-head">
     <button class="st-who" data-act="statsWho"><span class="pfblock" style="${pcVars(Math.max(0, pi))}">${esc(name.slice(0, 1).toUpperCase())}</span>
       <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
-    ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ""}
+    ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
   ${seg('period', 'v', PERIOD_OPTS, S.statsPeriod)}`;
 }
 
-function heatSection(st) {
-  const fields = st.doubles.fields;
-  const sel = ui.heatSel && fields[ui.heatSel] ? ui.heatSel : null;
-  const f = sel ? fields[sel] : null;
+/* ---------------- Unter-Reiter ---------------- */
+function overviewTab(st) {
+  const c = st.counts;
+  return `<div class="hero-stat"><small>Overall-Average · 501</small><b>${fmt(st.avg, 2)}</b><em>${st.darts} Darts · ${st.points} Punkte</em></div>
+    ${cards([
+      ['Bester Average', fmt(st.bestMatchAvg, 2)], ['First 9', fmt(st.f9, 2)],
+      ['Höchste Aufnahme', st.top5[0]?.score ?? '–'], ['Höchstes Checkout', st.highestCo ?? '–'],
+      ['Doppelquote', pct(st.doubles.rate)], ['Siegquote', pct(st.winRate)], ['180er', c.t180], ['Legs', `${st.legsWon}/${st.legsTotal}`],
+    ])}
+    <div class="minirow"><span><small>Matches</small><b>${st.matches}</b></span><span><small>Siege</small><b>${st.wins}</b></span><span><small>Längste Serie</small><b>${st.bestStreak}</b></span></div>`;
+}
+
+function scoringTab(st) {
+  const c = st.counts;
+  return block('', rankList('Top 5 Aufnahmen', st.top5))
+    + block('Anzahl', cards([['180', c.t180], ['140+', c.t140], ['100+', c.t100], ['60+', c.t60]], 'four'))
+    + block('Pro Aufnahme', cards([['Ø Aufnahme', fmt(st.perTurn)], ['Bust-Quote', pct(st.bustRate)]]))
+    + block('', distChart(st));
+}
+
+function checkoutTab(st) {
+  return record('Höchstes Checkout', st.highestCo ?? '–', st.favourite ? `Lieblingsdoppel ${st.favourite.field} (${st.favourite.count}×)` : '')
+    + block('Doppel', cards([['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout']]))
+    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`]), 'three'))
+    + rankList('Top 5 Checkouts', st.topCo);
+}
+
+/** Heatmap + Doppelliste, Farben relativ zur eigenen Gesamtquote, Top 3 markiert */
+export function doublesBlock(st, sel, withList = true) {
+  const fields = st.doubles.fields, rating = doubleRating(st.doubles);
+  const f = sel && fields[sel] ? fields[sel] : null;
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
   const sort = ui.heatSort || 'attempts';
   const num = (k) => (k === 'Bull' ? 25 : Number(k.slice(1)));
   rows.sort((a, b) => (sort === 'field' ? num(a.k) - num(b.k) : sort === 'rate' ? b.rate - a.rate || b.attempts - a.attempts : b.attempts - a.attempts));
   const th = (k, l) => `<th><button data-act="heatSort" data-v="${k}" class="${sort === k ? 'on' : ''}">${l}${sort === k ? ' ▾' : ''}</button></th>`;
-  return section('Doppelfelder', `
-    <div class="heat">
-      <div class="heat-board">${heatBoard(fields, sel)}</div>
-      <div class="heat-legend">${HEAT_STEPS.map((s) => `<span><i style="background:${s.color}"></i>${s.label}</span>`).join('')}<span><i class="none"></i>keine Versuche</span></div>
-      <div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>
+  const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
+  const topMark = (k) => (rating[k]?.top ? `<span class="topm">${rating[k].top}</span>` : '');
+  return `<div class="heat">
+      <div class="heat-board">${heatBoard(fields, f ? sel : null, rating)}</div>
+      <div class="heat-legend">${TIERS.map((t) => `<span><i style="background:${TIER_COLORS[t.k]}"></i>${t.label}</span>`).join('')}<span><i class="none"></i>unter ${MIN_ATTEMPTS} Versuchen</span><span><b class="topm">1</b>deine 3 besten Doppel</span></div>
+      <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>
+      ${withList ? `<div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>` : ''}
     </div>
-    ${rows.length ? `<div class="sbtable-wrap"><table class="sbtable dbl"><tr>${th('field', 'Feld')}${th('attempts', 'Versuche')}<th><div>Treffer</div></th>${th('rate', 'Quote')}</tr>
-      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td><i class="dot" style="background:${heatColor(r.rate)}"></i>${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}`, 'wide');
+    ${withList && rows.length ? `<div class="sbtable-wrap"><table class="sbtable dbl"><tr>${th('field', 'Feld')}${th('attempts', 'Versuche')}<th><div>Treffer</div></th>${th('rate', 'Quote')}</tr>
+      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${topMark(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}`;
+}
+
+function historyTab(st) {
+  return block('', historyCharts(st))
+    + block('Legs', cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four'))
+    + block('Matches', matchList(st));
 }
 
 export function emptyState(pid, any) {
@@ -59,32 +97,17 @@ export function emptyState(pid, any) {
   </div>`;
 }
 
-/** extras: zusätzliche Sektionen (Diagramme, Matchliste) aus Meilenstein 4 */
-export function statsView(extras = () => '') {
+export function statsView() {
   const pid = statsPid();
   const st = fullStats(S.matches, pid, S.statsPeriod);
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
-  const c = st.counts;
-  return `${head}<div class="pgs">
-    ${section('Überblick', kv([
-      ['Average', fmt(st.avg, 2)], ['Bester Match-Ø', fmt(st.bestMatchAvg, 2)], ['First 9 Ø', fmt(st.f9, 2)],
-      ['Matches', st.matches], ['Siege', st.wins, pct(st.winRate)], ['Längste Serie', st.bestStreak],
-      ['Legs', `${st.legsWon}/${st.legsTotal}`], ['Darts', st.darts], ['Punkte', st.points],
-    ]))}
-    ${section('Scoring', `${rankList('Top 5 Aufnahmen', st.top5)}${kv([
-      ['180', c.t180], ['140+', c.t140], ['100+', c.t100], ['60+', c.t60], ['Ø Aufnahme', fmt(st.perTurn)], ['Bust-Quote', pct(st.bustRate)],
-    ])}`)}
-    ${section('Checkout', `${record('Höchstes Checkout', st.highestCo ?? '–', st.favourite ? `Lieblingsdoppel ${st.favourite.field} (${st.favourite.count}×)` : '')}
-      ${kv([['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
-        ...st.ranges.map((r) => [`Checkout ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`])])}
-      ${rankList('Top 5 Checkouts', st.topCo)}`)}
-    ${section('Legs', kv([
-      ['Bestes Leg', st.bestLeg ? `${st.bestLeg} Darts` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15],
-    ]))}
-    ${heatSection(st)}
-    ${extras(st, pid)}
-  </div></main>`;
+  const sub = SUBTABS.some(([k]) => k === S.statsSub) ? S.statsSub : 'overview';
+  const body = sub === 'scoring' ? scoringTab(st) : sub === 'checkout' ? checkoutTab(st) : sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'history' ? historyTab(st) : overviewTab(st);
+  return `${head}
+    <nav class="subtabs">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}</nav>
+    <div class="subbody sub-${sub}">${body}</div>
+  </main>`;
 }
 
 export function profilePicker() {

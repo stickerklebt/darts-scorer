@@ -1,113 +1,92 @@
-# Darts Scorer – Architektur & Plan
+# Darts Scorer – Architektur & Regeln
 
 PWA für iPhone/iPad. Vanilla JS als ES-Module, kein Build-Step, keine Frameworks, keine CDNs.
 Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`stickerklebt/darts-scorer`, Branch `main`).
 
 ## Regeln für die Arbeit
-- Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheibe: eigene SVGs im Code.
-- Schriften lokal als `.woff2` (nur OFL): **Barlow Condensed** (Zahlen/Scoreboard), **Cinzel** (theatralische Versalien).
-- Design: eigene Motive im Stil 70er/80er-Rockalbum. **Keine** Cover-Motive, Wappen, Logos oder Namen von Bands nachbauen.
+- Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheiben, Animationen: eigene SVG/CSS/Canvas im Code. Keine Sounds.
+- Schriften lokal als `.woff2` (nur OFL): **Barlow Condensed** (Zahlen, Fließtext), **Metal Mania** (kantige Display-Schrift für große Überschriften).
+- Design: eigene Bildsprache aus Stilmitteln – verwitterter, rissiger Stein mit kühlem Grünstich (Grundmaterial), Zebra-Streifen
+  (Leisten, Trenner), bunte Comic-Magie mit Blitzen/Funken/Leuchten (Momente, Sieger, Hero), kantige Display-Lettern.
+  **Keine** Cover-Motive, Figuren, Kompositionen, Logos oder Bandnamen nachbauen. Flächen mit Körnung statt sterilen Einfarbflächen,
+  keine weichen Verläufe auf Flächen (Licht in Animationen ausgenommen). Hinter Zahlen bleibt es ruhig.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
-- Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün.
+- Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
 - App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg`, dann `qlmanage -t -s 1024 icon.svg`
   und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
-- Der Service Worker wird nur unter HTTPS registriert (nicht auf localhost), damit lokale Tests frische Dateien sehen.
-- Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt.
+- Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen.
+- Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt. Keine Statistik/Funktion entfernen.
+- Animationen in der Konsole prüfen: `(await import('/js/ui/fx.js')).fxPlay('lootbox', {score:180, name:'Test'})`,
+  `__fxFreeze()` hält das Bild an (Seite im Hintergrund: Animationen per `document.getAnimations()` auf eine Zeit setzen).
 
-## Dateistruktur (Ziel)
+## Dateistruktur
 ```
 index.html              Gerüst, lädt css/ und js/main.js (type="module")
 css/
-  tokens.css            Farben, Schriften (@font-face), Abstände, Ecken
-  base.css              Reset, Typo, Buttons, Tabs, Panels, Texturen
-  screens.css           Screen-spezifisches (Play, Setup, Game, Result, Stats, Compare)
-fonts/                  barlow-condensed-*.woff2, cinzel-*.woff2, OFL.txt
+  tokens.css            Farben, Schriften, Texturen (Körnung, Stein, Risse, Zebra, Raster)
+  base.css              Reset, Typo, Buttons, Tabs, Dialoge
+  screens.css           Screens (Play, Setup, Spiel, Ausbullen, Leg-Info, Ergebnis, Statistik, Vergleich, Bots)
+  fx.css                Vollbild-Animationen
+fonts/                  bc-*.woff2 (Barlow Condensed), metalmania.woff2, OFL-*.txt
+bots/                   Optionale Bot-Bilder + bilder.json (Liste) + README.md
 js/
-  main.js               Boot, Router (screen/tab), Event-Delegation, Render-Loop
-  store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, Match-Archiv
-  checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Hilfsfunktionen
-  x01.js                X01-Engine: Legs/Sets, Summen- + Einzeldart-Eingabe, Ziel/Doppelversuch, Undo
+  main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
+  store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand
+  match.js              Match-Objekt, Werfer-Reihenfolge
+  checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch
+  x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
   party.js              Highscore, Shanghai, Halbieren, Around the Clock
-  stats.js              Reine Funktionen: Matches → Kennzahlen, Heatmap, Verläufe, Verteilung
-  ui/
-    svg.js              Wappen, Ornamente, Badges, Muster (Halftone/Schraffur), Icons
-    board.js            Antippbare Dartscheibe + Kupferstich-Heatmap-Scheibe
-    charts.js           Linien- und Balkendiagramme
-    play.js             Tab „Spielen“ (Profilkarte, Hero X01, Modus-Grid)
-    setup.js            Setup-Seite (Plakat, Profilauswahl, Optionen)
-    game.js             Scoreboard + Eingabe (Summe / Einzeldart-Tastatur / Scheibe)
-    moments.js          Comic-Vollbild bei 180, High-Finish, Leg/Set gewonnen
-    result.js           Ergebnis-/Sieger-Screen
-    stats-view.js       Tab „Statistiken“ (Spielerwahl, Zeitfilter, Kennzahlen, Heatmap, Leerzustand)
-    stats-extra.js      Verlaufsdiagramme + aufklappbare Matchliste
-    common.js           esc/fmt/Segment-Helfer, Spielerfarben
-    compare.js          Vergleichsansicht
-    sheets.js           Dialoge: Zahnrad, Profilwahl, Bestätigungen, Daten löschen
-sw.js, manifest.webmanifest, icon-180.png, icon-512.png (neues Wappen-Icon)
-tests/
-  run.mjs               Mini-Testrunner
-  checkout.test.mjs     Pflicht-Testfälle + Vollprüfung 2–170 × 1/2/3 Darts
-  x01.test.mjs          Bust, Checkout, Summe→Einzeldart-Wechsel, Ziel/Doppelversuch, Sets
-  stats.test.mjs        Kennzahlen gegen handgerechnete Beispiel-Matches, Zeitfilter
+  bulloff.js            Echte Scheibengeometrie (mm), Feld an Position, Ausbullen-Logik
+  fx.js                 Welche Animation zu welchem Wurf (Töpfe, Zufall ohne Wiederholung)
+  bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma), Sprüche  ← zum Selbst-Ändern
+  botsim.js             Bot-Wurfmodell: zielen + 2D-Normalstreuung, X01 und Partyspiele
+  stats.js              Kennzahlen, Heatmap-Daten, relative Doppel-Bewertung (Stufen + Top 3)
+  games.js              Spielmodi (Titel, Regeln)
+  ui/ svg.js · board.js (Eingabe-, Heatmap- und Echt-Scheibe) · charts.js · play.js · setup.js · game.js ·
+      bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
+      compare.js · sheets.js · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
+      fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
+sw.js, manifest.webmanifest, icon-180.png, icon-512.png
+tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma per Simulation)
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots
 ```
 
-## Datenmodell (`localStorage['darts.v3']`, alte Daten werden verworfen)
+## Datenmodell (`localStorage['darts.v3']`)
 ```js
 {
-  version: 3,
-  mainId: 'p_…',                       // Hauptspieler (Onboarding)
-  profiles: [{ id, name, createdAt }], // Name eindeutig, Vergleich ohne Groß/Klein
-  matches: [MatchRecord],              // nur abgeschlossene Matches, alle Spielarten
-  current: Match | null,               // laufendes Match (Fortsetzen nach Neustart)
-  lineup: [profileId],                 // zuletzt gewählte Spieler
-  opts: { x01: { start, out, mode, target }, highscore: { rounds }, … },
-  prefs: { voice: false, hints: true, dartInput: 'keys' | 'board' },
+  version: 3, mainId, profiles: [{ id, name, createdAt }],   // nur Menschen; Bots stehen in js/bots.js
+  matches: [Match], current: Match | null,
+  lineup: [{ id, team }],                                     // id = Profil- oder Bot-id ('sensei-wu' …)
+  teamMode, anwurf: 'list' | 'bull',
+  opts: { x01: { start, out, mode, target }, highscore: { rounds }, shanghai: { rounds }, halveit: {}, atc: { bull } },
+  prefs: { voice: false, hints: true, dartInput: 'keys' | 'board', anim: true },
+  screen, tab, statsPid, statsPeriod, statsSub, cmpA, cmpB, game,
 }
-
-Match = {
-  id, game, opts, first, startedAt, endedAt?, winners?: [sideIndex],
-  sides: [[profileId, …]],             // Seite = Einzelspieler oder Team (mehrere Profile)
-  playerIds: [profileId],              // alle Profile flach (für Filter)
-  legs: [Leg],                         // X01
-  turns: [{ s, pid, v }],              // Partyspiele (v = Punkte bzw. Treffer)
-  pending: [Throw],                    // angefangene Einzeldart-Aufnahme
-}
-Leg  = { set, starter, winner?, turns: [Turn] }   // starter/winner = Seiten-Index
-Turn = {
-  s, pid,                              // Seite + Profil, das tatsächlich geworfen hat
-  startRem,                            // Rest vor der Aufnahme
-  input: 'sum' | 'darts',
-  score, darts, bust?, out?,
-  throws?: [{ n, m, before, target }]  // n 0–20/25, m 1–3; before = Rest vor dem Dart;
-}                                      // target = empfohlener erster Dart bei (before, übrige Darts)
+Match = { id, game, opts, first, startedAt, endedAt?, done, winners?, sides: [[id…]], playerIds, legs | turns, pending,
+          bull?: { contenders, throws: [{ s, x, y }], rounds: [{ throws, group, winner }], winner, done } }  // x,y in mm
+Leg  = { set, starter, winner?, turns: [Turn] }
+Turn = { s, pid, startRem, input: 'sum' | 'darts', score, darts, bust?, out?, throws?: [{ n, m, before, target }] }
+Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: null, target: null }]
 ```
-- **Einzeldart-Eingabe** gilt für jede Aufnahme mit `startRem ≤ 170`. Beginnt sie darüber, bleibt sie Summe.
-  Da 171+ nicht in einer Aufnahme checkbar ist, gibt es kein Checkout ohne Einzeldarts.
-- **Doppelversuch** (nur bei Double Out): Dart mit `before` gerade 2–40 oder 50. Ziel = `D(before/2)` bzw. Bull.
-  Treffer = genau dieses Feld. Daraus: Doppelquote gesamt, pro Feld, Ø Darts aufs Doppel.
-- **Teams:** Eine Seite mit mehreren Profilen spielt mit gemeinsamem Rest/Legs/Sets. Werfer der Seite =
-  `side[(Anzahl Aufnahmen dieser Seite im ganzen Match) % Teamgröße]` – die Reihenfolge läuft über Legs weiter.
-  Anzeige „TEAM Tim · Ben · Andi“, aktiver Werfer „Andis Wurf“. Statistik je Profil aus `turn.pid`,
-  Siege/Legs zählen für jedes Mitglied der Gewinnerseite. Max. 6 Spieler insgesamt.
-- Das `throws`-Format (Feld + Multiplikator + Ziel) ist so gewählt, dass Cricket es später wiederverwenden kann.
+- Einzeldart-Eingabe für Menschen ab Rest ≤ 170. **Bots werfen immer Dart für Dart** (`throwDart(m, n, mult, { any: true })`).
+- Doppelversuch (Double Out): Dart mit `before` gerade 2–40 oder 50.
+- Teams: Werfer = `side[(Aufnahmen der Seite im Match) % Teamgröße]`. Ausbullen wirft der Erste der Teamliste.
 
-## Checkout-Tabelle
-- Fest hinterlegt nach gängigem PDC-Chart: `CHECKOUT[3]` für 2–170, `CHECKOUT[2]` für 2–110, `CHECKOUT[1]` für die Doppel und Bull.
-- Bevorzugte Doppel: D20, D16, D8, D18, D12, D10 …; D1–D3 nur ohne sinnvolle Alternative.
-- Bogeys (169, 168, 166, 165, 163, 162, 159) und nicht checkbare Reste mit den übrigen Darts:
-  Setup-Wurf aus eigener Tabelle (z. B. „T19 → 112 Rest“).
+## Regeln der neuen Funktionen
+- **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
+- **Setup**: ein Screen – Modus · Spieler & Bots · Startpunkte/Runden · First to · Anwurf · Start; „Mehr Optionen“ (Out, Legs/Sets, Mischen, Regeln).
+- **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
+  Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
+- **Animationen** (`js/fx.js`): 26, 60, 100–120 (Topf), 121–179 (Topf), 180 (Lootbox); Finish 2–60, 61–99, 100–167, 170 (nur Checkout).
+  Nur X01 + Highscore, keine Busts, keine für Bots (nur kleine Andeutung in der Bot-Karte). Zufällig, nie zweimal dieselbe hintereinander.
+  Antippen überspringt; nach Finish-Animation die Leg-/Set-Info. Abschaltbar im Zahnrad (`prefs.anim`).
+- **Bots**: Sensei Wu Ø 45 (σ 17,74 mm), Super Mario Ø 42 (σ 18,87), Shrek Ø 40 (σ 19,8). Zielen T20, im Finish nach Checkout-Tabelle,
+  im Partyspiel aufs jeweilige Ziel. 3 Darts ≈ 2 s. Mindestens ein Mensch pro Spiel. Bots nicht in Statistik/Profilwahl.
+  Sprüche: max. 3 pro Spiel und Bot (Start · ein Moment · Ende). Undo nimmt die letzte menschliche Eingabe zurück, Bot-Würfe danach mit.
+  Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json`.
+- **Statistik**: Unter-Reiter Überblick · Scoring · Checkout · Doppel · Verlauf (nur 501). Doppelfarben relativ zur eigenen
+  Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral; Top 3 markiert.
+  Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
 
-## Statistik (nur 501-Matches, Zeitfilter 7 T / 30 T / 1 J / Gesamt)
-Überblick · Scoring · Checkout (inkl. Quote nach Bereich 2–40 / 41–100 / 101–170) · Legs ·
-Doppel-Heatmap · Diagramme (Average-Verlauf mit gleitendem Schnitt, Doppelquote-Verlauf,
-Verteilung der Aufnahmen) · Matchliste (aufklappbar) · Leerzustand · Vergleich zweier Spieler.
-
-## Meilensteine (alle vier erledigt, Stand 16.11.2026)
-1. **Fundament** – Module, Store v3, Profile (Auswahl/Neuanlage, Hauptspieler vorausgewählt), Checkout-Tabelle + Tests,
-   Einzeldart-Tastatur ab Rest ≤ 170, Ziel/Doppelversuch, Undo pro Dart, Matcharchiv, „Alle Daten löschen“. Optik noch alt.
-2. **Redesign** – Schriften, Design-Tokens, Ornamente/Muster/Wappen, Tabs mit gleitendem Strich, Startseite (Hero + Grid),
-   Setup-Plakat, Scoreboard, Comic-Momente, Ergebnis-Screen, Dartscheiben-Eingabe (umschaltbar im Zahnrad), neues App-Icon.
-3. **Statistiken** – Tab mit Spielerwahl, Zeitfilter, allen Kennzahlen, Heatmap + Doppelliste, Leerzustand.
-4. **Vergleich, Diagramme, Matchliste, Feinschliff** – Animationen, iPhone/iPad hoch & quer prüfen.
-
-Nach jedem Meilenstein: Tests grün, im Browser auf iPhone- und iPad-Größe geprüft, auf GitHub Pages veröffentlicht.
+## Stand
+Update 1 (Meilensteine 1–4) und Update 2 (Design, Setup, Ausbullen, Animationen, Bots, Statistik) erledigt, Stand 16.11.2026.
