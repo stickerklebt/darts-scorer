@@ -13,6 +13,8 @@ import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
+import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
+import { isBot } from './bots.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
 import { createBulloff, bullThrow, bullUndo, MM } from './bulloff.js';
@@ -89,19 +91,30 @@ function handle(res) {
   const m = S.current;
   if (res.type === 'error') { toast(res.msg); return render(); }
   const t = res.turn;
-  if (res.type === 'match') return finish();
+  // Animation (nur Menschen, nur wenn eingeschaltet). Bots bekommen nur eine kleine Andeutung in ihrer Karte.
+  let anim = null;
+  if (t && S.prefs.anim && !isBot(t.pid)) anim = fxForTurn(m.game, t, { score: m.game === 'x01' ? t.score : t.v, name: nameOf(t.pid) });
+  if (t && isBot(t.pid)) botHint(m, t);
+  if (res.type === 'match') { if (anim) { render(); anim.then(finish); } else finish(); return; }
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
-    else if (res.type === 'turn') {
-      say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
-      if (t.score === 180) moment({ kind: '180', pid: t.pid }, 2600);
-    } else if (res.type === 'leg' || res.type === 'set') {
-      moment({ kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' });
+    else if (res.type === 'turn') say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
+    else if (res.type === 'leg' || res.type === 'set') {
+      const mo = { kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
+      if (anim) anim.then(() => { if (S.current === m) { moment(mo); render(); } });
+      else moment(mo);
     }
   } else if (res.type === 'halved') { toast(`Halbiert: ${res.before} → ${res.after}`); say('Halbiert'); }
   else if (res.type === 'turn') say(String(t.v));
   render();
+}
+
+/** Bot: kleine Andeutung in der eigenen Karte bei starken Würfen (keine Vollbild-Animation). */
+function botHint(m, t) {
+  const v = m.game === 'x01' ? t.score : t.v;
+  if (t.bust || !(v >= 100 || (t.out && v >= 60))) return;
+  ui.botHint = { s: t.s, text: t.out ? `${v}!` : v === 180 ? '180!' : `${v}!`, at: Date.now() };
 }
 
 function undo() {
@@ -291,6 +304,7 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   const m = S.current;
+  if (fxRunning()) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') stopFx(); return; }
   if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff()) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
   if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (e.key === 'Backspace') undo(); return; }
