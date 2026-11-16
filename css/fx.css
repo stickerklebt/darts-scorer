@@ -241,3 +241,88 @@
 @keyframes sparkle { 50% { transform: scale(1.6) rotate(45deg); } }
 
 @media (prefers-reduced-motion: reduce) { .fx * { animation-duration: .01ms !important; } }
+
+/* ================= Update 3: längere Abläufe, Queen-Comic, 180 = Pokal ================= */
+.fx { animation: fade .12s, fxEnd .45s ease-in calc(var(--dur) - .45s) forwards; }
+@keyframes fxEnd { to { opacity: 0; } }
+.fx-big { color: var(--cream); -webkit-text-stroke: 4px #0b0a08; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #0b0a08, 0 0 34px rgba(255,210,63,.55); }
+.fx-sub { background: #0b0a08; color: var(--yellow); box-shadow: 6px 6px 0 var(--gold); font-family: var(--f-display); font-weight: 900; letter-spacing: .08em; outline: 1px solid var(--gold); outline-offset: -5px; }
+/* Stempel und Comic-Wörter */
+.fx-stamp { left: 50%; top: 20%; z-index: 7; transform: translateX(-50%) rotate(-10deg); padding: 8px 20px; border: 5px double var(--red); color: var(--red); background: rgba(243,233,210,.92);
+  font-family: var(--f-display); font-weight: 900; font-size: clamp(26px, 8vmin, 54px); letter-spacing: .08em; text-transform: uppercase; animation: stamp .35s cubic-bezier(.3,1.6,.5,1) both; text-align: center; line-height: 1; }
+.fx-stamp small { display: block; font-size: .35em; letter-spacing: .2em; margin-top: 4px; }
+.fx-stamp.grade { top: auto; bottom: 14%; left: auto; right: 8%; transform: rotate(8deg); }
+@keyframes stamp { from { transform: translateX(-50%) rotate(-10deg) scale(3); opacity: 0; } }
+.fx-stamp.grade { animation-name: stampR; } @keyframes stampR { from { transform: rotate(8deg) scale(3); opacity: 0; } }
+.fx-pow { left: 50%; top: 24%; z-index: 7; transform: translateX(-50%) rotate(-8deg); animation: fxPopS .35s cubic-bezier(.2,1.6,.4,1) both; }
+.fx-pow b { display: inline-block; padding: 6px 18px; background: var(--yellow); color: #0b0a08; border: 4px solid #0b0a08; box-shadow: 6px 6px 0 var(--red);
+  font-family: var(--f-display); font-weight: 900; font-size: clamp(30px, 9vmin, 70px); }
+.fx-pow.small { transform: rotate(-6deg); } .fx-pow.small b { font-size: clamp(20px, 6vmin, 40px); }
+/* Breakfast */
+.bf-toast { animation: toastPop2 3.6s cubic-bezier(.3,1.4,.5,1) both .15s; }
+@keyframes toastPop2 { 0% { transform: translateY(40%); } 15% { transform: translateY(-120%) rotate(-12deg); } 30% { transform: translateY(-60%); } 45% { transform: translateY(30%); } 60% { transform: translateY(-150%) rotate(14deg); } 78% { transform: translateY(-70%) rotate(-4deg); } 100% { transform: translateY(-80%) rotate(0); } }
+.bf-bacon.b2 { left: auto; right: 38%; bottom: 2%; transform: scale(.8) rotate(6deg); animation-delay: .06s; }
+/* Dreieck */
+.tri-chalk span:nth-child(4) { animation-delay: .9s; color: var(--yellow); }
+.tri-square { animation: sqIn .9s cubic-bezier(.2,1.3,.4,1) both, sqTurn 2.8s ease-in-out 1s both; }
+@keyframes sqTurn { 50% { transform: rotate(-8deg); } }
+/* Klatschen läuft durch, Worte */
+/* Bass-Drop: Equalizer passend zur Dauer */
+/* Blendeffekt: zweiter Durchgang rückwärts, Glanz auf dem Titel */
+.fl-sun, .fl-streak, .fl-g { animation-duration: 2.3s; }
+.fl-line.rev { transform: scaleX(-1); }
+.fx-title.shine .fx-big { background: linear-gradient(100deg, var(--cream) 40%, #fff 50%, var(--cream) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 2.4s linear infinite; }
+@keyframes shine { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+/* Lichtblitz länger */
+.fl-white { animation-duration: 4.2s; }
+.fl-rays { animation: spin 12s linear infinite, fadeLate 4.6s forwards; }
+.fx-title.burnin .fx-big { animation-duration: 4s; }
+/* Einfrieren: Eis wächst länger, Faust später */
+.fz-ice { animation-duration: 2.2s; }
+.fz-fist { animation: punch2 2.7s cubic-bezier(.6,0,.4,1.4) forwards; }
+@keyframes punch2 { 0%, 82% { transform: translateY(0) rotate(-8deg); } 94% { transform: translateY(-82vh) rotate(4deg) scale(1.2); } 100% { transform: translateY(-74vh) rotate(0) scale(1.1); } }
+/* Pfeil: Ring nach dem Einschlag */
+.ar-ring { position: absolute; left: 50%; top: 50%; width: 30%; height: 30%; margin: -15% 0 0 -15%; border-radius: 50%; border: 6px solid var(--yellow); opacity: 0; animation: wave .8s ease-out .55s; }
+/* KLICK: Wörter pulsieren */
+.kl-word b { animation: fxPopS .3s both .35s, klPulse .5s steps(2) infinite 1s; }
+.kl-word b:last-child { animation: fxPopS .3s both .75s, klPulse .5s steps(2) infinite 1.25s; }
+@keyframes klPulse { 50% { transform: rotate(-2deg) scale(1.08); } }
+/* Atomrakete: längerer Flug, dritte Welle, Pilzwolke */
+.nk-rocket { animation-duration: 1.65s; }
+.nk-wave.w3 { animation-delay: .4s; border-color: rgba(229,64,44,.7); }
+.nk-mush { left: 50%; bottom: 0; width: min(60vmin, 360px); height: 70vh; margin-left: calc(min(60vmin, 360px) / -2); z-index: 2; animation: mushUp 2.3s cubic-bezier(.2,.8,.3,1) both; }
+.nk-mush .cap { position: absolute; left: 0; right: 0; top: 0; height: 42%; border-radius: 50% 50% 40% 40%; background: #8a4a1f; background-image: var(--tex-halftone-lg); border: 4px solid #0b0a08; }
+.nk-mush .stem { position: absolute; left: 36%; right: 36%; top: 36%; bottom: 0; background: #6a3a18; background-image: var(--tex-halftone); border: 4px solid #0b0a08; border-bottom: 0; }
+@keyframes mushUp { from { transform: translateY(70%) scale(.4); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(0) scale(1); opacity: .9; } }
+/* Big Fish: Zeitachse auf 8 s gestreckt, Titel nach dem Platsch */
+.bf-water, .bf-fish { animation-duration: var(--dur); }
+.bf-title { animation-delay: 5.1s; }
+/* 180: Pokal */
+.tr-spots { inset: 0; z-index: 1; }
+.tr-spots .sp { position: absolute; top: -10%; width: 46vmin; height: 120vh; background: linear-gradient(180deg, rgba(255,240,190,.5), rgba(255,240,190,0) 90%);
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%); transform-origin: 50% 0; opacity: 0; animation: spotIn .6s ease-out .3s forwards, sweep 2.4s ease-in-out .3s infinite alternate; }
+.tr-spots .sp.l { left: 5%; --a: 18deg; } .tr-spots .sp.r { right: 5%; --a: -18deg; animation-delay: .5s, .5s; }
+@keyframes spotIn { to { opacity: 1; } }
+@keyframes sweep { from { transform: rotate(var(--a)); } to { transform: rotate(calc(var(--a) * -1)); } }
+.fx-trophy .lb-rays { top: 48%; }
+.tr-glow { left: 50%; top: 48%; width: 80vmin; height: 80vmin; margin: -40vmin 0 0 -40vmin; border-radius: 50%; z-index: 2; opacity: 0;
+  background: radial-gradient(circle, rgba(255,233,168,.95) 0 10%, rgba(255,210,63,.45) 30%, transparent 62%); animation: glowCharge 2.4s ease-in .4s forwards, lbPulse .28s ease-in-out infinite alternate .4s; }
+@keyframes glowCharge { to { opacity: 1; } }
+.fx-trophy.burst .tr-glow { animation: lbBurst 1s ease-out forwards; }
+.tr-cup { left: 50%; top: 48%; width: min(62vmin, 380px); height: min(72vmin, 440px); margin: calc(min(72vmin, 440px) * -.5) 0 0 calc(min(62vmin, 380px) * -.5); z-index: 5; opacity: 0;
+  filter: drop-shadow(0 0 30px rgba(255,210,63,.9)); overflow: hidden; }
+.tr-cup-in, .tr-cup-in svg { width: 100%; height: 100%; }
+.tr-cup.rise { animation: cupRise2 1.4s cubic-bezier(.2,1.2,.4,1) forwards; overflow: visible; }
+@keyframes cupRise2 { from { opacity: 1; transform: translateY(70vh) scale(.5); } to { opacity: 1; transform: translateY(-8%) scale(1); } }
+.tr-cup.gleam { animation: cupFloat 1.6s ease-in-out infinite alternate; opacity: 1; transform: translateY(-8%); }
+@keyframes cupFloat { from { transform: translateY(-8%) rotate(-1.5deg); } to { transform: translateY(-11%) rotate(1.5deg); } }
+.tr-shine { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.85) 48%, transparent 60%); mix-blend-mode: overlay; opacity: 0; pointer-events: none; }
+.tr-cup.gleam .tr-shine { opacity: 1; animation: shineSweep 1.4s ease-in-out infinite; }
+@keyframes shineSweep { from { transform: translateX(-80%); } to { transform: translateX(80%); } }
+.tr-plinth { left: 50%; bottom: -30px; width: 70vmin; height: 26px; margin-left: -35vmin; background: var(--gold); border: 3px solid #0b0a08; opacity: 0; }
+.fx-trophy.burst .tr-plinth { animation: fxRise .6s .2s forwards; opacity: 1; bottom: 6%; }
+.fx-trophy .lb-title { top: 80%; }
+.fx-trophy .lb-title .fx-big { color: #ffe9a8; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #0b0a08, 0 0 50px #ffd23f, 0 0 90px #ff7a3d; }
+.tr-corner { width: 16vmin; height: 16vmin; z-index: 6; animation: fxPopS .4s both; }
+.tr-corner.tl { left: 3%; top: 3%; } .tr-corner.tr { right: 3%; top: 3%; transform: scaleX(-1); }
+.tr-corner.bl { left: 3%; bottom: 3%; transform: scaleY(-1); } .tr-corner.br { right: 3%; bottom: 3%; transform: scale(-1); }

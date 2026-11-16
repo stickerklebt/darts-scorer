@@ -6,7 +6,7 @@ export const POOLS = {
   triangle: ['triangle'],                                                // genau 60
   s100: ['confetti', 'balloons', 'clap', 'paparazzi', 'fireworks'],      // 100–120
   s121: ['bassdrop', 'shatter', 'flare', 'flash', 'freeze'],             // 121–179
-  s180: ['lootbox'],                                                     // 180
+  s180: ['trophy'],                                                      // 180
   f2: ['arrow'],                                                         // Finish 2–60
   f61: ['klick'],                                                        // Finish 61–99
   f100: ['nuke'],                                                        // Finish 100–167
@@ -15,10 +15,10 @@ export const POOLS = {
 
 /** Ungefähre Dauer je Animation in ms */
 export const DURATION = {
-  breakfast: 1500, triangle: 1500,
-  confetti: 2000, balloons: 2000, clap: 2000, paparazzi: 2000, fireworks: 2000,
-  bassdrop: 3000, shatter: 3000, flare: 3000, flash: 3000, freeze: 3000,
-  lootbox: 5200, arrow: 1000, klick: 2000, nuke: 3000, bigfish: 6000,
+  breakfast: 4000, triangle: 4000,
+  confetti: 4000, balloons: 4000, clap: 4000, paparazzi: 4000, fireworks: 4000,
+  bassdrop: 5000, shatter: 5000, flare: 5000, flash: 5000, freeze: 5000,
+  trophy: 7000, arrow: 2000, klick: 4000, nuke: 5000, bigfish: 8000,
 };
 
 /** Topf für eine Aufnahme (ohne Finish). */

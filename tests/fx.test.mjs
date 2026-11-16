@@ -32,7 +32,7 @@ test('Animation: nie zweimal hintereinander dieselbe', () => {
     assert.notEqual(a, last);
     last = a;
   }
-  assert.equal(pickAnim('s180', 'lootbox'), 'lootbox', 'Topf mit nur einer Animation');
+  assert.equal(pickAnim('s180', 'trophy'), 'trophy', 'Topf mit nur einer Animation');
 });
 
 test('Animation: zufällig und gleich häufig', () => {
@@ -44,4 +44,11 @@ test('Animation: zufällig und gleich häufig', () => {
   const N = 20000;
   for (let i = 0; i < N; i++) { last = pickAnim('s100', last, rnd); count[last]++; }
   for (const a of POOLS.s100) assert.ok(Math.abs(count[a] / N - 0.2) < 0.02, `${a}: ${count[a]}`);
+});
+
+import { DURATION } from '../js/fx.js';
+test('Animation: Dauern laut Auftrag', () => {
+  const want = { breakfast: 4000, triangle: 4000, confetti: 4000, bassdrop: 5000, trophy: 7000, arrow: 2000, klick: 4000, nuke: 5000, bigfish: 8000 };
+  for (const [k, v] of Object.entries(want)) assert.equal(DURATION[k], v, k);
+  for (const k of Object.values(POOLS).flat()) assert.ok(DURATION[k], `Dauer für ${k}`);
 });

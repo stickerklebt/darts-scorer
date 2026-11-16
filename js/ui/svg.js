@@ -215,18 +215,33 @@ export const magicCorner = (c1 = COLORS.cyan, c2 = COLORS.pink, c3 = COLORS.spar
   <path d="${sparkPath(72, 12, 9)}" fill="${c3}"/><path d="${sparkPath(46, 40, 5)}" fill="${c2}"/><path d="${sparkPath(84, 40, 4)}" fill="${c1}"/>
 </svg>`;
 
-/* ---------- Pokal ---------- */
-export const trophy = (C = COLORS) => `<svg viewBox="0 0 120 140" aria-hidden="true">
-  <path d="M30 16 H90 V44 C90 70 76 84 60 88 C44 84 30 70 30 44 Z" fill="${C.spark}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
-  <path d="M38 22 V44 C38 62 46 74 56 79" fill="none" stroke="#fff6cf" stroke-width="5" opacity=".8"/>
-  <path d="M30 26 H14 V38 C14 52 24 60 34 62 M90 26 H106 V38 C106 52 96 60 86 62" fill="none" stroke="${C.ink}" stroke-width="9"/>
-  <path d="M30 26 H14 V38 C14 52 24 60 34 62 M90 26 H106 V38 C106 52 96 60 86 62" fill="none" stroke="${C.spark}" stroke-width="4"/>
-  <path d="M52 88 H68 L72 106 H48 Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
-  <path d="M32 106 H88 L94 128 H26 Z" fill="${C.stone}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
-  <path d="M40 114 H80" stroke="${C.stoneL}" stroke-width="3"/>
-  <path d="M30 12 H90" stroke="${C.ink}" stroke-width="5"/>
-  <path d="${starPath(60, 44, 13, 5.5)}" fill="${C.red}" stroke="${C.ink}" stroke-width="2.5"/>
+/* ---------- Pokal (detailreich: Bänder, Lorbeer, Edelsteine, Sockel mit Plakette) ---------- */
+export const trophy = (C = COLORS) => {
+  const K = '#0b0a08', G = '#ffd23f', D = '#d4a63a', L = '#fff4c4';
+  let beads = ''; for (let i = 0; i < 9; i++) beads += `<circle cx="${34 + i * 6.5}" cy="22" r="1.6" fill="${K}"/>`;
+  return `<svg viewBox="0 0 120 150" aria-hidden="true">
+  <path d="M30 26 H14 C8 26 6 32 7 38 C9 52 20 60 34 62 M90 26 H106 C112 26 114 32 113 38 C111 52 100 60 86 62" fill="none" stroke="${K}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M30 26 H14 C8 26 6 32 7 38 C9 52 20 60 34 62 M90 26 H106 C112 26 114 32 113 38 C111 52 100 60 86 62" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round"/>
+  <path d="M28 14 H92 V44 C92 72 78 86 60 90 C42 86 28 72 28 44 Z" fill="${G}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M28 18 H92 V26 H28 Z" fill="${D}" stroke="${K}" stroke-width="2.5"/>${beads}
+  <path d="M36 30 V46 C36 64 44 76 54 81" fill="none" stroke="${L}" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+  <path d="M84 32 V46 C84 60 79 70 72 76" fill="none" stroke="${D}" stroke-width="3" opacity=".8"/>
+  ${laurelBranch(60, 54, 22, 120, 230, 5, D)}<g transform="translate(120 0) scale(-1 1)">${laurelBranch(60, 54, 22, 120, 230, 5, D)}</g>
+  <path d="${starPath(60, 50, 13, 5.5)}" fill="${C.red}" stroke="${K}" stroke-width="2.5"/>
+  <circle cx="60" cy="50" r="2.4" fill="${L}"/>
+  <path d="M26 12 H94" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 90 H68 L71 100 H49 Z" fill="${D}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="102" rx="16" ry="4.5" fill="${G}" stroke="${K}" stroke-width="3"/>
+  <path d="M55 106 H65 L67 114 H53 Z" fill="${D}" stroke="${K}" stroke-width="3"/>
+  <path d="M28 116 H92 L98 140 H22 Z" fill="#2a241c" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M32 120 H88" stroke="${D}" stroke-width="2"/>
+  <rect x="42" y="124" width="36" height="11" fill="${G}" stroke="${K}" stroke-width="2"/>
+  <path d="M46 129.5 H74" stroke="${K}" stroke-width="1.4" stroke-dasharray="3 2"/>
+  <path d="${starPath(32, 131, 3.4, 1.4)}" fill="${G}"/><path d="${starPath(88, 131, 3.4, 1.4)}" fill="${G}"/>
+  <circle cx="22" cy="16" r="2" fill="${L}"/><path d="${starPath(104, 10, 5, 1.2, 4)}" fill="${L}"/><path d="${starPath(14, 70, 4, 1, 4)}" fill="${L}"/>
 </svg>`;
+};
+
 
 /* ---------- Funke an der Zündschnur: Lichtpunkt wandert eine Rahmenlinie entlang ---------- */
 export const fuse = (inset = 6, secs = 9, rx = 3) => `<span class="fuse" style="inset:${inset}px;--fuse-t:${secs}s" aria-hidden="true"><svg><rect x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100"/><rect class="tail" x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100"/></svg></span>`;
