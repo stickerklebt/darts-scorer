@@ -21,6 +21,8 @@ const DEF = () => ({
   prefs: { voice: false, hints: true, dartInput: 'keys' },
   screen: 'home',
   tab: 'play',
+  statsPid: null,
+  statsPeriod: 'all',
   game: 'x01',
 });
 

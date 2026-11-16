@@ -5,7 +5,8 @@ import * as X from './x01.js';
 import * as G from './party.js';
 import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
-import { onboardView, tabsBar, playView, statsPlaceholder } from './ui/play.js';
+import { onboardView, tabsBar, playView } from './ui/play.js';
+import { statsView } from './ui/stats-view.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
@@ -24,7 +25,7 @@ function render() {
   else if (S.screen === 'game' && m && !m.done) html = gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
-  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsPlaceholder() : playView()); }
+  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   $('#app').innerHTML = html;
@@ -151,6 +152,18 @@ const actions = {
     profile(S.mainId).name = n; ui.modal = null; render();
   },
   settings() { ui.modal = { type: 'settings' }; render(); },
+  statsWho() { ui.modal = { type: 'pickStats' }; render(); },
+  statsPick(el) { S.statsPid = el.dataset.v; ui.modal = null; ui.heatSel = null; render(); },
+  period(el) { S.statsPeriod = el.dataset.v; render(); },
+  heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
+  heatSort(el) { ui.heatSort = el.dataset.v; render(); },
+  play501() {
+    const pid = S.statsPid && profile(S.statsPid) ? S.statsPid : S.mainId;
+    S.game = 'x01'; S.opts.x01.start = 501;
+    if (!S.lineup.some((e) => e.id === pid)) S.lineup.unshift({ id: pid, team: 'A' });
+    S.lineup = S.lineup.slice(0, MAX_PLAYERS);
+    S.screen = 'setup'; render(); window.scrollTo(0, 0);
+  },
   wipe() { ui.modal = { type: 'wipe' }; render(); },
   wipeForce() { resetAll(); ui.modal = null; releaseWakeLock(); render(); },
   home() {
@@ -249,6 +262,6 @@ splash.innerHTML = crest({ size: 220 });
 document.body.appendChild(splash);
 setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
 if (S.screen === 'game') requestWakeLock();
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

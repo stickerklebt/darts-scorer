@@ -33,3 +33,41 @@ export function inputBoard() {
   </g>`;
   return `<svg class="inboard" viewBox="-${R.edge} -${R.edge} ${R.edge * 2} ${R.edge * 2}" aria-label="Dartscheibe">${s}</svg>`;
 }
+
+/* ---------- Doppelfelder-Heatmap im Kupferstich-Stil ---------- */
+export const HEAT_STEPS = [
+  { max: 0.2, color: '#e5402c', label: 'unter 20 %' },
+  { max: 0.4, color: '#d4a63a', label: '20–40 %' },
+  { max: 1.01, color: '#1f9a4c', label: 'ab 40 %' },
+];
+export const heatColor = (rate) => (rate === null ? null : HEAT_STEPS.find((s) => rate < s.max).color);
+
+export function heatBoard(fields, sel) {
+  const C = COLORS, ink = C.ink, paper = C.cream;
+  const defs = `<defs>
+    <pattern id="hA" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V4" stroke="${ink}" stroke-width="1.1" opacity=".55"/></pattern>
+    <pattern id="hB" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><path d="M0 0V4" stroke="${ink}" stroke-width="1.1" opacity=".55"/></pattern>
+    <pattern id="hX" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 0L5 5M5 0L0 5" stroke="${ink}" stroke-width=".7" opacity=".5"/></pattern>
+    <pattern id="hN" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><path d="M0 0V3" stroke="${ink}" stroke-width=".8" opacity=".35"/></pattern>
+  </defs>`;
+  let s = `${defs}<circle r="${R.edge}" fill="${ink}"/><circle r="${R.dblOut}" fill="${paper}"/>`;
+  ORDER.forEach((n, i) => {
+    const [a0, a1] = segAngles(i);
+    const hatch = i % 2 ? 'url(#hA)' : 'url(#hB)';
+    s += `<path d="${ringPath(R.outerBull, R.triIn, a0, a1)}" fill="${hatch}"/>`;
+    s += `<path d="${ringPath(R.triIn, R.triOut, a0, a1)}" fill="url(#hX)"/>`;
+    s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${hatch}"/>`;
+    const key = `D${n}`, f = fields[key], rate = f ? f.hits / f.attempts : null, col = heatColor(rate);
+    s += `<path d="${ringPath(R.dblIn, R.dblOut, a0, a1)}" fill="${col || 'url(#hN)'}" ${col ? '' : `style="fill:${paper}"`} data-act="heat" data-v="${key}"
+      stroke="${ink}" stroke-width="${sel === key ? 3.5 : 1}"/>`;
+    if (!col) s += `<path d="${ringPath(R.dblIn, R.dblOut, a0, a1)}" fill="url(#hN)" pointer-events="none"/>`;
+    const mid = (a0 + a1) / 2, [x, y] = pt(125, mid).split(',');
+    s += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central" pointer-events="none">${n}</text>`;
+  });
+  const fb = fields.Bull, rb = fb ? fb.hits / fb.attempts : null, cb = heatColor(rb);
+  s += `<circle r="${R.outerBull}" fill="url(#hX)"/>`;
+  s += `<circle r="${R.bull + 3}" fill="${cb || paper}" stroke="${ink}" stroke-width="${sel === 'Bull' ? 3.5 : 1}" data-act="heat" data-v="Bull"/>`;
+  s += `<g fill="none" stroke="${ink}" stroke-width="1" pointer-events="none">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
+    ${ORDER.map((_, i) => `<path d="M${pt(R.outerBull, segAngles(i)[0])} L${pt(R.dblOut, segAngles(i)[0])}"/>`).join('')}</g>`;
+  return `<svg class="heatboard" viewBox="-${R.edge} -${R.edge} ${R.edge * 2} ${R.edge * 2}" aria-label="Doppelquote je Feld">${s}</svg>`;
+}
