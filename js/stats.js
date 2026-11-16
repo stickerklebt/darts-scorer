@@ -168,3 +168,24 @@ export function doubleRating(doubles) {
   for (const [k, f] of Object.entries(doubles.fields)) out[k] = { tier: doubleTier(f.hits, f.attempts, doubles.rate), top: top.get(k) ?? null };
   return out;
 }
+
+/* ---------------- Schnellwahl: die 8 häufigsten eigenen Scores ---------------- */
+export const QUICK_MIN_TURNS = 30;
+/**
+ * Häufigste Scores eines Spielers aus Summen-Eingaben (X01 ohne Busts, Highscore), über alle gespeicherten
+ * Matches plus das laufende. Erst ab 30 solchen Aufnahmen; dann die 8 häufigsten, sortiert nach Wert.
+ */
+export function quickScores(matches, pid, current = null, n = 8) {
+  const count = new Map();
+  let total = 0;
+  const all = current && !matches.some((m) => m.id === current.id) ? [...matches, current] : matches;
+  for (const m of all) {
+    if (m.game === 'x01') {
+      for (const l of m.legs) for (const t of l.turns) if (t.pid === pid && t.input === 'sum' && !t.bust) { total++; count.set(t.score, (count.get(t.score) || 0) + 1); }
+    } else if (m.game === 'highscore') {
+      for (const t of m.turns) if (t.pid === pid && !t.throws) { total++; count.set(t.v, (count.get(t.v) || 0) + 1); }
+    }
+  }
+  if (total < QUICK_MIN_TURNS) return [];
+  return [...count.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0]).slice(0, n).map(([v]) => v).sort((a, b) => a - b);
+}

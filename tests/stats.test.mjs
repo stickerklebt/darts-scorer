@@ -120,3 +120,24 @@ test('Doppel: die 3 besten werden markiert, zu wenige Versuche nie', () => {
   assert.equal(r.D1.top, null); assert.equal(r.D1.tier, null);
   assert.equal(r.D5.top, null); assert.equal(r.D5.tier, 'bad');
 });
+
+import { quickScores } from '../js/stats.js';
+test('Schnellwahl: erst ab 30 Summen-Aufnahmen, dann 8 häufigste nach Wert sortiert', () => {
+  const mk = (scores, extra = {}) => ({ id: 'q' + Math.random(), game: 'x01', legs: [{ turns: scores.map((sc) => ({ pid: 'a', input: 'sum', score: sc, ...extra })) }] });
+  const few = mk(Array(29).fill(60));
+  assert.deepEqual(quickScores([few], 'a'), []);
+  const scores = [...Array(9).fill(60), ...Array(6).fill(45), ...Array(5).fill(100), ...Array(4).fill(26), ...Array(3).fill(41), ...Array(2).fill(81), 140, 85, 180, 22, 11];
+  const m = mk(scores);
+  assert.equal(scores.length, 34);
+  // 60×9, 45×6, 100×5, 26×4, 41×3, 81×2, dann Gleichstand (je 1×) → höhere Werte zuerst: 180, 140
+  assert.deepEqual(quickScores([m], 'a'), [26, 41, 45, 60, 81, 100, 140, 180]);
+  // Busts, Einzeldart-Aufnahmen und andere Spieler zählen nicht
+  const busts = mk(Array(40).fill(0), { bust: true });
+  assert.deepEqual(quickScores([busts], 'a'), []);
+  const darts = { id: 'd', game: 'x01', legs: [{ turns: Array(40).fill({ pid: 'a', input: 'darts', score: 60 }) }] };
+  assert.deepEqual(quickScores([darts], 'a'), []);
+  assert.deepEqual(quickScores([m], 'b'), []);
+  // Highscore zählt mit, laufendes Match zählt mit
+  const hs = { id: 'h', game: 'highscore', turns: Array(30).fill({ pid: 'b', v: 100 }) };
+  assert.deepEqual(quickScores([], 'b', hs), [100]);
+});

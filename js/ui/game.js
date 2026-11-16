@@ -6,6 +6,7 @@ import { route, setupFor, label } from '../checkout.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, seg } from './common.js';
 import { throwerOf } from '../match.js';
+import { quickScores } from '../stats.js';
 import { icon } from './svg.js';
 import { inputBoard, realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
@@ -124,7 +125,7 @@ export function gameView() {
 
 function sumPad(m, thrower) {
   let quick = [];
-  if (m.game === 'x01' || m.game === 'highscore') quick = [26, 41, 45, 60, 81, 85, 100, 140, 180];
+  if (m.game === 'x01' || m.game === 'highscore') quick = quickScores(S.matches, thrower, m);
   else if (m.game === 'shanghai') { const t = G.round(m) + 1; quick = [1, 2, 3, 4, 5, 6].map((k) => k * t); }
   else if (m.game === 'halveit') {
     const t = G.HALF[G.round(m)];
