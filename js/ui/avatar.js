@@ -19,16 +19,13 @@ export async function probeBotImages(onDone) {
   } catch (e) { /* offline oder keine Liste: Platzhalter */ }
 }
 
-/** Platzhalter: Initialen in Bot-Farbe, Stein-Körnung, Zebra-Kante, Funke. */
+/** Platzhalter: Initialen in Bot-Farbe, Pop-Art-Raster, Goldrahmen, Stern. */
 function placeholder(b) {
   return `<svg viewBox="0 0 64 64" aria-hidden="true">
-    <defs><filter id="avn-${b.id}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="3"/>
-      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .7 -.2"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs>
     <rect width="64" height="64" fill="${b.color}"/>
-    <rect width="64" height="64" fill="${b.color}" filter="url(#avn-${b.id})"/>
-    <path d="M0 18 L12 22 L18 15 L27 20" fill="none" stroke="${COLORS.ink}" stroke-width="1" opacity=".45"/>
-    <g fill="${COLORS.ink}" opacity=".5">${[0, 1, 2, 3].map((i) => `<rect x="${4 + i * 16}" y="56" width="8" height="8"/>`).join('')}</g>
-    <text x="32" y="41" text-anchor="middle" font-family="'Metal Mania', serif" font-size="27" fill="${b.ink}">${b.initials}</text>
+    <g fill="${COLORS.ink}" opacity=".22">${Array.from({ length: 49 }, (_, i) => `<circle cx="${4.5 + (i % 7) * 9}" cy="${4.5 + Math.floor(i / 7) * 9}" r="1.7"/>`).join('')}</g>
+    <rect x="3" y="3" width="58" height="58" fill="none" stroke="${COLORS.gold}" stroke-width="1.5"/>
+    <text x="32" y="41" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="22" fill="${b.ink}">${b.initials}</text>
     <path d="${sparkPath(53, 11, 6)}" fill="${COLORS.spark}"/>
   </svg>`;
 }

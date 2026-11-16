@@ -5,7 +5,7 @@ import * as X from '../x01.js';
 import * as G from '../party.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
-import { ribbon, trophy, magicCorner, COLORS } from './svg.js';
+import { ribbon, trophy, cornerOrnament, laurelWreath, fuse, COLORS } from './svg.js';
 
 export function x01Table(m) {
   const w = m.winners, n = m.sides.length;
@@ -53,9 +53,9 @@ export function resultView() {
   } else sub = GAMES[m.game].title;
   return `<main class="page">
     <section class="victory">
-      <span class="vic-fx tl">${magicCorner()}</span><span class="vic-fx tr">${magicCorner(COLORS.pink, COLORS.cyan)}</span>
-      <div class="vic-cup">${trophy()}</div>
-      ${ribbon(w.length > 1 ? 'GLEICHSTAND' : 'SIEGER', COLORS.red, '#fff4e0')}
+      <span class="vic-fx tl">${cornerOrnament(COLORS.ink)}</span><span class="vic-fx tr">${cornerOrnament(COLORS.ink)}</span>${fuse(-4, 12)}
+      <div class="vic-cup"><svg class="wreath" viewBox="0 0 200 170" aria-hidden="true">${laurelWreath(100, 92, 72, COLORS.gold, 8)}</svg><span class="cup">${trophy()}</span></div>
+      ${ribbon(w.length > 1 ? 'GLEICHSTAND' : 'SIEGER', COLORS.ink, COLORS.gold)}
       <h1 class="display vic-name">${esc(name)}</h1>
       <div class="vic-score num">${sub}</div>
     </section>

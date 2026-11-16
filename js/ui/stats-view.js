@@ -3,7 +3,7 @@
 import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
-import { icon, stars } from './svg.js';
+import { icon, stars, fuse } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, matchList } from './stats-extra.js';
 
@@ -18,7 +18,7 @@ export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
 const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub]) => `<div class="kv-c"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
-const record = (title, value, sub) => `<div class="record"><div><small>${title}</small><b>${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
+const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b>${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows) => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<div class="rl"><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></div>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
@@ -35,7 +35,7 @@ export function statsHeader(pid) {
 /* ---------------- Unter-Reiter ---------------- */
 function overviewTab(st) {
   const c = st.counts;
-  return `<div class="hero-stat"><small>Overall-Average · 501</small><b>${fmt(st.avg, 2)}</b><em>${st.darts} Darts · ${st.points} Punkte</em></div>
+  return `<div class="hero-stat">${fuse(5, 12)}<small>Overall-Average · 501</small><b>${fmt(st.avg, 2)}</b><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
       ['Bester Average', fmt(st.bestMatchAvg, 2)], ['First 9', fmt(st.f9, 2)],
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–'], ['Höchstes Checkout', st.highestCo ?? '–'],
@@ -89,7 +89,7 @@ function historyTab(st) {
 export function emptyState(pid, any) {
   return `<div class="empty">
     <div class="empty-card"><div>
-      ${stars(3, '#1f2523', 14)}
+      ${stars(3, '#0b0a08', 14)}
       <h2 class="display">${any ? 'Ruhige Zeiten' : 'Die Bühne ist frei'}</h2>
       <p>${any ? 'In diesem Zeitraum wurde kein 501-Match gespielt.' : `${esc(nameOf(pid))} hat noch kein 501-Match gespielt. Nach dem ersten Match steht hier alles: Average, Doppelquote, Rekorde und mehr.`}</p>
     </div></div>

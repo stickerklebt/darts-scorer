@@ -2,7 +2,7 @@
 import { S, ui, nameOf, sideName } from '../store.js';
 import * as X from '../x01.js';
 import { esc, pcVars } from './common.js';
-import { magicCorner, COLORS } from './svg.js';
+import { cornerOrnament, COLORS } from './svg.js';
 
 export function momentView() {
   const mo = ui.moment;
@@ -15,7 +15,7 @@ export function momentView() {
     : m.sides.map((_, s) => X.legsWon(m, s)).join(' : ') + ' Legs';
   return `<div class="moment" style="${pcVars(mo.s)}">
     <div class="mo-card">
-      <span class="mo-fx l">${magicCorner()}</span><span class="mo-fx r">${magicCorner(COLORS.pink, COLORS.cyan)}</span>
+      <span class="mo-fx l">${cornerOrnament(COLORS.ink)}</span><span class="mo-fx r">${cornerOrnament(COLORS.ink)}</span>
       <div class="mo-big display">${mo.set ? 'Set!' : 'Leg!'}</div>
       <div class="mo-name">${esc(sideName(m.sides[mo.s]))}</div>
       <div class="mo-info num">Checkout ${mo.score} · ${m.sides[mo.s].length > 1 ? `${esc(nameOf(mo.pid))} · ` : ''}${mo.darts} Dart${mo.darts > 1 ? 's' : ''}</div>

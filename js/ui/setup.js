@@ -6,7 +6,7 @@ import * as G from '../party.js';
 import { GAMES, MAX_PLAYERS } from '../games.js';
 import { BOTS, isBot } from '../bots.js';
 import { esc, pcVars, seg, optRow } from './common.js';
-import { badge, divider, icon } from './svg.js';
+import { badge, divider, icon, fuse } from './svg.js';
 import { avatar } from './avatar.js';
 
 const TEAM_LETTERS = 'ABCDEF';
@@ -39,7 +39,7 @@ function moreOptions(id) {
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
       <section class="rules"><div class="rules-in">
         ${badge(id, 40)}<span class="overline">Die Spielregeln</span>
-        <h2 class="display">${g.title}</h2>${divider('#1f2523')}<p>${g.desc}</p>
+        <h2 class="display">${g.title}</h2>${divider('#0b0a08')}<p>${g.desc}</p>
         ${id === 'x01' ? '<p class="small">Nur 501-Matches zählen für die Statistik.</p>' : ''}
       </div></section>
     </div>` : ''}
@@ -67,7 +67,7 @@ export function setupView() {
   const nSides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length;
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">${g.title}</span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
-    <div class="su-head">${badge(id, 40)}<div><b class="display">${g.title}</b><small>${id === 'x01' ? 'Der Klassiker' : 'Partyspiel'}</small></div></div>
+    <div class="su-head">${badge(id, 40)}<div><small>★ ${id === 'x01' ? 'Der Klassiker' : 'Partyspiel'} ★</small><b>${g.title}</b></div></div>
     <h2 class="label"><i class="stepn">1</i>Modus</h2>
     ${seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0)}
     <h2 class="label"><i class="stepn">2</i>${SHOW_BOTS ? 'Spieler &amp; Bots' : 'Spieler'}</h2>
@@ -86,5 +86,5 @@ export function setupView() {
     <p class="foot">${nSides < 2 ? 'Bei nur einer Seite entfällt der Anwurf.' : S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>
     ${moreOptions(id)}
   </main>
-  <div class="dock"><div><button class="btn red big start" data-act="start">Start</button></div></div>`;
+  <div class="dock"><div><button class="btn red big start" data-act="start">Start</button>${fuse(-3, 7, 2)}</div></div>`;
 }
