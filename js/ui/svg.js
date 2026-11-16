@@ -1,11 +1,13 @@
 /* Eigene SVG-Grafiken: Wappen, Ornamente, Badges, Comic-Elemente, Icons. Alles selbst entworfen. */
 
 export const COLORS = {
-  ink: '#0b0a08', cream: '#f3e9d2', cream2: '#d9c9a3', gold: '#d4a63a', goldL: '#ecc96a',
-  red: '#e5402c', blue: '#2f6fe4', yellow: '#ffd23f', green: '#1f9a4c', violet: '#8b5cf6',
+  ink: '#0e1211', cream: '#dedcd0', cream2: '#b5b8aa', gold: '#c9a34e', goldL: '#e2c47e',
+  red: '#c4452f', blue: '#3f6ea6', yellow: '#ddbd55', green: '#4f9a5e', violet: '#8c6fc4', teal: '#6fa59b',
+  stone: '#6b7470', stoneD: '#454d4a', stoneL: '#9aa29b',
+  pink: '#ff4fb3', cyan: '#52e4ff', magic: '#a66bff', spark: '#ffd45c',
 };
-export const PLAYER_COLORS = ['#e5402c', '#2f6fe4', '#ffd23f', '#1f9a4c', '#8b5cf6', '#f3e9d2'];
-export const PLAYER_INK = ['#f3e9d2', '#f3e9d2', '#0b0a08', '#f3e9d2', '#f3e9d2', '#0b0a08'];
+export const PLAYER_COLORS = ['#c4452f', '#3f6ea6', '#d9b84e', '#4f9a5e', '#8c6fc4', '#d6d3c4'];
+export const PLAYER_INK = ['#f4efe4', '#f4efe4', '#0e1211', '#f4efe4', '#f4efe4', '#0e1211'];
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const polar = (cx, cy, r, deg) => [r2(cx + r * Math.cos((deg * Math.PI) / 180)), r2(cy + r * Math.sin((deg * Math.PI) / 180))];
@@ -41,55 +43,77 @@ export function laurelWreath(cx, cy, R, color = COLORS.gold, n = 8) {
   return `<g>${left}</g><g transform="translate(${cx * 2} 0) scale(-1 1)">${left}</g>`;
 }
 
-/* ---------- Dartpfeil (liegend, Spitze rechts), Länge 140 ---------- */
-function dartShape(color, ink) {
-  return `<g>
-    <path d="M70 0 L52 -2.6 L52 2.6 Z" fill="${color}"/>
-    <rect x="18" y="-5" width="34" height="10" rx="1" fill="${color}"/>
-    <path d="M22 -5v10M28 -5v10M34 -5v10M40 -5v10M46 -5v10" stroke="${ink}" stroke-width="1.6"/>
-    <rect x="-40" y="-2" width="58" height="4" fill="${color}"/>
-    <path d="M-40 0 L-70 -16 L-58 0 L-70 16 Z" fill="${color}"/>
-    <path d="M-40 0 L-66 -12 M-40 0 L-66 12" stroke="${ink}" stroke-width="1.4"/>
-  </g>`;
+/* ---------- Funke (4-zackig, Comic-Magie) ---------- */
+export const sparkPath = (cx, cy, R, r = R * 0.22) => starPath(cx, cy, R, r, 4, -90);
+/** Elektrische Zickzack-Linie von (x0,y0) nach (x1,y1) */
+export function zigzag(x0, y0, x1, y1, n = 6, amp = 6, seed = 1) {
+  let d = `M${r2(x0)},${r2(y0)}`;
+  const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
+  for (let i = 1; i < n; i++) {
+    const t = i / n, off = (i % 2 ? 1 : -1) * amp * (0.6 + ((seed * 7 + i * 13) % 5) / 10);
+    d += ` L${r2(x0 + dx * t + nx * off)},${r2(y0 + dy * t + ny * off)}`;
+  }
+  return `${d} L${r2(x1)},${r2(y1)}`;
 }
 
-/* ---------- Wappen (App-Logo) ---------- */
-export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
-  const C = COLORS, cx = 100, cy = 122;
-  // Dartscheibe im Schild: 20 Segmente creme/schwarz, Goldring, rotes Bull
-  let board = '';
+/* ---------- Klingen-Pfeil (liegend, Spitze rechts) ---------- */
+export function bladeDart(C = COLORS, flight = COLORS.red) {
+  return `<path d="M96 0 L62 -4 L62 4 Z" fill="${C.cream}"/>
+    <path d="M62 -6 L30 -5 L22 0 L30 5 L62 6 Z" fill="${C.stoneL}" stroke="${C.ink}" stroke-width="1.5"/>
+    <path d="M36 -5v10M44 -5.4v10.8M52 -5.7v11.4" stroke="${C.ink}" stroke-width="1.4"/>
+    <rect x="-46" y="-2" width="70" height="4" fill="${C.cream2}"/>
+    <path d="M-44 0 L-92 -26 L-74 0 L-92 26 Z" fill="${flight}" stroke="${C.ink}" stroke-width="2"/>
+    <path d="M-48 0 L-82 -18 M-48 0 L-82 18" stroke="${C.ink}" stroke-width="1.2"/>`;
+}
+
+/* ---------- Mini-Dartscheibe (für Wappen, Platzhalter) ---------- */
+export function miniBoard(cx, cy, R, C = COLORS) {
+  const k = R / 41;
+  let s = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="${C.ink}"/>`;
   for (let i = 0; i < 20; i++) {
-    const a0 = -99 + i * 18, a1 = a0 + 18;
-    const [x0, y0] = polar(cx, cy, 34, a0), [x1, y1] = polar(cx, cy, 34, a1);
-    board += `<path d="M${cx},${cy} L${x0},${y0} A34,34 0 0,1 ${x1},${y1} Z" fill="${i % 2 ? C.cream : C.ink}"/>`;
+    const a0 = -99 + i * 18, a1 = a0 + 18, dark = i % 2 === 0;
+    const seg = (r0, r1, fill) => {
+      const [x0, y0] = polar(cx, cy, r1 * k, a0), [x1, y1] = polar(cx, cy, r1 * k, a1), [x2, y2] = polar(cx, cy, r0 * k, a1), [x3, y3] = polar(cx, cy, r0 * k, a0);
+      return `<path d="M${x0},${y0} A${r1 * k},${r1 * k} 0 0,1 ${x1},${y1} L${x2},${y2} A${r0 * k},${r0 * k} 0 0,0 ${x3},${y3} Z" fill="${fill}"/>`;
+    };
+    s += seg(6, 33, dark ? C.ink : C.cream) + seg(20, 24, dark ? C.red : C.green) + seg(33, 37, dark ? C.red : C.green);
   }
-  board += `<circle cx="${cx}" cy="${cy}" r="35.5" fill="none" stroke="${C.gold}" stroke-width="5"/>
-    <circle cx="${cx}" cy="${cy}" r="21" fill="none" stroke="${C.gold}" stroke-width="3.5"/>
-    <circle cx="${cx}" cy="${cy}" r="8" fill="${C.gold}"/><circle cx="${cx}" cy="${cy}" r="4" fill="${C.red}"/>`;
-  const shield = 'M44 58 H156 V118 C156 166 128 190 100 206 C72 190 44 166 44 118 Z';
-  // Krone aus Pfeilspitzen
-  let crown = `<rect x="62" y="40" width="76" height="9" fill="${C.gold}"/>`;
-  [[70, 26], [85, 18], [100, 10], [115, 18], [130, 26]].forEach(([x, top]) => {
-    crown += `<path d="M${x - 6} 40 L${x} ${top} L${x + 6} 40 Z" fill="${C.gold}"/><path d="M${x} ${top - 7} l3 4 -3 4 -3 -4z" fill="${C.cream}"/>`;
-  });
-  crown += `<path d="M66 44.5h68" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="3 3"/>`;
-  // Spruchband
+  return s + `<circle cx="${cx}" cy="${cy}" r="${6.5 * k}" fill="${C.green}"/><circle cx="${cx}" cy="${cy}" r="${3.2 * k}" fill="${C.red}"/>
+    <circle cx="${cx}" cy="${cy}" r="${39.5 * k}" fill="none" stroke="${C.cream2}" stroke-width="${1.2 * k}"/>`;
+}
+
+/* ---------- Wappen (App-Logo): Stein-Schild, Scheibe, Klingen-Pfeile, Funken, Zebra-Band ---------- */
+export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
+  const C = COLORS;
+  const shield = 'M40 46 L62 38 L100 30 L138 38 L160 46 L164 104 L154 150 L128 184 L100 204 L72 184 L46 150 L36 104 Z';
+  const cracks = `<g fill="none" stroke="${C.ink}" stroke-width="1.6" stroke-linejoin="bevel" opacity=".7">
+    <path d="M62 38 L66 52 L58 63 L64 74"/><path d="M160 46 L150 58 L154 70 L145 79"/><path d="M46 150 L58 146 L63 158 L75 160"/>
+    <path d="M154 150 L143 144 L139 156"/><path d="M100 204 L102 192 L96 184"/></g>`;
+  const sparks = [[28, 36, 9, C.spark], [174, 58, 7, C.cyan], [22, 140, 6, C.pink], [178, 146, 8, C.spark], [100, 13, 7, C.cyan]]
+    .map(([x, y, R, c]) => `<path d="${sparkPath(x, y, R)}" fill="${c}"/>`).join('');
+  const bolts = `<g fill="none" stroke-linejoin="bevel" stroke-linecap="square">
+    <path d="${zigzag(10, 98, 32, 66, 5, 5, 2)}" stroke="${C.cyan}" stroke-width="2.4"/>
+    <path d="${zigzag(190, 96, 168, 126, 5, 5, 3)}" stroke="${C.pink}" stroke-width="2.4"/></g>`;
   const ban = banner ? `<g>
-      <path d="M22 206 L40 200 L40 228 L22 234 L30 220 Z" fill="${C.cream2}"/>
-      <path d="M178 206 L160 200 L160 228 L178 234 L170 220 Z" fill="${C.cream2}"/>
-      <path d="M36 198 Q100 186 164 198 L164 226 Q100 214 36 226 Z" fill="${C.cream}" stroke="${C.ink}" stroke-width="1.5"/>
-      <text x="100" y="218" text-anchor="middle" font-family="Cinzel, 'Times New Roman', serif" font-weight="900" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
+      <path d="M16 196 L44 190 L44 220 L16 226 L26 208 Z" fill="${C.stoneD}"/>
+      <path d="M184 196 L156 190 L156 220 L184 226 L174 208 Z" fill="${C.stoneD}"/>
+      <rect x="34" y="184" width="132" height="38" fill="${C.ink}" stroke="${C.cream}" stroke-width="2"/>
+      <g fill="${C.cream}" opacity=".85">${Array.from({ length: 8 }, (_, i) => `<rect x="${40 + i * 16}" y="188" width="8" height="3.5"/><rect x="${40 + i * 16}" y="214.5" width="8" height="3.5"/>`).join('')}</g>
+      <text x="100" y="210" text-anchor="middle" font-family="'Metal Mania', serif" font-size="22" letter-spacing="2" fill="${C.cream}">${banner}</text>
     </g>` : '';
   return `<svg viewBox="0 0 200 240" width="${size}" height="${size * 1.2}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><filter id="crestGrain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".05 .09" numOctaves="3" seed="4"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 -.3"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs>
     ${bg ? `<rect x="-20" y="-20" width="240" height="280" fill="${bg}"/>` : ''}
-    <g transform="translate(100 120) rotate(-38)">${dartShape(C.gold, C.ink).replace('<g>', '<g transform="scale(1.62)">')}</g>
-    <g transform="translate(100 120) rotate(-142)">${dartShape(C.gold, C.ink).replace('<g>', '<g transform="scale(1.62)">')}</g>
-    ${laurelWreath(100, 128, 84, C.gold, 7)}
-    <path d="${shield}" fill="${C.ink}" stroke="${C.gold}" stroke-width="4"/>
-    <path d="M51 64 H149 V118 C149 161 124 183 100 198 C76 183 51 161 51 118 Z" fill="none" stroke="${C.cream}" stroke-width="1"/>
-    ${board}
-    ${crown}
-    <path d="${starPath(62, 74, 4, 1.7)}" fill="${C.gold}"/><path d="${starPath(138, 74, 4, 1.7)}" fill="${C.gold}"/>
+    ${bolts}
+    <g transform="translate(100 112) rotate(-42) scale(1.25)">${bladeDart(C)}</g>
+    <g transform="translate(100 112) rotate(-138) scale(1.25)">${bladeDart(C)}</g>
+    <path d="${shield}" fill="${C.stone}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
+    <path d="${shield}" fill="${C.stone}" filter="url(#crestGrain)"/>
+    <path d="M46 52 L64 45 L100 38 L136 45 L154 52 L157 104 L148 146 L124 177 L100 195 L76 177 L52 146 L43 104 Z" fill="none" stroke="${C.stoneL}" stroke-width="1.4" stroke-linejoin="bevel"/>
+    ${cracks}
+    ${miniBoard(100, 114, 42, C)}
+    ${sparks}
     ${ban}
   </svg>`;
 }
@@ -103,11 +127,11 @@ export const cornerOrnament = (color = COLORS.gold) => `<svg viewBox="0 0 40 40"
   <circle cx="26" cy="5" r="1.6" fill="${color}"/><circle cx="5" cy="26" r="1.6" fill="${color}"/>
 </svg>`;
 
-export const divider = (color = COLORS.gold) => `<svg class="divider" viewBox="0 0 240 16" preserveAspectRatio="none" aria-hidden="true">
-  <path d="M0 8 H96 M144 8 H240" stroke="${color}" stroke-width="1"/>
-  <path d="M0 11 H90 M150 11 H240" stroke="${color}" stroke-width="0.5"/>
-  <path d="M104 8 l6 -6 6 6 -6 6z M124 8 l6 -6 6 6 -6 6z" fill="${color}"/>
-  <path d="${starPath(120, 8, 6, 2.6)}" fill="${color}"/>
+/* Trenner: Zebra-Balken links/rechts, in der Mitte eine Klinge */
+export const divider = (color = COLORS.cream2) => `<svg class="divider" viewBox="0 0 240 16" aria-hidden="true">
+  <g fill="${color}" opacity=".5">${[0, 1, 2, 3, 4].map((i) => `<rect x="${8 + i * 18}" y="6" width="10" height="4"/><rect x="${222 - i * 18}" y="6" width="10" height="4"/>`).join('')}</g>
+  <path d="M100 8 L116 3 L120 0 L124 3 L140 8 L124 13 L120 16 L116 13 Z" fill="${color}"/>
+  <path d="M112 8 L120 5 L128 8 L120 11 Z" fill="${COLORS.ink}"/>
 </svg>`;
 
 export const stars = (n = 3, color = COLORS.gold, size = 12) =>
@@ -116,7 +140,7 @@ export const stars = (n = 3, color = COLORS.gold, size = 12) =>
 export const ribbon = (text, fill = COLORS.red, ink = COLORS.cream) => `<svg class="ribbon" viewBox="0 0 220 40" aria-hidden="true">
   <path d="M0 10 L20 6 L20 36 L0 40 L8 23 Z M220 10 L200 6 L200 36 L220 40 L212 23 Z" fill="${fill}" opacity=".7"/>
   <path d="M14 2 H206 V32 H14 Z" fill="${fill}" stroke="${COLORS.ink}" stroke-width="2"/>
-  <text x="110" y="23" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="15" letter-spacing="3" fill="${ink}">${text}</text>
+  <text x="110" y="23" text-anchor="middle" font-family="'Metal Mania', serif" font-size="18" letter-spacing="2" fill="${ink}">${text}</text>
 </svg>`;
 
 /* ---------- Spielmodus-Badges ---------- */
@@ -165,3 +189,23 @@ const P = {
   keys: '<rect x="3" y="4" width="18" height="16"/><path d="M3 9.3h18M3 14.7h18M9 4v16M15 4v16"/>',
 };
 export const icon = (k, w = 2.2, size = 20) => `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${P[k]}</svg>`;
+
+/* ---------- Magie-Ecke: Blitz + Funken (Hero, Sieger) ---------- */
+export const magicCorner = (c1 = COLORS.cyan, c2 = COLORS.pink, c3 = COLORS.spark) => `<svg viewBox="0 0 90 64" aria-hidden="true">
+  <path d="${zigzag(4, 58, 60, 8, 5, 5, 4)}" fill="none" stroke="${c1}" stroke-width="2.6" stroke-linejoin="bevel"/>
+  <path d="${zigzag(2, 40, 34, 4, 4, 3, 2)}" fill="none" stroke="${c2}" stroke-width="1.6" stroke-linejoin="bevel"/>
+  <path d="${sparkPath(72, 12, 9)}" fill="${c3}"/><path d="${sparkPath(46, 40, 5)}" fill="${c2}"/><path d="${sparkPath(84, 40, 4)}" fill="${c1}"/>
+</svg>`;
+
+/* ---------- Pokal ---------- */
+export const trophy = (C = COLORS) => `<svg viewBox="0 0 120 140" aria-hidden="true">
+  <path d="M30 16 H90 V44 C90 70 76 84 60 88 C44 84 30 70 30 44 Z" fill="${C.spark}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
+  <path d="M38 22 V44 C38 62 46 74 56 79" fill="none" stroke="#fff6cf" stroke-width="5" opacity=".8"/>
+  <path d="M30 26 H14 V38 C14 52 24 60 34 62 M90 26 H106 V38 C106 52 96 60 86 62" fill="none" stroke="${C.ink}" stroke-width="9"/>
+  <path d="M30 26 H14 V38 C14 52 24 60 34 62 M90 26 H106 V38 C106 52 96 60 86 62" fill="none" stroke="${C.spark}" stroke-width="4"/>
+  <path d="M52 88 H68 L72 106 H48 Z" fill="${C.gold}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
+  <path d="M32 106 H88 L94 128 H26 Z" fill="${C.stone}" stroke="${C.ink}" stroke-width="4" stroke-linejoin="bevel"/>
+  <path d="M40 114 H80" stroke="${C.stoneL}" stroke-width="3"/>
+  <path d="M30 12 H90" stroke="${C.ink}" stroke-width="5"/>
+  <path d="${starPath(60, 44, 13, 5.5)}" fill="${C.red}" stroke="${C.ink}" stroke-width="2.5"/>
+</svg>`;

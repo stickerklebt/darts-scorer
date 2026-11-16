@@ -1,34 +1,51 @@
-/* Design-Tokens: Farben, Schriften, Ecken, Texturen */
+/* Design-Tokens: Farben, Schriften, Ecken, Texturen
+   Stil: verwitterter Stein (Grundmaterial), Zebrastreifen (Leisten), Comic-Magie (Momente),
+   kantige Display-Schrift (Überschriften). Gedämpfte, leicht ausgeblichene Farben, Körnung statt Einfarbflächen. */
 @font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-500.woff2) format('woff2'); font-weight: 500; font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-700.woff2) format('woff2'); font-weight: 700; font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-800.woff2) format('woff2'); font-weight: 800; font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-800i.woff2) format('woff2'); font-weight: 800; font-style: italic; font-display: swap; }
-@font-face { font-family: 'Cinzel'; src: url(../fonts/cinzel.woff2) format('woff2'); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: 'Metal Mania'; src: url(../fonts/metalmania.woff2) format('woff2'); font-weight: 400; font-display: swap; }
 
 :root {
-  /* Grundtöne */
-  --ink: #0b0a08; --coal: #12100d; --panel: #1a1713; --panel2: #231f19; --panel3: #2e2820;
-  --line: #3a3229; --line2: #5b4f3e;
-  --cream: #f3e9d2; --cream2: #d9c9a3; --muted: #a89d87; --dim: #6f6656;
-  /* Pop-Art-Palette */
-  --red: #e5402c; --red-d: #a92a1b; --gold: #d4a63a; --gold-l: #ecc96a;
-  --blue: #2f6fe4; --blue-d: #1d4aa3; --yellow: #ffd23f; --green: #1f9a4c; --violet: #8b5cf6;
-  /* Spielerfarben */
-  --p0: var(--red); --p1: var(--blue); --p2: var(--yellow); --p3: var(--green); --p4: var(--violet); --p5: var(--cream);
+  /* Stein: kühle, leicht grünstichige Grautöne */
+  --ink: #0e1211; --coal: #141918; --panel: #1b2120; --panel2: #232a28; --panel3: #2d3532;
+  --line: #333c39; --line2: #4b5652;
+  /* Kreide statt Creme */
+  --cream: #dedcd0; --cream2: #b5b8aa; --muted: #8e978f; --dim: #5c6661;
+  /* Gedämpfte Akzente (ausgeblichene Fotofarben) */
+  --red: #c4452f; --red-d: #8a2e1f; --gold: #c9a34e; --gold-l: #e2c47e;
+  --blue: #3f6ea6; --blue-d: #355a86; --yellow: #ddbd55; --green: #4f9a5e; --violet: #8c6fc4;
+  --teal: #6fa59b; --teal-d: #3d6b63;
+  /* Magie (nur Momente/Animationen): leuchtend */
+  --mg-pink: #ff4fb3; --mg-cyan: #52e4ff; --mg-violet: #a66bff; --mg-gold: #ffd45c;
+  /* Spielerfarben (gedämpft) */
+  --p0: #c4452f; --p1: #3f6ea6; --p2: #d9b84e; --p3: #4f9a5e; --p4: #8c6fc4; --p5: #d6d3c4;
   /* Schrift */
   --f-num: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
-  --f-display: 'Cinzel', 'Times New Roman', serif;
+  --f-display: 'Metal Mania', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   /* Ecken */
   --r-btn: 2px; --r-panel: 5px;
   /* Safe Areas */
   --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left); --sar: env(safe-area-inset-right);
-  /* Texturen (flache SVG-Muster) */
-  --tex-halftone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2.25' cy='2.25' r='1.6' fill='%23000' fill-opacity='.3'/%3E%3Ccircle cx='6.75' cy='6.75' r='1.6' fill='%23000' fill-opacity='.3'/%3E%3C/svg%3E");
-  --tex-halftone-lg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='4' cy='4' r='3' fill='%23000' fill-opacity='.22'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%23000' fill-opacity='.22'/%3E%3C/svg%3E");
-  --tex-hatch-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M-1 7L7 -1M-1 1L1 -1M5 7L7 5' stroke='%23d4a63a' stroke-opacity='.5' stroke-width='1'/%3E%3C/svg%3E");
-  --tex-engrave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M-1 6L6 -1M-1 1L1 -1M4 6L6 4' stroke='%230b0a08' stroke-opacity='.42' stroke-width='.9'/%3E%3C/svg%3E");
-  --tex-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 0L7 7M7 0L0 7' stroke='%23d4a63a' stroke-opacity='.18' stroke-width='.8'/%3E%3C/svg%3E");
+
+  /* ---- Texturen ---- */
+  /* Film-Körnung (feTurbulence, hell + dunkel) */
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.4 .4 .4 0 -.12 .4 .4 .4 0 -.12 .4 .4 .4 0 -.12 0 0 0 0 .2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Stein: großflächig fleckig */
+  --tex-stone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.016' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .72 0 0 0 0 .8 0 0 0 0 .76 0 0 0 .45 -.2'/%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23s)'/%3E%3C/svg%3E");
+  /* Risse */
+  --tex-cracks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='380' height='300' fill='none' stroke-linejoin='bevel'%3E%3Cg stroke='%23000' stroke-opacity='.55'%3E%3Cpath d='M-4 62 L30 70 L52 58 L74 81 L101 77 L118 96 L150 92 L171 114 M101 77 L108 52 L131 41 M171 114 L198 108 L214 131' stroke-width='1.3'/%3E%3Cpath d='M260 -4 L252 26 L268 49 L257 77 L274 102 L266 131 M257 77 L236 88 L224 112 M274 102 L301 111 L322 104 L351 122 L384 117' stroke-width='1.1'/%3E%3Cpath d='M40 304 L58 271 L49 246 L71 222 L93 230 M71 222 L76 196 M180 304 L186 281 L210 266 L206 240' stroke-width='.9'/%3E%3C/g%3E%3Cg stroke='%23fff' stroke-opacity='.12'%3E%3Cpath d='M-4 63.5 L30 71.5 L52 59.5 L74 82.5 L101 78.5 L118 97.5 L150 93.5 L171 115.5 M261.5 -4 L253.5 26 L269.5 49 L258.5 77 L275.5 102 L267.5 131' stroke-width='.8'/%3E%3C/g%3E%3C/svg%3E");
+  /* Zebrastreifen (harte Kanten) */
+  --tex-zebra: repeating-linear-gradient(90deg, var(--cream) 0 14px, transparent 14px 28px);
+  /* Comic-Raster (für Momente) */
+  --tex-halftone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2.25' cy='2.25' r='1.5' fill='%23000' fill-opacity='.22'/%3E%3Ccircle cx='6.75' cy='6.75' r='1.5' fill='%23000' fill-opacity='.22'/%3E%3C/svg%3E");
+  --tex-halftone-lg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='4' cy='4' r='3' fill='%23000' fill-opacity='.2'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%23000' fill-opacity='.2'/%3E%3C/svg%3E");
+  /* Gravur (feine Schraffur) */
+  --tex-engrave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M-1 6L6 -1M-1 1L1 -1M4 6L6 4' stroke='%23000' stroke-opacity='.18' stroke-width='.8'/%3E%3C/svg%3E");
+  --tex-hatch-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M-1 7L7 -1M-1 1L1 -1M5 7L7 5' stroke='%23c9a34e' stroke-opacity='.45' stroke-width='1'/%3E%3C/svg%3E");
+  --tex-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 0L7 7M7 0L0 7' stroke='%23c9a34e' stroke-opacity='.14' stroke-width='.8'/%3E%3C/svg%3E");
   color-scheme: dark;
 }

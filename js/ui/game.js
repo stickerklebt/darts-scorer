@@ -4,35 +4,46 @@ import * as X from '../x01.js';
 import * as G from '../party.js';
 import { route, setupFor, label } from '../checkout.js';
 import { GAMES } from '../games.js';
-import { esc, fmt, pcVars, seg, sideLabel } from './common.js';
+import { esc, fmt, pcVars, seg } from './common.js';
+import { throwerOf } from '../match.js';
 import { icon } from './svg.js';
 import { inputBoard } from './board.js';
 
 const whoText = (m, s, thrower) => (isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
 const chipCls = (d) => (d.n === 25 && d.m === 2 ? 'b' : d.m === 2 ? 'd' : '');
 
-function scoreboard(items, cur) {
+function scoreboard(items, cur, swap) {
+  const anim = (s) => (s === cur && swap ? 'swap' : '');
   if (items.length <= 2) {
-    return `<div class="duo ${items.length === 1 ? 'solo' : ''}">${items.map((it, s) => `<div class="sbp ${s === cur ? 'on' : ''}" style="${pcVars(s)}">
-      <div class="sbp-head"><span class="sbp-name ${it.team ? 'team' : ''}">${it.starter ? '<i class="throw"></i>' : ''}${it.label}</span>${it.right}</div>
-      ${it.who ? `<div class="sbp-who">${esc(it.who)}</div>` : ''}
+    return `<div class="duo ${items.length === 1 ? 'solo' : ''}">${items.map((it, s) => `<div class="sbp ${s === cur ? 'on' : 'off'} ${anim(s)}" style="${pcVars(s)}">
+      <div class="sbp-head"><span class="sbp-name">${it.starter ? '<i class="throw"></i>' : ''}${esc(it.name)}</span>${it.right}</div>
+      ${it.team ? `<div class="sbp-team">${it.team}</div>` : ''}
+      ${it.extra || ''}
       <div class="sbp-rem">${it.big}</div>
       <div class="sbp-stats">${it.stats.map(([k, v]) => `<span><small>${k}</small><b>${v}</b></span>`).join('')}</div>
     </div>`).join('')}</div>`;
   }
-  return `<div class="rows">${items.map((it, s) => `<div class="sbr ${s === cur ? 'on' : ''}" style="${pcVars(s)}">
+  return `<div class="rows">${items.map((it, s) => `<div class="sbr ${s === cur ? 'on' : 'off'} ${anim(s)}" style="${pcVars(s)}">
     <span class="sbr-c"></span>
-    <span class="sbr-n"><b class="${it.team ? 'team' : ''}">${it.starter ? '<i class="throw"></i>' : ''}${it.label}</b>
-      <small>${[it.who ? `<span class="whob">${esc(it.who)}</span>` : '', it.rowInfo, ...it.stats.slice(0, 2).map(([k, v]) => `${k} <b>${v}</b>`)].filter(Boolean).join(' · ')}</small></span>
+    <span class="sbr-n"><b>${it.starter ? '<i class="throw"></i>' : ''}${esc(it.name)}</b>
+      <small>${[it.team ? `<span class="whob">${it.team}</span>` : '', it.rowInfo, ...it.stats.slice(0, 2).map(([k, v]) => `${k} <b>${v}</b>`)].filter(Boolean).join(' · ')}</small></span>
+    ${it.extra || ''}
     <span class="sbr-rem">${it.big}</span>
   </div>`).join('')}</div>`;
 }
+
+/** Teamzeile: alle Mitglieder, der nächste Werfer hervorgehoben. */
+const teamLine = (side, next) => `<span class="tt">TEAM</span>${side.map((id) => (id === next ? `<b>${esc(nameOf(id))}</b>` : esc(nameOf(id)))).join(' · ')}`;
 
 const pips = (won, total) => (total > 7 ? `<span class="setlbl">${won}</span>` : `<span class="pips">${Array.from({ length: total }, (_, i) => `<i class="${i < won ? 'w' : ''}"></i>`).join('')}</span>`);
 
 export function gameView() {
   const m = S.current;
   let title, sub, cur, board, hint, pad, thrower, isBoard = false;
+  const curNow = m.game === 'x01' ? X.curSide(m) : G.curSide(m);
+  const swapKey = `${m.id}:${curNow}:${m.game === 'x01' ? m.legs.length : 0}`;
+  const swap = ui.swapKey !== undefined && ui.swapKey !== swapKey;
+  ui.swapKey = swapKey;
   if (m.game === 'x01') {
     const l = X.leg(m); cur = X.curSide(m); thrower = X.curThrower(m);
     const ps = X.pendingSum(m), sets = X.isSets(m);
@@ -41,16 +52,16 @@ export function gameView() {
     const items = m.sides.map((side, s) => {
       const st = X.matchStats(m, { s });
       const mine = l.turns.filter((t) => t.s === s), last = mine[mine.length - 1];
+      const next = throwerOf(m, s, X.sideTurnCount(m, s));
       return {
-        label: sideLabel(side), team: isTeam(side), starter: s === l.starter,
-        who: isTeam(side) && s === cur ? `${possessive(nameOf(thrower))} Wurf` : '',
+        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === l.starter,
         big: X.rem(m, l, s) - (s === cur ? ps : 0),
         right: sets ? `<span class="setlbl">S${X.setsWon(m, s)} · L${X.legsInSet(m, s, l.set)}</span>` : pips(X.legsWon(m, s), m.opts.target),
         rowInfo: sets ? `S <b>${X.setsWon(m, s)}</b> L <b>${X.legsInSet(m, s, l.set)}</b>` : `Legs <b>${X.legsWon(m, s)}</b>`,
         stats: [['Ø', fmt(st.avg)], ['Letzte', last ? (last.bust ? 'Bust' : last.score) : '–'], ['Darts', mine.reduce((a, t) => a + t.darts, 0)]],
       };
     });
-    board = scoreboard(items, cur);
+    board = scoreboard(items, cur, swap);
     const mode = X.inputMode(m), before = X.curRem(m) - ps, left = 3 - m.pending.length;
     let h = '';
     if (mode === 'darts' && m.opts.out === 'double' && S.prefs.hints) {
@@ -69,16 +80,16 @@ export function gameView() {
     const items = m.sides.map((side, s) => {
       const turns = m.turns.filter((t) => t.s === s), last = turns[turns.length - 1];
       const done = m.game === 'atc' && G.atcPos(m, s) >= G.atcTotal(m);
+      const next = throwerOf(m, s, turns.length);
       return {
-        label: sideLabel(side), team: isTeam(side), starter: s === m.first, right: '', rowInfo: '',
-        who: isTeam(side) && s === cur ? `${possessive(nameOf(thrower))} Wurf` : '',
+        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === m.first, right: '', rowInfo: '',
         big: m.game === 'atc' ? `${G.atcPos(m, s)}<small style="font-size:.4em;color:var(--muted)">/${G.atcTotal(m)}</small>` : G.score(m, s),
         stats: m.game === 'atc'
           ? [['Ziel', done ? '✓' : G.atcLabel(G.atcPos(m, s))], ['Letzte', last ? last.v : '–'], ['Runden', turns.length]]
           : [['Letzte', last ? last.v : '–'], ['Runden', turns.length], ['Platz', 1 + m.sides.filter((_, o) => G.score(m, o) > G.score(m, s)).length]],
       };
     });
-    board = scoreboard(items, cur);
+    board = scoreboard(items, cur, swap);
     let tgt = '';
     if (m.game === 'shanghai') tgt = String(round + 1);
     else if (m.game === 'halveit') tgt = G.halfLabel(G.HALF[round]);
@@ -86,7 +97,8 @@ export function gameView() {
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
-  return `<div class="game ${isBoard ? 'boardmode' : ''}">
+  return `<div class="game ${isBoard ? 'boardmode' : ''}" style="${pcVars(cur)}">
+    <div class="turnbar ${swap ? 'swap' : ''}"></div>
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
       <div class="gtitle"><b>${title}</b><span>${sub}</span></div>

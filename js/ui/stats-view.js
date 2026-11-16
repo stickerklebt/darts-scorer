@@ -51,7 +51,7 @@ function heatSection(st) {
 export function emptyState(pid, any) {
   return `<div class="empty">
     <div class="empty-card"><div>
-      ${stars(3, '#0b0a08', 14)}
+      ${stars(3, '#1f2523', 14)}
       <h2 class="display">${any ? 'Ruhige Zeiten' : 'Die Bühne ist frei'}</h2>
       <p>${any ? 'In diesem Zeitraum wurde kein 501-Match gespielt.' : `${esc(nameOf(pid))} hat noch kein 501-Match gespielt. Nach dem ersten Match steht hier alles: Average, Doppelquote, Rekorde und mehr.`}</p>
     </div></div>

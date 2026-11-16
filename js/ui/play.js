@@ -3,13 +3,13 @@ import { S, ui, nameOf } from '../store.js';
 import { overview } from '../stats.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
-import { crest, divider, cornerOrnament, badge, stars, icon, MODE_COLORS } from './svg.js';
+import { crest, divider, magicCorner, badge, icon, MODE_COLORS, COLORS } from './svg.js';
 
 export function onboardView() {
   return `<div class="stage">
     <div class="stage-crest">${crest({ size: 240 })}</div>
     ${divider()}
-    <h1 class="display">Willkommen</h1>
+    <h1 class="display"><span class="bladed">Willkommen</span></h1>
     <p>Wie heißt du? Du bist der Hauptspieler dieser App.</p>
     <input id="nameField" class="field" placeholder="Dein Name" maxlength="16" autocomplete="given-name" autocapitalize="words" spellcheck="false" enterkeyhint="done">
     <button class="btn red big" data-act="onboard">Los geht’s</button>
@@ -27,7 +27,7 @@ export function tabsBar() {
 
 export function playView() {
   const ov = overview(S.matches, S.mainId), m = S.current, name = nameOf(S.mainId), o = S.opts.x01;
-  const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
+  const corners = `<span class="hfx tl">${magicCorner()}</span><span class="hfx br">${magicCorner(COLORS.pink, COLORS.cyan, COLORS.spark)}</span>`;
   const others = Object.keys(GAMES).filter((id) => id !== 'x01');
   return `<main class="page">
     <button class="profile" data-act="rename">
@@ -38,9 +38,9 @@ export function playView() {
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero">
       ${corners}
-      <div class="hero-band">${stars(2)}<span>Der Klassiker</span>${stars(2)}</div>
+      <div class="hero-band"><span>Der Klassiker</span></div>
       <div class="hero-main">
-        <div class="hero-title">${badge('x01', 46)}<b>X01</b></div>
+        <div class="hero-title">${badge('x01', 46)}<b class="display">X01</b></div>
         <div class="hero-num">${o.start}</div>
       </div>
       <div class="hero-meta">${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}</div>
@@ -53,19 +53,5 @@ export function playView() {
     <div class="modes">${others.map((id) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
     <button class="btn dark settings-btn" data-act="settings">${icon('gear', 1.8, 18)} Einstellungen</button>
-  </main>`;
-}
-
-export function statsPlaceholder() {
-  const ov = overview(S.matches, S.mainId);
-  return `<main class="page programme">
-    <h1 class="display">${esc(nameOf(S.mainId))}</h1>
-    ${divider()}
-    <div class="prog-card"><div>
-      <b>Overall-Average · 501</b>
-      <div class="big num">${fmt(ov.avg)}</div>
-      <p>${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'} · ${ov.wins} ${ov.wins === 1 ? 'Sieg' : 'Siege'} · Doppelquote ${ov.doubles.rate === null ? '–' : fmt(ov.doubles.rate * 100) + ' %'}</p>
-    </div></div>
-    <p class="foot" style="text-align:center;margin-top:18px">Die ausführliche Statistik mit Heatmap, Diagrammen und Vergleich folgt im nächsten Update.</p>
   </main>`;
 }
