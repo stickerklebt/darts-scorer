@@ -141,3 +141,30 @@ function setsOf(m, s) {
   for (const k of sets) if (m.legs.filter((l) => l.set === k && l.winner === s).length >= 3) c++;
   return c;
 }
+
+/* ---------------- Doppelfelder relativ zur eigenen Gesamtquote ---------------- */
+export const MIN_ATTEMPTS = 5;
+/** Stufen nach Verhältnis Feldquote / eigene Gesamtquote */
+export const TIERS = [
+  { k: 'great', min: 1.5, label: 'deutlich besser (ab 1,5×)' },
+  { k: 'good', min: 1.15, label: 'besser' },
+  { k: 'avg', min: 0.85, label: 'etwa deine Quote' },
+  { k: 'weak', min: 0.5, label: 'schwächer' },
+  { k: 'bad', min: -Infinity, label: 'deutlich schwächer (unter 0,5×)' },
+];
+/** Stufe eines Doppels – oder null bei zu wenigen Versuchen (unter 5). */
+export function doubleTier(hits, attempts, overall) {
+  if (attempts < MIN_ATTEMPTS || overall === null || overall === undefined) return null;
+  const rate = hits / attempts;
+  const ratio = overall > 0 ? rate / overall : rate > 0 ? Infinity : 1;
+  return TIERS.find((t) => ratio >= t.min).k;
+}
+/** Für jedes Feld: { tier, top } – top = Platz 1–3 der besten Doppel (nur mit genug Versuchen und mind. einem Treffer). */
+export function doubleRating(doubles) {
+  const out = {};
+  const ok = Object.entries(doubles.fields).filter(([, f]) => f.attempts >= MIN_ATTEMPTS && f.hits > 0)
+    .sort((a, b) => b[1].hits / b[1].attempts - a[1].hits / a[1].attempts || b[1].attempts - a[1].attempts);
+  const top = new Map(ok.slice(0, 3).map(([k], i) => [k, i + 1]));
+  for (const [k, f] of Object.entries(doubles.fields)) out[k] = { tier: doubleTier(f.hits, f.attempts, doubles.rate), top: top.get(k) ?? null };
+  return out;
+}

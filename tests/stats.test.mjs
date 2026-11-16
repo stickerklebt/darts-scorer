@@ -96,3 +96,27 @@ test('fullStats: Überblick, Serie, Scoring, Checkout, Legs', () => {
 test('movingAvg überspringt Lücken', () => {
   assert.deepEqual(movingAvg([10, null, 20, 30], 2), [10, 10, 20, 25]);
 });
+
+import { doubleTier, doubleRating } from '../js/stats.js';
+test('Doppelfarben relativ zur eigenen Gesamtquote', () => {
+  // Gesamtquote 5 %, D4 mit 8 % (2/25) → deutlich besser (grün)
+  assert.equal(doubleTier(2, 25, 0.05), 'great');
+  assert.equal(doubleTier(1, 20, 0.05), 'avg');       // 5 % ≈ eigene Quote → gold
+  assert.equal(doubleTier(1, 16, 0.05), 'good');      // 6,25 % → 1,25× → hellgrün
+  assert.equal(doubleTier(1, 30, 0.05), 'weak');      // 3,3 % → 0,67×
+  assert.equal(doubleTier(0, 12, 0.05), 'bad');       // 0 % → rot
+  assert.equal(doubleTier(4, 10, 0.4), 'avg', 'feste 40-%-Grenze gilt nicht mehr');
+  assert.equal(doubleTier(3, 4, 0.05), null, 'unter 5 Versuchen: keine Farbe');
+  assert.equal(doubleTier(0, 8, 0), 'avg', 'Gesamtquote 0 und Feld 0 → wie die eigene Quote');
+});
+
+test('Doppel: die 3 besten werden markiert, zu wenige Versuche nie', () => {
+  const r = doubleRating({ rate: 0.1, fields: {
+    D20: { attempts: 20, hits: 2 }, D16: { attempts: 10, hits: 3 }, D8: { attempts: 6, hits: 1 },
+    D10: { attempts: 5, hits: 1 }, D1: { attempts: 2, hits: 2 }, D5: { attempts: 9, hits: 0 },
+  } });
+  assert.equal(r.D16.top, 1); assert.equal(r.D10.top, 2); assert.equal(r.D8.top, 3);
+  assert.equal(r.D20.top, null);
+  assert.equal(r.D1.top, null); assert.equal(r.D1.tier, null);
+  assert.equal(r.D5.top, null); assert.equal(r.D5.tier, 'bad');
+});
