@@ -9,7 +9,7 @@ import { laurelWreath, ribbon, starPath, COLORS } from './svg.js';
 const wreath = () => `<svg viewBox="0 0 200 170" aria-hidden="true">${laurelWreath(100, 95, 70, COLORS.gold, 7)}
   <path d="${starPath(100, 74, 26, 11)}" fill="${COLORS.yellow}" stroke="${COLORS.ink}" stroke-width="3"/></svg>`;
 
-function x01Table(m) {
+export function x01Table(m) {
   const w = m.winners, n = m.sides.length;
   const st = m.sides.map((_, s) => X.matchStats(m, { s }));
   const rows = [

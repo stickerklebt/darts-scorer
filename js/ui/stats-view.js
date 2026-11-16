@@ -24,7 +24,7 @@ export function statsHeader(pid) {
   return `<div class="st-head">
     <button class="st-who" data-act="statsWho"><span class="pfblock" style="${pcVars(Math.max(0, pi))}">${esc(name.slice(0, 1).toUpperCase())}</span>
       <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
-    ${S.profiles.length > 1 && typeof COMPARE !== "undefined" ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ""}
+    ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ""}
   </div>
   ${seg('period', 'v', PERIOD_OPTS, S.statsPeriod)}`;
 }
@@ -45,7 +45,7 @@ function heatSection(st) {
       <div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>
     </div>
     ${rows.length ? `<div class="sbtable-wrap"><table class="sbtable dbl"><tr>${th('field', 'Feld')}${th('attempts', 'Versuche')}<th><div>Treffer</div></th>${th('rate', 'Quote')}</tr>
-      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td><i class="dot" style="background:${heatColor(r.rate)}"></i>${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}`);
+      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td><i class="dot" style="background:${heatColor(r.rate)}"></i>${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}`, 'wide');
 }
 
 export function emptyState(pid, any) {
@@ -66,7 +66,7 @@ export function statsView(extras = () => '') {
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const c = st.counts;
-  return `${head}
+  return `${head}<div class="pgs">
     ${section('Überblick', kv([
       ['Average', fmt(st.avg, 2)], ['Bester Match-Ø', fmt(st.bestMatchAvg, 2)], ['First 9 Ø', fmt(st.f9, 2)],
       ['Matches', st.matches], ['Siege', st.wins, pct(st.winRate)], ['Längste Serie', st.bestStreak],
@@ -84,7 +84,7 @@ export function statsView(extras = () => '') {
     ]))}
     ${heatSection(st)}
     ${extras(st, pid)}
-  </main>`;
+  </div></main>`;
 }
 
 export function profilePicker() {

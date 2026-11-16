@@ -7,6 +7,8 @@ import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
 import { onboardView, tabsBar, playView } from './ui/play.js';
 import { statsView } from './ui/stats-view.js';
+import { statsExtras } from './ui/stats-extra.js';
+import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
@@ -25,10 +27,15 @@ function render() {
   else if (S.screen === 'game' && m && !m.done) html = gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
-  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : playView()); }
+  else if (S.screen === 'compare' && S.profiles.length) html = compareView();
+  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView(statsExtras) : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
-  $('#app').innerHTML = html;
+  const app = $('#app');
+  app.innerHTML = html;
+  const key = `${S.screen}:${S.tab}`;
+  if (ui.lastKey && ui.lastKey !== key) { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
+  ui.lastKey = key;
   // Tab-Strich gleitet von der alten zur neuen Position
   const tl = $('.tabline');
   if (tl) {
@@ -157,6 +164,11 @@ const actions = {
   period(el) { S.statsPeriod = el.dataset.v; render(); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
   heatSort(el) { ui.heatSort = el.dataset.v; render(); },
+  openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
+  compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
+  backStats() { S.screen = 'home'; S.tab = 'stats'; render(); window.scrollTo(0, 0); },
+  cmpWho(el) { ui.modal = { type: 'pickCmp', k: el.dataset.k }; render(); },
+  cmpPick(el) { if (el.dataset.k === 'a') S.cmpA = el.dataset.v; else S.cmpB = el.dataset.v; ui.modal = null; render(); },
   play501() {
     const pid = S.statsPid && profile(S.statsPid) ? S.statsPid : S.mainId;
     S.game = 'x01'; S.opts.x01.start = 501;

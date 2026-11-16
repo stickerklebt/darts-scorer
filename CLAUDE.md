@@ -11,7 +11,7 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün.
 - App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg`, dann `qlmanage -t -s 1024 icon.svg`
   und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
-- Beim Testen im Browser: Service Worker abmelden, sonst liefert der Offline-Cache alte Dateien.
+- Der Service Worker wird nur unter HTTPS registriert (nicht auf localhost), damit lokale Tests frische Dateien sehen.
 - Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt.
 
 ## Dateistruktur (Ziel)
@@ -38,7 +38,9 @@ js/
     game.js             Scoreboard + Eingabe (Summe / Einzeldart-Tastatur / Scheibe)
     moments.js          Comic-Vollbild bei 180, High-Finish, Leg/Set gewonnen
     result.js           Ergebnis-/Sieger-Screen
-    stats-view.js       Tab „Statistiken“ (Spielerwahl, Zeitfilter, Sektionen, Matchliste)
+    stats-view.js       Tab „Statistiken“ (Spielerwahl, Zeitfilter, Kennzahlen, Heatmap, Leerzustand)
+    stats-extra.js      Verlaufsdiagramme + aufklappbare Matchliste
+    common.js           esc/fmt/Segment-Helfer, Spielerfarben
     compare.js          Vergleichsansicht
     sheets.js           Dialoge: Zahnrad, Profilwahl, Bestätigungen, Daten löschen
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png (neues Wappen-Icon)
@@ -100,7 +102,7 @@ Turn = {
 Doppel-Heatmap · Diagramme (Average-Verlauf mit gleitendem Schnitt, Doppelquote-Verlauf,
 Verteilung der Aufnahmen) · Matchliste (aufklappbar) · Leerzustand · Vergleich zweier Spieler.
 
-## Meilensteine
+## Meilensteine (alle vier erledigt, Stand 16.11.2026)
 1. **Fundament** – Module, Store v3, Profile (Auswahl/Neuanlage, Hauptspieler vorausgewählt), Checkout-Tabelle + Tests,
    Einzeldart-Tastatur ab Rest ≤ 170, Ziel/Doppelversuch, Undo pro Dart, Matcharchiv, „Alle Daten löschen“. Optik noch alt.
 2. **Redesign** – Schriften, Design-Tokens, Ornamente/Muster/Wappen, Tabs mit gleitendem Strich, Startseite (Hero + Grid),

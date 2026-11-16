@@ -4,6 +4,7 @@ import * as G from '../party.js';
 import { GAMES } from '../games.js';
 import { esc, seg, matchSummary } from './common.js';
 import { profilePicker } from './stats-view.js';
+import { comparePicker } from './compare.js';
 
 const tog = (k, lbl) => `<button class="srow" data-act="pref" data-k="${k}"><span class="lbl">${lbl}</span><span class="tog ${S.prefs[k] ? 'on' : ''}"></span></button>`;
 
@@ -28,6 +29,8 @@ export function sheetView() {
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       <div class="sbtns"><button class="btn line" data-act="wipe" style="color:var(--red);border-color:var(--red)">Alle Daten löschen</button><button class="btn red" data-act="closeModal">Fertig</button></div>`;
+  } else if (md.type === 'pickCmp') {
+    inner = comparePicker(md.k);
   } else if (md.type === 'pickStats') {
     inner = profilePicker();
   } else if (md.type === 'wipe') {
