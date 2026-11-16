@@ -1,5 +1,5 @@
 /* Persistenter Zustand (localStorage), Profile, UI-Zustand. */
-import { bot } from './bots.js';
+import { bot, BOTS } from './bots.js';
 
 const KEY = 'darts.v3';
 const OLD_KEYS = ['dartscorer.v1', 'dartscorer.v2'];
@@ -61,6 +61,8 @@ export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toStri
 export const profile = (id) => S.profiles.find((p) => p.id === id);
 export const nameOf = (id) => profile(id)?.name ?? bot(id)?.name ?? '?';
 export const findProfile = (name) => { const k = name.trim().toLowerCase(); return S.profiles.find((p) => p.name.toLowerCase() === k); };
+/** Ist der Name schon vergeben (Profil oder Bot)? Groß/Klein und Leerzeichen am Rand egal. */
+export const nameTaken = (name) => { const k = name.trim().toLowerCase(); return !!k && (!!findProfile(k) || BOTS.some((b) => b.name.toLowerCase() === k)); };
 /** Profil zum Namen holen oder neu anlegen (Groß/Klein egal). Gibt die id zurück. */
 export function ensureProfile(name) {
   const n = name.trim();

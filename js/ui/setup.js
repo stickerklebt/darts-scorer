@@ -10,7 +10,6 @@ import { badge, divider, icon, fuse } from './svg.js';
 import { avatar } from './avatar.js';
 
 const TEAM_LETTERS = 'ABCDEF';
-const SHOW_BOTS = true;
 
 /** Punkt 3 + 4: Startpunkte bzw. Runden/Ziele und First to X */
 function mainOptions(id) {
@@ -48,9 +47,6 @@ function moreOptions(id) {
 
 export function setupView() {
   const id = S.game, g = GAMES[id], L = S.lineup, full = L.length >= MAX_PLAYERS;
-  const inLineup = new Set(L.map((e) => e.id));
-  const saved = S.profiles.filter((p) => !inLineup.has(p.id)).sort((a, b) => a.name.localeCompare(b.name, 'de'));
-  const bots = SHOW_BOTS ? BOTS.filter((b) => !inLineup.has(b.id)) : [];
   const rows = L.map((e, i) => {
     const ci = S.teamMode ? TEAM_LETTERS.indexOf(e.team) : i;
     const bot = isBot(e.id);
@@ -70,14 +66,9 @@ export function setupView() {
     <div class="su-head">${badge(id, 40)}<div><small>★ ${id === 'x01' ? 'Der Klassiker' : 'Partyspiel'} ★</small><b>${g.title}</b></div></div>
     <h2 class="label"><i class="stepn">1</i>Modus</h2>
     ${seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0)}
-    <h2 class="label"><i class="stepn">2</i>${SHOW_BOTS ? 'Spieler &amp; Bots' : 'Spieler'}</h2>
+    <h2 class="label"><i class="stepn">2</i>Spieler &amp; Bots</h2>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
-    <div class="addrow">
-      <input id="newPlayer" placeholder="Neuer Spieler" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done" ${full ? 'disabled' : ''}>
-      <button class="sq" data-act="addNew" ${full ? 'disabled' : ''} aria-label="Hinzufügen">${icon('plus', 2.6)}</button>
-    </div>
-    ${saved.length ? `<div class="pchips">${saved.map((p) => `<button data-act="addProfile" data-v="${p.id}" ${full ? 'disabled' : ''}>${esc(p.name)}</button>`).join('')}</div>` : ''}
-    ${bots.length ? `<div class="botchips">${bots.map((b) => `<button data-act="addProfile" data-v="${b.id}" ${full ? 'disabled' : ''}>${avatar(b.id, 36)}<span class="bc-t"><b>${esc(b.name)}</b><small>Bot · Ø ${b.avg}</small></span>${icon('plus', 2.6, 16)}</button>`).join('')}</div>` : ''}
+    <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     <p class="foot">Bis zu ${MAX_PLAYERS} Spieler. ${S.teamMode ? 'Tippe auf „Team“, um Spieler zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge dieser Liste.' : ''}</p>
     <h2 class="label"><i class="stepn">3</i>Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>

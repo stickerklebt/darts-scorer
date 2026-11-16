@@ -1,5 +1,5 @@
 /* Einstieg: Rendering, Aktionen, Events. */
-import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName } from './store.js';
+import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid } from './store.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
@@ -289,6 +289,26 @@ function addToLineup(id) {
   render();
 }
 
+/* ---------------- Spieler hinzufügen: Live-Prüfung des Namens, Suche ---------------- */
+function focusSheet() { if (ui.addTab === 'new') setTimeout(() => $('#newPlayer')?.focus(), 60); }
+function checkName() {
+  const inp = $('#newPlayer'), hint = $('#nameHint'), btn = $('#addNewBtn');
+  if (!inp) return;
+  const n = inp.value.trim(), taken = nameTaken(n);
+  if (hint) hint.textContent = taken ? `„${n}“ gibt es schon – bitte einen anderen Namen wählen.` : '';
+  inp.classList.toggle('bad', taken);
+  if (btn) btn.disabled = !n || taken;
+}
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'newPlayer') checkName();
+  if (e.target.id === 'pSearch') {
+    const q = e.target.value.trim().toLowerCase();
+    let n = 0;
+    document.querySelectorAll('.plist-pick .srow[data-name]').forEach((r) => { const ok = r.dataset.name.includes(q); r.hidden = !ok; if (ok) n++; });
+    const nr = document.querySelector('.nores'); if (nr) nr.hidden = n > 0;
+  }
+});
+
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
 const actions = {
@@ -353,8 +373,18 @@ const actions = {
     e.team = letters[(letters.indexOf(e.team) + 1) % letters.length];
     render();
   },
-  addNew() { const n = field('newPlayer'); if (!n) return $('#newPlayer')?.focus(); addToLineup(ensureProfile(n)); },
-  addProfile(el) { addToLineup(el.dataset.v); },
+  addPlayer() { ui.modal = { type: 'addPlayer' }; ui.addTab = ui.addTab || (S.profiles.some((p) => !S.lineup.some((e) => e.id === p.id)) ? 'known' : 'new'); render(); focusSheet(); },
+  addTab(el) { ui.addTab = el.dataset.v; render(); focusSheet(); },
+  addNew() {
+    const n = field('newPlayer');
+    if (!n) return $('#newPlayer')?.focus();
+    if (nameTaken(n)) { checkName(); return $('#newPlayer')?.focus(); }
+    const p = { id: uid('p'), name: n, createdAt: Date.now() };
+    S.profiles.push(p);
+    ui.modal = null;
+    addToLineup(p.id);
+  },
+  addProfile(el) { if (ui.modal?.type === 'addPlayer') ui.modal = null; addToLineup(el.dataset.v); },
   pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); render(); },
   pup(el) { const i = Number(el.dataset.v), L = S.lineup; [L[i - 1], L[i]] = [L[i], L[i - 1]]; render(); },
   pshuffle() { const L = S.lineup; for (let i = L.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L[i], L[j]] = [L[j], L[i]]; } render(); },

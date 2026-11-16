@@ -606,3 +606,19 @@
 .tab { font-family: var(--f-num); }
 .subtabs::after { opacity: .5; height: 1px; background: var(--gold); }
 .speech b { color: var(--red-d); }
+
+/* ================= Spieler hinzufügen (Auswahlfenster) ================= */
+.btn.addp { width: 100%; margin-top: 10px; border-color: var(--gold); color: var(--gold-l); border-style: dashed; }
+.ap-head { text-align: center; }
+.ap-head .divider { max-width: 220px; margin: 6px auto 8px; }
+.ap-tabs { margin-bottom: 14px; }
+.ap-tabs button { font-size: 13px; letter-spacing: .02em; height: 44px; line-height: 1.05; padding: 0 4px; }
+.ap-body { min-height: 150px; margin-bottom: 14px; }
+.ap-hint { margin: 0 4px 12px !important; }
+.field.bad { border-bottom-color: var(--red); color: var(--red); }
+.name-hint { min-height: 20px; margin: -8px 4px 10px !important; color: var(--red) !important; font-weight: 700; font-size: 15px !important; }
+.field.search { height: 46px; font-size: 18px; text-transform: none; text-align: left; letter-spacing: .02em; }
+.srow[hidden] { display: none; }
+.srow > .ic { color: var(--gold); }
+.botrow .av { margin-right: 2px; }
+.demo-btn { width: 100%; margin-bottom: 12px; }
