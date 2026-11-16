@@ -16,6 +16,7 @@ import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
 import { isBot, bot, BOTS } from './bots.js';
 import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
+import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
@@ -317,6 +318,7 @@ const actions = {
     if (!n) return $('#nameField').focus();
     S.mainId = ensureProfile(n);
     S.lineup = [{ id: S.mainId, team: 'A' }];
+    seedDemo(S);
     S.screen = 'home'; S.tab = 'play'; render();
   },
   tab(el) { S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null; render(); window.scrollTo(0, 0); },
@@ -347,6 +349,8 @@ const actions = {
     S.screen = 'setup'; render(); window.scrollTo(0, 0);
   },
   wipe() { ui.modal = { type: 'wipe' }; render(); },
+  demoWipe() { ui.modal = { type: 'demoWipe' }; render(); },
+  demoWipeForce() { removeDemo(S); ui.modal = null; toast('Testdaten entfernt'); render(); },
   wipeForce() { resetAll(); ui.modal = null; releaseWakeLock(); render(); },
   home() {
     ui.modal = null; ui.moment = null; ui.entry = '';
@@ -483,6 +487,7 @@ document.addEventListener('pointerup', (e) => endDrag(e, true));
 document.addEventListener('pointercancel', (e) => endDrag(e, false));
 
 /* ---------------- Start ---------------- */
+seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellungen entfernbar)
 render();
 probeBotImages(() => render());
 const splash = document.createElement('div');

@@ -12,6 +12,7 @@ const DEF = () => ({
   current: null,                // laufendes Match
   lineup: [],                   // [{ id, team }]
   teamMode: false,
+  demoSeeded: false,            // Testdaten wurden schon einmal eingefügt
   anwurf: 'list',               // 'list' = wer oben steht, fängt an · 'bull' = Ausbullen
   opts: {
     x01: { start: 501, out: 'double', mode: 'legs', target: 2 },
@@ -50,9 +51,11 @@ export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, 
 
 export function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ } }
 export function resetAll() {
+  const seeded = S.demoSeeded; // Testdaten nach „Alle Daten löschen“ nicht erneut einfügen
   try { localStorage.removeItem(KEY); } catch (e) { /* */ }
   for (const k of Object.keys(S)) delete S[k];
   Object.assign(S, DEF());
+  S.demoSeeded = !!seeded;
 }
 
 export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
