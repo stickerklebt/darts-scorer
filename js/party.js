@@ -45,14 +45,15 @@ export function winners(m) {
   return sc.map((x, i) => (x === best ? i : -1)).filter((i) => i >= 0);
 }
 
-/** Aufnahme erfassen. v = Punkte (bzw. Treffer bei Around the Clock). */
-export function submit(m, v) {
+/** Aufnahme erfassen. v = Punkte (bzw. Treffer bei Around the Clock). throws: Einzeldarts (Bots). */
+export function submit(m, v, throws = null) {
   if (m.done) return { type: 'error', msg: 'Spiel ist beendet' };
   const err = validate(m, v);
   if (err) return { type: 'error', msg: err };
   const s = curSide(m);
   const before = score(m, s);
   const t = { s, pid: curThrower(m), v };
+  if (throws) t.throws = throws;
   m.turns.push(t);
   if (isDone(m)) { m.done = true; m.winners = winners(m); return { type: 'match', turn: t }; }
   if (m.game === 'halveit' && v === 0) return { type: 'halved', turn: t, before, after: score(m, s) };

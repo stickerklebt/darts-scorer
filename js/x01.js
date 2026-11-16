@@ -58,10 +58,11 @@ export function submitSum(m, score) {
   return recordTurn(m, { ...base, score, darts: 3 });
 }
 
-/** Einen einzelnen Dart erfassen (Rest ≤ 170). n: 0–20 oder 25, mult: 1–3. */
-export function throwDart(m, n, mult) {
+/** Einen einzelnen Dart erfassen (Rest ≤ 170). n: 0–20 oder 25, mult: 1–3.
+ *  opts.any: auch über 170 Dart für Dart (Bots werfen immer einzeln). */
+export function throwDart(m, n, mult, opts = {}) {
   if (m.done) return { type: 'error', msg: 'Match ist beendet' };
-  if (inputMode(m) !== 'darts') return { type: 'error', msg: 'Bitte die Summe der Aufnahme eingeben' };
+  if (!opts.any && inputMode(m) !== 'darts') return { type: 'error', msg: 'Bitte die Summe der Aufnahme eingeben' };
   if (n === 0) mult = 1;
   if (n === 25 && mult === 3) return { type: 'error', msg: 'Triple-Bull gibt es nicht' };
   if (!((n >= 0 && n <= 20) || n === 25) || ![1, 2, 3].includes(mult)) return { type: 'error', msg: 'Ungültiger Dart' };

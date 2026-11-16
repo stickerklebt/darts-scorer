@@ -7,9 +7,12 @@ import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, seg } from './common.js';
 import { throwerOf } from '../match.js';
 import { icon } from './svg.js';
-import { inputBoard } from './board.js';
+import { inputBoard, realBoard } from './board.js';
+import { isBot, bot } from '../bots.js';
+import { avatar } from './avatar.js';
+import { PLAYER_COLORS } from './svg.js';
 
-const whoText = (m, s, thrower) => (isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
+const whoText = (m, s, thrower) => (isBot(thrower) ? `${nameOf(thrower)} wirft` : isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
 const chipCls = (d) => (d.n === 25 && d.m === 2 ? 'b' : d.m === 2 ? 'd' : '');
 
 function scoreboard(items, cur, swap) {
@@ -30,6 +33,17 @@ function scoreboard(items, cur, swap) {
     ${it.extra || ''}
     <span class="sbr-rem">${it.big}</span>
   </div>`).join('')}</div>`;
+}
+
+/** Bot-Bereich in der Karte: Bild, kleine Scheibe mit den Darts der Aufnahme, Sprechblase, Andeutung bei starken Würfen. */
+function botBox(m, s, next) {
+  const side = m.sides[s], botId = isBot(next) ? next : side.find(isBot);
+  if (!botId) return '';
+  const marks = (ui.botMarks?.[s] || []).map((d) => ({ x: d.x, y: d.y, color: PLAYER_COLORS[s % 6], fly: Date.now() - d.at < 450 }));
+  const sp = ui.speech?.[botId];
+  const hint = ui.botHint && ui.botHint.s === s && Date.now() - ui.botHint.at < 1600 ? `<b class="bot-pop">${esc(ui.botHint.text)}<i></i><i></i><i></i></b>` : '';
+  return `<div class="botbox">${avatar(botId, 46)}<div class="minib">${realBoard(marks, 17)}</div>
+    ${sp && sp.until > Date.now() ? `<div class="speech">${esc(sp.text)}</div>` : ''}${hint}</div>`;
 }
 
 /** Teamzeile: alle Mitglieder, der nächste Werfer hervorgehoben. */
@@ -54,7 +68,7 @@ export function gameView() {
       const mine = l.turns.filter((t) => t.s === s), last = mine[mine.length - 1];
       const next = throwerOf(m, s, X.sideTurnCount(m, s));
       return {
-        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === l.starter,
+        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === l.starter, extra: botBox(m, s, next),
         big: X.rem(m, l, s) - (s === cur ? ps : 0),
         right: sets ? `<span class="setlbl">S${X.setsWon(m, s)} · L${X.legsInSet(m, s, l.set)}</span>` : pips(X.legsWon(m, s), m.opts.target),
         rowInfo: sets ? `S <b>${X.setsWon(m, s)}</b> L <b>${X.legsInSet(m, s, l.set)}</b>` : `Legs <b>${X.legsWon(m, s)}</b>`,
@@ -70,8 +84,8 @@ export function gameView() {
       else { const su = setupFor(before, left); if (su) h = `<span class="tk-l">Setup</span><span class="tk-c">${label(su.dart)}</span><span class="tk-w">→ ${su.leave} Rest</span>`; }
     }
     hint = `<div class="ticker">${h || `<span class="tk-w">${esc(whoText(m, cur, thrower))}</span>`}</div>`;
-    isBoard = mode === 'darts' && S.prefs.dartInput === 'board';
-    pad = mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
+    isBoard = mode === 'darts' && S.prefs.dartInput === 'board' && !isBot(thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, m.pending) : mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
   } else {
     cur = G.curSide(m); thrower = G.curThrower(m);
     const round = G.round(m);
@@ -82,7 +96,7 @@ export function gameView() {
       const done = m.game === 'atc' && G.atcPos(m, s) >= G.atcTotal(m);
       const next = throwerOf(m, s, turns.length);
       return {
-        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === m.first, right: '', rowInfo: '',
+        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === m.first, right: '', rowInfo: '', extra: botBox(m, s, next),
         big: m.game === 'atc' ? `${G.atcPos(m, s)}<small style="font-size:.4em;color:var(--muted)">/${G.atcTotal(m)}</small>` : G.score(m, s),
         stats: m.game === 'atc'
           ? [['Ziel', done ? '✓' : G.atcLabel(G.atcPos(m, s))], ['Letzte', last ? last.v : '–'], ['Runden', turns.length]]
@@ -95,7 +109,7 @@ export function gameView() {
     else if (m.game === 'halveit') tgt = G.halfLabel(G.HALF[round]);
     else if (m.game === 'atc') tgt = G.atcLabel(G.atcPos(m, cur));
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
-    pad = m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
   return `<div class="game ${isBoard ? 'boardmode' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
@@ -158,4 +172,14 @@ function hitsPad(m, thrower, cur) {
       ${[0, 1, 2, 3].map((h) => `<button class="key" data-act="hits" data-v="${h}" ${h > left ? 'disabled' : ''}>${h}</button>`).join('')}
       <button class="key wide back" data-act="back">${icon('undo', 2.4, 26)}</button>
     </div>`;
+}
+
+/** Während ein Bot wirft: Bild, Name, die Darts der Aufnahme, Rückgängig (nimmt die letzte eigene Eingabe zurück). */
+function botPad(m, thrower, darts) {
+  const sum = darts.reduce((a, d) => a + d.n * d.m, 0);
+  return `<div class="botpad">
+    <div class="bp-top">${avatar(thrower, 64)}<div class="bp-t"><b>${esc(nameOf(thrower))}</b><span>wirft<i>.</i><i>.</i><i>.</i></span><small>Bot · Ø ${bot(thrower).avg}</small></div></div>
+    <div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${darts[i] ? 'filled' : ''}">${darts[i] ? label(darts[i]) : '–'}</div>`).join('')}<div class="slot sum">${sum}</div></div>
+    <button class="btn dark" data-act="undo">${icon('undo', 2.4, 18)} Letzte eigene Eingabe zurück</button>
+  </div>`;
 }

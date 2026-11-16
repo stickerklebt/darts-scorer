@@ -14,10 +14,12 @@ import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
 import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
-import { isBot } from './bots.js';
+import { isBot, bot, BOTS } from './bots.js';
+import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull } from './botsim.js';
+import { probeBotImages } from './ui/avatar.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
-import { createBulloff, bullThrow, bullUndo, MM } from './bulloff.js';
+import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 
 const $ = (s) => document.querySelector(s);
@@ -48,6 +50,7 @@ function render() {
     else tl.style.setProperty('--i', to);
     ui.tabFrom = to;
   }
+  scheduleBot();
 }
 
 let toastTimer = null;
@@ -80,6 +83,7 @@ function finish() {
   m.endedAt = Date.now();
   archive(m);
   say(`${sideName(m.sides[m.winners[0]])} gewinnt`);
+  ui.endLines = botsInMatch(m).map((id) => ({ id, text: line(m, id, m.winners.includes(sideOfId(m, id)) ? 'win' : 'lose', 'end') })).filter((x) => x.text);
   ui.modal = null; ui.moment = null; ui.entry = ''; ui.mult = 1;
   S.screen = 'result';
   releaseWakeLock();
@@ -94,7 +98,12 @@ function handle(res) {
   // Animation (nur Menschen, nur wenn eingeschaltet). Bots bekommen nur eine kleine Andeutung in ihrer Karte.
   let anim = null;
   if (t && S.prefs.anim && !isBot(t.pid)) anim = fxForTurn(m.game, t, { score: m.game === 'x01' ? t.score : t.v, name: nameOf(t.pid) });
-  if (t && isBot(t.pid)) botHint(m, t);
+  if (t && isBot(t.pid)) { botHint(m, t); if (good(m, t)) speak(m, t.pid, 'good', 0.7); }
+  if (t && !isBot(t.pid)) {
+    const opp = botsInMatch(m).filter((id) => sideOfId(m, id) !== t.s);
+    if (t.bust) opp.forEach((id) => speak(m, id, 'oppBust', 0.6));
+    else if ((m.game === 'x01' ? t.score : m.game === 'highscore' ? t.v : 0) >= 140) opp.forEach((id) => speak(m, id, 'oppGood', 0.5));
+  }
   if (res.type === 'match') { if (anim) { render(); anim.then(finish); } else finish(); return; }
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
@@ -107,6 +116,7 @@ function handle(res) {
     }
   } else if (res.type === 'halved') { toast(`Halbiert: ${res.before} → ${res.after}`); say('Halbiert'); }
   else if (res.type === 'turn') say(String(t.v));
+  if (anim && res.type !== 'leg' && res.type !== 'set') anim.then(() => { if (S.current === m && !m.done) render(); });
   render();
 }
 
@@ -117,14 +127,106 @@ function botHint(m, t) {
   ui.botHint = { s: t.s, text: t.out ? `${v}!` : v === 180 ? '180!' : `${v}!`, at: Date.now() };
 }
 
+/** Wer hat die letzte Eingabe gemacht? (für Undo mit Bots) */
+function lastEntryPid(m) {
+  if (m.game === 'x01') {
+    if (m.pending.length) return X.curThrower(m);
+    for (let i = m.legs.length - 1; i >= 0; i--) { const ts = m.legs[i].turns; if (ts.length) return ts[ts.length - 1].pid; }
+    return null;
+  }
+  return m.turns.length ? m.turns[m.turns.length - 1].pid : null;
+}
+/** Rückgängig: nimmt die letzte menschliche Eingabe zurück – Bot-Würfe danach werden mit zurückgenommen. */
 function undo() {
   const m = S.current;
   if (!m) return;
-  ui.modal = null; ui.moment = null; ui.entry = '';
-  if (m.done) { unarchive(m); m.endedAt = undefined; S.screen = 'game'; requestWakeLock(); }
-  if (m.game === 'x01') X.undo(m); else G.undo(m);
+  clearTimeout(botTimer); botTimer = null;
+  ui.modal = null; ui.moment = null; ui.entry = ''; ui.botTurn = null;
+  if (m.done) { unarchive(m); m.endedAt = undefined; S.screen = 'game'; ui.endLines = null; requestWakeLock(); }
+  for (let guard = 0; guard < 400; guard++) {
+    const pid = lastEntryPid(m);
+    if (pid === null) break;
+    const ok = m.game === 'x01' ? X.undo(m) : G.undo(m);
+    if (!ok || !isBot(pid)) break;
+  }
+  ui.botMarks = {};
   render();
 }
+
+/* ---------------- Bots: werfen selbst, Dart für Dart ---------------- */
+const curThrowerOf = (m) => (m.game === 'x01' ? X.curThrower(m) : G.curThrower(m));
+const botsInMatch = (m) => m.playerIds.filter(isBot);
+const sideOfId = (m, id) => m.sides.findIndex((side) => side.includes(id));
+const good = (m, t) => !t.bust && ((m.game === 'x01' ? t.score : t.v) >= 100 || (t.out && t.score >= 60));
+let botTimer = null;
+function scheduleBot() {
+  const m = S.current;
+  let who = null;
+  if (S.screen === 'game' && m && !m.done && !ui.modal && !ui.moment && !fxRunning()) {
+    if (inBulloff()) { const s = bullNext(m.bull); if (!ui.boResult && s !== null && isBot(m.sides[s][0]) && !ui.boPending) who = 'bull'; }
+    else if (isBot(curThrowerOf(m))) who = 'turn';
+  }
+  if (!who) { if (!ui.boPending || !inBulloff()) { clearTimeout(botTimer); botTimer = null; } return; }
+  if (botTimer) return;
+  const fresh = m.game === 'x01' ? !m.pending.length : !(ui.botTurn?.darts?.length);
+  botTimer = setTimeout(() => { botTimer = null; botStep(); }, who === 'bull' ? 900 : fresh ? 850 : 620);
+}
+function botStep() {
+  const m = S.current;
+  if (!m || m.done || S.screen !== 'game') return;
+  if (inBulloff()) {
+    const s = bullNext(m.bull);
+    if (s === null || !isBot(m.sides[s][0])) return;
+    ui.boPending = { ...throwBull(bot(m.sides[s][0]).sigma), fly: true };
+    botTimer = setTimeout(() => { botTimer = null; if (ui.boPending && inBulloff()) bullPlace(ui.boPending.x, ui.boPending.y); }, 1100);
+    render();
+    return;
+  }
+  const pid = curThrowerOf(m);
+  if (!isBot(pid)) return;
+  const b = bot(pid);
+  ui.botMarks ??= {};
+  if (m.game === 'x01') {
+    const s = X.curSide(m);
+    if (!m.pending.length) ui.botMarks[s] = [];
+    const d = x01BotDart(m, b.sigma);
+    ui.botMarks[s] = [...(ui.botMarks[s] || []), { x: d.x, y: d.y, at: Date.now() }];
+    handle(X.throwDart(m, d.n, d.m, { any: true }));
+  } else {
+    const s = G.curSide(m);
+    if (!ui.botTurn || ui.botTurn.s !== s || ui.botTurn.mid !== m.id || ui.botTurn.n !== m.turns.length) { ui.botTurn = { s, mid: m.id, n: m.turns.length, darts: [] }; ui.botMarks[s] = []; }
+    const d = partyBotDart(m, s, ui.botTurn.darts, b.sigma);
+    ui.botTurn.darts.push(d);
+    ui.botMarks[s] = [...ui.botMarks[s], { x: d.x, y: d.y, at: Date.now() }];
+    if (partyTurnDone(m, s, ui.botTurn.darts)) {
+      const darts = ui.botTurn.darts;
+      ui.botTurn = null;
+      handle(G.submit(m, partyValue(m, s, darts), darts.map((x) => ({ n: x.n, m: x.m, before: null, target: null }))));
+    } else render();
+  }
+}
+
+/* ---------------- Bot-Sprüche: max. 3 pro Spiel und Bot (Start · ein Moment · Ende) ---------------- */
+function line(m, id, kind, slot) {
+  const b = bot(id);
+  ui.lines ??= {};
+  const k = `${m.id}:${id}`, used = (ui.lines[k] ??= { slots: [], said: [] });
+  if (used.slots.includes(slot) || used.slots.length >= 3) return null;
+  const pool = (b.lines[kind] || []).filter((x) => !used.said.includes(x));
+  if (!pool.length) return null;
+  const text = pool[Math.floor(Math.random() * pool.length)];
+  used.slots.push(slot); used.said.push(text);
+  return text;
+}
+function speak(m, id, kind, chance = 1, slot = kind === 'start' ? 'start' : 'mid') {
+  if (Math.random() > chance) return;
+  const text = line(m, id, kind, slot);
+  if (!text) return;
+  ui.speech ??= {};
+  ui.speech[id] = { text, until: Date.now() + 3800 };
+  setTimeout(() => { if (S.screen === 'game') render(); }, 3900);
+}
+function greet(m) { botsInMatch(m).forEach((id, i) => setTimeout(() => { if (S.current === m) { speak(m, id, 'start'); render(); } }, 400 + i * 700)); }
 
 /* ---------------- Ausbullen ---------------- */
 const inBulloff = () => !!(S.current?.bull && !S.current.bull.done);
@@ -137,6 +239,7 @@ function finishBulloff() {
   m.first = b.winner;
   if (m.game === 'x01') m.legs[0].starter = b.winner;
   ui.boResult = null;
+  greet(m);
   render();
 }
 function bullPlace(x, y) {
@@ -152,7 +255,8 @@ function bullPlace(x, y) {
 function newMatch(game, sides, opts, first, bull) {
   const m = createMatch(game, sides, opts, first);
   if (bull && sides.length > 1) m.bull = createBulloff(sides.length);
-  ui.boPending = null; ui.boResult = null; ui.swapKey = undefined;
+  ui.boPending = null; ui.boResult = null; ui.swapKey = undefined; ui.botMarks = {}; ui.botTurn = null; ui.speech = {}; ui.endLines = null;
+  if (!m.bull) greet(m);
   return m;
 }
 
@@ -168,6 +272,7 @@ function startGame() {
   if (!S.lineup.length) { toast('Mindestens ein Spieler'); return render(); }
   const sides = buildSides();
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
+  if (!S.lineup.some((e) => !isBot(e.id))) { toast('Mindestens ein Mensch muss mitspielen'); return render(); }
   S.current = newMatch(S.game, sides, S.opts[S.game], 0, S.anwurf === 'bull');
   S.screen = 'game';
   ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
@@ -305,7 +410,7 @@ document.addEventListener('keydown', (e) => {
   }
   const m = S.current;
   if (fxRunning()) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') stopFx(); return; }
-  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff()) return;
+  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff() || isBot(curThrowerOf(m))) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
   if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
@@ -324,6 +429,8 @@ function boardPoint(svg, e) {
 document.addEventListener('pointerdown', (e) => {
   const svg = e.target.closest?.('#boBoard .realboard');
   if (!svg || !inBulloff() || ui.boResult || ui.modal) return;
+  const bs = bullNext(S.current.bull);
+  if (bs === null || isBot(S.current.sides[bs][0])) return;
   e.preventDefault();
   drag = { svg, id: e.pointerId };
   try { svg.setPointerCapture(e.pointerId); } catch (err) { /* */ }
@@ -347,6 +454,7 @@ document.addEventListener('pointercancel', (e) => endDrag(e, false));
 
 /* ---------------- Start ---------------- */
 render();
+probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';
 splash.innerHTML = crest({ size: 220 });

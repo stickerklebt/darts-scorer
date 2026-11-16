@@ -9,7 +9,7 @@
 
 export const BOTS = [
   {
-    id: 'sensei-wu', name: 'Sensei Wu', initials: 'WU', avg: 45, sigma: 33.2, color: '#b9b3a0', ink: '#14110c',
+    id: 'sensei-wu', name: 'Sensei Wu', initials: 'WU', avg: 45, sigma: 17.74, color: '#b9b3a0', ink: '#14110c',
     lines: {
       start: [
         'Ein Pfeil, der zögert, findet nie sein Ziel.',
@@ -33,7 +33,7 @@ export const BOTS = [
     },
   },
   {
-    id: 'super-mario', name: 'Super Mario', initials: 'SM', avg: 42, sigma: 36.6, color: '#c4452f', ink: '#fff4e0',
+    id: 'super-mario', name: 'Super Mario', initials: 'SM', avg: 42, sigma: 18.87, color: '#c4452f', ink: '#fff4e0',
     lines: {
       start: [
         'Wahoo! Auf geht’s, Mamma mia, ich bin bereit!',
@@ -57,7 +57,7 @@ export const BOTS = [
     },
   },
   {
-    id: 'shrek', name: 'Shrek', initials: 'SH', avg: 40, sigma: 39.4, color: '#6f8f3c', ink: '#f2f0dc',
+    id: 'shrek', name: 'Shrek', initials: 'SH', avg: 40, sigma: 19.8, color: '#6f8f3c', ink: '#f2f0dc',
     lines: {
       start: [
         'Na schön. Werfen wir halt. Dann ist Ruhe.',

@@ -10,7 +10,7 @@ import { badge, divider, icon } from './svg.js';
 import { avatar } from './avatar.js';
 
 const TEAM_LETTERS = 'ABCDEF';
-const SHOW_BOTS = false; // wird mit den Bots (Meilenstein 5) eingeschaltet
+const SHOW_BOTS = true;
 
 /** Punkt 3 + 4: Startpunkte bzw. Runden/Ziele und First to X */
 function mainOptions(id) {
@@ -77,7 +77,7 @@ export function setupView() {
       <button class="sq" data-act="addNew" ${full ? 'disabled' : ''} aria-label="Hinzufügen">${icon('plus', 2.6)}</button>
     </div>
     ${saved.length ? `<div class="pchips">${saved.map((p) => `<button data-act="addProfile" data-v="${p.id}" ${full ? 'disabled' : ''}>${esc(p.name)}</button>`).join('')}</div>` : ''}
-    ${bots.length ? `<div class="botchips">${bots.map((b) => `<button data-act="addProfile" data-v="${b.id}" ${full ? 'disabled' : ''}>${avatar(b.id, 30)}<span><b>${esc(b.name)}</b><small>Bot · Ø ${b.avg}</small></span>${icon('plus', 2.6, 16)}</button>`).join('')}</div>` : ''}
+    ${bots.length ? `<div class="botchips">${bots.map((b) => `<button data-act="addProfile" data-v="${b.id}" ${full ? 'disabled' : ''}>${avatar(b.id, 36)}<span class="bc-t"><b>${esc(b.name)}</b><small>Bot · Ø ${b.avg}</small></span>${icon('plus', 2.6, 16)}</button>`).join('')}</div>` : ''}
     <p class="foot">Bis zu ${MAX_PLAYERS} Spieler. ${S.teamMode ? 'Tippe auf „Team“, um Spieler zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge dieser Liste.' : ''}</p>
     <h2 class="label"><i class="stepn">3</i>Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>

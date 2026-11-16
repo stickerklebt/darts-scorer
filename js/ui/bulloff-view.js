@@ -3,6 +3,8 @@ import { S, ui, nameOf, isTeam } from '../store.js';
 import { bullNext, segmentAt, MM } from '../bulloff.js';
 import { label } from '../checkout.js';
 import { esc, fmt, pcVars } from './common.js';
+import { isBot } from '../bots.js';
+import { avatar } from './avatar.js';
 import { PLAYER_COLORS, icon } from './svg.js';
 import { realBoard } from './board.js';
 
@@ -32,6 +34,7 @@ export function bulloffView() {
       <span class="bo-d">${t ? distTxt(t.x, t.y) : out ? 'raus' : s === next && ui.boPending ? distTxt(ui.boPending.x, ui.boPending.y) : '–'}</span></div>`;
   }).join('');
   const whoName = cur !== null ? nameOf(bullThrower(m, cur)) : '';
+  const botNext = !res && next !== null && isBot(bullThrower(m, next));
   return `<div class="game bulloff" style="${cur !== null ? pcVars(cur) : ''}">
     <div class="turnbar"></div>
     <header class="gbar">
@@ -41,12 +44,12 @@ export function bulloffView() {
     </header>
     <div class="bo-main">
       <div class="bo-left">
-        ${res ? '' : `<div class="bo-who" style="${pcVars(cur)}"><b>${esc(whoName)}</b><span>wirft aufs Bull</span></div>`}
+        ${res ? '' : `<div class="bo-who" style="${pcVars(cur)}">${botNext ? avatar(bullThrower(m, next), 40) : ''}<b>${esc(whoName)}</b><span>wirft aufs Bull</span></div>`}
         <div class="bo-board" id="boBoard">${realBoard(darts)}${banner}</div>
       </div>
       <div class="bo-side">
         <div class="bo-chips">${chips}</div>
-        ${res ? '' : `<p class="foot bo-hint">Finger auf die Scheibe halten, wo der Dart steckt – die Lupe zeigt die genaue Stelle. Loslassen setzt den Dart.</p>
+        ${res || botNext ? '' : `<p class="foot bo-hint">Finger auf die Scheibe halten, wo der Dart steckt – die Lupe zeigt die genaue Stelle. Loslassen setzt den Dart.</p>
         <div class="bo-btns">
           <button class="btn dark" data-act="boUndo" ${ui.boPending || b.throws.length ? '' : 'disabled'}>${icon('undo', 2.4, 18)} Rückgängig</button>
           <button class="btn red" data-act="boOk" ${ui.boPending ? '' : 'disabled'}>Bestätigen</button>

@@ -92,8 +92,8 @@ export function realBoardInner() {
   return s;
 }
 /** Ganze Scheibe mit Darts: darts = [{ x, y, color, win?, pending? }] */
-export function realBoard(darts = []) {
+export function realBoard(darts = [], dot = 7.5) {
   const d = darts.map((t) => `<g class="rbd ${t.win ? 'win' : ''} ${t.pending ? 'pending' : ''} ${t.fly ? 'fly' : ''}" transform="translate(${t.x} ${t.y})" style="--dc:${t.color}">
-    ${t.win ? '<circle class="halo" r="16"/>' : ''}<circle r="7.5" fill="${t.color}" stroke="#0b0e0d" stroke-width="2.6"/><circle r="2" fill="#0b0e0d"/></g>`).join('');
+    ${t.win ? '<circle class="halo" r="16"/>' : ''}<circle r="${dot}" fill="${t.color}" stroke="#0b0e0d" stroke-width="${dot / 2.9}"/><circle r="${dot / 3.7}" fill="#0b0e0d"/></g>`).join('');
   return `<svg class="realboard" viewBox="-230 -230 460 460" aria-label="Dartscheibe">${realBoardInner()}${d}</svg>`;
 }
