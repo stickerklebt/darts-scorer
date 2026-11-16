@@ -183,12 +183,9 @@ const actions = {
     if (S.current && S.current.done) S.current = null;
     S.screen = 'home'; S.tab = 'play'; releaseWakeLock(); render();
   },
-  pick(el) { S.game = el.dataset.v; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
-  quickstart() {
-    S.game = 'x01';
-    if (!S.lineup.length) { S.screen = 'setup'; return render(); }
-    actions.start();
-  },
+  pick(el) { S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false; render(); window.scrollTo(0, 0); },
+  more() { ui.moreOpen = !ui.moreOpen; render(); },
+  anwurf(el) { S.anwurf = el.dataset.v; render(); },
   resume() { S.screen = 'game'; requestWakeLock(); render(); },
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;

@@ -1,12 +1,12 @@
 // Offline-Cache: App startet ohne Internet, Updates werden im Hintergrund geladen.
-const CACHE = 'dartscorer-v7';
+const CACHE = 'dartscorer-v8';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png',
   './css/tokens.css', './css/base.css', './css/screens.css',
   './fonts/bc-500.woff2', './fonts/bc-600.woff2', './fonts/bc-700.woff2', './fonts/bc-800.woff2', './fonts/bc-800i.woff2', './fonts/metalmania.woff2',
-  './js/main.js', './js/store.js', './js/match.js', './js/checkout.js', './js/x01.js', './js/party.js', './js/stats.js', './js/games.js',
+  './js/main.js', './js/store.js', './js/match.js', './js/checkout.js', './js/x01.js', './js/party.js', './js/stats.js', './js/games.js', './js/bots.js',
   './js/ui/common.js', './js/ui/svg.js', './js/ui/board.js', './js/ui/play.js', './js/ui/setup.js', './js/ui/game.js',
-  './js/ui/moments.js', './js/ui/result.js', './js/ui/sheets.js', './js/ui/stats-view.js', './js/ui/stats-extra.js', './js/ui/charts.js', './js/ui/compare.js',
+  './js/ui/moments.js', './js/ui/result.js', './js/ui/sheets.js', './js/ui/stats-view.js', './js/ui/stats-extra.js', './js/ui/charts.js', './js/ui/compare.js', './js/ui/avatar.js',
 ];
 
 self.addEventListener('install', (e) => {

@@ -44,9 +44,8 @@ export function playView() {
         <div class="hero-num">${o.start}</div>
       </div>
       <div class="hero-meta">${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}</div>
-      <div class="hero-btns">
-        <button class="btn red" data-act="quickstart">Spiel starten</button>
-        <button class="btn line" data-act="pick" data-v="x01">Einrichten</button>
+      <div class="hero-btns one">
+        <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
       </div>
     </section>
     <h2 class="label">Partyspiele</h2>

@@ -1,4 +1,5 @@
 /* Persistenter Zustand (localStorage), Profile, UI-Zustand. */
+import { bot } from './bots.js';
 
 const KEY = 'darts.v3';
 const OLD_KEYS = ['dartscorer.v1', 'dartscorer.v2'];
@@ -11,6 +12,7 @@ const DEF = () => ({
   current: null,                // laufendes Match
   lineup: [],                   // [{ id, team }]
   teamMode: false,
+  anwurf: 'list',               // 'list' = wer oben steht, fängt an · 'bull' = Ausbullen
   opts: {
     x01: { start: 501, out: 'double', mode: 'legs', target: 2 },
     highscore: { rounds: 10 },
@@ -18,7 +20,7 @@ const DEF = () => ({
     halveit: {},
     atc: { bull: 1 },
   },
-  prefs: { voice: false, hints: true, dartInput: 'keys' },
+  prefs: { voice: false, hints: true, dartInput: 'keys', anim: true },
   screen: 'home',
   tab: 'play',
   statsPid: null,
@@ -43,7 +45,7 @@ function load() {
 /** Der gesamte gespeicherte Zustand. Wird nur verändert, nie ersetzt. */
 export const S = load();
 /** Flüchtiger UI-Zustand (nicht gespeichert). */
-export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, tabFrom: null };
+export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, tabFrom: null, moreOpen: false };
 
 export function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ } }
 export function resetAll() {
@@ -56,7 +58,7 @@ export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toStri
 
 /* ---------- Profile ---------- */
 export const profile = (id) => S.profiles.find((p) => p.id === id);
-export const nameOf = (id) => profile(id)?.name ?? '?';
+export const nameOf = (id) => profile(id)?.name ?? bot(id)?.name ?? '?';
 export const findProfile = (name) => { const k = name.trim().toLowerCase(); return S.profiles.find((p) => p.name.toLowerCase() === k); };
 /** Profil zum Namen holen oder neu anlegen (Groß/Klein egal). Gibt die id zurück. */
 export function ensureProfile(name) {
