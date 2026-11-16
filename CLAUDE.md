@@ -9,6 +9,9 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 - Design: eigene Motive im Stil 70er/80er-Rockalbum. **Keine** Cover-Motive, Wappen, Logos oder Namen von Bands nachbauen.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün.
+- App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg`, dann `qlmanage -t -s 1024 icon.svg`
+  und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
+- Beim Testen im Browser: Service Worker abmelden, sonst liefert der Offline-Cache alte Dateien.
 - Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt.
 
 ## Dateistruktur (Ziel)

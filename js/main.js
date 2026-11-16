@@ -4,7 +4,14 @@ import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
 import { GAMES, MAX_PLAYERS } from './games.js';
-import * as V from './ui/views.js';
+import { esc } from './ui/common.js';
+import { onboardView, tabsBar, playView, statsPlaceholder } from './ui/play.js';
+import { setupView } from './ui/setup.js';
+import { gameView } from './ui/game.js';
+import { resultView } from './ui/result.js';
+import { momentView } from './ui/moments.js';
+import { sheetView } from './ui/sheets.js';
+import { crest } from './ui/svg.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -13,18 +20,32 @@ function render() {
   save();
   const m = S.current;
   let html;
-  if (!S.mainId || !profile(S.mainId)) html = V.onboardView();
-  else if (S.screen === 'game' && m && !m.done) html = V.gameView();
-  else if (S.screen === 'result' && m && m.done) html = V.resultView();
-  else if (S.screen === 'setup' && GAMES[S.game]) html = V.setupView();
-  else { S.screen = 'home'; html = V.homeView(); }
-  html += V.modalView();
-  if (ui.toast) html += `<div class="toast glass"><i></i>${V.esc(ui.toast)}</div>`;
+  if (!S.mainId || !profile(S.mainId)) html = onboardView();
+  else if (S.screen === 'game' && m && !m.done) html = gameView() + momentView();
+  else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
+  else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
+  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsPlaceholder() : playView()); }
+  html += sheetView();
+  if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   $('#app').innerHTML = html;
+  // Tab-Strich gleitet von der alten zur neuen Position
+  const tl = $('.tabline');
+  if (tl) {
+    const to = S.tab === 'stats' && S.screen === 'home' ? 1 : 0;
+    if (ui.tabFrom !== null && ui.tabFrom !== to) requestAnimationFrame(() => requestAnimationFrame(() => tl.style.setProperty('--i', to)));
+    else tl.style.setProperty('--i', to);
+    ui.tabFrom = to;
+  }
 }
 
 let toastTimer = null;
 function toast(msg) { ui.toast = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => { ui.toast = null; render(); }, 1800); }
+let momentTimer = null;
+function moment(mo, autoClose = 0) {
+  ui.moment = mo;
+  clearTimeout(momentTimer);
+  if (autoClose) momentTimer = setTimeout(() => { if (ui.moment === mo) { ui.moment = null; render(); } }, autoClose);
+}
 
 /* ---------------- Ansage & Display an ---------------- */
 function say(txt) {
@@ -47,10 +68,11 @@ function finish() {
   m.endedAt = Date.now();
   archive(m);
   say(`${sideName(m.sides[m.winners[0]])} gewinnt`);
-  ui.modal = null; ui.entry = ''; ui.mult = 1;
+  ui.modal = null; ui.moment = null; ui.entry = ''; ui.mult = 1;
   S.screen = 'result';
   releaseWakeLock();
   render();
+  window.scrollTo(0, 0);
 }
 
 function handle(res) {
@@ -60,9 +82,11 @@ function handle(res) {
   if (res.type === 'match') return finish();
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
-    else if (res.type === 'turn') { say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score)); if (t.score === 180) toast('180!'); }
-    else if (res.type === 'leg' || res.type === 'set') {
-      ui.modal = { type: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
+    else if (res.type === 'turn') {
+      say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
+      if (t.score === 180) moment({ kind: '180', pid: t.pid }, 2600);
+    } else if (res.type === 'leg' || res.type === 'set') {
+      moment({ kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' });
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
     }
   } else if (res.type === 'halved') { toast(`Halbiert: ${res.before} → ${res.after}`); say('Halbiert'); }
@@ -73,7 +97,7 @@ function handle(res) {
 function undo() {
   const m = S.current;
   if (!m) return;
-  ui.modal = null; ui.entry = '';
+  ui.modal = null; ui.moment = null; ui.entry = '';
   if (m.done) { unarchive(m); m.endedAt = undefined; S.screen = 'game'; requestWakeLock(); }
   if (m.game === 'x01') X.undo(m); else G.undo(m);
   render();
@@ -93,7 +117,7 @@ function startGame() {
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
   S.current = createMatch(S.game, sides, S.opts[S.game], 0);
   S.screen = 'game';
-  ui.entry = ''; ui.modal = null; ui.mult = 1;
+  ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
   requestWakeLock();
   render();
 }
@@ -116,8 +140,9 @@ const actions = {
     if (!n) return $('#nameField').focus();
     S.mainId = ensureProfile(n);
     S.lineup = [{ id: S.mainId, team: 'A' }];
-    S.screen = 'home'; render();
+    S.screen = 'home'; S.tab = 'play'; render();
   },
+  tab(el) { S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null; render(); window.scrollTo(0, 0); },
   rename() { ui.modal = { type: 'rename' }; render(); setTimeout(() => $('#nameField')?.focus(), 50); },
   saveName() {
     const n = field('nameField'), other = findProfile(n);
@@ -129,11 +154,16 @@ const actions = {
   wipe() { ui.modal = { type: 'wipe' }; render(); },
   wipeForce() { resetAll(); ui.modal = null; releaseWakeLock(); render(); },
   home() {
-    ui.modal = null; ui.entry = '';
+    ui.modal = null; ui.moment = null; ui.entry = '';
     if (S.current && S.current.done) S.current = null;
-    S.screen = 'home'; releaseWakeLock(); render();
+    S.screen = 'home'; S.tab = 'play'; releaseWakeLock(); render();
   },
   pick(el) { S.game = el.dataset.v; S.screen = 'setup'; render(); window.scrollTo(0, 0); },
+  quickstart() {
+    S.game = 'x01';
+    if (!S.lineup.length) { S.screen = 'setup'; return render(); }
+    actions.start();
+  },
   resume() { S.screen = 'game'; requestWakeLock(); render(); },
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;
@@ -151,11 +181,7 @@ const actions = {
     e.team = letters[(letters.indexOf(e.team) + 1) % letters.length];
     render();
   },
-  addNew() {
-    const n = field('newPlayer');
-    if (!n) return $('#newPlayer')?.focus();
-    addToLineup(ensureProfile(n));
-  },
+  addNew() { const n = field('newPlayer'); if (!n) return $('#newPlayer')?.focus(); addToLineup(ensureProfile(n)); },
   addProfile(el) { addToLineup(el.dataset.v); },
   pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); render(); },
   pup(el) { const i = Number(el.dataset.v), L = S.lineup; [L[i - 1], L[i]] = [L[i], L[i - 1]]; render(); },
@@ -170,26 +196,25 @@ const actions = {
   back() { if (ui.entry) { ui.entry = ui.entry.slice(0, -1); render(); } else undo(); },
   ok() { actions.submit(ui.entry === '' ? 0 : parseInt(ui.entry, 10)); },
   quick(el) { actions.submit(Number(el.dataset.v)); },
-  submit(v) {
-    ui.entry = '';
-    const m = S.current;
-    handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v));
-  },
+  submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
   dart(el) { const n = Number(el.dataset.v), mult = n === 0 ? 1 : ui.mult; ui.mult = 1; handle(X.throwDart(S.current, n, mult)); },
   bull(el) { ui.mult = 1; handle(X.throwDart(S.current, 25, Number(el.dataset.v))); },
+  board(el) { ui.mult = 1; handle(X.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
+  dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },
   undo() { undo(); },
   gear() { ui.modal = { type: 'gear' }; render(); },
   pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
   abort() { ui.modal = { type: 'abort' }; render(); },
-  abortForce() { S.current = null; ui.modal = null; S.screen = 'home'; releaseWakeLock(); render(); },
+  abortForce() { S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
   closeModal() { ui.modal = null; render(); },
   scrim() { ui.modal = null; render(); },
   rematch() {
     const m = S.current;
     S.current = createMatch(m.game, m.sides, m.opts, m.first + 1);
-    S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.mult = 1;
+    S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
     requestWakeLock(); render();
   },
 };
@@ -209,13 +234,20 @@ document.addEventListener('keydown', (e) => {
   }
   const m = S.current;
   if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc') return;
+  if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
   if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();
 });
 
+/* ---------------- Start ---------------- */
 render();
+const splash = document.createElement('div');
+splash.className = 'splash';
+splash.innerHTML = crest({ size: 220 });
+document.body.appendChild(splash);
+setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
 if (S.screen === 'game') requestWakeLock();
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

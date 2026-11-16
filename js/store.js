@@ -20,6 +20,7 @@ const DEF = () => ({
   },
   prefs: { voice: false, hints: true, dartInput: 'keys' },
   screen: 'home',
+  tab: 'play',
   game: 'x01',
 });
 
@@ -38,7 +39,7 @@ function load() {
 /** Der gesamte gespeicherte Zustand. Wird nur verändert, nie ersetzt. */
 export const S = load();
 /** Flüchtiger UI-Zustand (nicht gespeichert). */
-export const ui = { entry: '', mult: 1, modal: null, toast: null };
+export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, tabFrom: null };
 
 export function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ } }
 export function resetAll() {

@@ -1,0 +1,34 @@
+/* Design-Tokens: Farben, Schriften, Ecken, Texturen */
+@font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-500.woff2) format('woff2'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-700.woff2) format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-800.woff2) format('woff2'); font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url(../fonts/bc-800i.woff2) format('woff2'); font-weight: 800; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Cinzel'; src: url(../fonts/cinzel.woff2) format('woff2'); font-weight: 400 900; font-display: swap; }
+
+:root {
+  /* Grundtöne */
+  --ink: #0b0a08; --coal: #12100d; --panel: #1a1713; --panel2: #231f19; --panel3: #2e2820;
+  --line: #3a3229; --line2: #5b4f3e;
+  --cream: #f3e9d2; --cream2: #d9c9a3; --muted: #a89d87; --dim: #6f6656;
+  /* Pop-Art-Palette */
+  --red: #e5402c; --red-d: #a92a1b; --gold: #d4a63a; --gold-l: #ecc96a;
+  --blue: #2f6fe4; --blue-d: #1d4aa3; --yellow: #ffd23f; --green: #1f9a4c; --violet: #8b5cf6;
+  /* Spielerfarben */
+  --p0: var(--red); --p1: var(--blue); --p2: var(--yellow); --p3: var(--green); --p4: var(--violet); --p5: var(--cream);
+  /* Schrift */
+  --f-num: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --f-display: 'Cinzel', 'Times New Roman', serif;
+  /* Ecken */
+  --r-btn: 2px; --r-panel: 5px;
+  /* Safe Areas */
+  --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left); --sar: env(safe-area-inset-right);
+  /* Texturen (flache SVG-Muster) */
+  --tex-halftone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2.25' cy='2.25' r='1.6' fill='%23000' fill-opacity='.3'/%3E%3Ccircle cx='6.75' cy='6.75' r='1.6' fill='%23000' fill-opacity='.3'/%3E%3C/svg%3E");
+  --tex-halftone-lg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='4' cy='4' r='3' fill='%23000' fill-opacity='.22'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%23000' fill-opacity='.22'/%3E%3C/svg%3E");
+  --tex-hatch-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M-1 7L7 -1M-1 1L1 -1M5 7L7 5' stroke='%23d4a63a' stroke-opacity='.5' stroke-width='1'/%3E%3C/svg%3E");
+  --tex-engrave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M-1 6L6 -1M-1 1L1 -1M4 6L6 4' stroke='%230b0a08' stroke-opacity='.42' stroke-width='.9'/%3E%3C/svg%3E");
+  --tex-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 0L7 7M7 0L0 7' stroke='%23d4a63a' stroke-opacity='.18' stroke-width='.8'/%3E%3C/svg%3E");
+  color-scheme: dark;
+}
