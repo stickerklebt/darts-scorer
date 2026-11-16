@@ -13,6 +13,8 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 - **Lichtlinie** (`fuse()` in `svg.js`, `.fuse` in `base.css`): ein heller Schein gleitet sehr langsam die Goldrahmen-Linie
   entlang und läuft nach hinten weich aus (6 übereinanderliegende Striche, SVG-`<animate>`) –
   Hero-Karte, Start-Button im Setup, Rekord-Karten, Overall-Average, Sieger-Screen. **Im laufenden Spiel kein Leuchten.**
+- **Rendering ohne Flackern:** `render()` setzt nicht mehr `innerHTML`, sondern gleicht den Bildschirm per `morph()` an
+  (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
 - App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg`, dann `qlmanage -t -s 1024 icon.svg`

@@ -25,6 +25,29 @@ import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 const $ = (s) => document.querySelector(s);
 
 /* ---------------- Rendering ---------------- */
+/* Statt den ganzen Bildschirm neu zu setzen (flackert, Animationen starten neu), wird nur angepasst,
+   was sich wirklich geändert hat: gleiche Elemente bleiben stehen, nur Text/Attribute/Kinder werden aktualisiert. */
+function morph(parent, html) {
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  patchChildren(parent, t.content);
+}
+function patchChildren(a, b) {
+  const an = [...a.childNodes], bn = [...b.childNodes];
+  for (let i = 0; i < bn.length; i++) {
+    if (i < an.length) patchNode(an[i], bn[i]);
+    else a.appendChild(bn[i]);
+  }
+  for (let i = an.length - 1; i >= bn.length; i--) an[i].remove();
+}
+function patchNode(x, y) {
+  if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName || (x.nodeType === 1 && x.namespaceURI !== y.namespaceURI)) { x.replaceWith(y); return; }
+  if (x.nodeType !== 1) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; return; }
+  for (const at of [...x.attributes]) if (!y.hasAttribute(at.name)) x.removeAttribute(at.name);
+  for (const at of [...y.attributes]) if (x.getAttribute(at.name) !== at.value) x.setAttribute(at.name, at.value);
+  if (x.tagName === 'INPUT' && y.hasAttribute('value') && x !== document.activeElement) x.value = y.getAttribute('value');
+  patchChildren(x, y);
+}
 function render() {
   save();
   const m = S.current;
@@ -38,7 +61,7 @@ function render() {
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
-  app.innerHTML = html;
+  morph(app, html);
   const key = `${S.screen}:${S.tab}`;
   if (ui.lastKey && ui.lastKey !== key) { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   ui.lastKey = key;
