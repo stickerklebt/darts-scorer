@@ -3,6 +3,7 @@ import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sid
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
+import * as C from './cricket.js';
 import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
 import { onboardView, tabsBar, playView } from './ui/play.js';
@@ -14,7 +15,7 @@ import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
 import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
 import { isBot, bot, BOTS, planLines } from './bots.js';
-import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull } from './botsim.js';
+import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
@@ -152,6 +153,7 @@ function botHint(m, t) {
 
 /** Wer hat die letzte Eingabe gemacht? (für Undo mit Bots) */
 function lastEntryPid(m) {
+  if (m.game === 'cricket') return m.pending.length ? C.curThrower(m) : m.turns.length ? m.turns[m.turns.length - 1].pid : null;
   if (m.game === 'x01') {
     if (m.pending.length) return X.curThrower(m);
     for (let i = m.legs.length - 1; i >= 0; i--) { const ts = m.legs[i].turns; if (ts.length) return ts[ts.length - 1].pid; }
@@ -169,7 +171,7 @@ function undo() {
   for (let guard = 0; guard < 400; guard++) {
     const pid = lastEntryPid(m);
     if (pid === null) break;
-    const ok = m.game === 'x01' ? X.undo(m) : G.undo(m);
+    const ok = m.game === 'x01' ? X.undo(m) : m.game === 'cricket' ? C.undo(m) : G.undo(m);
     if (!ok || !isBot(pid)) break;
   }
   ui.botMarks = {};
@@ -177,7 +179,7 @@ function undo() {
 }
 
 /* ---------------- Bots: werfen selbst, Dart für Dart ---------------- */
-const curThrowerOf = (m) => (m.game === 'x01' ? X.curThrower(m) : G.curThrower(m));
+const curThrowerOf = (m) => (m.game === 'x01' ? X.curThrower(m) : m.game === 'cricket' ? C.curThrower(m) : G.curThrower(m));
 const botsInMatch = (m) => m.playerIds.filter(isBot);
 const sideOfId = (m, id) => m.sides.findIndex((side) => side.includes(id));
 const good = (m, t) => !t.bust && ((m.game === 'x01' ? t.score : t.v) >= 100 || (t.out && t.score >= 60));
@@ -191,7 +193,7 @@ function scheduleBot() {
   }
   if (!who) { if (!ui.boPending || !inBulloff()) { clearTimeout(botTimer); botTimer = null; } return; }
   if (botTimer) return;
-  const fresh = m.game === 'x01' ? !m.pending.length : !(ui.botTurn?.darts?.length);
+  const fresh = m.game === 'x01' || m.game === 'cricket' ? !m.pending.length : !(ui.botTurn?.darts?.length);
   botTimer = setTimeout(() => { botTimer = null; botStep(); }, who === 'bull' ? 900 : fresh ? 850 : 620);
 }
 function botStep() {
@@ -209,6 +211,14 @@ function botStep() {
   if (!isBot(pid)) return;
   const b = bot(pid);
   ui.botMarks ??= {};
+  if (m.game === 'cricket') {
+    const s = C.curSide(m);
+    if (!m.pending.length) ui.botMarks[s] = [];
+    const d = throwAt(C.aim(m), b.sigma);
+    ui.botMarks[s] = [...(ui.botMarks[s] || []), { x: d.x, y: d.y, at: Date.now() }];
+    handle(C.throwDart(m, d.n, d.m));
+    return;
+  }
   if (m.game === 'x01') {
     const s = X.curSide(m);
     if (!m.pending.length) ui.botMarks[s] = [];
@@ -362,6 +372,8 @@ document.addEventListener('input', (e) => {
   }
 });
 
+const throwOne = (m, n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult) : X.throwDart(m, n, mult));
+
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
 const actions = {
@@ -416,7 +428,7 @@ const actions = {
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;
     o[k] = /^\d+$/.test(v) ? Number(v) : v;
-    if (k === 'mode') o.target = Math.min(o.target, o.mode === 'sets' ? 5 : 7);
+    if (k === 'mode' && S.game === 'x01') o.target = Math.min(o.target, o.mode === 'sets' ? 5 : 7);
     render();
   },
   teamMode(el) {
@@ -457,9 +469,9 @@ const actions = {
   submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
-  dart(el) { const n = Number(el.dataset.v), mult = n === 0 ? 1 : ui.mult; ui.mult = 1; handle(X.throwDart(S.current, n, mult)); },
-  bull(el) { ui.mult = 1; handle(X.throwDart(S.current, 25, Number(el.dataset.v))); },
-  board(el) { ui.mult = 1; handle(X.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
+  dart(el) { const n = Number(el.dataset.v), mult = n === 0 ? 1 : ui.mult; ui.mult = 1; handle(throwOne(S.current, n, mult)); },
+  bull(el) { ui.mult = 1; handle(throwOne(S.current, 25, Number(el.dataset.v))); },
+  board(el) { ui.mult = 1; handle(throwOne(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
   boOk() { if (ui.boPending) bullPlace(ui.boPending.x, ui.boPending.y); },
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
@@ -498,7 +510,7 @@ document.addEventListener('keydown', (e) => {
   if (fxRunning()) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') stopFx(); return; }
   if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff() || isBot(curThrowerOf(m))) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
-  if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (e.key === 'Backspace') undo(); return; }
+  if (m.game === 'cricket' || (m.game === 'x01' && X.inputMode(m) === 'darts')) { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();

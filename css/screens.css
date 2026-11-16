@@ -622,3 +622,36 @@
 .srow > .ic { color: var(--gold); }
 .botrow .av { margin-right: 2px; }
 .demo-btn { width: 100%; margin-bottom: 12px; }
+
+/* ================= Cricket ================= */
+.ckwrap { flex: none; border: 1px solid var(--line2); border-radius: var(--r-panel); overflow: hidden; background: var(--coal); }
+.ckgrid { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+.ckgrid th { width: 52px; padding: 0 8px; text-align: left; font-family: var(--f-display); font-weight: 900; font-size: 15px; color: var(--gold-l); background: var(--ink); border-right: 1px solid var(--gold); }
+.ckgrid td { height: clamp(22px, 3.3dvh, 34px); text-align: center; border-left: 1px solid var(--line); position: relative; }
+.ckgrid tr + tr td, .ckgrid tr + tr th { border-top: 1px solid var(--line); }
+.ckgrid td.hd { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-top: 3px solid var(--pc); height: 26px; white-space: nowrap; overflow: hidden; }
+.ckgrid td.cur { background: rgba(212,166,58,.09); }
+.ckgrid td.hd.cur { color: var(--cream); }
+.ckgrid tr.dead th, .ckgrid tr.dead td { opacity: .35; }
+.ckgrid td small { position: absolute; right: 4px; top: 2px; font-size: 10px; font-weight: 800; color: var(--gold); }
+.mk { display: inline-block; position: relative; width: 18px; height: 18px; vertical-align: middle; }
+.mk::before, .mk::after { content: ""; position: absolute; left: 50%; top: -1px; width: 3px; height: 20px; margin-left: -1.5px; background: var(--pc); border-radius: 1px; }
+.mk.m1::before { transform: rotate(40deg); } .mk.m1::after { display: none; }
+.mk.m2::before { transform: rotate(40deg); } .mk.m2::after { transform: rotate(-40deg); }
+.mk.m3 { border: 2.5px solid var(--pc); border-radius: 50%; width: 22px; height: 22px; }
+.mk.m3::before { transform: rotate(40deg); top: 0; height: 17px; } .mk.m3::after { transform: rotate(-40deg); top: 0; height: 17px; }
+.ckpad { grid-template-columns: repeat(4, 1fr); }
+.ckpad .dk.miss { grid-column: span 2; }
+.dk.ck { font-size: 26px; }
+.dk.closed { color: var(--dim); background: var(--coal); }
+.cricket .sbp-stats { display: none; }
+.cricket .sbp-head { min-height: 32px; }
+.cricket .sbp.on .sbp-name { font-size: clamp(22px, 6vw, 36px); }
+.cricket .sbp-rem { font-size: clamp(44px, 13vw, 110px); }
+.cricket .duo .botbox { position: absolute; right: 6px; bottom: 6px; padding: 0; gap: 4px; z-index: 2; }
+.cricket .duo .botbox .av { width: 30px !important; height: 30px !important; }
+.cricket .duo .minib { width: 48px; height: 48px; }
+.cricket .duo .speech { left: auto; right: 0; top: auto; bottom: 56px; width: min(70vw, 260px); }
+.cricket .duo .speech::before { display: none; }
+@media (min-width: 820px) and (orientation: landscape) { .cricket .sbp-rem { font-size: clamp(60px, 9vw, 150px); } }
+.cricket .duo .sbp:has(.botbox) .sbp-rem { padding-right: 64px; }

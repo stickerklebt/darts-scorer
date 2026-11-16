@@ -22,6 +22,8 @@ function mainOptions(id) {
   if (id === 'highscore') return optRow('Runden', seg('opt', 'rounds', [[5, '5'], [10, '10'], [15, '15'], [20, '20']], o.rounds));
   if (id === 'shanghai') return optRow('Ziele', seg('opt', 'rounds', [[7, '1–7'], [10, '1–10'], [20, '1–20']], o.rounds));
   if (id === 'atc') return optRow('Ende', seg('opt', 'bull', [[1, 'Mit Bull'], [0, 'Bis 20']], o.bull));
+  if (id === 'cricket') return optRow('Variante', seg('opt', 'mode', [['points', 'Mit Punkten'], ['close', 'Nur Schließen']], o.mode))
+    + optRow('Runden (max.)', seg('opt', 'rounds', [[15, '15'], [20, '20'], [25, '25']], o.rounds));
   return optRow('Ziele', `<div class="optfix">${G.HALF.map(G.halfLabel).join(' · ')}</div>`);
 }
 

@@ -41,6 +41,7 @@ js/
   checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch
   x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
   party.js              Highscore, Shanghai, Halbieren, Around the Clock
+  cricket.js            Cricket: 20–15 + Bull, Treffer/Punkte, Sieg, Rundenlimit, Undo pro Dart, Bot-Ziel
   bulloff.js            Echte Scheibengeometrie (mm), Feld an Position, Ausbullen-Logik
   fx.js                 Welche Animation zu welchem Wurf (Töpfe, Zufall ohne Wiederholung)
   bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma), Sprüche  ← zum Selbst-Ändern
@@ -54,7 +55,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -72,6 +73,7 @@ Match = { id, game, opts, demo?, first, startedAt, endedAt?, done, winners?, sid
           bull?: { contenders, throws: [{ s, x, y }], rounds: [{ throws, group, winner }], winner, done } }  // x,y in mm
 Leg  = { set, starter, winner?, turns: [Turn] }
 Turn = { s, pid, startRem, input: 'sum' | 'darts', score, darts, bust?, out?, throws?: [{ n, m, before, target }] }
+Cricket-Turn = { s, pid, v (Punkte), marks (Treffer), throws: [{ n, m }] }   // Match.pending = laufende Darts
 Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: null, target: null }]
 ```
 - Einzeldart-Eingabe für Menschen ab Rest ≤ 170. **Bots werfen immer Dart für Dart** (`throwDart(m, n, mult, { any: true })`).
@@ -110,6 +112,12 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 
 - **Einmaliger Daten-Neustart** (`S.cleanV`): beim ersten Start nach Update 4 wurden alle Matches und alle Spieler außer dem
   Hauptspieler gelöscht; keine Testdaten mehr. `demo.js` bleibt für spätere Tests erhalten.
+
+- **Cricket** (`js/cricket.js`): 20, 19, 18, 17, 16, 15, Bull; 3 Treffer schließen (Double 2, Triple 3, 25 = 1, Bull = 2).
+  „Mit Punkten“: Treffer auf eigene, beim Gegner offene Felder zählen Feldwert; Sieg = alles zu und nicht hinten.
+  „Nur Schließen“: wer zuerst alles zu hat. Rundenlimit (15/20/25) → meiste Punkte, dann meiste Treffer. Eingabe Dart für Dart
+  (Tastatur 20–15/25/Bull/Daneben oder Dartscheibe), Treffer-Tafel unter den Karten. Keine Animationen, nicht in der Statistik.
+  Bots zielen auf die höchste offene Zahl bzw. punkten, wenn sie hinten liegen.
 
 ## Stand
 Update 1 (Meilensteine 1–4), Update 2 (Setup, Ausbullen, Animationen, Bots, Statistik) und Update 3 (Queen-Look zurück,

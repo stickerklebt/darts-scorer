@@ -2,6 +2,7 @@
 import { S, ui, nameOf, isTeam, possessive } from '../store.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
+import * as C from '../cricket.js';
 import { route, setupFor, label } from '../checkout.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, seg } from './common.js';
@@ -87,6 +88,25 @@ export function gameView() {
     hint = `<div class="ticker">${h || `<span class="tk-w">${esc(whoText(m, cur, thrower))}</span>`}</div>`;
     isBoard = mode === 'darts' && S.prefs.dartInput === 'board' && !isBot(thrower);
     pad = isBot(thrower) ? botPad(m, thrower, m.pending) : mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
+  } else if (m.game === 'cricket') {
+    cur = C.curSide(m); thrower = C.curThrower(m);
+    const st = C.state(m), pts = m.opts.mode !== 'close';
+    title = `Cricket · ${pts ? 'Mit Punkten' : 'Nur Schließen'}`;
+    sub = `Runde ${C.round(m) + 1} von ${C.rounds(m)}`;
+    const items = m.sides.map((side, s) => {
+      const turns = m.turns.filter((t) => t.s === s), last = turns[turns.length - 1];
+      const next = throwerOf(m, s, turns.length);
+      const closed = C.TARGETS.filter((t) => st.marks[s][t] >= 3).length;
+      return {
+        name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === m.first, right: '', rowInfo: `Zu <b>${closed}/7</b>`, extra: botBox(m, s, next),
+        big: pts ? st.pts[s] : `${closed}<small style="font-size:.4em;color:var(--muted)">/7</small>`,
+        stats: [['Zu', `${closed}/7`], ['Letzte', last ? (pts ? last.v : `${last.marks}×`) : '–'], ['Treffer', st.hits[s]]],
+      };
+    });
+    board = scoreboard(items, cur, swap) + ckGrid(m, st, cur);
+    hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
+    isBoard = S.prefs.dartInput === 'board' && !isBot(thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, m.pending) : isBoard ? boardPad(m, thrower, true) : cricketPad(m, thrower);
   } else {
     cur = G.curSide(m); thrower = G.curThrower(m);
     const round = G.round(m);
@@ -112,7 +132,7 @@ export function gameView() {
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
-  return `<div class="game ${isBoard ? 'boardmode' : ''}" style="${pcVars(cur)}">
+  return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
@@ -142,9 +162,11 @@ function sumPad(m, thrower) {
 
 function slots(m) {
   const p = m.pending;
-  return `<div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${p[i] ? 'filled' : ''}">${p[i] ? label(p[i]) : '–'}</div>`).join('')}<div class="slot sum">${X.pendingSum(m)}</div></div>`;
+  return `<div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${p[i] ? 'filled' : ''}">${p[i] ? label(p[i]) : '–'}</div>`).join('')}<div class="slot sum">${m.game === 'cricket' ? `+${C.state(m).pendingPts}` : X.pendingSum(m)}</div></div>`;
 }
-const restEntry = (m, thrower) => `<div class="entry"><span class="who">${esc(nameOf(thrower))}</span><span class="val">${X.curRem(m) - X.pendingSum(m)}<small>Rest</small></span></div>`;
+const restEntry = (m, thrower) => (m.game === 'cricket'
+  ? `<div class="entry"><span class="who">${esc(nameOf(thrower))}</span><span class="val">${m.pending.length}<small>/ 3 Darts</small></span></div>`
+  : `<div class="entry"><span class="who">${esc(nameOf(thrower))}</span><span class="val">${X.curRem(m) - X.pendingSum(m)}<small>Rest</small></span></div>`);
 
 function dartPad(m, thrower) {
   let nums = '';
@@ -183,4 +205,27 @@ function botPad(m, thrower, darts) {
     <div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${darts[i] ? 'filled' : ''}">${darts[i] ? label(darts[i]) : '–'}</div>`).join('')}<div class="slot sum">${sum}</div></div>
     <button class="btn dark" data-act="undo">${icon('undo', 2.4, 18)} Letzte eigene Eingabe zurück</button>
   </div>`;
+}
+
+/* ---------- Cricket: Treffer-Tafel und Eingabe ---------- */
+const markGlyph = (k) => (k <= 0 ? '' : k === 1 ? '<i class="mk m1"></i>' : k === 2 ? '<i class="mk m2"></i>' : '<i class="mk m3"></i>');
+function ckGrid(m, st, cur) {
+  const n = m.sides.length;
+  const rows = C.TARGETS.map((t) => {
+    const allClosed = st.marks.every((mk) => mk[t] >= 3);
+    return `<tr class="${allClosed ? 'dead' : ''}"><th>${C.tLabel(t)}</th>${m.sides.map((_, s) => `<td class="${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${markGlyph(st.marks[s][t])}${st.marks[s][t] > 3 ? `<small>+${st.marks[s][t] - 3}</small>` : ''}</td>`).join('')}</tr>`;
+  }).join('');
+  return `<div class="ckwrap"><table class="ckgrid n${Math.min(n, 6)}"><tr><th></th>${m.sides.map((side, s) => `<td class="hd ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${esc(nameOf(side[0])).slice(0, 8)}</td>`).join('')}</tr>${rows}</table></div>`;
+}
+function cricketPad(m, thrower) {
+  const st = C.state(m), s = C.curSide(m);
+  const key = (n) => `<button class="dk ck ${st.marks[s][n] >= 3 ? 'closed' : ''}" data-act="dart" data-v="${n}">${n}</button>`;
+  return `${restEntry(m, thrower)}${slots(m)}
+    ${seg('mult', 'v', [[1, 'Single', 'm1'], [2, 'Double', 'm2'], [3, 'Triple', 'm3']], ui.mult, 'mults')}
+    <div class="dgrid ckpad">${[20, 19, 18, 17, 16, 15].map(key).join('')}
+      <button class="dk bull ${st.marks[s][25] >= 3 ? 'closed' : ''}" data-act="bull" data-v="1">25</button>
+      <button class="dk b50 ${st.marks[s][25] >= 3 ? 'closed' : ''}" data-act="bull" data-v="2">Bull</button>
+      <button class="dk miss" data-act="dart" data-v="0">Daneben</button>
+      <button class="dk back" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 24)}</button>
+    </div>`;
 }

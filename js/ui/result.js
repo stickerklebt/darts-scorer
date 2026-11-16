@@ -3,6 +3,7 @@ import { S, ui, nameOf, sideName, isTeam } from '../store.js';
 import { avatar } from './avatar.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
+import * as C from '../cricket.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
 import { ribbon, trophy, cornerOrnament, laurelWreath, fuse, COLORS } from './svg.js';
@@ -36,8 +37,10 @@ export function x01Table(m) {
 }
 
 function partyRanks(m) {
-  const order = m.sides.map((side, s) => ({ side, s, v: G.score(m, s) })).sort((a, b) => b.v - a.v);
-  const unit = m.game === 'atc' ? ` / ${G.atcTotal(m)}` : '';
+  const ck = m.game === 'cricket' ? C.state(m, false) : null;
+  const val = (s) => (ck ? (m.opts.mode === 'close' ? C.TARGETS.filter((t) => ck.marks[s][t] >= 3).length : ck.pts[s]) : G.score(m, s));
+  const order = m.sides.map((side, s) => ({ side, s, v: val(s) })).sort((a, b) => b.v - a.v);
+  const unit = m.game === 'atc' ? ` / ${G.atcTotal(m)}` : m.game === 'cricket' && m.opts.mode === 'close' ? ' / 7' : m.game === 'cricket' ? ' Pkt' : '';
   return `<div class="ranks">${order.map((o, i) => `<div class="rk ${m.winners.includes(o.s) ? 'first' : ''}" style="${pcVars(o.s)}">
     <span class="rk-pos">${i + 1}</span><span class="rk-name">${esc(sideName(o.side))}</span><span class="rk-val">${o.v}${unit}</span></div>`).join('')}</div>`;
 }

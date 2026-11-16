@@ -20,6 +20,7 @@ const DEF = () => ({
     shanghai: { rounds: 7 },
     halveit: {},
     atc: { bull: 1 },
+    cricket: { mode: 'points', rounds: 20 },
   },
   prefs: { voice: false, hints: true, dartInput: 'keys', anim: true },
   screen: 'home',
