@@ -473,3 +473,51 @@
   .moment .mo-big { font-size: clamp(80px, 26dvh, 160px); }
 }
 @media (min-width: 900px) { .pgs .pg:not(.wide) .kv { grid-template-columns: repeat(3, 1fr); } }
+
+/* ================= Ausbullen ================= */
+.bulloff { gap: 10px; }
+.bo-main { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.bo-left { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.bo-who { flex: none; display: flex; align-items: baseline; justify-content: center; gap: 10px; padding: 8px 12px; border-radius: var(--r-panel);
+  background-color: var(--pc); background-image: var(--tex-grain); background-blend-mode: overlay; color: var(--pi); box-shadow: 0 0 22px -6px var(--pc); animation: cardOn .26s; }
+.bo-who b { font-size: clamp(26px, 8vw, 44px); font-weight: 800; letter-spacing: .05em; text-transform: uppercase; line-height: 1; }
+.bo-who span { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; opacity: .85; }
+.bo-board { position: relative; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.realboard { width: 100%; height: 100%; max-height: 62dvh; touch-action: none; -webkit-touch-callout: none; filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
+.realboard .rbn { fill: #d9d5c4; font-family: var(--f-num); font-weight: 800; font-size: 26px; pointer-events: none; }
+.rbd.pending circle:first-child { stroke: #fff; }
+.rbd.win .halo { fill: none; stroke: var(--dc); stroke-width: 3; animation: halo 1s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes halo { from { transform: scale(.5); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
+.bo-side { flex: none; display: flex; flex-direction: column; gap: 8px; }
+.bo-chips { display: grid; grid-template-columns: 1fr; gap: 4px; }
+.bo-chip { display: flex; align-items: center; gap: 10px; min-height: 40px; padding-right: 10px; background: rgba(0,0,0,.3); border: 1px solid var(--line); color: var(--muted); }
+.bo-chip .pc { align-self: stretch; width: 32px; font-size: 16px; }
+.bo-chip.on { border-color: var(--pc); color: var(--cream); box-shadow: inset 4px 0 0 var(--pc); }
+.bo-chip.out { opacity: .4; }
+.bo-n { flex: 1; min-width: 0; font-size: 17px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bo-n small { margin-left: 6px; font-size: 11px; letter-spacing: .1em; color: var(--muted); }
+.bo-d { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bo-hint { margin: 0; text-align: center; }
+.bo-btns { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; }
+.bo-banner { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%) rotate(-3deg); min-width: 70%; padding: 10px 22px; text-align: center;
+  border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink), 0 0 40px rgba(255,212,92,.5); animation: pop .4s cubic-bezier(.2,1.6,.4,1) both; }
+.bo-banner.win { background-color: var(--pc); background-image: var(--tex-grain), var(--tex-halftone); background-blend-mode: overlay, normal; color: var(--pi); }
+.bo-banner.tie { background: var(--mg-gold); color: var(--ink); }
+.bo-banner small { display: block; font-size: 14px; font-weight: 800; letter-spacing: .24em; text-transform: uppercase; }
+.bo-banner b { display: block; font-size: clamp(30px, 9vw, 56px); line-height: 1.05; }
+.bulloff .bo-board:has(.bo-banner) { padding-bottom: 96px; }
+.bo-banner span { display: block; font-size: 17px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.loupe { position: fixed; z-index: 85; width: 150px; height: 150px; border-radius: 50%; overflow: hidden; pointer-events: none; background: #0b0e0d;
+  border: 3px solid var(--cream); box-shadow: 0 0 0 2px var(--ink), 0 8px 24px rgba(0,0,0,.7); }
+.loupe svg { width: 100%; height: 100%; display: block; }
+.loupe .rbn { display: none; }
+.loupe .cross { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+.loupe .cross::before, .loupe .cross::after { content: ""; position: absolute; background: #fff; box-shadow: 0 0 0 1px #000; }
+.loupe .cross::before { left: 14px; top: 0; width: 2px; height: 30px; }
+.loupe .cross::after { top: 14px; left: 0; height: 2px; width: 30px; }
+.lp-t { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 13px; font-weight: 800; letter-spacing: .06em; color: #fff; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
+@media (min-width: 820px) and (orientation: landscape), (orientation: landscape) and (max-height: 520px) {
+  .bo-main { flex-direction: row; gap: 16px; }
+  .bo-side { flex: 0 0 min(40%, 420px); justify-content: center; }
+  .realboard { max-height: none; }
+}

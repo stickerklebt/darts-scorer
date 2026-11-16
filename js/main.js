@@ -15,6 +15,8 @@ import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
+import { createBulloff, bullThrow, bullUndo, MM } from './bulloff.js';
+import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -24,7 +26,7 @@ function render() {
   const m = S.current;
   let html;
   if (!S.mainId || !profile(S.mainId)) html = onboardView();
-  else if (S.screen === 'game' && m && !m.done) html = gameView() + momentView();
+  else if (S.screen === 'game' && m && !m.done) html = inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
@@ -111,6 +113,36 @@ function undo() {
   render();
 }
 
+/* ---------------- Ausbullen ---------------- */
+const inBulloff = () => !!(S.current?.bull && !S.current.bull.done);
+let boTimer = null;
+function finishBulloff() {
+  const m = S.current, b = m?.bull;
+  clearTimeout(boTimer);
+  if (!b || b.winner === null) return;
+  b.done = true;
+  m.first = b.winner;
+  if (m.game === 'x01') m.legs[0].starter = b.winner;
+  ui.boResult = null;
+  render();
+}
+function bullPlace(x, y) {
+  const m = S.current, res = bullThrow(m.bull, x, y);
+  ui.boPending = null;
+  if (!res) return render();
+  clearTimeout(boTimer);
+  if (res.type === 'winner') { ui.boResult = res; boTimer = setTimeout(finishBulloff, 2800); }
+  else if (res.type === 'tie') { ui.boResult = res; boTimer = setTimeout(() => { ui.boResult = null; render(); }, 2600); }
+  render();
+}
+/** Neues Match anlegen (inkl. Ausbullen, wenn gewählt und mehr als eine Seite). */
+function newMatch(game, sides, opts, first, bull) {
+  const m = createMatch(game, sides, opts, first);
+  if (bull && sides.length > 1) m.bull = createBulloff(sides.length);
+  ui.boPending = null; ui.boResult = null; ui.swapKey = undefined;
+  return m;
+}
+
 function buildSides() {
   const L = S.lineup;
   if (!S.teamMode) return L.map((e) => [e.id]);
@@ -123,7 +155,7 @@ function startGame() {
   if (!S.lineup.length) { toast('Mindestens ein Spieler'); return render(); }
   const sides = buildSides();
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
-  S.current = createMatch(S.game, sides, S.opts[S.game], 0);
+  S.current = newMatch(S.game, sides, S.opts[S.game], 0, S.anwurf === 'bull');
   S.screen = 'game';
   ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
   requestWakeLock();
@@ -225,6 +257,10 @@ const actions = {
   bull(el) { ui.mult = 1; handle(X.throwDart(S.current, 25, Number(el.dataset.v))); },
   board(el) { ui.mult = 1; handle(X.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  boOk() { if (ui.boPending) bullPlace(ui.boPending.x, ui.boPending.y); },
+  boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
+  boDone() { finishBulloff(); },
+  boTie() { clearTimeout(boTimer); ui.boResult = null; render(); },
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },
   undo() { undo(); },
   gear() { ui.modal = { type: 'gear' }; render(); },
@@ -235,7 +271,7 @@ const actions = {
   scrim() { ui.modal = null; render(); },
   rematch() {
     const m = S.current;
-    S.current = createMatch(m.game, m.sides, m.opts, m.first + 1);
+    S.current = newMatch(m.game, m.sides, m.opts, m.first + 1, !!m.bull);
     S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
     requestWakeLock(); render();
   },
@@ -255,13 +291,45 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   const m = S.current;
-  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc') return;
+  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff()) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
   if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();
 });
+
+/* ---------------- Ausbullen: Finger halten, Lupe, loslassen setzt ---------------- */
+let drag = null;
+function boardPoint(svg, e) {
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  const q = p.matrixTransform(svg.getScreenCTM().inverse());
+  const r = Math.hypot(q.x, q.y), k = r > MM.edge ? MM.edge / r : 1; // nicht außerhalb der Scheibe
+  return { x: q.x * k, y: q.y * k };
+}
+document.addEventListener('pointerdown', (e) => {
+  const svg = e.target.closest?.('#boBoard .realboard');
+  if (!svg || !inBulloff() || ui.boResult || ui.modal) return;
+  e.preventDefault();
+  drag = { svg, id: e.pointerId };
+  try { svg.setPointerCapture(e.pointerId); } catch (err) { /* */ }
+  const p = boardPoint(svg, e);
+  loupeShow(svg, p.x, p.y, e.clientX, e.clientY);
+});
+document.addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  e.preventDefault();
+  const p = boardPoint(drag.svg, e);
+  loupeShow(drag.svg, p.x, p.y, e.clientX, e.clientY);
+}, { passive: false });
+function endDrag(e, place) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const p = boardPoint(drag.svg, e);
+  drag = null; loupeHide();
+  if (place) { ui.boPending = p; render(); }
+}
+document.addEventListener('pointerup', (e) => endDrag(e, true));
+document.addEventListener('pointercancel', (e) => endDrag(e, false));
 
 /* ---------------- Start ---------------- */
 render();
