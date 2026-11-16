@@ -244,7 +244,12 @@ export const trophy = (C = COLORS) => {
 
 
 /* ---------- Funke an der Zündschnur: Lichtpunkt wandert eine Rahmenlinie entlang ---------- */
-export const fuse = (inset = 6, secs = 9, rx = 3) => `<span class="fuse" style="inset:${inset}px;--fuse-t:${secs}s" aria-hidden="true"><svg><rect x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100"/><rect class="tail" x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100"/></svg></span>`;
+export const fuse = (inset = 6, secs = 24, rx = 3) => {
+  // [Länge in % des Umfangs, Deckkraft]: kurzer heller Kopf, lange, immer schwächere Schleppe (Köpfe bündig)
+  const layers = [[32, 0.14], [22, 0.2], [14, 0.3], [8, 0.45], [4, 0.65], [1.6, 1]];
+  const dur = Math.round(secs * 2.2);
+  return `<span class="fuse" style="inset:${inset}px" aria-hidden="true"><svg>${layers.map(([l, o]) => `<rect x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100" stroke-dasharray="${l} ${100 - l}" opacity="${o}"><animate attributeName="stroke-dashoffset" from="${l - 30}" to="${l - 130}" dur="${dur}s" repeatCount="indefinite"/></rect>`).join('')}</svg></span>`;
+};
 
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 export function heroArt() {

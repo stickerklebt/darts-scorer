@@ -56,6 +56,7 @@ export function resetAll() {
   for (const k of Object.keys(S)) delete S[k];
   Object.assign(S, DEF());
   S.demoSeeded = !!seeded;
+  S.cleanV = 1;
 }
 
 export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;

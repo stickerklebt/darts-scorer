@@ -80,9 +80,89 @@ export const BOTS = [
       lose: ['Pfff. War eh langweilig. Ich hab Zwiebeln auf dem Herd.', 'Verloren. Ist mir egal. Wirklich. Lasst mich in Ruhe.'],
     },
   },
+  /* ---- Bots mit Zufallssprüchen (Update 4): Sprüche hängen an keinem Ereignis, sondern an zufällig
+     ausgelosten Aufnahmen (aus den ersten 8, nie der ersten). random.count = Sprüche pro Spiel,
+     random.weights = gewichtete Ziehung, random.repeat = Wiederholung erlaubt, startLine = immer zum Spielstart. ---- */
+  {
+    id: 'jensn-huang', name: 'Jensn Huang', initials: 'JH', avg: 40, sigma: 19.8, color: '#2f6fe4', ink: '#f3e9d2', art: 'jensn',
+    random: { count: 2, lines: [
+      'Ich will auch mal andere Darts ausprobieren.',
+      'Man, meine Darts sind nicht so nice.',
+      'Andere Darts sollte ich echt mal ausprobieren.',
+      'Ich sollte vielleicht chinesische Darts ausprobieren.',
+      'Sind chinesische Darts gut?',
+      'Habe gerade chinesische Darts gefunden, die probiere ich mal.',
+      'Die chinesischen Darts funktionieren ganz gut.',
+      'Ich will also nur meine chinesischen Darts.',
+      'Kann ich mehr Dartpfeile haben als nur ein Set?',
+      'Man, die chinesischen Darts sind gut.',
+      'Schaffe ich es eigentlich, an einem Tag 200 Milliarden Dollar zu verlieren?',
+      'Wie viel Geld kann ich eigentlich an einem Tag mit Nvidia verlieren?',
+    ] },
+  },
+  {
+    id: 'michael-jackson', name: 'Michael Jackson', initials: 'MJ', avg: 40, sigma: 19.8, color: '#e5402c', ink: '#f3e9d2', art: 'mj',
+    startLine: 'Hee-hee!',
+    random: { count: 2, lines: [
+      'Dirty Diana, ooohhhh!',
+      'Thriller, thrilllerrrr!',
+      "I'm a smooth criminal, dada!",
+      'Yiaauuuh!',
+      'Uuuuuh!',
+      'Black or White! Shamone!',
+      'Black or White, da da da!',
+      'Billie Jean! Dah!',
+      'Man in the Mirror! Ow!',
+      'Bad! Ow!',
+      'Yiiiihaaaaa!',
+      "Say it one more time, I'm not gonna stop, aaaauuuu!",
+    ] },
+  },
+  {
+    id: 'phil-taylor', name: 'Phil Taylor', initials: 'PT', avg: 100, sigma: 6.42, color: '#ffd23f', ink: '#0b0a08', art: 'phil',
+    random: { count: 2, repeat: true, lines: ['Power!', 'Easy.', 'Lightwork.'], weights: [60, 20, 20] },
+  },
+  {
+    id: 'dreimac', name: 'Dreimac', initials: 'DM', avg: 40, sigma: 19.8, color: '#8b5cf6', ink: '#f3e9d2', art: 'dreimac',
+    random: { count: 2, lines: [
+      'negativ, absolut RIESEN ABGELEHNT',
+      'cola!?',
+      'ich mag das hier nicht, wobei, ich glaube, schon',
+      'unbreaking aszuwakjhaqua infinity',
+      'unterschätz das mal nicht',
+      'naaa auch im norden isst man flammkuchen',
+      '"dieser song könnte dir auch gefallen" am arsch ich will everybody',
+      'laber kein... scheiß',
+    ] },
+  },
 ];
 
 export const BOT_IDS = new Set(BOTS.map((b) => b.id));
 export const isBot = (id) => BOT_IDS.has(id);
 export const bot = (id) => BOTS.find((b) => b.id === id) || null;
 export const MAX_LINES = 3;
+
+/* ---------------- Zufallssprüche (nur Bots mit `random`) ---------------- */
+/**
+ * Zu Spielbeginn auslosen: welche Sprüche (ohne Doppelte, außer repeat; gewichtet, wenn weights)
+ * und nach welchen eigenen Aufnahmen (2.–8. Aufnahme, nie die erste). → { turns: [Nr.], lines: [Text] }
+ */
+export function planLines(b, rnd = Math.random) {
+  const r = b.random;
+  if (!r) return null;
+  const n = Math.min(r.count, 7, r.repeat ? Infinity : r.lines.length);
+  const slots = [2, 3, 4, 5, 6, 7, 8];
+  const turns = [];
+  while (turns.length < n) { const i = Math.floor(rnd() * slots.length); turns.push(slots.splice(i, 1)[0]); }
+  turns.sort((x, y) => x - y);
+  const pool = r.lines.map((t, i) => ({ t, w: r.weights ? r.weights[i] : 1 }));
+  const lines = [];
+  for (let k = 0; k < n; k++) {
+    const total = pool.reduce((a, p) => a + p.w, 0);
+    let x = rnd() * total, idx = 0;
+    while (idx < pool.length - 1 && x >= pool[idx].w) { x -= pool[idx].w; idx++; }
+    lines.push(pool[idx].t);
+    if (!r.repeat) pool.splice(idx, 1);
+  }
+  return { turns, lines };
+}

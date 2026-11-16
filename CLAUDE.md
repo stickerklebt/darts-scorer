@@ -10,7 +10,8 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
   Pop-Art-Farbblöcke mit Raster, Comic-Momente, Kupferstich-Plakate (Rekorde, Regeln, Heatmap). Nur Stilmittel:
   **keine** Cover-Motive, kein Queen-Wappen, keine Band-Logos/-Namen. **Hintergründe schlicht** (keine Körnung, kein Rauschen,
   keine Muster) – Details gehören auf die Elemente. Die alten Stein-Texturvariablen (`--tex-grain/stone/cracks`) sind `none`.
-- **Funke an der Zündschnur** (`fuse()` in `svg.js`, `.fuse` in `base.css`): Lichtpunkt wandert eine Goldrahmen-Linie entlang –
+- **Lichtlinie** (`fuse()` in `svg.js`, `.fuse` in `base.css`): ein heller Schein gleitet sehr langsam die Goldrahmen-Linie
+  entlang und läuft nach hinten weich aus (6 übereinanderliegende Striche, SVG-`<animate>`) –
   Hero-Karte, Start-Button im Setup, Rekord-Karten, Overall-Average, Sieger-Screen. **Im laufenden Spiel kein Leuchten.**
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
@@ -88,10 +89,15 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
   Finish 2–60 (2 s), 61–99 (4 s), 100–167 Atomrakete (5 s), 170 Big Fish (8 s, nur Checkout). Mehrere Phasen (Aufbau, Höhepunkt,
   Ausklang; letzter Ausklang über `--dur` in `fx.css`). Nur X01 + Highscore, keine Busts, keine für Bots (nur Andeutung in der Karte).
   Zufällig, nie zweimal dieselbe hintereinander. Antippen überspringt; nach Finish-Animation die Leg-/Set-Info. Abschaltbar (`prefs.anim`).
-- **Bots**: Sensei Wu Ø 45 (σ 17,74 mm), Super Mario Ø 42 (σ 18,87), Shrek Ø 40 (σ 19,8). Zielen T20, im Finish nach Checkout-Tabelle,
-  im Partyspiel aufs jeweilige Ziel. 3 Darts ≈ 2 s. Mindestens ein Mensch pro Spiel. Bots nicht in Statistik/Profilwahl.
-  Sprüche: max. 3 pro Spiel und Bot (Start · ein Moment · Ende). Undo nimmt die letzte menschliche Eingabe zurück, Bot-Würfe danach mit.
-  Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json`.
+- **Bots** (klassisch, Ereignis-Sprüche): Sensei Wu Ø 45 (σ 17,74 mm), Super Mario Ø 42 (σ 18,87), Shrek Ø 40 (σ 19,8).
+  Zielen T20, im Finish nach Checkout-Tabelle, im Partyspiel aufs jeweilige Ziel. 3 Darts ≈ 2 s. Mindestens ein Mensch pro Spiel.
+  Bots nicht in Statistik/Profilwahl. Sprüche: max. 3 pro Spiel und Bot (Start · ein Moment · Ende).
+  Undo nimmt die letzte menschliche Eingabe zurück, Bot-Würfe danach mit.
+- **Bots mit Zufallssprüchen** (Feld `random` in `js/bots.js`): Jensn Huang Ø 40, Michael Jackson Ø 40 (`startLine` „Hee-hee!“),
+  Phil Taylor Ø 100 (σ 6,42 mm, gewichtet 60/20/20, Wiederholung erlaubt), Dreimac Ø 40. `planLines()` lost zu Spielbeginn
+  2 Sprüche und 2 eigene Aufnahmen (2.–8., nie die erste) aus; gesagt wird nach genau diesen Aufnahmen, unabhängig von Ereignissen.
+  Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
+  Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
 - **Statistik**: Unter-Reiter Überblick · Scoring · Checkout · Doppel · Verlauf (nur 501). Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral; Top 3 markiert.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
@@ -100,6 +106,10 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
   Wurfmodell (über 170 als Summe, darunter Einzeldarts), verschiedene Lieblingsdoppel. Einmalig beim Start (`S.demoSeeded`,
   bleibt auch nach „Alle Daten löschen“ gesetzt). „Testdaten entfernen“ in den Einstellungen löscht nur `demo: true`.
 
+- **Einmaliger Daten-Neustart** (`S.cleanV`): beim ersten Start nach Update 4 wurden alle Matches und alle Spieler außer dem
+  Hauptspieler gelöscht; keine Testdaten mehr. `demo.js` bleibt für spätere Tests erhalten.
+
 ## Stand
 Update 1 (Meilensteine 1–4), Update 2 (Setup, Ausbullen, Animationen, Bots, Statistik) und Update 3 (Queen-Look zurück,
-Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) erledigt, Stand 16.11.2026.
+Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) und Update 4 (Daten-Neustart, langsame Lichtlinie,
+vier neue Bots mit Zufallssprüchen) erledigt, Stand 16.11.2026.

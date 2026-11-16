@@ -13,7 +13,7 @@ import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
 import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
-import { isBot, bot, BOTS } from './bots.js';
+import { isBot, bot, BOTS, planLines } from './bots.js';
 import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
@@ -83,7 +83,7 @@ function finish() {
   m.endedAt = Date.now();
   archive(m);
   say(`${sideName(m.sides[m.winners[0]])} gewinnt`);
-  ui.endLines = botsInMatch(m).map((id) => ({ id, text: line(m, id, m.winners.includes(sideOfId(m, id)) ? 'win' : 'lose', 'end') })).filter((x) => x.text);
+  ui.endLines = botsInMatch(m).filter((id) => !bot(id).random).map((id) => ({ id, text: line(m, id, m.winners.includes(sideOfId(m, id)) ? 'win' : 'lose', 'end') })).filter((x) => x.text);
   ui.modal = null; ui.moment = null; ui.entry = ''; ui.mult = 1;
   S.screen = 'result';
   releaseWakeLock();
@@ -98,9 +98,9 @@ function handle(res) {
   // Animation (nur Menschen, nur wenn eingeschaltet). Bots bekommen nur eine kleine Andeutung in ihrer Karte.
   let anim = null;
   if (t && S.prefs.anim && !isBot(t.pid)) anim = fxForTurn(m.game, t, { score: m.game === 'x01' ? t.score : t.v, name: nameOf(t.pid) });
-  if (t && isBot(t.pid)) { botHint(m, t); if (good(m, t)) speak(m, t.pid, 'good', 0.7); }
+  if (t && isBot(t.pid)) { botHint(m, t); if (bot(t.pid).random) randomLine(m, t.pid); else if (good(m, t)) speak(m, t.pid, 'good', 0.7); }
   if (t && !isBot(t.pid)) {
-    const opp = botsInMatch(m).filter((id) => sideOfId(m, id) !== t.s);
+    const opp = botsInMatch(m).filter((id) => sideOfId(m, id) !== t.s && !bot(id).random);
     if (t.bust) opp.forEach((id) => speak(m, id, 'oppBust', 0.6));
     else if ((m.game === 'x01' ? t.score : m.game === 'highscore' ? t.v : 0) >= 140) opp.forEach((id) => speak(m, id, 'oppGood', 0.5));
   }
@@ -226,7 +226,35 @@ function speak(m, id, kind, chance = 1, slot = kind === 'start' ? 'start' : 'mid
   ui.speech[id] = { text, until: Date.now() + 3800 };
   setTimeout(() => { if (S.screen === 'game') render(); }, 3900);
 }
-function greet(m) { botsInMatch(m).forEach((id, i) => setTimeout(() => { if (S.current === m) { speak(m, id, 'start'); render(); } }, 400 + i * 700)); }
+function greet(m) {
+  botsInMatch(m).forEach((id, i) => setTimeout(() => {
+    if (S.current !== m) return;
+    const b = bot(id);
+    if (!b.random) speak(m, id, 'start');
+    else if (b.startLine) say1(id, b.startLine);
+    render();
+  }, 400 + i * 700));
+}
+/** Spruch direkt anzeigen (gleiche Sprechblase und Dauer wie bei den anderen Bots) */
+function say1(id, text) {
+  ui.speech ??= {};
+  ui.speech[id] = { text, until: Date.now() + 3800 };
+  setTimeout(() => { if (S.screen === 'game') render(); }, 3900);
+}
+/** Zufallssprüche: zu Spielbeginn ausgelost (Sprüche + Aufnahmen 2–8), hier nach der passenden eigenen Aufnahme gesagt */
+function planBots(m) {
+  ui.botPlans ??= {};
+  ui.botPlans[m.id] = Object.fromEntries(botsInMatch(m).filter((id) => bot(id).random).map((id) => [id, { ...planLines(bot(id)), said: [] }]));
+}
+function randomLine(m, id) {
+  const plan = ui.botPlans?.[m.id]?.[id];
+  if (!plan) return;
+  const n = m.game === 'x01' ? m.legs.reduce((a, l) => a + l.turns.filter((t) => t.pid === id).length, 0) : m.turns.filter((t) => t.pid === id).length;
+  const k = plan.turns.indexOf(n);
+  if (k < 0 || plan.said.includes(n)) return;
+  plan.said.push(n);
+  say1(id, plan.lines[k]);
+}
 
 /* ---------------- Ausbullen ---------------- */
 const inBulloff = () => !!(S.current?.bull && !S.current.bull.done);
@@ -256,6 +284,7 @@ function newMatch(game, sides, opts, first, bull) {
   const m = createMatch(game, sides, opts, first);
   if (bull && sides.length > 1) m.bull = createBulloff(sides.length);
   ui.boPending = null; ui.boResult = null; ui.swapKey = undefined; ui.botMarks = {}; ui.botTurn = null; ui.speech = {}; ui.endLines = null;
+  planBots(m);
   if (!m.bull) greet(m);
   return m;
 }
@@ -487,6 +516,17 @@ document.addEventListener('pointerup', (e) => endDrag(e, true));
 document.addEventListener('pointercancel', (e) => endDrag(e, false));
 
 /* ---------------- Start ---------------- */
+/* Einmaliger Neustart der Daten (Wunsch nach Update 3): alle Matches/Statistiken und alle Spieler außer dem
+   Hauptspieler löschen, keine Testdaten mehr einfügen. Läuft genau einmal (S.cleanV). */
+if (!S.cleanV) {
+  S.matches = []; S.current = null;
+  S.profiles = S.profiles.filter((p) => p.id === S.mainId);
+  S.lineup = S.mainId ? [{ id: S.mainId, team: 'A' }] : [];
+  S.statsPid = null; S.cmpA = null; S.cmpB = null; S.teamMode = false;
+  if (S.screen !== 'home') { S.screen = 'home'; S.tab = 'play'; }
+  S.demoSeeded = true; S.cleanV = 1;
+  save();
+}
 seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellungen entfernbar)
 render();
 probeBotImages(() => render());
