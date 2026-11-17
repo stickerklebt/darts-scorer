@@ -94,6 +94,18 @@
 .sbp-rem { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(64px, 21vw, 150px); font-weight: 700; line-height: 1;
   font-variant-numeric: tabular-nums; letter-spacing: -.01em; color: var(--cream2); opacity: .72; }
 .sbp.on .sbp-rem { color: var(--pi); opacity: 1; font-weight: 800; }
+/* Checkout-Weg direkt unter dem Rest */
+.sbp-rem { flex-direction: column; }
+.sbp-co { flex: none; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 0 10px; margin-top: .14em; font-size: 1rem; line-height: 1; letter-spacing: 0; }
+.co-c { min-width: 2.6em; text-align: center; background: var(--cream); color: var(--ink); padding: 4px 10px; font-weight: 800; font-size: clamp(22px, 5.4vw, 34px); line-height: 1.05;
+  letter-spacing: .02em; font-variant-numeric: tabular-nums; border: 2px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.45); }
+.co-c.d { background: var(--green); color: var(--cream); }
+.co-c.b { background: var(--red); color: var(--cream); }
+.co-l { font-size: clamp(14px, 3.4vw, 18px); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--pi); opacity: .85; }
+.sbr-rem { flex-direction: column; justify-content: center; align-items: flex-end; }
+.sbr-co { display: flex; gap: 4px; margin-top: 2px; }
+.sbr-co .co-c { font-size: 16px; padding: 2px 6px; min-width: 0; box-shadow: none; border-width: 1px; }
+.sbr-co .co-l { font-size: 11px; }
 .sbp-stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,.06); background: rgba(0,0,0,.25); }
 .sbp.on .sbp-stats { background: rgba(0,0,0,.16); border-top-color: rgba(0,0,0,.2); }
 .sbp-stats span { padding: 5px 10px; display: flex; flex-direction: column; }
@@ -181,9 +193,16 @@
   .quick button { height: 44px; font-size: 18px; }
   .dk { height: clamp(50px, 8.6dvh, 86px); font-size: 26px; }
   .sbp-rem { font-size: clamp(80px, 12vw, 190px); }
+  .co-c { font-size: clamp(26px, 3.4vw, 44px); padding: 5px 14px; }
+  /* Eingabe groß und mittig im freien Bereich über der Tastatur */
+  .pad .entry { flex: 1 1 auto; min-height: 0; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .pad .entry .val { font-size: clamp(64px, 17dvh, 170px); letter-spacing: -.01em; }
+  .pad .entry .val small { display: block; text-align: center; font-size: 16px; margin: 4px 0 0; }
+  .pad .entry .who { font-size: 18px; }
 }
 @media (min-width: 700px) and (orientation: portrait) {
   .sbp-rem { font-size: clamp(100px, 17vw, 220px); }
+  .entry .val { font-size: 60px; }
   .key { height: clamp(62px, 7.2dvh, 92px); font-size: 34px; }
   .sbp-name { font-size: 22px; }
   .sbp-stats b { font-size: 24px; }
@@ -346,7 +365,11 @@
   .key { height: clamp(32px, 11.5dvh, 52px); font-size: 22px; }
   .dk { height: clamp(28px, 9.5dvh, 44px); font-size: 18px; }
   .quick button { height: 30px; font-size: 14px; }
-  .entry .val { font-size: 28px; }
+  .pad .entry { gap: 0; }
+  .pad .entry .val { font-size: clamp(30px, 14dvh, 64px); }
+  .pad .entry .val small { display: inline; font-size: 13px; margin-left: 4px; }
+  .pad .entry .who { font-size: 13px; }
+  .co-c { font-size: 18px; padding: 2px 8px; }
   .slot, .mults button { height: 30px; font-size: 15px; }
   .sbp-rem { font-size: clamp(44px, 16dvh, 90px); }
   .sbp-head { min-height: 28px; }
@@ -655,3 +678,115 @@
 .cricket .duo .speech::before { display: none; }
 @media (min-width: 820px) and (orientation: landscape) { .cricket .sbp-rem { font-size: clamp(60px, 9vw, 150px); } }
 .cricket .duo .sbp:has(.botbox) .sbp-rem { padding-right: 64px; }
+
+/* Solo-Hinweis im Setup */
+.solo-hint { display: block; color: var(--gold); font-weight: 800; letter-spacing: .04em; margin-bottom: 2px; }
+
+/* =====================================================================================================
+   HANDGEMACHT (Queen-Look, Update 5): gezeichnet statt perfekt. Neue Schriften (League Gothic · IM Fell),
+   Linien mit leichtem Federwackeln (Filter #rough in index.html), Bleisatz-Rauheit auf großen Zahlen (#ink),
+   gealtertes Papier auf den Plakatkarten, kleine Schieflagen, versetzter Pop-Art-Druck, etwas rundere Ecken.
+   ===================================================================================================== */
+/* Fließtext in IM Fell, Zahlen in League Gothic */
+.foot, .sheet p, .stage p, .rules p, .empty-card p, .speech, .record em, .hero-stat em, .ml-mid small, .heat-note, .heat-legend,
+.chart-empty, .rl-s, .rl-empty, .resume small, .botchips small, .srow .lbl small, .name-hint, .ap-hint { font-family: var(--f-text); letter-spacing: .01em; text-transform: none; }
+.foot { font-size: 15px; line-height: 1.4; }
+.rules p { font-size: 18px; line-height: 1.42; }
+.rules p.small { font-size: 15px; font-style: italic; }
+.speech { font-size: 16px; line-height: 1.25; }
+.stage p, .sheet p { font-size: 17px; }
+.display, .pg-h, .mode-name, .su-head b, .rules h2, .record small, .st-name b, .cm-p b, .hero-title b, .hero-band span, .sheet h3 { letter-spacing: .03em; }
+/* große Zahlen etwas größer (League Gothic ist schmaler) */
+.hero-num { font-size: clamp(130px, 40vw, 200px); line-height: .86; }
+.record b { font-size: 88px; }
+.kv-c b { font-size: 40px; }
+.pfavg b { font-size: 44px; }
+
+/* Gezeichnete Linien: Ornamente, Wappen, Sterne, Ränder wackeln leicht wie mit der Feder gezogen */
+.divider, .corner svg, .stars svg, .badge-mode svg, .hero-art svg, .stage-crest svg, .splash svg, .vic-cup, .ribbon, .mo-fx svg, .vic-fx svg { filter: url(#rough); }
+.hero::before, .hero::after, .profile::after, .mode-art::before, .badge-mode::before, .victory::after, .hero-stat::before, .heat-board .heatboard { filter: url(#rough); }
+/* Plakatkarten: Rahmen von Hand gezogen, Text leicht gedruckt */
+.su-head > div, .rules-in, .record > div, .empty-card > div, .rlist, .hero-band, .stepn, .tag, .mo-stand, .vic-score, .resume .live { filter: url(#rough-s); }
+/* Große Zahlen und Titel: Bleisatz-Rauheit an den Kanten */
+.hero-num, .record b, .hero-stat b, .vic-name, .mo-big, .stage h1, .pg-h { filter: url(#ink); }
+
+/* Gealtertes Papier – nur auf den cremefarbenen Karten, Hintergrund der Seite bleibt schlicht */
+.su-head, .rules, .record, .rlist, .empty-card, .heat-board { background-image: var(--paper-age), var(--tex-engrave); }
+.su-head > div, .rules-in, .record > div, .empty-card > div { background: rgba(243,233,210,.86); background-image: var(--paper-age); }
+
+/* Handgezogene Linien statt gerader Striche */
+.label::after { height: 8px; background: var(--hand-line) repeat-x 0 50% / 160px 8px; opacity: .8; }
+.subtabs::after { height: 8px; opacity: .55; background: var(--hand-line) repeat-x 0 50% / 160px 8px; }
+
+/* Kleine Schieflagen: nichts sitzt maschinell exakt */
+.hero-band { transform: rotate(-.6deg); }
+.mode:nth-child(odd) .badge-mode { transform: rotate(-3deg); }
+.mode:nth-child(even) .badge-mode { transform: rotate(2.5deg); }
+.mode-art::after { transform: rotate(14deg); }
+.tag { transform: rotate(-2.5deg); display: inline-block; }
+.stepn { transform: rotate(-5deg); border-radius: 3px; }
+.vic-score { transform: rotate(-1.6deg); }
+.mo-stand { transform: rotate(1.4deg); }
+.resume .live { display: inline-block; transform: rotate(-3deg); border-radius: 3px; }
+.su-head > div { transform: rotate(-.4deg); }
+.record:nth-child(odd) > div { transform: rotate(-.35deg); }
+.record:nth-child(even) > div { transform: rotate(.3deg); }
+.cm-vs { transform: rotate(-9deg) translateY(-2px); }
+
+/* Pop-Art-Druck leicht versetzt (Passer nicht ganz genau) */
+.hero-num { text-shadow: 3px 2px 0 var(--red), 6px 7px 0 var(--ink), 8px 6px 0 var(--gold); }
+.hero-stat b { text-shadow: 3px 2px 0 var(--red); }
+.vic-name { text-shadow: 3px 2px 0 var(--ink), 6px 5px 0 var(--gold); }
+.pfblock, .mode-art, .cm-p, .victory { background-position: 2px 1px, 0 0; }
+
+/* Etwas runder: Karten, Felder, Tasten (sanft, nicht weich) */
+.profile, .hero, .mode, .opts, .plist, .more, .kv-c, .mlist, .ranks, .sbtable-wrap, .chart, .st-who, .ckwrap, .su-head, .rules, .record, .rlist,
+.empty-card, .hero-stat, .victory, .mo-card, .heat-board, .resume, .seg, .prow:first-child, .bp-top, .speech, .toast { border-radius: var(--r-panel); }
+.su-head > div, .rules-in, .record > div, .empty-card > div { border-radius: 7px; }
+.hero::before { border-radius: 7px; } .hero::after { border-radius: 5px; }
+.key, .dk, .slot, .mults button, .quick button, .seg button, .sq, .co-c, .tk-c, .teambtn, .pchips button { border-radius: var(--r-btn); }
+.sbp, .sbr { border-radius: var(--r-panel); }
+.mode-art { border-radius: 8px 8px 0 0; }
+.pfblock { border-radius: 8px 0 0 8px; }
+.badge-mode { border-radius: 7px; }
+
+/* Knöpfe: innen eine von Hand gezogene Linie */
+.btn { position: relative; }
+.btn.red::after, .btn.gold::after, .key.ok::after { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(243,233,210,.5); border-radius: calc(var(--r-btn) - 2px);
+  pointer-events: none; filter: url(#rough-s); }
+.key.ok { position: relative; }
+.btn.gold::after { border-color: rgba(11,10,8,.4); }
+/* Aktive Spielerkarte: feiner gezeichneter Innenrahmen */
+.sbp.on::after { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(11,10,8,.28); border-radius: 7px; pointer-events: none; filter: url(#rough-s); }
+
+/* League Gothic ist schmaler als die alte Zahlenschrift: Spielzahlen ~25 % größer, damit sie aus 2 m lesbar bleiben */
+.sbp-rem { font-size: clamp(80px, 26vw, 188px); }
+.sbr-rem { font-size: clamp(34px, 7dvh, 76px); }
+.sbr.on .sbr-rem { font-size: clamp(50px, 10dvh, 104px); }
+.sbp-stats b { font-size: 23px; }
+.key { font-size: 38px; }
+.dk { font-size: 28px; }
+.dk.miss { font-size: 18px; }
+.slot { font-size: 24px; }
+.quick button { font-size: 20px; }
+.entry .val { font-size: 50px; }
+.co-c { font-size: clamp(26px, 6.4vw, 40px); }
+.cricket .sbp-rem { font-size: clamp(55px, 16vw, 136px); }
+@media (orientation: portrait) { .boardmode .sbp-rem { font-size: clamp(60px, 16vw, 120px); } }
+@media (min-width: 820px) and (orientation: landscape) {
+  .sbp-rem { font-size: clamp(100px, 15vw, 240px); }
+  .key { font-size: 42px; } .dk { font-size: 31px; } .quick button { font-size: 22px; }
+  .co-c { font-size: clamp(30px, 4vw, 52px); }
+  .pad .entry .val { font-size: clamp(80px, 21dvh, 210px); }
+  .cricket .sbp-rem { font-size: clamp(75px, 11vw, 185px); }
+}
+@media (min-width: 700px) and (orientation: portrait) {
+  .sbp-rem { font-size: clamp(125px, 21vw, 275px); }
+  .key { font-size: 42px; } .sbp-stats b { font-size: 29px; } .entry .val { font-size: 72px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .sbp-rem { font-size: clamp(55px, 20dvh, 112px); }
+  .key { font-size: 27px; } .dk { font-size: 22px; } .sbp-stats b { font-size: 18px; }
+  .pad .entry .val { font-size: clamp(36px, 17dvh, 78px); }
+  .co-c { font-size: 22px; }
+}

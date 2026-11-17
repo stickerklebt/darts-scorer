@@ -326,3 +326,8 @@
 .tr-corner { width: 16vmin; height: 16vmin; z-index: 6; animation: fxPopS .4s both; }
 .tr-corner.tl { left: 3%; top: 3%; } .tr-corner.tr { right: 3%; top: 3%; transform: scaleX(-1); }
 .tr-corner.bl { left: 3%; bottom: 3%; transform: scaleY(-1); } .tr-corner.br { right: 3%; bottom: 3%; transform: scale(-1); }
+
+/* Update 5: Zahlen in League Gothic (Holzlettern), Wörter in IM Fell; Kanten leicht gedruckt */
+.fx-big { font-family: var(--f-num); letter-spacing: .02em; }
+.fx-big, .fx-sub, .fx-stamp, .fx-pow b { filter: url(#ink); }
+.fx-sub, .fx-stamp, .fx-pow b { border-radius: 6px; }

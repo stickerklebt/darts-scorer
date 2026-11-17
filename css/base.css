@@ -1,7 +1,7 @@
 /* Basis: Reset, Typo, Buttons, Tabs, Listen, Dialoge */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; background: var(--ink); color: var(--cream);
-  font-family: var(--f-num); font-weight: 500; font-size: 17px; letter-spacing: .01em;
+  font-family: var(--f-num); font-weight: 400; font-size: 18px; letter-spacing: .02em; font-synthesis: none;
   -webkit-font-smoothing: antialiased; overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-text-size-adjust: 100%; }
 button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; touch-action: manipulation; border-radius: var(--r-btn); }
 button:disabled { opacity: .3; pointer-events: none; }

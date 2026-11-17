@@ -25,7 +25,7 @@ function placeholder(b) {
     <rect width="64" height="64" fill="${b.color}"/>
     <g fill="${COLORS.ink}" opacity=".22">${Array.from({ length: 49 }, (_, i) => `<circle cx="${4.5 + (i % 7) * 9}" cy="${4.5 + Math.floor(i / 7) * 9}" r="1.7"/>`).join('')}</g>
     <rect x="3" y="3" width="58" height="58" fill="none" stroke="${COLORS.gold}" stroke-width="1.5"/>
-    <text x="32" y="41" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="22" fill="${b.ink}">${b.initials}</text>
+    <text x="32" y="41" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', serif" font-size="22" fill="${b.ink}">${b.initials}</text>
     <path d="${sparkPath(53, 11, 6)}" fill="${COLORS.spark}"/>
   </svg>`;
 }
@@ -80,7 +80,7 @@ const ART = {
   // Eigenständige Comic-Figur: Kappe, Sternchen-Augen, breites Grinsen
   dreimac: (b) => `${frame(b.color)}
     <path d="M10 64 C11 52 19 47 32 47 C45 47 53 52 54 64 Z" fill="${COLORS.green}" stroke="${K}" stroke-width="2"/>
-    <text x="32" y="60" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="9" fill="${COLORS.yellow}">3</text>
+    <text x="32" y="60" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', serif" font-size="9" fill="${COLORS.yellow}">3</text>
     <circle cx="32" cy="31" r="15" fill="#f6d36b" stroke="${K}" stroke-width="2"/>
     <path d="M16.5 26 C17 15 25 11 32 11 C39 11 47 15 47.5 26 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="1.8"/>
     <path d="M44 25 C50 24.5 54 26 55 28 C51 28.5 47 28 44 27 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="1.6"/>

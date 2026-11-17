@@ -12,9 +12,12 @@ export const PLAYER_INK = ['#f3e9d2', '#f3e9d2', '#0b0a08', '#f3e9d2', '#f3e9d2'
 const r2 = (x) => Math.round(x * 100) / 100;
 const polar = (cx, cy, r, deg) => [r2(cx + r * Math.cos((deg * Math.PI) / 180)), r2(cy + r * Math.sin((deg * Math.PI) / 180))];
 
-export function starPath(cx, cy, R, r, n = 5, rot = -90) {
+export function starPath(cx, cy, R, r, n = 5, rot = -90, wob = 0) {
   const pts = [];
-  for (let i = 0; i < n * 2; i++) pts.push(polar(cx, cy, i % 2 ? r : R, rot + (i * 180) / n).join(','));
+  for (let i = 0; i < n * 2; i++) {
+    const j = wob ? Math.sin(i * 12.9898 + cx * 0.7 + cy * 0.3) * wob : 0;   // wob > 0: von Hand gezeichnet, Spitzen ungleich
+    pts.push(polar(cx, cy, (i % 2 ? r : R) * (1 + j), rot + (i * 180) / n + j * 18).join(','));
+  }
   return `M${pts.join('L')}Z`;
 }
 export function burstPath(cx, cy, R, r, n = 18) {
@@ -26,17 +29,26 @@ export function burstPath(cx, cy, R, r, n = 18) {
   return `M${pts.join('L')}Z`;
 }
 
-/* ---------- Lorbeerzweig (links), entlang eines Bogens ---------- */
+/* ---------- Lorbeerzweig (links), entlang eines Bogens – Blätter von Hand: ungleich groß, leicht verdreht, mit Ader ---------- */
+const jit = (i, k = 1) => (((i * 9301 + 49297 * k) % 233280) / 233280 - 0.5);   // fester Zufall je Index
+function leaf(x, y, len, w, rot, color) {
+  const h = len / 2;
+  return `<g transform="translate(${x} ${y}) rotate(${r2(rot)})">
+    <path d="M${-h},0 C${r2(-h * 0.4)},${r2(-w * 1.15)} ${r2(h * 0.45)},${r2(-w * 0.95)} ${h},${r2(w * 0.12)} C${r2(h * 0.35)},${r2(w * 0.95)} ${r2(-h * 0.45)},${r2(w * 1.05)} ${-h},0Z" fill="${color}"/>
+    <path d="M${r2(-h * 0.85)},0 Q0,${r2(-w * 0.18)} ${r2(h * 0.8)},${r2(w * 0.08)}" fill="none" stroke="#0b0a08" stroke-opacity=".55" stroke-width=".7"/>
+  </g>`;
+}
 function laurelBranch(cx, cy, R, from, to, n, color) {
-  let out = `<path d="M${polar(cx, cy, R, from).join(',')} A${R},${R} 0 0,1 ${polar(cx, cy, R, to).join(',')}" fill="none" stroke="${color}" stroke-width="2"/>`;
+  let out = `<path d="M${polar(cx, cy, R, from).join(',')} A${R},${R} 0 0,1 ${polar(cx, cy, R, to).join(',')}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>`;
   for (let i = 0; i < n; i++) {
-    const a = from + ((to - from) * (i + 0.5)) / n;
+    const a = from + ((to - from) * (i + 0.5 + jit(i, 2) * 0.25)) / n;
     for (const side of [-1, 1]) {
-      const [x, y] = polar(cx, cy, R + side * 5, a);
-      out += `<ellipse cx="${x}" cy="${y}" rx="8" ry="3.4" fill="${color}" transform="rotate(${r2(a + 90 + side * 35)} ${x} ${y})"/>`;
+      const [x, y] = polar(cx, cy, R + side * (5 + jit(i, side + 3) * 1.6), a);
+      out += leaf(x, y, 17 * (0.85 + jit(i, side + 5) * 0.3), 3.6 * (0.9 + jit(i, 7) * 0.3), a + 90 + side * (35 + jit(i, side + 9) * 14), color);
     }
   }
-  return out;
+  const [bx, by] = polar(cx, cy, R, to + 4);
+  return out + `<circle cx="${bx}" cy="${by}" r="2.6" fill="${color}"/>`;
 }
 export function laurelWreath(cx, cy, R, color = COLORS.gold, n = 8) {
   const left = laurelBranch(cx, cy, R, 100, 235, n, color);
@@ -95,8 +107,9 @@ function dartShape(color, ink) {
 }
 
 /* ---------- Wappen (App-Logo) ---------- */
+let crestN = 0;
 export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
-  const C = COLORS, cx = 100, cy = 122;
+  const C = COLORS, cx = 100, cy = 122, cid = `crc${++crestN}`;
   // Dartscheibe im Schild: 20 Segmente creme/schwarz, Goldring, rotes Bull
   let board = '';
   for (let i = 0; i < 20; i++) {
@@ -119,7 +132,10 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
       <path d="M22 206 L40 200 L40 228 L22 234 L30 220 Z" fill="${C.cream2}"/>
       <path d="M178 206 L160 200 L160 228 L178 234 L170 220 Z" fill="${C.cream2}"/>
       <path d="M36 198 Q100 186 164 198 L164 226 Q100 214 36 226 Z" fill="${C.cream}" stroke="${C.ink}" stroke-width="1.5"/>
-      <text x="100" y="218" text-anchor="middle" font-family="Cinzel, 'Times New Roman', serif" font-weight="900" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
+      <path d="M44 203 Q100 192 156 203 M44 221 Q100 210 156 221" fill="none" stroke="${C.ink}" stroke-width=".5" stroke-opacity=".35" stroke-dasharray="1.6 2.4"/>
+      <path d="M40 200 L40 228 M160 200 L160 228" stroke="${C.ink}" stroke-width=".8" stroke-opacity=".5"/>
+      <path d="M24 210 L36 206 M26 222 L36 219 M176 210 L164 206 M174 222 L164 219" stroke="${C.ink}" stroke-width=".6" stroke-opacity=".45"/>
+      <text x="100" y="218" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', 'Times New Roman', serif" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
     </g>` : '';
   return `<svg viewBox="0 0 200 240" width="${size}" height="${size * 1.2}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     ${bg ? `<rect x="-20" y="-20" width="240" height="280" fill="${bg}"/>` : ''}
@@ -128,6 +144,8 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
     <g transform="translate(100 120) rotate(-142)">${dartShape(C.gold, C.ink).replace('<g>', '<g transform="scale(1.62)">')}</g>
     ${laurelWreath(100, 128, 84, C.gold, 7)}
     <path d="${shield}" fill="${C.ink}" stroke="${C.gold}" stroke-width="4"/>
+    <clipPath id="${cid}"><path d="${shield}"/></clipPath>
+    <g clip-path="url(#${cid})" stroke="${C.gold}" stroke-width=".55" opacity=".32">${Array.from({ length: 34 }, (_, i) => `<path d="M${40 + i * 6} 56 L${r2(-30 + i * 6 + jit(i, 3) * 3)} 212"/>`).join('')}</g>
     <path d="M51 64 H149 V118 C149 161 124 183 100 198 C76 183 51 161 51 118 Z" fill="none" stroke="${C.cream}" stroke-width="1"/>
     ${board}
     ${crown}
@@ -138,27 +156,32 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
 
 /* ---------- Ornamente ---------- */
 export const cornerOrnament = (color = COLORS.gold) => `<svg viewBox="0 0 40 40" aria-hidden="true">
-  <path d="M2 38 V8 Q2 2 8 2 H38" fill="none" stroke="${color}" stroke-width="2"/>
-  <path d="M8 38 V14 Q8 8 14 8 H38" fill="none" stroke="${color}" stroke-width="1"/>
-  <path d="M14 14 q8 0 8 8 q-6 0 -8 -8z" fill="${color}"/>
-  <path d="M2 2 l5 0 -5 5z" fill="${color}"/>
-  <circle cx="26" cy="5" r="1.6" fill="${color}"/><circle cx="5" cy="26" r="1.6" fill="${color}"/>
+  <path d="M2 38 V9 Q2.4 2.2 9 2 H38" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+  <path d="M8 38 V15 Q8.3 8.4 14.6 8 H38" fill="none" stroke="${color}" stroke-width=".9" stroke-linecap="round"/>
+  <path d="M14 14 C20 13.4 22.4 17 21.6 20.6 C20.9 23.6 17.2 23.8 16.4 21.4 C15.8 19.6 17.6 18.4 18.8 19.4" fill="none" stroke="${color}" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M22 9.5 C26 10.5 27.5 13.6 26 16.2 C24.4 14.6 22.6 12.8 22 9.5Z" fill="${color}"/>
+  <path d="M9.5 22 C10.5 26 13.6 27.5 16.2 26 C14.6 24.4 12.8 22.6 9.5 22Z" fill="${color}"/>
+  <path d="M2 2 l5.4 .4 -5 5.2z" fill="${color}"/>
+  <circle cx="31" cy="5" r="1.5" fill="${color}"/><circle cx="35.5" cy="5.3" r=".9" fill="${color}"/>
+  <circle cx="5" cy="31" r="1.5" fill="${color}"/><circle cx="5.3" cy="35.5" r=".9" fill="${color}"/>
 </svg>`;
 
 export const divider = (color = COLORS.gold) => `<svg class="divider" viewBox="0 0 240 16" preserveAspectRatio="none" aria-hidden="true">
-  <path d="M0 8 H96 M144 8 H240" stroke="${color}" stroke-width="1"/>
-  <path d="M0 11 H90 M150 11 H240" stroke="${color}" stroke-width="0.5"/>
-  <path d="M104 8 l6 -6 6 6 -6 6z M124 8 l6 -6 6 6 -6 6z" fill="${color}"/>
-  <path d="${starPath(120, 8, 6, 2.6)}" fill="${color}"/>
+  <path d="M2 8.4 C30 7.2 60 9 88 7.8" fill="none" stroke="${color}" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M152 7.8 C180 9 210 7.2 238 8.4" fill="none" stroke="${color}" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M14 11.2 C40 10.4 66 11.8 86 10.6 M154 10.6 C174 11.8 200 10.4 226 11.2" fill="none" stroke="${color}" stroke-width=".5"/>
+  <path d="M88 7.8 C93 7.4 95 3.6 99 4.4 C101.6 5 100.8 8.4 98.2 8 M152 7.8 C147 7.4 145 3.6 141 4.4 C138.4 5 139.2 8.4 141.8 8" fill="none" stroke="${color}" stroke-width="1" stroke-linecap="round"/>
+  <path d="M104.5 8.2 l5.6 -5.8 6 6 -5.8 5.6z M124 7.8 l6 -5.6 5.6 6 -6 5.8z" fill="${color}"/>
+  <path d="${starPath(120, 8, 6.4, 2.6, 5, -90, 0.08)}" fill="${color}"/>
 </svg>`;
 
 export const stars = (n = 3, color = COLORS.gold, size = 12) =>
-  `<span class="stars">${Array.from({ length: n }, () => `<svg viewBox="0 0 20 20" width="${size}" height="${size}" aria-hidden="true"><path d="${starPath(10, 10, 9.5, 4)}" fill="${color}"/></svg>`).join('')}</span>`;
+  `<span class="stars">${Array.from({ length: n }, (_, i) => `<svg viewBox="0 0 20 20" width="${size}" height="${size}" aria-hidden="true" style="transform:rotate(${(i % 2 ? 7 : -5) + i * 2}deg)"><path d="${starPath(10, 10, 9.5, 4, 5, -90, 0.09)}" fill="${color}"/></svg>`).join('')}</span>`;
 
 export const ribbon = (text, fill = COLORS.red, ink = COLORS.cream) => `<svg class="ribbon" viewBox="0 0 220 40" aria-hidden="true">
   <path d="M0 10 L20 6 L20 36 L0 40 L8 23 Z M220 10 L200 6 L200 36 L220 40 L212 23 Z" fill="${fill}" opacity=".7"/>
   <path d="M14 2 H206 V32 H14 Z" fill="${fill}" stroke="${COLORS.ink}" stroke-width="2"/>
-  <text x="110" y="23" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="15" letter-spacing="3" fill="${ink}">${text}</text>
+  <text x="110" y="23" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', serif" font-size="15" letter-spacing="3" fill="${ink}">${text}</text>
 </svg>`;
 
 /* ---------- Spielmodus-Badges ---------- */
@@ -257,7 +280,7 @@ export function heroArt() {
   const C = COLORS;
   let rays = '';
   for (let i = 0; i < 72; i++) {
-    const a = (i * 5 * Math.PI) / 180, r0 = i % 2 ? 108 : 96, r1 = i % 6 === 0 ? 196 : i % 2 ? 170 : 184;
+    const a = ((i * 5 + jit(i, 4) * 1.6) * Math.PI) / 180, r0 = (i % 2 ? 108 : 96) + jit(i, 6) * 5, r1 = (i % 6 === 0 ? 196 : i % 2 ? 170 : 184) + jit(i, 8) * 12;
     rays += `<path d="M${r2(200 + r0 * Math.cos(a))} ${r2(200 + r0 * Math.sin(a))} L${r2(200 + r1 * Math.cos(a))} ${r2(200 + r1 * Math.sin(a))}"/>`;
   }
   let dots = '';

@@ -5,11 +5,20 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 
 ## Regeln für die Arbeit
 - Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheiben, Animationen: eigene SVG/CSS/Canvas im Code. Keine Sounds.
-- Schriften lokal als `.woff2` (nur OFL): **Barlow Condensed** (Zahlen, Fließtext), **Cinzel** (theatralische Versalien, Überschriften).
+- Schriften lokal als `.woff2` (nur OFL): **League Gothic** (Zahlen, Beschriftungen, Knöpfe – schmale Holzlettern),
+  **IM Fell English SC** (Überschriften, Bleisatz-Versalien), **IM Fell English** (Fließtext). IM Fell hat Mediävalziffern –
+  deshalb kommen Ziffern in `--f-display`/`--f-text` per `unicode-range` aus League Gothic („Fell Digits“ in `tokens.css`).
+  Nur ein Schnitt je Schrift, `font-synthesis: none` (kein künstliches Fett).
 - Design: **Queen-Look** – heraldisch, Gold/Creme auf Schwarz, Ornamente (Eck-Ornamente, Lorbeer, Sterne, Strahlenkranz),
   Pop-Art-Farbblöcke mit Raster, Comic-Momente, Kupferstich-Plakate (Rekorde, Regeln, Heatmap). Nur Stilmittel:
   **keine** Cover-Motive, kein Queen-Wappen, keine Band-Logos/-Namen. **Hintergründe schlicht** (keine Körnung, kein Rauschen,
   keine Muster) – Details gehören auf die Elemente. Die alten Stein-Texturvariablen (`--tex-grain/stone/cracks`) sind `none`.
+- **Handgemacht statt perfekt** (Block „HANDGEMACHT“ am Ende von `screens.css`): SVG-Filter in `index.html` – `#rough` (Linien
+  wackeln wie mit der Feder), `#rough-s` (Plakatkarten, leicht gedruckt), `#ink` (Bleisatz-Kanten an großen Zahlen/Titeln).
+  Ornamente in `svg.js` von Hand: Lorbeerblätter ungleich mit Ader, Sterne leicht schief (`starPath(…, wob)`), Schnörkel in
+  Ecken und Trennern, Schraffur im Wappen. Gealtertes Papier (`--paper-age`) nur auf Cremekarten, handgezogene Linien
+  (`--hand-line`) bei Labels, kleine Schieflagen, leicht versetzter Pop-Art-Druck. Ecken etwas runder (`--r-btn` 6, `--r-panel` 10).
+  Im Spiel nur zurückhaltend (Innenrahmen der aktiven Karte), damit Zahlen klar lesbar bleiben.
 - **Lichtlinie** (`fuse()` in `svg.js`, `.fuse` in `base.css`): ein heller Schein gleitet sehr langsam die Goldrahmen-Linie
   entlang und läuft nach hinten weich aus (6 übereinanderliegende Striche, SVG-`<animate>`) –
   Hero-Karte, Start-Button im Setup, Rekord-Karten, Overall-Average, Sieger-Screen. **Im laufenden Spiel kein Leuchten.**
@@ -17,7 +26,7 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
   (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
-- App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg`, dann `qlmanage -t -s 1024 icon.svg`
+- App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg` (bettet IM Fell ein, Federfilter), dann `qlmanage -t -s 1024 icon.svg`
   und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen.
 - Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt. Keine Statistik/Funktion entfernen.
@@ -28,23 +37,23 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 ```
 index.html              Gerüst, lädt css/ und js/main.js (type="module")
 css/
-  tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich)
+  tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich, Papier, Handlinie)
   base.css              Reset, Typo, Buttons, Tabs, Dialoge
   screens.css           Screens (Play, Setup, Spiel, Ausbullen, Leg-Info, Ergebnis, Statistik, Vergleich, Bots)
   fx.css                Vollbild-Animationen
-fonts/                  bc-*.woff2 (Barlow Condensed), cinzel.woff2, OFL-*.txt
+fonts/                  league-gothic.woff2, fell-sc.woff2, fell.woff2, fell-i.woff2, OFL-*.txt
 bots/                   Optionale Bot-Bilder + bilder.json (Liste) + README.md
 js/
   main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
   store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand
   match.js              Match-Objekt, Werfer-Reihenfolge
-  checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch
+  checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
   x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
   party.js              Highscore, Shanghai, Halbieren, Around the Clock
   cricket.js            Cricket: 20–15 + Bull, Treffer/Punkte, Sieg, Rundenlimit, Undo pro Dart, Bot-Ziel
   bulloff.js            Echte Scheibengeometrie (mm), Feld an Position, Ausbullen-Logik
   fx.js                 Welche Animation zu welchem Wurf (Töpfe, Zufall ohne Wiederholung)
-  bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma), Sprüche  ← zum Selbst-Ändern
+  bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma, dsigma), Sprüche  ← zum Selbst-Ändern
   botsim.js             Bot-Wurfmodell: zielen + 2D-Normalstreuung, X01 und Partyspiele
   stats.js              Kennzahlen, Heatmap-Daten, relative Doppel-Bewertung (Stufen + Top 3), Schnellwahl (quickScores)
   demo.js               Testdaten-Generator (fester Seed, demo: true), einmalig einfügen / gezielt entfernen
@@ -54,7 +63,7 @@ js/
       compare.js · sheets.js · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png
-tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma per Simulation)
+tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
 tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket
 ```
 
@@ -85,20 +94,28 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 - **Setup**: ein Screen – Modus · Spieler & Bots · Startpunkte/Runden · First to · Anwurf · Start; „Mehr Optionen“ (Out, Legs/Sets, Mischen, Regeln).
   Hinzufügen nur über **ein Plus** → Auswahlfenster: Neuer Spieler (Name eindeutig gegenüber Profilen und Bots, Groß/Klein und
   Rand-Leerzeichen egal, Live-Hinweis am Feld) · Bekannter Spieler (alphabetisch, Suchfeld ab 6 Einträgen) · Bot als Gegner.
+- **Summen-Eingabe ohne OK**: kann keine weitere Ziffer mehr eine mögliche Aufnahme ergeben (43 → 430+ gibt es nicht,
+  19, 100, 0 …), wird nach 220 ms automatisch übernommen (`entryDone` in `checkout.js`). Unmögliche Eingaben (179) → Hinweis.
+  Die Eingabe steht im Querformat groß und mittig im freien Bereich über der Tastatur.
+- **Checkout-Weg** steht direkt unter dem Rest in der Karte des werfenden Spielers (`.sbp-co`), nicht mehr im Ticker.
+- **Solo**: ein Mensch allein spielt ohne Gegner (Setup zeigt „Solo starten“), alle Modi.
 - **Schnellwahl** über der Tastatur (X01-Summe, Highscore): erst ab 30 eigenen Summen-Aufnahmen (ohne Busts) des werfenden
   Spielers, dann seine 8 häufigsten Scores nach Wert sortiert; sonst ausgeblendet. Shanghai/Halbieren behalten ihre Vielfachen.
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
-- **Animationen** (`js/fx.js`): 26, 60 (4 s) · 100–120 Topf (4 s) · 121–179 Topf (5 s) · 180 Pokal (7 s) ·
+- **Animationen** (`js/fx.js`):  26, 60 (4 s) · 100–120 Topf (4 s) · 121–179 Topf (5 s) · 180 Pokal (7 s) ·
   Finish 2–60 (2 s), 61–99 (4 s), 100–167 Atomrakete (5 s), 170 Big Fish (8 s, nur Checkout). Mehrere Phasen (Aufbau, Höhepunkt,
   Ausklang; letzter Ausklang über `--dur` in `fx.css`). Nur X01 + Highscore, keine Busts, keine für Bots (nur Andeutung in der Karte).
   Zufällig, nie zweimal dieselbe hintereinander. Antippen überspringt; nach Finish-Animation die Leg-/Set-Info. Abschaltbar (`prefs.anim`).
-- **Bots** (klassisch, Ereignis-Sprüche): Sensei Wu Ø 45 (σ 17,74 mm), Super Mario Ø 42 (σ 18,87), Shrek Ø 40 (σ 19,8).
+- **Bots** (klassisch, Ereignis-Sprüche): Sensei Wu Ø 46, Super Mario Ø 42, Shrek Ø 48.
+  Stärke = zwei Streuungen: `sigma` (Scoring) und `dsigma` (nur auf Doppel → Checkout-Quote, Ø 40 ≈ 15 %, Ø 50 ≈ 19,5 %,
+  Ø 100 ≈ 42 % pro Dart). Kalibriert mit `node tools/calibrate-bots.mjs`: **Ø pro Leg, gemittelt über viele Legs** = avg
+  (so wie man ihn im Spiel sieht; der Schnitt über alle Darts liegt ~2,5 darunter). Averages 40/42/…/50 zufällig verteilt.
   Zielen T20, im Finish nach Checkout-Tabelle, im Partyspiel aufs jeweilige Ziel. 3 Darts ≈ 2 s. Mindestens ein Mensch pro Spiel.
   Bots nicht in Statistik/Profilwahl. Sprüche: max. 3 pro Spiel und Bot (Start · ein Moment · Ende).
   Undo nimmt die letzte menschliche Eingabe zurück, Bot-Würfe danach mit.
-- **Bots mit Zufallssprüchen** (Feld `random` in `js/bots.js`): Jensn Huang Ø 40, Michael Jackson Ø 40 (`startLine` „Hee-hee!“),
-  Phil Taylor Ø 100 (σ 6,42 mm, gewichtet 60/20/20, Wiederholung erlaubt), Dreimac Ø 40. `planLines()` lost zu Spielbeginn
+- **Bots mit Zufallssprüchen** (Feld `random` in `js/bots.js`): Jensn Huang Ø 50, Michael Jackson Ø 44 (`startLine` „Hee-hee!“),
+  Phil Taylor Ø 100 (immer 100; Sprüche gewichtet 60/20/20, Wiederholung erlaubt), Dreimac Ø 40. `planLines()` lost zu Spielbeginn
   2 Sprüche und 2 eigene Aufnahmen (2.–8., nie die erste) aus; gesagt wird nach genau diesen Aufnahmen, unabhängig von Ereignissen.
   Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
   Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
@@ -122,4 +139,5 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 ## Stand
 Update 1 (Meilensteine 1–4), Update 2 (Setup, Ausbullen, Animationen, Bots, Statistik) und Update 3 (Queen-Look zurück,
 Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) und Update 4 (Daten-Neustart, langsame Lichtlinie,
-vier neue Bots mit Zufallssprüchen) erledigt, Stand 16.11.2026.
+vier neue Bots mit Zufallssprüchen) erledigt. Danach: Cricket, Eingabe ohne OK, Checkout unter dem Rest, Solo,
+Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details, Stand 17.11.2026.
