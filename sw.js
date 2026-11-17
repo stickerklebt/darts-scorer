@@ -1,5 +1,5 @@
 // Offline-Cache: App startet ohne Internet, Updates werden im Hintergrund geladen.
-const CACHE = 'dartscorer-v27';
+const CACHE = 'dartscorer-v28';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon-180.png', './icon-512.png',
   './css/tokens.css', './css/base.css', './css/screens.css', './css/fx.css',

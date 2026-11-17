@@ -29,6 +29,9 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 - App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg` (bettet IM Fell ein, Federfilter), dann `qlmanage -t -s 1024 icon.svg`
   und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen.
+- **Nicht als Datei öffnen:** Firefox/Chrome laden ES-Module nicht über `file://` (sonst schwarzer Bildschirm). `index.html`
+  zeigt dann nach 1,5 s einen Hinweis mit Link zu GitHub Pages. Lokal starten: `Darts starten.command` (Doppelklick,
+  Python-Server auf 127.0.0.1, Port ab 8000, öffnet den Browser).
 - Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt. Keine Statistik/Funktion entfernen.
 - Animationen in der Konsole prüfen: `(await import('/js/ui/fx.js')).fxPlay('trophy', {score:180, name:'Test'})`,
   `__fxFreeze()` hält das Bild an (Seite im Hintergrund: Animationen per `document.getAnimations()` auf eine Zeit setzen).
@@ -62,7 +65,7 @@ js/
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
       compare.js · sheets.js · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
-sw.js, manifest.webmanifest, icon-180.png, icon-512.png
+sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
 tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket
 ```
