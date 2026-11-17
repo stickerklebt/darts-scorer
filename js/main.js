@@ -29,6 +29,7 @@ import { crest } from './ui/svg.js';
 import { entryDone, entryPossible } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
+import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR } from './ui/aimboard.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -630,9 +631,21 @@ const actions = {
   submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
-  dart(el) { const n = Number(el.dataset.v), mult = n === 0 ? 1 : ui.mult; ui.mult = 1; handle(throwOne(S.current, n, mult)); },
+  dart(el) {
+    const n = Number(el.dataset.v), mult = n === 0 ? 1 : ui.mult; ui.mult = 1;
+    if (ui.aimPos) ui.aimPos = ui.aimPos.slice(0, S.current.pending.length); // Daneben-Knopf: keine Position
+    handle(throwOne(S.current, n, mult));
+  },
   bull(el) { ui.mult = 1; handle(throwOne(S.current, 25, Number(el.dataset.v))); },
   board(el) { ui.mult = 1; handle(throwOne(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
+  /** Dart von der Scheibe (Position in Scheiben-Einheiten) */
+  aimDart(x, y) {
+    const m = S.current, d = fieldAt(x, y);
+    ui.aimPos = (ui.aimPos || []).slice(0, m.pending.length);
+    ui.aimPos.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
+    ui.mult = 1;
+    handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
+  },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
   boOk() { if (ui.boPending) bullPlace(ui.boPending.x, ui.boPending.y); },
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
@@ -717,9 +730,47 @@ function endDrag(e, place) {
 document.addEventListener('pointerup', (e) => endDrag(e, true));
 document.addEventListener('pointercancel', (e) => endDrag(e, false));
 
+/* ---------------- Eingabe-Scheibe: halten → Lupe, loslassen setzt den Dart ---------------- */
+let aim = null;
+function aimPoint(svg, e) {
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  const q = p.matrixTransform(svg.getScreenCTM().inverse());
+  const r = Math.hypot(q.x, q.y), k = r > AR.edge ? AR.edge / r : 1;
+  return { x: q.x * k, y: q.y * k };
+}
+document.addEventListener('pointerdown', (e) => {
+  const svg = e.target.closest?.('#dartBoard .aimboard');
+  if (!svg || ui.modal || ui.moment || fxRunning() || S.screen !== 'game') return;
+  e.preventDefault();
+  const p = aimPoint(svg, e);
+  aim = { svg, id: e.pointerId, p, cx: e.clientX, cy: e.clientY, shown: false };
+  try { svg.setPointerCapture(e.pointerId); } catch (err) { /* */ }
+  aimHover(svg, fieldAt(p.x, p.y));
+  // Lupe erst nach kurzem Halten – ein schneller Tipp setzt direkt
+  aim.timer = setTimeout(() => { if (aim) { aim.shown = true; aimLoupe(svg, aim.p.x, aim.p.y, aim.cx, aim.cy); } }, 140);
+});
+document.addEventListener('pointermove', (e) => {
+  if (!aim || e.pointerId !== aim.id) return;
+  e.preventDefault();
+  aim.p = aimPoint(aim.svg, e); aim.cx = e.clientX; aim.cy = e.clientY;
+  aimHover(aim.svg, fieldAt(aim.p.x, aim.p.y));
+  if (!aim.shown) { aim.shown = true; clearTimeout(aim.timer); }
+  aimLoupe(aim.svg, aim.p.x, aim.p.y, aim.cx, aim.cy);
+}, { passive: false });
+function aimEnd(e, place) {
+  if (!aim || e.pointerId !== aim.id) return;
+  const { p, svg, timer } = aim;
+  aim = null; clearTimeout(timer); aimLoupeHide(); aimHover(svg, null);
+  if (place) actions.aimDart(p.x, p.y);
+}
+document.addEventListener('pointerup', (e) => aimEnd(e, true));
+document.addEventListener('pointercancel', (e) => aimEnd(e, false));
+
 /* ---------------- Start ---------------- */
 /* Einmaliger Neustart der Daten (Wunsch nach Update 3): alle Matches/Statistiken und alle Spieler außer dem
    Hauptspieler löschen, keine Testdaten mehr einfügen. Läuft genau einmal (S.cleanV). */
+/* Einmalig: Einzeldarts standardmäßig über die neue Scheibe eingeben (Tastatur bleibt in den Einstellungen wählbar). */
+if (!S.aimV) { S.prefs.dartInput = 'board'; S.aimV = 1; }
 if (!S.cleanV) {
   S.matches = []; S.current = null;
   S.profiles = S.profiles.filter((p) => p.id === S.mainId);

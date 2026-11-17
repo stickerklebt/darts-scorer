@@ -79,11 +79,11 @@ js/
   games.js              Spielmodi (Titel, Regeln)
   ui/ svg.js · board.js (Eingabe-, Heatmap- und Echt-Scheibe) · charts.js · play.js · setup.js · game.js ·
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
-      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
+      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · aimboard.js (Eingabe-Scheibe mit Lupe) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -94,7 +94,7 @@ tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · 
   lineup: [{ id, team }],                                     // id = Profil- oder Bot-id ('sensei-wu' …)
   teamMode, anwurf: 'list' | 'bull', demoSeeded,              // demoSeeded: Testdaten wurden schon einmal eingefügt
   opts: { x01: { start, out, mode, target }, highscore: { rounds }, shanghai: { rounds }, halveit: {}, atc: { bull } },
-  prefs: { voice: false, hints: true, dartInput: 'keys' | 'board', anim: true },
+  prefs: { voice: false, hints: true, dartInput: 'board' | 'keys', anim: true },   // aimV: einmal auf 'board' umgestellt
   screen, tab, statsPid, statsPeriod, statsSub, cmpA, cmpB, game,
 }
 Match = { id, game, opts, demo?, first, startedAt, endedAt?, done, winners?, sides: [[id…]], playerIds, legs | turns, pending,
@@ -122,6 +122,12 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
   und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
+- **Eingabe-Scheibe** (`ui/aimboard.js`, Standard für Einzeldarts in X01 und Cricket; Tastatur in den Einstellungen wählbar):
+  eigene Scheibe im App-Stil (warm-dunkle Felder, leicht getönte Grün-/Rot-Ringe, Golddrähte, breitere Ringe für Finger).
+  Finger drauf → Feld unter dem Finger leuchtet gold; nach 140 ms halten (oder beim Ziehen) erscheint die Lupe über dem Finger
+  mit Fadenkreuz und Feldname; loslassen setzt den Dart (außerhalb des Double-Rings = daneben, dazu Knopf „Daneben“).
+  Über der Scheibe drei Treffer-Kacheln (1 · T20 60 …, nächster Dart „Jetzt“), getroffene Felder der laufenden Aufnahme
+  leuchten mit Nummer an der Wurfstelle (`ui.aimPos`, nur flüchtig). Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
 - **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):
   alle fertigen Spiele aller Modi, neueste zuerst, nach Monat gruppiert, Filter Alle · X01 · Cricket · Party. Zeile: S/N/=
   aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)

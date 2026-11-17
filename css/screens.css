@@ -865,3 +865,42 @@
 .hist .ml-mid { padding-left: 10px; }
 .btn.hist-del { width: 100%; margin-top: 16px; color: var(--red); border-color: var(--red); }
 .btn.hist-link { width: 100%; margin-top: 12px; }
+
+/* ================= Eingabe-Scheibe (Finger halten → Lupe, loslassen setzt) ================= */
+.ahits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ahit { position: relative; height: 54px; border-radius: var(--r-btn); border: 1.5px dashed var(--line2); display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--dim); }
+.ahit i { position: absolute; left: 7px; top: 4px; font-style: normal; font-size: 12px; color: var(--muted); }
+.ahit b { font-size: 26px; font-weight: 400; line-height: 1; }
+.ahit small { font-size: 15px; color: var(--muted); }
+.ahit.now { border-color: var(--gold); color: var(--gold); }
+.ahit.now b { font-size: 18px; letter-spacing: .14em; text-transform: uppercase; }
+.ahit.done { border-style: solid; border-color: var(--cream2); background: var(--panel2); color: var(--cream); animation: fade .2s; }
+.ahit.done.m2 { border-color: #2a8a55; background: rgba(42,107,69,.35); }
+.ahit.done.m3 { border-color: #c4452f; background: rgba(138,51,38,.4); }
+.ahit.done.m0 { border-color: var(--line2); color: var(--muted); }
+.aimbox { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 2px 0; }
+.aimboard { width: 100%; height: 100%; max-height: 62dvh; touch-action: none; -webkit-touch-callout: none; user-select: none; cursor: crosshair; }
+.aimboard .arim { fill: var(--coal); stroke: var(--gold); stroke-width: 1.4; }
+.aimboard .af { transition: fill-opacity .12s; }
+.aimboard .af.aim { fill: #ecc96a; fill-opacity: .9; }
+.aimboard .af.hit { filter: brightness(1.75) saturate(1.15); }
+.aimboard .awire { fill: none; stroke: #d4a63a; stroke-opacity: .45; stroke-width: .7; pointer-events: none; }
+.aimboard .aglows { pointer-events: none; }
+.aimboard .aglow { fill: none; stroke: #fbe8b0; stroke-width: 5; stroke-opacity: .9; }
+.aimboard .aedge { fill: none; stroke: #fff6dc; stroke-width: 1.6; pointer-events: none; }
+.aimboard .anum { fill: #ecc96a; font-family: var(--f-num); font-size: 15px; pointer-events: none; }
+.aimboard .amark { pointer-events: none; }
+.aimboard .amark circle { fill: var(--ink); stroke: #fff6dc; stroke-width: 1.5; }
+.aimboard .amark text { fill: #fff6dc; font-family: var(--f-num); font-size: 9px; }
+.loupe.aim { width: 156px; height: 156px; background: var(--coal); border: 3px solid var(--gold); box-shadow: 0 8px 26px rgba(0,0,0,.6); }
+.loupe.aim .anum { display: none; }
+.loupe.aim .lp-t { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); padding: 2px 10px; border-radius: var(--r-btn); background: var(--ink); color: var(--cream);
+  font-family: var(--f-num); font-size: 22px; letter-spacing: .04em; white-space: nowrap; }
+.loupe.aim .lp-t.m2 { background: #1f6b3e; } .loupe.aim .lp-t.m3 { background: #a92a1b; } .loupe.aim .lp-t.m0 { color: var(--muted); }
+.pad.board .boardrow .dk { height: 52px; }
+/* Im Scheiben-Modus bekommt die Scheibe den Platz, der Rest steht kompakt darüber */
+.pad.board { justify-content: flex-start; gap: 8px; }
+.pad.board .entry { flex: none !important; flex-direction: row !important; align-items: baseline !important; justify-content: space-between !important; }
+.pad.board .entry .val { font-size: 44px !important; }
+.pad.board .entry .val small { display: inline !important; margin-left: 6px !important; }
+.loupe.aim .aimboard { max-height: none; cursor: default; }

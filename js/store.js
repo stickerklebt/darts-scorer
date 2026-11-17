@@ -22,7 +22,7 @@ const DEF = () => ({
     atc: { bull: 1 },
     cricket: { mode: 'points', rounds: 20 },
   },
-  prefs: { voice: false, hints: true, dartInput: 'keys', anim: true },
+  prefs: { voice: false, hints: true, dartInput: 'board', anim: true },
   screen: 'home',
   tab: 'play',
   statsPid: null,

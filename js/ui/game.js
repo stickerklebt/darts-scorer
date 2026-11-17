@@ -9,7 +9,8 @@ import { esc, fmt, pcVars, seg } from './common.js';
 import { throwerOf } from '../match.js';
 import { quickScores } from '../stats.js';
 import { icon } from './svg.js';
-import { inputBoard, realBoard } from './board.js';
+import { fieldAt, fieldName, aimBoard } from './aimboard.js';
+import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
 import { avatar } from './avatar.js';
 import { PLAYER_COLORS } from './svg.js';
@@ -182,11 +183,22 @@ function dartPad(m, thrower) {
     </div>`;
 }
 
+/** Eingabe per Scheibe: Finger halten → Lupe, loslassen setzt den Dart. Getroffene Felder leuchten. */
 function boardPad(m, thrower) {
-  return `${restEntry(m, thrower)}${slots(m)}
-    <div class="boardbox">${inputBoard()}</div>
-    <div class="boardrow"><button class="dk miss" data-act="dart" data-v="0">Miss</button>
-      <button class="dk" style="color:var(--muted);display:flex;align-items:center;justify-content:center" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 24)}</button></div>`;
+  const hits = m.pending.map((d, i) => {
+    const p = ui.aimPos?.[i];
+    return p ? { ...d, x: p.x, y: p.y, z: fieldAt(p.x, p.y).z } : { ...d, z: 'o' };
+  });
+  const chip = (i) => {
+    const d = hits[i], now = i === hits.length;
+    if (!d) return `<div class="ahit ${now ? 'now' : ''}"><i>${i + 1}</i><b>${now ? 'Jetzt' : '–'}</b></div>`;
+    return `<div class="ahit done m${d.n === 0 ? 0 : d.m}"><i>${i + 1}</i><b>${fieldName(d)}</b>${m.game === 'cricket' || d.n === 0 ? '' : `<small>${d.n * d.m}</small>`}</div>`;
+  };
+  return `${restEntry(m, thrower)}
+    <div class="ahits">${[0, 1, 2].map(chip).join('')}</div>
+    <div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>
+    <div class="boardrow"><button class="dk miss" data-act="dart" data-v="0">Daneben</button>
+      <button class="dk" style="color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 24)}</button></div>`;
 }
 
 function hitsPad(m, thrower, cur) {
