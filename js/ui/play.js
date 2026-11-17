@@ -24,10 +24,10 @@ export function playView() {
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   const others = Object.keys(GAMES).filter((id) => id !== 'x01');
   return `<main class="page">
-    <button class="profile" data-act="rename">
-      <span class="pfblock" style="${pcVars(0)}">${esc(name.slice(0, 1).toUpperCase())}</span>
-      <span class="pfname"><small>Du · ${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'}</small><b>${esc(name)}</b></span>
-      <span class="pfavg"><small>Ø 501</small><b>${fmt(ov.avg)}</b></span>
+    <button class="me glint" data-act="rename" style="--gd:-3s">
+      <span class="me-mono"><span>${esc(name.slice(0, 1).toUpperCase())}</span></span>
+      <span class="me-txt"><b>${esc(name)}</b><small>${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'} · ${ov.wins} ${ov.wins === 1 ? 'Sieg' : 'Siege'}</small></span>
+      <span class="me-avg"><small>Ø 501</small><b class="pop">${fmt(ov.avg)}</b></span>
     </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero">

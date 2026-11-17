@@ -1,18 +1,23 @@
-/* Anmeldung beim Start: 1) E-Mail → 2a) Passwort (Konto gibt es) oder 2b) Passwort festlegen + eindeutigen Namen wählen. */
+/* Anmeldung beim Start: 1) E-Mail → 2a) Passwort (Konto gibt es) oder 2b) Passwort festlegen + eindeutigen Namen wählen.
+   Eine gerahmte Karte mit Eck-Ornamenten und wanderndem Licht, Schritt-Anzeige oben, Wappen mit Lichtschein darüber. */
 import { ui } from '../store.js';
 import { esc } from './common.js';
-import { crest, divider } from './svg.js';
+import { crest, cornerOrnament, stars } from './svg.js';
 
 export function authView() {
   const a = ui.auth || (ui.auth = { step: 'email', email: '' });
   const err = a.error ? `<p class="auth-err" role="alert">${esc(a.error)}</p>` : '';
   const busy = a.busy ? 'disabled' : '';
+  const type = a.show ? 'text' : 'password';
+  const showBtn = `<button class="pw-show" data-act="pwShow" type="button">${a.show ? 'Verbergen' : 'Zeigen'}</button>`;
+  const mail = `<button class="auth-mail" data-act="authBack"><span>${esc(a.email)}</span><small>ändern</small></button>`;
   let body;
   if (a.step === 'login') {
     body = `<div class="auth-form" data-key="auth-login">
       <h1 class="display">Willkommen zurück</h1>
-      <button class="auth-mail" data-act="authBack">${esc(a.email)}<small>ändern</small></button>
-      <input id="authPw" class="field plain" type="password" placeholder="Passwort" autocomplete="current-password" enterkeyhint="go">
+      ${mail}
+      <div class="auth-row"><label class="auth-lbl" for="authPw">Passwort</label>${showBtn}</div>
+      <input id="authPw" class="field plain" type="${type}" placeholder="Dein Passwort" autocomplete="current-password" enterkeyhint="go">
       ${err}
       <button class="btn red big" data-act="authLogin" ${busy}>${a.busy ? 'Moment …' : 'Anmelden'}</button>
       <p class="auth-note">Passwort vergessen? Zurücksetzen per E-Mail kommt noch – bis dahin hilft der Betreiber des Servers.</p>
@@ -20,28 +25,35 @@ export function authView() {
   } else if (a.step === 'register') {
     body = `<div class="auth-form" data-key="auth-register">
       <h1 class="display">Neues Konto</h1>
-      <button class="auth-mail" data-act="authBack">${esc(a.email)}<small>ändern</small></button>
+      ${mail}
       <label class="auth-lbl" for="authName">Dein Name</label>
       <input id="authName" class="field name" placeholder="Eindeutiger Name" maxlength="20" autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next">
-      <p id="authNameHint" class="name-hint ${a.nameOk ? 'ok' : ''}" aria-live="polite">${esc(a.nameHint || 'Freunde finden dich über diesen Namen. 3–20 Zeichen, ohne Leerzeichen.')}</p>
-      <label class="auth-lbl" for="authPw">Passwort festlegen</label>
-      <input id="authPw" class="field plain" type="password" placeholder="Mindestens 8 Zeichen" autocomplete="new-password" enterkeyhint="next">
-      <input id="authPw2" class="field plain" type="password" placeholder="Passwort wiederholen" autocomplete="new-password" enterkeyhint="go">
+      <p id="authNameHint" class="name-hint ${a.nameOk ? 'ok' : ''}" aria-live="polite">${esc(a.nameHint || 'Freunde finden dich darüber · 3–20 Zeichen, ohne Leerzeichen')}</p>
+      <div class="auth-row"><label class="auth-lbl" for="authPw">Passwort festlegen</label>${showBtn}</div>
+      <input id="authPw" class="field plain" type="${type}" placeholder="Mindestens 8 Zeichen" autocomplete="new-password" enterkeyhint="next">
+      <input id="authPw2" class="field plain" type="${type}" placeholder="Passwort wiederholen" autocomplete="new-password" enterkeyhint="go">
       ${err}
       <button class="btn red big" data-act="authRegister" ${busy}>${a.busy ? 'Moment …' : 'Konto anlegen'}</button>
     </div>`;
   } else {
     body = `<div class="auth-form" data-key="auth-email">
       <h1 class="display">Willkommen</h1>
-      <p>Melde dich mit deiner E-Mail an. Deine Spiele und Statistiken liegen dann sicher in deinem Konto – auf jedem Gerät.</p>
-      <input id="authEmail" class="field plain" type="email" placeholder="E-Mail-Adresse" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" value="${esc(a.email || '')}">
+      <p class="auth-lead">Melde dich mit deiner E-Mail an – neu oder schon dabei, das klären wir im nächsten Schritt.</p>
+      <label class="auth-lbl" for="authEmail">E-Mail</label>
+      <input id="authEmail" class="field plain" type="email" placeholder="name@beispiel.de" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" value="${esc(a.email || '')}">
       ${err}
       <button class="btn red big" data-act="authEmail" ${busy}>${a.busy ? 'Moment …' : 'Weiter'}</button>
     </div>`;
   }
+  const s2 = a.step === 'register' ? 'Konto anlegen' : 'Passwort';
+  const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   return `<div class="stage auth">
-    <div class="stage-crest">${crest({ size: 200 })}</div>
-    ${divider()}
-    ${body}
+    <div class="auth-halo" aria-hidden="true"></div>
+    <div class="auth-crest">${crest({ size: 150 })}</div>
+    <section class="auth-card glint" style="--gd:-2s">${corners}
+      <div class="auth-steps"><span class="on">1 · E-Mail</span><i class="${a.step !== 'email' ? 'on' : ''}"></i><span class="${a.step !== 'email' ? 'on' : ''}">2 · ${s2}</span></div>
+      ${body}
+    </section>
+    <p class="auth-foot">${stars(3, '#d4a63a', 9)}<span>Deine Spiele liegen sicher in deinem Konto – spielen geht auch offline.</span></p>
   </div>`;
 }

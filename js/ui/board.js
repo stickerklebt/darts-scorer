@@ -40,38 +40,37 @@ export function inputBoard() {
 export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', weak: '#d27a3a', bad: '#c4452f' };
 export const tierColor = (t) => (t ? TIER_COLORS[t] : null);
 
-/** rating: { feld: { tier, top } } aus doubleRating() – Farbe relativ zum Spieler, Top 3 markiert */
+/** Medaillen-Farben für die drei besten Doppel */
+export const MEDALS = ['#ffd45c', '#dfe4ea', '#d9925a'];
+
+/**
+ * Doppel-Heatmap im Stil der Eingabe-Scheibe: dunkle Felder, Doppel in der Farbe ihrer Stufe
+ * (relativ zur eigenen Gesamtquote), die drei besten mit Gold-/Silber-/Bronze-Rand.
+ * rating: { feld: { tier, top } } aus doubleRating()
+ */
 export function heatBoard(fields, sel, rating = {}) {
-  const C = COLORS, ink = C.ink, paper = C.cream;
-  const defs = `<defs>
-    <pattern id="hA" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V4" stroke="${ink}" stroke-width="1.1" opacity=".55"/></pattern>
-    <pattern id="hB" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><path d="M0 0V4" stroke="${ink}" stroke-width="1.1" opacity=".55"/></pattern>
-    <pattern id="hX" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 0L5 5M5 0L0 5" stroke="${ink}" stroke-width=".7" opacity=".5"/></pattern>
-    <pattern id="hN" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><path d="M0 0V3" stroke="${ink}" stroke-width=".8" opacity=".35"/></pattern>
-  </defs>`;
-  let s = `${defs}<circle r="${R.edge}" fill="${ink}"/><circle r="${R.dblOut}" fill="${paper}"/>`, tops = '';
+  const dark = ['#1d1913', '#28221a'], tri = ['#2c251c', '#352d22'];
+  const fillFor = (key) => tierColor(rating[key]?.tier) || (fields[key]?.attempts ? '#5b5140' : '#15120e');
+  let s = `<defs><filter id="hGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6"/></filter></defs>
+    <circle r="${R.edge}" class="hrim"/><circle r="${R.dblOut + 1}" fill="#0f0d0a"/>`;
+  let medals = '', glow = '', nums = '';
   ORDER.forEach((n, i) => {
-    const [a0, a1] = segAngles(i);
-    const hatch = i % 2 ? 'url(#hA)' : 'url(#hB)';
-    s += `<path d="${ringPath(R.outerBull, R.triIn, a0, a1)}" fill="${hatch}"/>`;
-    s += `<path d="${ringPath(R.triIn, R.triOut, a0, a1)}" fill="url(#hX)"/>`;
-    s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${hatch}"/>`;
-    const key = `D${n}`, col = tierColor(rating[key]?.tier);
-    s += `<path d="${ringPath(R.dblIn, R.dblOut, a0, a1)}" fill="${col || 'url(#hN)'}" ${col ? '' : `style="fill:${paper}"`} data-act="heat" data-v="${key}"
-      stroke="${ink}" stroke-width="${sel === key ? 3.5 : 1}"/>`;
-    if (!col) s += `<path d="${ringPath(R.dblIn, R.dblOut, a0, a1)}" fill="url(#hN)" pointer-events="none"/>`;
-    const mid = (a0 + a1) / 2, [x, y] = pt(125, mid).split(',');
-    s += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central" pointer-events="none">${n}</text>`;
+    const [a0, a1] = segAngles(i), k = i % 2;
+    s += `<path d="${ringPath(R.outerBull, R.triIn, a0, a1)}" fill="${dark[k]}"/><path d="${ringPath(R.triIn, R.triOut, a0, a1)}" fill="${tri[k]}"/>`;
+    s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${dark[k]}"/>`;
+    const key = `D${n}`, d = ringPath(R.dblIn, R.dblOut, a0, a1);
+    s += `<path class="hd ${sel === key ? 'sel' : ''}" d="${d}" fill="${fillFor(key)}" data-act="heat" data-v="${key}"/>`;
     const top = rating[key]?.top;
-    if (top) { const [tx, ty] = pt((R.dblIn + R.dblOut) / 2, mid).split(','); tops += `<g pointer-events="none" transform="translate(${tx} ${ty})"><circle r="10" fill="${ink}" stroke="#ffd45c" stroke-width="2.5"/><text class="htop" text-anchor="middle" dominant-baseline="central">${top}</text></g>`; }
+    if (top) { glow += `<path class="hmed-g" d="${d}" stroke="${MEDALS[top - 1]}"/>`; medals += `<path class="hmed" d="${d}" stroke="${MEDALS[top - 1]}"/>`; }
+    const [x, y] = pt(125, (a0 + a1) / 2).split(',');
+    nums += `<text x="${x}" y="${y}" class="hn ${top ? `t${top}` : ''}" text-anchor="middle" dominant-baseline="central">${n}</text>`;
   });
-  const cb = tierColor(rating.Bull?.tier);
-  s += `<circle r="${R.outerBull}" fill="url(#hX)"/>`;
-  s += `<circle r="${R.bull + 3}" fill="${cb || paper}" stroke="${ink}" stroke-width="${sel === 'Bull' ? 3.5 : 1}" data-act="heat" data-v="Bull"/>`;
-  s += `<g fill="none" stroke="${ink}" stroke-width="1" pointer-events="none">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
-    ${ORDER.map((_, i) => `<path d="M${pt(R.outerBull, segAngles(i)[0])} L${pt(R.dblOut, segAngles(i)[0])}"/>`).join('')}</g>${tops}`;
-  if (rating.Bull?.top) s += `<g pointer-events="none" transform="translate(0 -28)"><circle r="10" fill="${ink}" stroke="#ffd45c" stroke-width="2.5"/><text class="htop" text-anchor="middle" dominant-baseline="central">${rating.Bull.top}</text></g>`;
-  return `<svg class="heatboard" viewBox="-${R.edge} -${R.edge} ${R.edge * 2} ${R.edge * 2}" aria-label="Doppelquote je Feld">${s}</svg>`;
+  s += `<circle r="${R.outerBull}" fill="#2c251c"/>`;
+  s += `<circle class="hd ${sel === 'Bull' ? 'sel' : ''}" r="${R.bull + 3}" fill="${fillFor('Bull')}" data-act="heat" data-v="Bull"/>`;
+  if (rating.Bull?.top) { const c = MEDALS[rating.Bull.top - 1]; glow += `<circle class="hmed-g" r="${R.bull + 3}" stroke="${c}"/>`; medals += `<circle class="hmed" r="${R.bull + 3}" stroke="${c}"/>`; }
+  s += `<g class="hwire">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
+    ${ORDER.map((_, i) => `<path d="M${pt(R.outerBull, segAngles(i)[0])} L${pt(R.dblOut, segAngles(i)[0])}"/>`).join('')}</g>`;
+  return `<svg class="heatboard" viewBox="-${R.edge} -${R.edge} ${R.edge * 2} ${R.edge * 2}" aria-label="Doppelquote je Feld">${s}<g filter="url(#hGlow)">${glow}</g>${medals}${nums}</svg>`;
 }
 
 /* ---------- Echte Scheibe (mm) fürs Ausbullen: ganze Scheibe inkl. Zahlenring ---------- */

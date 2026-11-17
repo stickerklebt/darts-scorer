@@ -9,6 +9,8 @@ Das Gerät hält alles weiter in `localStorage` (offline spielbar), `js/sync.js`
 GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup: `README.md`.
 
 ## Regeln für die Arbeit
+- **Aussehen: `DESIGN.md` ist verbindlich** (Farben, Schrift-Rollen, Zahlen, Rahmen, Licht, Bausteine). Neue Elemente danach bauen,
+  neue Regeln dort eintragen.
 - Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheiben, Animationen: eigene SVG/CSS/Canvas im Code. Keine Sounds.
 - Schriften lokal als `.woff2` (nur OFL): **League Gothic** (Zahlen, Beschriftungen, Knöpfe – schmale Holzlettern),
   **IM Fell English SC** (Überschriften, Bleisatz-Versalien), **IM Fell English** (Fließtext). IM Fell hat Mediävalziffern –
@@ -27,12 +29,19 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 - **Lichtlinie** (`fuse()` in `svg.js`, `.fuse` in `base.css`): ein heller Schein gleitet sehr langsam die Goldrahmen-Linie
   entlang und läuft nach hinten weich aus (6 übereinanderliegende Striche, SVG-`<animate>`) –
   Hero-Karte, Start-Button im Setup, Rekord-Karten, Overall-Average, Sieger-Screen. **Im laufenden Spiel kein Leuchten.**
+- **Licht & Bewegung** (außerhalb des Spiels): `.glint` = ein Lichtpunkt wandert sehr langsam am Rand entlang
+  (CSS conic-gradient + `@property --ga`, Verzögerung `--gd` je Karte versetzt) – Statistik-Karten, Spielerkarte, Anmeldekarte,
+  Statistik-Kopf. Karten erscheinen nacheinander (`--i`), roter Reiterstrich glimmt, große rote Knöpfe mit gelegentlichem Lichtstreif.
+- **Zahlen:** League Gothic ist sehr schmal → große Zahlen außerhalb des Spiels werden mit `scaleX(var(--num-w))` (1,16)
+  leicht verbreitert. Plakat-Stil `.pop` (rot versetzter Schatten + `#ink`) nur für ausgewählte Zahlen: Ø auf der
+  Spielerkarte, Overall-Average, Rekord-Karten, Ø in der Freundesliste. Kleine Karten (`.kv-c`) mit Goldrand ringsum.
 - **Rendering ohne Flackern:** `render()` setzt nicht mehr `innerHTML`, sondern gleicht den Bildschirm per `morph()` an
   (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
-- App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg` (bettet IM Fell ein, Federfilter), dann `qlmanage -t -s 1024 icon.svg`
-  und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
+- App-Icon: bewusst schlicht (Zielscheibe: Goldring, Rot, Schwarz, Creme, rotes Bull auf dunklem Grund) aus
+  `tools/mkicon.mjs` → `node tools/mkicon.mjs icon.svg && qlmanage -t -s 1024 icon.svg`, dann mit `sips -Z 512/180`
+  zu `icon-512.png` / `icon-180.png`. Das Wappen bleibt nur in der App (Splash, Anmeldung).
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen. `/api/` wird nie gecacht.
 - **Server-Regeln:** keine npm-Pakete. Neue Endpunkte in `server/src/routes/`, Eingaben in `validate.js` prüfen, Fehler als
   `HttpError` mit deutscher Meldung. Schema-Änderungen nur als neuer Eintrag am Ende von `MIGRATIONS` in `db.js`.
@@ -63,6 +72,7 @@ js/
   main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
   store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand, SYNC_KEYS, Save-Hook
   api.js                fetch-Wrapper zum Server (ApiError, deutsche Meldungen)
+  caller.js             Eigener Caller: Aufnahme → WAV (mono 22 kHz, getrimmt, normalisiert), Server + IndexedDB, Web-Audio-Wiedergabe
   sync.js               Konto (auth), Login/Logout, Delta-Sync mit dem Server (Meta in `darts.sync`)
   match.js              Match-Objekt, Werfer-Reihenfolge
   checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
@@ -79,11 +89,11 @@ js/
   games.js              Spielmodi (Titel, Regeln)
   ui/ svg.js · board.js (Eingabe-, Heatmap- und Echt-Scheibe) · charts.js · play.js · setup.js · game.js ·
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
-      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · aimboard.js (Eingabe-Scheibe mit Lupe) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
+      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · aimboard.js (Eingabe-Scheibe mit Lupe) · caller.js (Screen Eigener Caller) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -111,7 +121,7 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 ## Server-Datenmodell (SQLite `/var/lib/darts/darts.db`)
 `users` (id, email klein, username, username_key klein + UNIQUE, pw_hash scrypt) · `sessions` (token_hash SHA-256, Ablauf) ·
 `user_state` (rev, state = JSON der SYNC_KEYS, state_rev) · `matches` (user_id, id, rev, deleted = Grabstein, data JSON) ·
-`friendships` (requester_id, addressee_id, status pending|accepted).
+`friendships` (requester_id, addressee_id, status pending|accepted) · `caller_clips` (user_id, score 0–180, WAV-Daten).
 Sync: Gerät schickt `{ since, upsert, remove, state? }`, bekommt Änderungen anderer Geräte seit `since`. Zustand nur bei
 bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (Server-Basis + eigene Spieler). Laufendes Match
 (`current`) und UI-Zustand bleiben lokal.
@@ -122,6 +132,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
   und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
+- **Eigener Caller** (Einstellungen › Eigener Caller, Screen `caller`): Zahl wählen (Beliebt + alle möglichen 0–180), aufnehmen
+  (max. 5 s, Pegel + Zeit live), anhören, speichern/löschen. Wirft der **Hauptspieler** in X01 oder Highscore genau eine
+  eingesprochene Zahl (kein Bust), spielt seine Aufnahme statt der Computerstimme (`prefs.ownCalls`, unabhängig von „Ansage“);
+  weitere Computer-Ansagen warten, bis sie fertig ist. Ablage im Konto (`/api/calls`, PUT nur `audio/wav`, max. 400 KB, 200 Stück),
+  Offline-Kopie in IndexedDB; Abmelden löscht die Kopie. Mikrofon braucht HTTPS (Permissions-Policy `microphone=(self)`).
 - **Eingabe-Scheibe** (`ui/aimboard.js`, Standard für Einzeldarts in X01 und Cricket; Tastatur in den Einstellungen wählbar):
   eigene Scheibe im App-Stil (warm-dunkle Felder, leicht getönte Grün-/Rot-Ringe, Golddrähte, breitere Ringe für Finger).
   Finger drauf → Feld unter dem Finger leuchtet gold; nach 140 ms halten (oder beim Ziehen) erscheint die Lupe über dem Finger
@@ -167,7 +182,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
   Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
 - **Statistik**: Unter-Reiter Überblick · Scoring · Checkout · Doppel · Verlauf (nur 501). Doppelfarben relativ zur eigenen
-  Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral; Top 3 markiert.
+  Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral.
+  Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel mit Gold-/Silber-/Bronze-Rand (glimmend), in der Liste
+  als Medaillen-Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
+  Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
 
 - **Testdaten** (`js/demo.js`): ~60 × 501 über 90 Tage (Hauptspieler, „Test-Tim“, „Test-Ben“) + 5 Partyspiele, Würfe aus dem

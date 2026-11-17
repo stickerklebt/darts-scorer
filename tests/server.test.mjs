@@ -217,3 +217,39 @@ test('Konto: Name ändern, Passwort ändern, löschen', async () => {
     assert.equal(s.db.prepare('SELECT COUNT(*) AS n FROM user_state').get().n, 1);
   } finally { await s.stop(); }
 });
+
+/** Minimales gültiges WAV (Mono, 8 kHz, n Samples Stille) */
+function wav(n = 800) {
+  const b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVE', 8); b.write('fmt ', 12); b.writeUInt32LE(16, 16);
+  b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(8000, 24); b.writeUInt32LE(16000, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34);
+  b.write('data', 36); b.writeUInt32LE(n * 2, 40);
+  return b;
+}
+
+test('Eigener Caller: Ansage hochladen, auflisten, abrufen, löschen; nur WAV, nur eigene', async () => {
+  const s = await boot();
+  try {
+    const a = client(s.base), b = client(s.base);
+    await register(a, 'call@x.de', 'Caller');
+    await register(b, 'other@x.de', 'Andere');
+    // Rohes PUT mit Cookie: Cookie über einen Login-Request holen
+    const login = await fetch(`${s.base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'call@x.de', password: 'geheim123' }) });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const put = (score, body, type = 'audio/wav') => fetch(`${s.base}/api/calls/${score}`, { method: 'PUT', headers: { 'Content-Type': type, Cookie: cookie }, body });
+    assert.equal((await put(180, wav())).status, 200);
+    assert.equal((await put(181, wav())).status, 400);
+    assert.equal((await put(60, Buffer.from('kein wav hier, nur text....................................'))).status, 400);
+    assert.equal((await put(60, wav(), 'audio/webm')).status, 415);
+    assert.equal((await put(60, Buffer.alloc(500 * 1024))).status, 413);
+    const list = await (await fetch(`${s.base}/api/calls`, { headers: { Cookie: cookie } })).json();
+    assert.deepEqual(list.calls.map((c) => c.score), [180]);
+    const got = await fetch(`${s.base}/api/calls/180`, { headers: { Cookie: cookie } });
+    assert.equal(got.headers.get('content-type'), 'audio/wav');
+    assert.equal(Buffer.from(await got.arrayBuffer()).toString('ascii', 0, 4), 'RIFF');
+    assert.equal((await b('GET', '/api/calls')).body.calls.length, 0); // andere sehen sie nicht
+    assert.equal((await b('GET', '/api/calls/180')).status, 404);
+    assert.equal((await fetch(`${s.base}/api/calls/180`, { method: 'DELETE', headers: { Cookie: cookie } })).status, 200);
+    assert.equal((await fetch(`${s.base}/api/calls/180`, { headers: { Cookie: cookie } })).status, 404);
+  } finally { await s.stop(); }
+});

@@ -3,6 +3,22 @@ import { COLORS } from './svg.js';
 
 const W = 340, H = 170, PAD = { l: 34, r: 10, t: 12, b: 24 };
 const r1 = (x) => Math.round(x * 10) / 10;
+/** Schöne Schrittweite (1, 2, 2,5, 5 × 10^n) */
+const niceStep = (raw) => { const p = 10 ** Math.floor(Math.log10(raw)); const f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; };
+/**
+ * Achsenbereich passend zu den Werten (nicht immer ab 0 bzw. bis 100): etwas Luft ober- und unterhalb,
+ * auf runde Schritte gerundet, nie unter 0 und – falls angegeben – nie über cap (z. B. 100 %).
+ */
+export function axisRange(vals, cap = null) {
+  let a = Math.min(...vals), b = Math.max(...vals);
+  if (!(b > a)) { const pad = Math.max(Math.abs(a) * 0.15, 1); a -= pad; b += pad; }
+  const step = niceStep((b - a) / 4);
+  let lo = Math.max(0, Math.floor((a - step * 0.5) / step) * step);
+  let hi = Math.ceil((b + step * 0.5) / step) * step;
+  if (cap !== null) hi = Math.min(cap, hi);
+  if (hi <= lo) hi = lo + step;
+  return { lo, hi };
+}
 const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.log10(v)); return Math.ceil(v / p * 2) / 2 * p; };
 
 /**
@@ -12,13 +28,14 @@ const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.l
 export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '' } = {}) {
   const pts = values.map((v, i) => ({ v, a: avg[i], i })).filter((p) => p.v !== null);
   if (!pts.length) return '<p class="chart-empty">Noch keine Daten in diesem Zeitraum.</p>';
-  const max = maxHint ?? niceMax(Math.max(...pts.map((p) => p.v)) * 1.08);
+  const { lo, hi } = axisRange([...pts.map((p) => p.v), ...avg.filter((a) => a !== null && a !== undefined)], maxHint);
+  const min = lo, max = hi;
   const n = values.length, iw = W - PAD.l - PAD.r, ih = H - PAD.t - PAD.b;
   const x = (i) => r1(PAD.l + (n === 1 ? iw / 2 : (i / (n - 1)) * iw));
-  const y = (v) => r1(PAD.t + ih - (v / max) * ih);
+  const y = (v) => r1(PAD.t + ih - ((v - min) / (max - min)) * ih);
   let g = '';
   for (let k = 0; k <= 4; k++) {
-    const v = (max * k) / 4, yy = y(v);
+    const v = min + ((max - min) * k) / 4, yy = y(v);
     g += `<path d="M${PAD.l} ${yy}H${W - PAD.r}" stroke="${k ? COLORS.gold : COLORS.cream2}" stroke-opacity="${k ? 0.22 : 0.6}" stroke-width="1" ${k ? 'stroke-dasharray="2 3"' : ''}/>`;
     g += `<text x="${PAD.l - 6}" y="${yy}" class="ax" text-anchor="end" dominant-baseline="central">${fmt(v)}</text>`;
   }

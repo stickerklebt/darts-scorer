@@ -7,7 +7,7 @@ export function createRouter() {
     routes.push({ method, re, keys, handler, opts });
   };
   return {
-    get: add('GET'), post: add('POST'), patch: add('PATCH'), delete: add('DELETE'),
+    get: add('GET'), post: add('POST'), patch: add('PATCH'), put: add('PUT'), delete: add('DELETE'),
     /** → { route, params } · 'method' (Pfad passt, Methode nicht) · null */
     match(method, pathname) {
       let pathHit = false;

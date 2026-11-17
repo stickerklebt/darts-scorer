@@ -52,6 +52,15 @@ const MIGRATIONS = [
      CHECK (requester_id <> addressee_id)
    );
    CREATE INDEX friendships_addressee ON friendships(addressee_id);`,
+  /* 2: Eigener Caller – selbst eingesprochene Ansagen je Punktzahl (WAV, wenige KB) */
+  `CREATE TABLE caller_clips (
+     user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     score      INTEGER NOT NULL CHECK (score BETWEEN 0 AND 180),
+     mime       TEXT NOT NULL,
+     data       BLOB NOT NULL,
+     updated_at INTEGER NOT NULL,
+     PRIMARY KEY (user_id, score)
+   );`,
 ];
 
 export function openDb(file) {

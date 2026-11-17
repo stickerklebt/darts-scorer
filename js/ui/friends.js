@@ -47,7 +47,7 @@ export function friendsView() {
     : friends.length
       ? `<div class="slist flist">${friends.map((x) => `<button class="srow" data-act="friendOpen" data-v="${esc(x.id)}">${chip(x.username)}
           <span class="lbl">${esc(x.username)}<small>${x.matches ? `${x.matches} ${x.matches === 1 ? 'Spiel' : 'Spiele'}${x.lastPlayed ? ` · zuletzt ${ago(x.lastPlayed)}` : ''}` : 'Noch keine Spiele'}</small></span>
-          <span class="favg"><small>Ø 501</small><b>${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
+          <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
   return `<main class="page friends">
@@ -71,7 +71,7 @@ export function friendsView() {
 }
 
 /* ---------------- Profil eines Freundes ---------------- */
-const cards = (items) => `<div class="kv">${items.map(([k, v, sub]) => `<div class="kv-c"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div class="kv-c glint" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';

@@ -1,7 +1,7 @@
 /* HTTP-Anwendung: Sicherheits-Header, API-Routen, statische Dateien, Fehlerbehandlung, Request-Log.
    createApp() ist ohne Netzwerk testbar (tests/server.test.mjs startet sie auf einem freien Port). */
 import { performance } from 'node:perf_hooks';
-import { HttpError, sendJson, readJson, clientIp, isHttps } from './http.js';
+import { HttpError, sendJson, readJson, readBinary, clientIp, isHttps } from './http.js';
 import { createRouter } from './router.js';
 import { createSessions } from './sessions.js';
 import { createLimiter } from './ratelimit.js';
@@ -10,10 +10,11 @@ import { authRoutes } from './routes/auth.js';
 import { accountRoutes } from './routes/account.js';
 import { syncRoutes } from './routes/sync.js';
 import { friendRoutes } from './routes/friends.js';
+import { callerRoutes } from './routes/caller.js';
 
 const CSP = [
   "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
-  "connect-src 'self'", "manifest-src 'self'", "worker-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'self'", "frame-ancestors 'none'",
+  "connect-src 'self'", "media-src 'self' blob: data:", "manifest-src 'self'", "worker-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'self'", "frame-ancestors 'none'",
 ].join('; ');
 
 export function createApp({ config, db, log }) {
@@ -30,6 +31,7 @@ export function createApp({ config, db, log }) {
   accountRoutes(router, deps);
   syncRoutes(router, deps);
   friendRoutes(router, deps);
+  callerRoutes(router, deps);
   router.get('/healthz', () => { db.prepare('SELECT 1').get(); return { ok: true }; }, { public: true });
   const serveStatic = createStatic(config.appDir);
 
@@ -40,7 +42,7 @@ export function createApp({ config, db, log }) {
     res.setHeader('Referrer-Policy', 'same-origin');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
-    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=()');
     if (isHttps(req, config.trustProxy)) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   }
 
@@ -64,6 +66,7 @@ export function createApp({ config, db, log }) {
       req, res, log, params: hit.params, query: url.searchParams, ip: clientIp(req, config.trustProxy),
       user: sessions.user(req, res),
       json: () => readJson(req, config.maxBodyBytes),
+      binary: (limit, types) => readBinary(req, limit, types),
     };
     if (!hit.route.opts.public && !c.user) throw new HttpError(401, 'unauthenticated', 'Bitte anmelden.');
     res.locals = { user: c.user?.id };

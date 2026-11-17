@@ -17,15 +17,15 @@ export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
 
 const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
-const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub]) => `<div class="kv-c"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
-const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b>${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
+const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub], i) => `<div class="kv-c glint" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows) => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<div class="rl"><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></div>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
   return `<div class="st-head">
-    <button class="st-who" data-act="statsWho"><span class="pfblock" style="${pcVars(Math.max(0, pi))}">${esc(name.slice(0, 1).toUpperCase())}</span>
+    <button class="st-who glint" data-act="statsWho" style="--gd:-6s"><span class="me-mono sm" style="${pcVars(Math.max(0, pi))}"><span>${esc(name.slice(0, 1).toUpperCase())}</span></span>
       <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
@@ -59,25 +59,32 @@ function checkoutTab(st) {
     + rankList('Top 5 Checkouts', st.topCo);
 }
 
-/** Heatmap + Doppelliste, Farben relativ zur eigenen Gesamtquote, Top 3 markiert */
+/** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
+    Liste: beste Quote zuerst oder nach Zahl; Erklärung der Farben klein am Ende. */
 export function doublesBlock(st, sel, withList = true) {
   const fields = st.doubles.fields, rating = doubleRating(st.doubles);
   const f = sel && fields[sel] ? fields[sel] : null;
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
-  const sort = ui.heatSort || 'attempts';
+  const sort = ui.heatSort === 'field' ? 'field' : 'rate';
   const num = (k) => (k === 'Bull' ? 25 : Number(k.slice(1)));
-  rows.sort((a, b) => (sort === 'field' ? num(a.k) - num(b.k) : sort === 'rate' ? b.rate - a.rate || b.attempts - a.attempts : b.attempts - a.attempts));
-  const th = (k, l) => `<th><button data-act="heatSort" data-v="${k}" class="${sort === k ? 'on' : ''}">${l}${sort === k ? ' ▾' : ''}</button></th>`;
+  const rated = (r) => (r.attempts >= MIN_ATTEMPTS ? 1 : 0);
+  rows.sort((a, b) => (sort === 'field' ? num(a.k) - num(b.k) : rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts));
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
-  const topMark = (k) => (rating[k]?.top ? `<span class="topm">${rating[k].top}</span>` : '');
+  const medal = (k) => (rating[k]?.top ? `<span class="medal m${rating[k].top}" title="Platz ${rating[k].top}"></span>` : '');
+  const legend = `<div class="heat-key">
+      <span class="hk-scale"><small>schwächer</small>${['bad', 'weak', 'avg', 'good', 'great'].map((t) => `<i style="background:${TIER_COLORS[t]}"></i>`).join('')}<small>besser</small></span>
+      <span class="hk-med"><span class="medal m1"></span><span class="medal m2"></span><span class="medal m3"></span><small>deine 3 besten</small></span>
+      <span class="hk-none"><i></i><small>unter ${MIN_ATTEMPTS} Versuchen</small></span>
+    </div>
+    <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>`;
   return `<div class="heat">
       <div class="heat-board">${heatBoard(fields, f ? sel : null, rating)}</div>
-      <div class="heat-legend">${TIERS.map((t) => `<span><i style="background:${TIER_COLORS[t.k]}"></i>${t.label}</span>`).join('')}<span><i class="none"></i>unter ${MIN_ATTEMPTS} Versuchen</span><span><b class="topm">1</b>deine 3 besten Doppel</span></div>
-      <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>
       ${withList ? `<div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>` : ''}
     </div>
-    ${withList && rows.length ? `<div class="sbtable-wrap"><table class="sbtable dbl"><tr>${th('field', 'Feld')}${th('attempts', 'Versuche')}<th><div>Treffer</div></th>${th('rate', 'Quote')}</tr>
-      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${topMark(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}`;
+    ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2>${seg('heatSort', 'v', [['rate', 'Beste zuerst'], ['field', 'Nach Zahl']], sort, 'seg sm')}</div>
+      <div class="sbtable-wrap"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
+      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${medal(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
+    ${withList ? legend : ''}`;
 }
 
 function historyTab(st) {

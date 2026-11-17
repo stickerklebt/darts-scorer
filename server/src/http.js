@@ -28,6 +28,23 @@ export async function readJson(req, limit) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw bad('bad_json', 'Ungültiges JSON.'); }
 }
 
+/** Binären Körper lesen (z. B. Audio) – mit Größenlimit und erlaubten Content-Types. */
+export async function readBinary(req, limit, types) {
+  const ct = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+  if (!types.includes(ct)) throw new HttpError(415, 'content_type', `Erlaubt: ${types.join(', ')}`);
+  const len = Number(req.headers['content-length'] || 0);
+  if (len > limit) throw new HttpError(413, 'too_large', 'Datei zu groß.');
+  const chunks = [];
+  let size = 0;
+  for await (const c of req) {
+    size += c.length;
+    if (size > limit) throw new HttpError(413, 'too_large', 'Datei zu groß.');
+    chunks.push(c);
+  }
+  if (!size) throw bad('empty', 'Leere Datei.');
+  return { type: ct, data: Buffer.concat(chunks) };
+}
+
 export function parseCookies(header = '') {
   const out = {};
   for (const part of header.split(';')) {

@@ -28,3 +28,12 @@ test('Scheibe: Namen, Schlüssel und Markierung der getroffenen Felder', () => {
   assert.match(svg, /class="af hit" data-k="b2"/);
   assert.equal((svg.match(/class="amark"/g) || []).length, 1); // Wurfstelle nur mit Position
 });
+
+import { axisRange } from '../js/ui/charts.js';
+test('Diagramm-Achse passt sich den Werten an (5–10 % nicht bis 100 %)', () => {
+  const r = axisRange([5, 7, 10], 100);
+  assert.ok(r.lo >= 0 && r.lo <= 5 && r.hi >= 10 && r.hi <= 15, JSON.stringify(r));
+  assert.deepEqual(axisRange([0, 100], 100).hi, 100);
+  const a = axisRange([40, 62]);
+  assert.ok(a.lo > 0 && a.hi < 100, JSON.stringify(a));
+});

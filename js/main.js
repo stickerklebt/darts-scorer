@@ -30,6 +30,8 @@ import { entryDone, entryPossible } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR } from './ui/aimboard.js';
+import { callerView } from './ui/caller.js';
+import { loadCalls, clearCalls, playCall, warmCalls, startRecording, stopRecording, cancelRecording, isRecording, saveCall, deleteCall, playBuffer, callInfo } from './caller.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -69,6 +71,7 @@ function render() {
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
   else if (S.screen === 'friend' && ui.friend) html = friendView();
   else if (S.screen === 'history') html = historyView();
+  else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
@@ -98,8 +101,10 @@ function moment(mo, autoClose = 0) {
 }
 
 /* ---------------- Ansage & Display an ---------------- */
+let sayAfter = 0; // nach einer eigenen Ansage spricht die Computerstimme erst, wenn diese fertig ist
 function say(txt) {
   if (!S.prefs.voice || !('speechSynthesis' in window)) return;
+  if (Date.now() < sayAfter) { setTimeout(() => say(txt), sayAfter - Date.now()); return; }
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) { /* */ }
 }
 let wakeLock = null;
@@ -139,10 +144,16 @@ function handle(res) {
     if (t.bust) opp.forEach((id) => speak(m, id, 'oppBust', 0.6));
     else if ((m.game === 'x01' ? t.score : m.game === 'highscore' ? t.v : 0) >= 140) opp.forEach((id) => speak(m, id, 'oppGood', 0.5));
   }
+  // Eigener Caller: wirft der Hauptspieler eine eingesprochene Zahl, kommt seine Aufnahme statt der Computerstimme
+  let own = 0;
+  if (t && !t.bust && t.pid === S.mainId && !isBot(t.pid) && S.prefs.ownCalls !== false && (m.game === 'x01' || m.game === 'highscore')) {
+    own = playCall(m.game === 'x01' ? t.score : t.v);
+    if (own) sayAfter = Date.now() + own * 1000 + 250;
+  }
   if (res.type === 'match') { if (anim) { render(); anim.then(finish); } else finish(); return; }
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
-    else if (res.type === 'turn') say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
+    else if (res.type === 'turn' && !own) say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
     else if (res.type === 'leg' || res.type === 'set') {
       const mo = { kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
@@ -150,7 +161,7 @@ function handle(res) {
       else moment(mo);
     }
   } else if (res.type === 'halved') { toast(`Halbiert: ${res.before} → ${res.after}`); say('Halbiert'); }
-  else if (res.type === 'turn') say(String(t.v));
+  else if (res.type === 'turn' && !own) say(String(t.v));
   if (anim && res.type !== 'leg' && res.type !== 'set') anim.then(() => { if (S.current === m && !m.done) render(); });
   render();
 }
@@ -347,6 +358,7 @@ function startGame() {
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
   if (!S.lineup.some((e) => !isBot(e.id))) { toast('Mindestens ein Mensch muss mitspielen'); return render(); }
   S.current = newMatch(S.game, sides, S.opts[S.game], 0, S.anwurf === 'bull');
+  warmCalls();
   S.screen = 'game';
   ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
   requestWakeLock();
@@ -382,7 +394,7 @@ async function loadFriends() {
   catch (e) { ui.friends.error = errMsg(e); }
   render();
 }
-let searchTimer = null, nameTimer = null;
+let searchTimer = null, nameTimer = null, crTimer = null;
 function searchFriends(q) {
   ui.fsearch = { ...(ui.fsearch || {}), q, busy: true, error: null };
   clearTimeout(searchTimer);
@@ -399,7 +411,7 @@ function checkAuthName(v) {
   clearTimeout(nameTimer);
   if (!a || !hint) return;
   const n = v.trim();
-  if (!n) { a.nameOk = false; a.nameHint = ''; hint.textContent = 'Freunde finden dich über diesen Namen. 3–20 Zeichen, ohne Leerzeichen.'; hint.className = 'name-hint'; return; }
+  if (!n) { a.nameOk = false; a.nameHint = ''; hint.textContent = 'Freunde finden dich darüber · 3–20 Zeichen, ohne Leerzeichen'; hint.className = 'name-hint'; return; }
   nameTimer = setTimeout(async () => {
     try {
       const r = await api('GET', `api/auth/username?name=${encodeURIComponent(n)}`);
@@ -459,6 +471,7 @@ const actions = {
       setTimeout(() => $(r.exists ? '#authPw' : '#authName')?.focus(), 60);
     });
   },
+  pwShow() { if (ui.auth) { ui.auth.show = !ui.auth.show; render(); } },
   authBack() { ui.auth = { step: 'email', email: ui.auth?.email || '' }; render(); setTimeout(() => $('#authEmail')?.focus(), 60); },
   authLogin() {
     const password = $('#authPw')?.value || '';
@@ -467,7 +480,7 @@ const actions = {
       const r = await api('POST', 'api/auth/login', { email: ui.auth.email, password });
       ui.auth = null; S.screen = 'home'; S.tab = 'play';
       await login(r.user);
-      loadFriends();
+      loadFriends(); loadCalls(r.user.id);
     });
   },
   authRegister() {
@@ -478,15 +491,15 @@ const actions = {
       const r = await api('POST', 'api/auth/register', { email: ui.auth.email, password, username });
       ui.auth = null; S.screen = 'home'; S.tab = 'play';
       await login(r.user);
-      loadFriends();
+      loadFriends(); loadCalls(r.user.id);
     });
   },
   async logout() {
     ui.modal = null; toast('Wird gesichert …'); render();
     if (!(await logout())) { ui.modal = { type: 'logoutUnsynced' }; render(); return; }
-    ui.friends = null; ui.fsearch = null; ui.friend = null; ui.toast = null; render();
+    ui.friends = null; ui.fsearch = null; ui.friend = null; ui.toast = null; clearCalls(); render();
   },
-  async logoutForce() { ui.modal = null; await logout(true); ui.friends = null; ui.fsearch = null; ui.friend = null; render(); },
+  async logoutForce() { ui.modal = null; await logout(true); clearCalls(); ui.friends = null; ui.fsearch = null; ui.friend = null; render(); },
   pwOpen() { ui.modal = { type: 'password' }; render(); setTimeout(() => $('#pwOld')?.focus(), 60); },
   async pwSave() {
     const current = $('#pwOld')?.value || '', next = $('#pwNew')?.value || '';
@@ -499,8 +512,54 @@ const actions = {
   async delAcctForce() {
     const password = $('#delPw')?.value || '';
     ui.modal = { type: 'delAcct', busy: true }; render();
-    try { await api('DELETE', 'api/me', { password }); forget(); ui.modal = null; ui.friends = null; ui.fsearch = null; ui.auth = null; toast('Konto gelöscht'); }
+    try { await api('DELETE', 'api/me', { password }); forget(); clearCalls(); ui.modal = null; ui.friends = null; ui.fsearch = null; ui.auth = null; toast('Konto gelöscht'); }
     catch (e) { ui.modal = { type: 'delAcct', error: errMsg(e) }; }
+    render();
+  },
+  /* Eigener Caller */
+  callerOpen() { ui.modal = null; ui.caller = { sel: ui.caller?.sel ?? 180 }; S.screen = 'caller'; render(); window.scrollTo(0, 0); },
+  crBack() { cancelRecording(); clearInterval(crTimer); ui.caller = null; S.screen = 'home'; S.tab = 'play'; render(); window.scrollTo(0, 0); },
+  crSel(el) {
+    if (isRecording()) return;
+    ui.caller = { sel: Number(el.dataset.v) }; render();
+    document.querySelector('.crec')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  },
+  async crRec() {
+    const c = ui.caller;
+    c.err = null; c.rec = { state: 'rec' }; render();
+    const t0 = Date.now();
+    try {
+      await startRecording((lv) => { const el = $('#crLevel'); if (el) el.style.transform = `scaleX(${lv.toFixed(3)})`; });
+    } catch (e) {
+      c.rec = null; c.err = e.name === 'NotAllowedError' ? 'Kein Zugriff aufs Mikrofon – bitte in den Einstellungen des Browsers erlauben.' : errMsg(e); render(); return;
+    }
+    clearInterval(crTimer);
+    crTimer = setInterval(() => {
+      const sec = (Date.now() - t0) / 1000, el = $('#crTime');
+      if (el) el.textContent = `${sec.toFixed(1).replace('.', ',')} s`;
+      if (sec >= 5) actions.crStop();
+    }, 100);
+  },
+  async crStop() {
+    clearInterval(crTimer);
+    const c = ui.caller;
+    if (!c || c.rec?.state !== 'rec') return;
+    try { const r = await stopRecording(); c.rec = { state: 'done', ...r }; playBuffer(r.buffer); }
+    catch (e) { c.rec = null; c.err = errMsg(e); }
+    render();
+  },
+  crPlayNew() { playBuffer(ui.caller?.rec?.buffer); },
+  crPlay() { playCall(ui.caller.sel); },
+  async crSave() {
+    const c = ui.caller, r = c.rec;
+    c.busy = true; render();
+    try { await saveCall(c.sel, r.wav, r.buffer); c.rec = null; toast(`Ansage für ${c.sel} gespeichert`); }
+    catch (e) { c.err = errMsg(e); }
+    c.busy = false; render();
+  },
+  async crDel() {
+    const c = ui.caller;
+    try { await deleteCall(c.sel); toast(`Ansage für ${c.sel} gelöscht`); } catch (e) { c.err = errMsg(e); }
     render();
   },
   /* Spielhistorie */
@@ -784,7 +843,7 @@ seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellung
 setOnChange(() => render());
 if (S.screen === 'friend') S.screen = 'home';
 render();
-bootAuth().then(() => { if (auth.user) loadFriends(); });
+bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); } });
 probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';
