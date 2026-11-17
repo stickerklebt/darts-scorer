@@ -20,7 +20,7 @@ export async function api(method, path, body) {
   }
   const json = (res.headers.get('content-type') || '').includes('application/json');
   const data = json ? await res.json().catch(() => null) : null;
-  if (!json) throw new ApiError(res.status || 0, 'no_server', 'Kein Darts-Server gefunden. Die App muss über den Server laufen (Container), damit Anmelden und Freunde funktionieren.');
+  if (!json) throw new ApiError(res.status || 0, 'no_server', 'Kein Darts-Server gefunden. Die App muss über den Server laufen, damit Anmelden und Freunde funktionieren.');
   if (!res.ok) throw new ApiError(res.status, data?.error || 'http', data?.message || `Fehler ${res.status}`, data);
   return data;
 }

@@ -1,8 +1,10 @@
 # Darts Scorer – Architektur & Regeln
 
 PWA für iPhone/iPad. Vanilla JS als ES-Module, kein Build-Step, keine Frameworks, keine CDNs.
-Läuft im **Container** (`Dockerfile`, `docker-compose.yml`): Node-Server in `server/` liefert die App aus und speichert
-Konten, Spieldaten und Freundschaften in SQLite (`node:sqlite`, Volume `/data`). Keine npm-Abhängigkeiten – nur Node-Bordmittel.
+Betrieb mit **nginx + systemd** (kein Docker): Node-Server in `server/` (nur 127.0.0.1:8080) liefert die App aus und speichert
+Konten, Spieldaten und Freundschaften in SQLite (`node:sqlite`, `/var/lib/darts`). nginx (Port 80, ohne TLS) davor; HTTPS macht
+ein weiterer Reverse Proxy, dessen X-Forwarded-Proto/-For/-Host durchgereicht werden. Keine npm-Abhängigkeiten.
+Konfiguration: nur `PORT` und `DATA_DIR` per Umgebung (setzt `darts.service`), alles andere fest in `config.js`.
 Das Gerät hält alles weiter in `localStorage` (offline spielbar), `js/sync.js` gleicht mit dem Konto ab.
 GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup: `README.md`.
 
@@ -47,7 +49,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 ## Dateistruktur
 ```
 index.html              Gerüst, lädt css/, js/main.js (type="module") und js/filehint.js
-Dockerfile, docker-compose.yml, .env.example, deploy/Caddyfile (HTTPS), README.md (Betrieb)
+deploy/  nginx.conf · darts.service · install.sh (einmalig) · update.sh · start.sh · stop.sh · logs.sh · backup.sh; README.md (Betrieb)
 server/src/             server.js · app.js · config.js · db.js · sessions.js · passwords.js · ratelimit.js · static.js ·
                         validate.js · friend-stats.js · backup.js · routes/ (auth, account, sync, friends)
 css/
@@ -105,7 +107,7 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 - Doppelversuch (Double Out): Dart mit `before` gerade 2–40 oder 50.
 - Teams: Werfer = `side[(Aufnahmen der Seite im Match) % Teamgröße]`. Ausbullen wirft der Erste der Teamliste.
 
-## Server-Datenmodell (SQLite `/data/darts.db`)
+## Server-Datenmodell (SQLite `/var/lib/darts/darts.db`)
 `users` (id, email klein, username, username_key klein + UNIQUE, pw_hash scrypt) · `sessions` (token_hash SHA-256, Ablauf) ·
 `user_state` (rev, state = JSON der SYNC_KEYS, state_rev) · `matches` (user_id, id, rev, deleted = Grabstein, data JSON) ·
 `friendships` (requester_id, addressee_id, status pending|accepted).
@@ -174,5 +176,5 @@ Update 1 (Meilensteine 1–4), Update 2 (Setup, Ausbullen, Animationen, Bots, St
 Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) und Update 4 (Daten-Neustart, langsame Lichtlinie,
 vier neue Bots mit Zufallssprüchen) erledigt. Danach: Cricket, Eingabe ohne OK, Checkout unter dem Rest, Solo,
 Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details,
-Container-Betrieb mit Server (Konto per E-Mail, Sync, Freunde mit Statistik), Stand 17.11.2026.
+Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über nginx + systemd), Stand 17.11.2026.
 Offen: Zusammen spielen, Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).

@@ -1,4 +1,4 @@
-/* Strukturierte Logs (eine JSON-Zeile pro Ereignis) auf stdout/stderr – im Container von Docker eingesammelt.
+/* Strukturierte Logs (eine JSON-Zeile pro Ereignis) auf stdout/stderr – landet über systemd im Journal (deploy/logs.sh).
    Niemals Passwörter, Tokens oder E-Mail-Adressen loggen. */
 export function createLogger({ silent = false } = {}) {
   const write = (level, msg, extra) => {

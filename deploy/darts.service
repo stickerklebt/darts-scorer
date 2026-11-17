@@ -1,0 +1,36 @@
+# systemd-Unit für den Darts Scorer. install.sh ersetzt @APP_DIR@ und @NODE@ und legt sie als
+# /etc/systemd/system/darts.service ab. Daten: /var/lib/darts (StateDirectory, gehört dem Nutzer darts).
+[Unit]
+Description=Darts Scorer (Node-Server)
+After=network.target
+
+[Service]
+Type=simple
+User=darts
+Group=darts
+WorkingDirectory=@APP_DIR@
+Environment=PORT=8080
+Environment=DATA_DIR=/var/lib/darts
+ExecStart=@NODE@ --disable-warning=ExperimentalWarning @APP_DIR@/server/src/server.js
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+StateDirectory=darts
+StateDirectoryMode=0750
+
+# Härtung: nur /var/lib/darts beschreibbar, keine Rechte-Ausweitung
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

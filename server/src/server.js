@@ -1,4 +1,4 @@
-/* Einstieg: Konfiguration, Datenbank, HTTP-Server, Aufräumen, sauberes Beenden (SIGTERM von Docker). */
+/* Einstieg: Konfiguration, Datenbank, HTTP-Server, Aufräumen, sauberes Beenden (SIGTERM von systemd). */
 import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { loadConfig } from './config.js';
@@ -12,7 +12,7 @@ const db = openDb(join(config.dataDir, 'darts.db'));
 const app = createApp({ config, db, log });
 
 const server = createServer({ requestTimeout: 30e3, headersTimeout: 15e3, keepAliveTimeout: 5e3 }, app.handler);
-server.listen(config.port, config.host, () => log.info('listening', { port: config.port, env: config.env, data: config.dataDir }));
+server.listen(config.port, config.host, () => log.info('listening', { host: config.host, port: config.port, data: config.dataDir }));
 
 // Abgelaufene Sitzungen stündlich entfernen
 const sweep = setInterval(() => { try { const n = app.sessions.sweep(); if (n) log.info('sessions_swept', { n }); } catch (e) { log.error('sweep_failed', { err: String(e) }); } }, 3600e3);

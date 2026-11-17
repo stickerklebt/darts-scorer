@@ -111,6 +111,20 @@ test('Sicherheit: JSON-Pflicht, fremde Herkunft, Rate-Limit, keine Serverdateien
   } finally { await s.stop(); }
 });
 
+test('Hinter dem Proxy: Secure-Cookie und HSTS nur bei X-Forwarded-Proto https, Client-IP aus X-Forwarded-For', async () => {
+  const s = await boot({ authRatePerMin: 2 });
+  try {
+    const plain = await client(s.base)('POST', '/api/auth/register', { email: 'p@x.de', username: 'Paula', password: 'geheim123' });
+    assert.doesNotMatch(plain.headers.get('set-cookie'), /Secure/);
+    const https = await client(s.base)('POST', '/api/auth/register', { email: 'q@x.de', username: 'Quentin', password: 'geheim123' }, { 'X-Forwarded-Proto': 'https' });
+    assert.match(https.headers.get('set-cookie'), /Secure/);
+    assert.match(https.headers.get('strict-transport-security'), /max-age/);
+    // Rate-Limit je echter Client-IP (erster Eintrag), nicht je Proxy-Adresse
+    const other = await client(s.base)('POST', '/api/auth/email', { email: 'z@x.de' }, { 'X-Forwarded-For': '203.0.113.9, 10.0.0.1' });
+    assert.equal(other.status, 200);
+  } finally { await s.stop(); }
+});
+
 test('Sync: hochladen, zweites Gerät bekommt Delta, Löschen, Zustandskonflikt', async () => {
   const s = await boot();
   try {

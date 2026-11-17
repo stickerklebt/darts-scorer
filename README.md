@@ -1,77 +1,41 @@
 # Darts Scorer
 
-PWA zum Darts-Zählen (iPhone/iPad) mit Konto, Datensync und Freunden. Ein kleiner Node-Server liefert die App aus
-und speichert die Daten aller Nutzer in SQLite. Keine npm-Abhängigkeiten.
+PWA zum Darts-Zählen (iPhone/iPad) mit Konto, Datensync und Freunden. Ein Node-Server ohne npm-Abhängigkeiten liefert
+die App aus und speichert alles in SQLite. Betrieb mit nginx und systemd.
 
-## Betrieb im Container
-
-```bash
-cp .env.example .env          # optional anpassen
-docker compose up -d --build  # → http://<rechner>:8080
+```
+Internet ─HTTPS→ äußerer Reverse Proxy ─HTTP→ nginx :80 ─→ Node 127.0.0.1:8080 ─→ /var/lib/darts/darts.db
 ```
 
-Mit eigener Domain und automatischem HTTPS (empfohlen – nur mit HTTPS funktionieren Offline-Modus und „Zum Home-Bildschirm“ auf dem iPhone richtig):
+nginx macht kein TLS und kennt keine Domain. HTTPS kommt vom Proxy davor; der muss `X-Forwarded-Proto` und
+`X-Forwarded-For` setzen (sonst keine Secure-Cookies und ein Rate-Limit für alle gemeinsam).
+
+## Einrichten (Linux mit systemd, Node ≥ 22.13)
 
 ```bash
-# in .env: DOMAIN=darts.example.de und TRUST_PROXY=true
-docker compose --profile https up -d --build
+sudo git clone https://github.com/stickerklebt/darts-scorer.git /opt/darts-scorer
+sudo /opt/darts-scorer/deploy/install.sh
 ```
 
-| Was | Wo |
+`install.sh` legt den Systemnutzer `darts`, die Unit `darts.service`, `/etc/nginx/conf.d/darts.conf` und ein nächtliches
+Backup an (installiert nginx bei Bedarf, schaltet die nginx-Standardseite ab). Mehrfach ausführbar.
+
+## Betrieb
+
+| Skript (in `deploy/`) | Zweck |
 |---|---|
-| Daten (Nutzer, Spiele, Freunde) | Volume `darts-data` → `/data/darts.db` im Container |
-| Logs (JSON-Zeilen) | `docker compose logs -f app` |
-| Gesundheit | `GET /healthz` (auch Docker-Healthcheck) |
-| Backup | `docker compose exec app node --disable-warning=ExperimentalWarning server/src/backup.js` → `/data/backups/` (die letzten 14) |
-| Backup auf den Host holen | `docker compose cp app:/data/backups ./deploy/backups` |
-| Update | `git pull && docker compose up -d --build` (Daten bleiben im Volume, Schema migriert automatisch) |
+| `update.sh` | `git pull`, Tests, Neustart – bei roten Tests bleibt der alte Stand |
+| `start.sh` · `stop.sh` | Server starten / anhalten |
+| `logs.sh` | Logs live (`journalctl -u darts`) |
+| `backup.sh` | Sicherung jetzt; läuft sonst täglich 3:30 → `/var/lib/darts/backups` (die letzten 14) |
 
-## Lokal ohne Container
+Einstellbar sind nur `PORT` (8080) und `DATA_DIR` (`/var/lib/darts`), beide in `darts.service`.
 
-`Darts starten.command` doppelklicken (braucht Node ≥ 22.13) – oder:
+## Lokal (Mac)
 
-```bash
-cd server && npm run dev      # http://localhost:8787, Daten in .data/
-```
-
+`Darts starten.command` doppelklicken – oder `cd server && npm run dev` (Port 8787, Daten in `.data/`).
 Tests: `node tests/run.mjs`
-
-## Aufbau
-
-```
-server/src/
-  server.js        Start, sauberes Beenden (SIGTERM), Aufräumen abgelaufener Sitzungen
-  app.js           Sicherheits-Header (CSP …), Herkunftsprüfung, Routing, Fehler, Request-Log
-  config.js        alle Einstellungen aus Umgebungsvariablen (.env.example)
-  db.js            SQLite (node:sqlite), WAL, Migrationen über PRAGMA user_version
-  sessions.js      HttpOnly-Cookie, Token nur als SHA-256 in der DB, gleitende Laufzeit
-  passwords.js     scrypt-Hashes
-  ratelimit.js     Schutz vor Durchprobieren (Anmeldung, Suche, Sync)
-  static.js        Auslieferung der App (nur freigegebene Pfade)
-  friend-stats.js  Freundes-Statistik aus den gespeicherten Matches (nutzt js/stats.js)
-  backup.js        konsistente Sicherung im laufenden Betrieb
-  routes/          auth · account · sync · friends
-```
-
-### API (JSON, Sitzung per Cookie)
-
-| Methode | Pfad | Zweck |
-|---|---|---|
-| POST | `/api/auth/email` | Gibt es ein Konto zu dieser E-Mail? |
-| GET | `/api/auth/username?name=` | Name frei/gültig? |
-| POST | `/api/auth/register` | E-Mail, Passwort, eindeutiger Name |
-| POST | `/api/auth/login` · `/api/auth/logout` | |
-| GET/PATCH/DELETE | `/api/me` | Konto anzeigen, Namen ändern, Konto löschen (Passwort) |
-| POST | `/api/me/password` | Passwort ändern (andere Geräte werden abgemeldet) |
-| POST | `/api/sync` | Delta-Sync der Spieldaten |
-| GET | `/api/users/search?q=` | Nutzer nach Namensanfang suchen |
-| GET/POST | `/api/friends` | Freunde + Anfragen / Anfrage per Name |
-| POST | `/api/friends/:id/accept` | Anfrage annehmen |
-| DELETE | `/api/friends/:id` | Ablehnen, zurückziehen oder entfernen |
-| GET | `/api/friends/:id` | Profil + Statistik (nur Freunde) |
 
 ## Noch offen
 
-- Zusammen spielen (Online-Match gegen Freunde) – in der App als „Kommt bald“ angekündigt
-- Passwort vergessen / E-Mail bestätigen (braucht einen Mailversand, z. B. SMTP)
-- Mehrere Server-Instanzen: Rate-Limit liegt im Speicher, SQLite ist für eine Instanz gedacht
+Zusammen spielen (Online-Match gegen Freunde) · Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand)

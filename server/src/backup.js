@@ -1,13 +1,12 @@
 /* Konsistente Sicherung der Datenbank im laufenden Betrieb (VACUUM INTO), alte Sicherungen aufräumen.
-   Im Container:  docker compose exec app node --disable-warning=ExperimentalWarning server/src/backup.js
-   Ergebnis:      /data/backups/darts-JJJJ-MM-TT-HHMMSS.db  (die letzten BACKUP_KEEP Stück, Standard 14) */
+   Aufruf über deploy/backup.sh (läuft nachts per Cron). Ergebnis: $DATA_DIR/backups/darts-JJJJ-MM-TT-HHMMSS.db (die letzten 14). */
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConfig } from './config.js';
 
 const config = loadConfig();
-const keep = Number(process.env.BACKUP_KEEP || 14);
+const keep = 14;
 const dir = join(config.dataDir, 'backups');
 mkdirSync(dir, { recursive: true });
 const stamp = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '').replace(/-(\d\d)-(\d\d)-(\d\d)$/, '-$1$2$3');

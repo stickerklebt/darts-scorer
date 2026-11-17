@@ -1,4 +1,4 @@
-/* SQLite (eingebaut in Node, node:sqlite). Eine Datei im Daten-Volume, WAL-Modus, Migrationen über PRAGMA user_version.
+/* SQLite (eingebaut in Node, node:sqlite). Eine Datei in DATA_DIR (/var/lib/darts), WAL-Modus, Migrationen über PRAGMA user_version.
    Neue Schema-Änderungen nur als NEUEN Eintrag ans Ende von MIGRATIONS hängen – bestehende nie ändern. */
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
