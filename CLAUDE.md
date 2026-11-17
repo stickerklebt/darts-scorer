@@ -79,7 +79,8 @@ js/
   main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
   store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand, SYNC_KEYS, Save-Hook
   api.js                fetch-Wrapper zum Server (ApiError, deutsche Meldungen)
-  caller.js             Eigener Caller: Aufnahme → WAV (mono 22 kHz, getrimmt, normalisiert), Server + IndexedDB, Web-Audio-Wiedergabe
+  caller.js             Eigener Caller: Aufnahme als Rohdaten über Web Audio (ScriptProcessor, eigener AudioContext mit Mikrofon-Abtastrate;
+                        kein MediaRecorder – Safari „Decoding failed“) → WAV (mono 22 kHz, getrimmt, normalisiert), Server + IndexedDB
   sync.js               Konto (auth), Login/Logout, Delta-Sync mit dem Server (Meta in `darts.sync`)
   match.js              Match-Objekt, Werfer-Reihenfolge
   checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
@@ -160,7 +161,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
   „Zusammen spielen“ ist als „Kommt bald“ angekündigt (noch nicht gebaut).
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
-- **Setup**: ein Screen – Modus · Spieler & Bots · Startpunkte/Runden · First to · Anwurf · Start; „Mehr Optionen“ (Out, Legs/Sets, Mischen, Regeln).
+- **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
+  bei Solo ausgeblendet) · Start. „Mehr Optionen“ (aufklappbar, zeigt eingeklappt eine Zusammenfassung wie „501 · Double Out“):
+  Jeder für sich/Teams, Startpunkte 301/501/701, Check-Out, Legs/Sets, Reihenfolge mischen, Spielregeln.
   Hinzufügen nur über **ein Plus** → Auswahlfenster: Neuer Spieler (Name eindeutig gegenüber Profilen und Bots, Groß/Klein und
   Rand-Leerzeichen egal, Live-Hinweis am Feld) · Bekannter Spieler (alphabetisch, Suchfeld ab 6 Einträgen) · Bot als Gegner.
 - **Summen-Eingabe ohne OK**: kann keine weitere Ziffer mehr eine mögliche Aufnahme ergeben (43 → 430+ gibt es nicht,
@@ -188,7 +191,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   2 Sprüche und 2 eigene Aufnahmen (2.–8., nie die erste) aus; gesagt wird nach genau diesen Aufnahmen, unabhängig von Ereignissen.
   Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
   Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
-- **Statistik**: Unter-Reiter Überblick · Scoring · Checkout · Doppel · Verlauf (nur 501). Doppelfarben relativ zur eigenen
+- **Statistik**: drei Unter-Reiter Überblick · Doppel · Verlauf & mehr (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Verlauf & mehr“: zuerst die Verlaufsdiagramme, darunter
+  eingeklappt (mit Kurzinfo im Kopf) Scoring · Checkout · Legs · Matches (`ui.statsOpen`). Zeitraum: Standard immer „Gesamt“
+  (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
+  Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Verlauf & mehr“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel mit Gold-/Silber-/Bronze-Rand (glimmend), in der Liste
   als Medaillen-Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.

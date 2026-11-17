@@ -602,6 +602,7 @@ const actions = {
   },
   backFriends() { S.screen = 'home'; S.tab = 'friends'; ui.friend = null; render(); window.scrollTo(0, 0); loadFriends(); },
   tab(el) {
+    if (el.dataset.v === 'stats' && S.tab !== 'stats') S.statsPeriod = 'all'; // Statistik startet immer mit „Gesamt“
     S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
     render(); window.scrollTo(0, 0);
     if (S.tab === 'friends') loadFriends();
@@ -620,7 +621,9 @@ const actions = {
   settings() { ui.modal = { type: 'settings' }; render(); },
   statsWho() { ui.modal = { type: 'pickStats' }; render(); },
   statsPick(el) { S.statsPid = el.dataset.v; ui.modal = null; ui.heatSel = null; render(); },
-  period(el) { S.statsPeriod = el.dataset.v; render(); },
+  period(el) { S.statsPeriod = el.dataset.v; if (ui.modal?.type === 'period') ui.modal = null; render(); },
+  periodPick() { ui.modal = { type: 'period' }; render(); },
+  statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
   heatSort(el) { ui.heatSort = el.dataset.v; render(); },
@@ -849,6 +852,7 @@ if (!S.cleanV) {
 seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellungen entfernbar)
 setOnChange(() => render());
 if (S.screen === 'friend') S.screen = 'home';
+S.statsPeriod = 'all';
 render();
 bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); } });
 probeBotImages(() => render());

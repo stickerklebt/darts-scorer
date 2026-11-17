@@ -1,5 +1,5 @@
-/* Setup: ein Screen mit allem, was man vor dem Spiel braucht. Reihenfolge:
-   Team-Modus · Spieler & Bots · Startpunkte/Runden · First to X · Anwurf · Start. Rest unter „Mehr Optionen“. */
+/* Setup: ein Screen mit allem, was man vor dem Spiel braucht. Sichtbar: Spieler & Bots · Spiel (First to X bzw. Runden)
+   · Anwurf (nur ab zwei Seiten) · Start. Seltenes unter „Mehr Optionen“: Teams, Startpunkte, Check-Out, Legs/Sets, Mischen, Regeln. */
 import { S, ui, nameOf } from '../store.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
@@ -16,8 +16,7 @@ function mainOptions(id) {
   const o = S.opts[id];
   if (id === 'x01') {
     const tOpts = o.mode === 'sets' ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 7];
-    return optRow('Startpunkte', seg('opt', 'start', [[301, '301'], [501, '501'], [701, '701']], o.start))
-      + optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', seg('opt', 'target', tOpts.map((v) => [v, String(v)]), o.target));
+    return optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', seg('opt', 'target', tOpts.map((v) => [v, String(v)]), o.target));
   }
   if (id === 'highscore') return optRow('Runden', seg('opt', 'rounds', [[5, '5'], [10, '10'], [15, '15'], [20, '20']], o.rounds));
   if (id === 'shanghai') return optRow('Ziele', seg('opt', 'rounds', [[7, '1–7'], [10, '1–10'], [20, '1–20']], o.rounds));
@@ -30,12 +29,18 @@ function mainOptions(id) {
 /** Klappfenster „Mehr Optionen“ */
 function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
-  const x01 = id === 'x01' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
-    + optRow('Modus', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
+  const x01 = id === 'x01' ? optRow('Startpunkte', seg('opt', 'start', [[301, '301'], [501, '501'], [701, '701']], o.start))
+    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
+    + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
+  const team = optRow('Spielweise', seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0));
+  // Zusammenfassung der eingeklappten Einstellungen, damit nichts versteckt „anders“ ist
+  const sum = [id === 'x01' ? o.start : null, id === 'x01' ? (o.out === 'double' ? 'Double Out' : 'Single Out') : null,
+    id === 'x01' && o.mode === 'sets' ? 'Sets' : null, S.teamMode ? 'Teams' : null].filter(Boolean).join(' · ');
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
-    <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
+    <button class="more-h" data-act="more"><span>Mehr Optionen${sum ? `<small>${sum}</small>` : ''}</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
-      ${x01 ? `<div class="opts">${x01}</div>` : ''}
+      <div class="opts">${team}${x01}</div>
+      ${S.teamMode ? '<p class="foot">Tippe bei den Spielern auf „Team“, um sie zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge der Liste.</p>' : ''}
       ${id === 'x01' && o.mode === 'sets' ? `<p class="foot">Ein Set gewinnt, wer zuerst ${X.LEGS_PER_SET} Legs holt.</p>` : ''}
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
       <section class="rules"><div class="rules-in">
@@ -65,18 +70,15 @@ export function setupView() {
   const nSides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length;
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">${g.title}</span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
-    <div class="su-head">${badge(id, 40)}<div><small>★ ${id === 'x01' ? 'Der Klassiker' : 'Partyspiel'} ★</small><b>${g.title}</b></div></div>
-    <h2 class="label"><i class="stepn">1</i>Modus</h2>
-    ${seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0)}
-    <h2 class="label"><i class="stepn">2</i>Spieler &amp; Bots</h2>
+    <h2 class="label"><i class="stepn">1</i>Spieler &amp; Bots</h2>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
-    <p class="foot">${!S.teamMode && L.length === 1 && !isBot(L[0].id) ? '<b class="solo-hint">Solo: Du spielst allein, ganz ohne Gegner.</b> ' : ''}Bis zu ${MAX_PLAYERS} Spieler. ${S.teamMode ? 'Tippe auf „Team“, um Spieler zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge dieser Liste.' : ''}</p>
-    <h2 class="label"><i class="stepn">3</i>Spiel</h2>
+    <p class="foot">${!S.teamMode && L.length === 1 && !isBot(L[0].id) ? '<b class="solo-hint">Solo: Du spielst allein, ganz ohne Gegner.</b> ' : ''}Bis zu ${MAX_PLAYERS} Spieler.</p>
+    <h2 class="label"><i class="stepn">2</i>Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>
-    <h2 class="label"><i class="stepn">4</i>Anwurf</h2>
+    ${nSides >= 2 ? `<h2 class="label"><i class="stepn">3</i>Anwurf</h2>
     ${seg('anwurf', 'v', [['bull', 'Ausbullen'], ['list', 'Wer oben steht']], S.anwurf)}
-    <p class="foot">${nSides < 2 ? 'Bei nur einer Seite entfällt der Anwurf.' : S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>
+    <p class="foot">${S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>` : ''}
     ${moreOptions(id)}
   </main>
   <div class="dock"><div><button class="btn red big start" data-act="start">${!S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</button>${fuse(-3, 7, 2)}</div></div>`;

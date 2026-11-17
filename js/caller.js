@@ -1,6 +1,6 @@
 /* Eigener Caller: selbst eingesprochene Ansagen je Punktzahl. Wirft der Hauptspieler genau diese Zahl, spielt die App
    seine Aufnahme statt der Computerstimme.
-   - Aufnahme per Mikrofon (MediaRecorder), danach Stille vorn/hinten abschneiden, auf Spitze normalisieren und als
+   - Aufnahme per Mikrofon als Rohdaten (Web Audio), danach Stille vorn/hinten abschneiden, auf Spitze normalisieren und als
      WAV (mono, 22 kHz) speichern – WAV läuft auf jedem Gerät, egal wo aufgenommen wurde.
    - Ablage im Konto (Server, /api/calls), Kopie in IndexedDB fürs Offline-Spielen.
    - Abspielen über Web Audio: einmal beim ersten Antippen freigeschaltet, danach auch ohne Tippen (z. B. nach der
@@ -119,62 +119,66 @@ export async function deleteCall(score) {
 }
 
 /* ---------------- Aufnahme ---------------- */
+/* Direkt als Rohdaten mitschneiden (Web Audio), nicht über MediaRecorder: Safari kann seine eigenen MediaRecorder-Dateien
+   oft nicht wieder dekodieren („Decoding failed“), Firefox scheitert an unterschiedlichen Abtastraten. Hier läuft ein eigener
+   AudioContext mit der Abtastrate des Mikrofons, ein ScriptProcessor sammelt die Samples (überall verfügbar, auch Safari). */
 let rec = null;
 /** Mikrofon an, Aufnahme starten. onLevel(0..1) bekommt laufend den Pegel (für die Anzeige). */
 export async function startRecording(onLevel) {
-  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error('Aufnehmen wird von diesem Browser nicht unterstützt.');
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!navigator.mediaDevices?.getUserMedia || !AC) throw new Error('Aufnehmen wird von diesem Browser nicht unterstützt.');
   if (!window.isSecureContext) throw new Error('Aufnehmen geht nur über HTTPS.');
   const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-  let raf = 0;
+  let rc = null;
   try {
-    const mr = new MediaRecorder(stream);
-    const chunks = [];
-    mr.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
-    // Pegelanzeige ist Zugabe: Firefox wirft hier, wenn Mikrofon und AudioContext verschiedene Abtastraten haben
-    // (z. B. 48 kHz gegen 44,1 kHz) – dann ohne Anzeige weiter aufnehmen statt abzubrechen.
-    const a = audio();
-    if (a && onLevel) {
-      try {
-        const an = a.createAnalyser(); an.fftSize = 512;
-        a.createMediaStreamSource(stream).connect(an);
-        const d = new Uint8Array(an.fftSize);
-        const tick = () => { an.getByteTimeDomainData(d); let m = 0; for (const v of d) m = Math.max(m, Math.abs(v - 128)); onLevel(Math.min(1, m / 100)); raf = requestAnimationFrame(tick); };
-        tick();
-      } catch (e) { cancelAnimationFrame(raf); raf = 0; console.warn('[caller] Pegelanzeige nicht möglich:', e?.message || e); }
-    }
-    const done = new Promise((ok) => { mr.onstop = () => ok(new Blob(chunks, { type: mr.mimeType || 'audio/webm' })); });
-    mr.start();
-    const timer = setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, MAX_SEC * 1000);
-    rec = { mr, stream, done, timer, raf };
+    const sr = stream.getAudioTracks()[0]?.getSettings?.().sampleRate;
+    try { rc = sr ? new AC({ sampleRate: sr }) : new AC(); } catch (e) { rc = new AC(); }
+    if (rc.state === 'suspended') await rc.resume().catch(() => {});
+    const src = rc.createMediaStreamSource(stream);
+    const proc = rc.createScriptProcessor(4096, 1, 1);
+    const mute = rc.createGain(); mute.gain.value = 0; // Prozessor muss angeschlossen sein, damit er läuft – aber stumm
+    const chunks = [], max = rc.sampleRate * MAX_SEC;
+    let n = 0;
+    proc.onaudioprocess = (e) => {
+      const d = e.inputBuffer.getChannelData(0);
+      if (n < max) { chunks.push(new Float32Array(d)); n += d.length; }
+      if (onLevel) { let m = 0; for (let i = 0; i < d.length; i += 4) m = Math.max(m, Math.abs(d[i])); onLevel(Math.min(1, m * 1.6)); }
+    };
+    src.connect(proc); proc.connect(mute); mute.connect(rc.destination);
+    rec = { stream, rc, src, proc, chunks, rate: rc.sampleRate };
     return rec;
   } catch (e) {
     // Mikrofon nie angeschaltet lassen, wenn der Start scheitert
-    cancelAnimationFrame(raf);
     stream.getTracks().forEach((t) => t.stop());
+    try { rc?.close(); } catch (err) { /* */ }
     throw e;
   }
+}
+function release(r) {
+  try { r.proc.onaudioprocess = null; r.src.disconnect(); r.proc.disconnect(); } catch (e) { /* */ }
+  r.stream.getTracks().forEach((t) => t.stop());
+  try { r.rc.close(); } catch (e) { /* */ }
 }
 /** Aufnahme beenden → { wav, buffer, peaks, duration } */
 export async function stopRecording() {
   if (!rec) return null;
-  const { mr, stream, done, timer, raf } = rec;
+  const r = rec;
   rec = null;
-  clearTimeout(timer); cancelAnimationFrame(raf);
-  if (mr.state === 'recording') mr.stop();
-  const blob = await done;
-  stream.getTracks().forEach((t) => t.stop());
-  const a = audio();
-  const raw = await a.decodeAudioData(await blob.arrayBuffer());
-  return processClip(raw);
+  release(r);
+  const len = r.chunks.reduce((a, c) => a + c.length, 0);
+  if (len < r.rate * 0.15) throw new Error('Zu kurz – bitte etwas länger sprechen.');
+  const all = new Float32Array(len);
+  let o = 0;
+  for (const c of r.chunks) { all.set(c, o); o += c.length; }
+  return processPcm(resample(all, r.rate, RATE));
 }
 export const isRecording = () => !!rec;
 /** Aufnahme abbrechen, ohne zu verarbeiten */
 export function cancelRecording() {
   if (!rec) return;
-  const { mr, stream, timer, raf } = rec;
-  rec = null; clearTimeout(timer); cancelAnimationFrame(raf);
-  try { mr.stop(); } catch (e) { /* */ }
-  stream.getTracks().forEach((t) => t.stop());
+  const r = rec;
+  rec = null;
+  release(r);
 }
 
 /* ---------------- Verarbeitung (rein rechnerisch, testbar) ---------------- */
@@ -213,13 +217,18 @@ export function peaksOf(data, n = 48) {
   return out;
 }
 
-async function processClip(raw) {
-  // Mono + 22 kHz über OfflineAudioContext
-  const len = Math.ceil(raw.duration * RATE);
-  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-  const oc = new OAC(1, Math.max(1, len), RATE);
-  const src = oc.createBufferSource(); src.buffer = raw; src.connect(oc.destination); src.start();
-  const mono = (await oc.startRendering()).getChannelData(0);
+/** Lineares Umrechnen auf eine andere Abtastrate (für Sprache völlig ausreichend) */
+export function resample(data, from, to) {
+  if (from === to) return data;
+  const out = new Float32Array(Math.max(1, Math.round(data.length * to / from))), k = from / to;
+  for (let i = 0; i < out.length; i++) {
+    const x = i * k, j = Math.floor(x), f = x - j;
+    out[i] = (data[j] ?? 0) * (1 - f) + (data[j + 1] ?? data[j] ?? 0) * f;
+  }
+  return out;
+}
+
+function processPcm(mono) {
   const pcm = trimNormalize(mono, RATE);
   if (!pcm.length) throw new Error('Nichts zu hören – bitte näher ans Mikrofon.');
   const a = audio(), buffer = a.createBuffer(1, pcm.length, RATE);

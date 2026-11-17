@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Browser-Tab-Symbol: einfacher Dartpfeil (Spitze unten links, Flights oben rechts) auf dunklem Grund -->
+  <rect width="64" height="64" rx="14" fill="#0b0a08"/>
+  <g transform="rotate(-45 32 32)">
+    <path d="M5 32H17" stroke="#f3e9d2" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="17" y="28" width="16" height="8" rx="3" fill="#f3e9d2"/>
+    <path d="M33 32H42" stroke="#f3e9d2" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M41 32L47 18H60L55 32Z" fill="#e5402c"/>
+    <path d="M41 32L47 46H60L55 32Z" fill="#a92a1b"/>
+  </g>
+</svg>

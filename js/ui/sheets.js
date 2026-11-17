@@ -89,6 +89,11 @@ export function sheetView() {
       ${pwField('delPw', 'Passwort', 'current-password')}
       ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
       <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="delAcctForce" ${md.busy ? 'disabled' : ''}>Endgültig löschen</button></div>`;
+  } else if (md.type === 'period') {
+    const opts = [['all', 'Gesamt', 'Alle gespeicherten Spiele'], ['1y', 'Letztes Jahr', ''], ['30d', 'Letzte 30 Tage', ''], ['7d', 'Letzte 7 Tage', '']];
+    inner = `<h3>Zeitraum</h3><p>Welche Spiele sollen in die Statistik?</p>
+      <div class="slist">${opts.map(([v, l, sub]) => `<button class="srow" data-act="period" data-v="${v}"><span class="lbl">${l}${sub ? `<small>${sub}</small>` : ''}</span>${S.statsPeriod === v ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
   } else if (md.type === 'histDel') {
     inner = `<h3>Spiel löschen?</h3><p>${esc(md.label)}<br>Das Spiel verschwindet aus der Historie und zählt nicht mehr in der Statistik – auch auf deinen anderen Geräten und bei deinen Freunden. Das lässt sich nicht rückgängig machen.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="histDelForce">Löschen</button></div>`;

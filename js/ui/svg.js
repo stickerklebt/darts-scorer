@@ -231,6 +231,7 @@ const P = {
     + '<path d="M13.5 12H16.6" stroke-width="1.3"/>'
     + '<path d="M16 12L18.4 6.6H23.2L21.4 12Z" fill="currentColor" stroke="none"/><path d="M16 12L18.4 17.4H23.2L21.4 12Z" fill="currentColor" stroke="none" opacity=".6"/>'
     + '<path d="M16 12H22.6" stroke-width=".8" opacity=".5"/></g>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2" stroke-linecap="round"/>',
   people: '<circle cx="9" cy="8" r="3.6"/><path d="M2.5 20.5c0-3.8 2.9-6.3 6.5-6.3s6.5 2.5 6.5 6.3"/><path d="M15.6 4.6a3.4 3.4 0 010 6.6M17.8 14.6c2.3.7 3.7 2.8 3.7 5.9"/>',
   chart: '<path d="M3 21h18"/><path d="M6 17V11M11 17V6M16 17v-8M21 17v-4"/>',
   board: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>',

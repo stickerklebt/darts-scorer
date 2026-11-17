@@ -8,7 +8,10 @@ import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, matchList } from './stats-extra.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
-export const SUBTABS = [['overview', 'Überblick'], ['scoring', 'Scoring'], ['checkout', 'Checkout'], ['doubles', 'Doppel'], ['history', 'Verlauf']];
+export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Verlauf & mehr']];
+/** Frühere Unter-Reiter landen in „Verlauf & mehr“ */
+const subOf = (k) => (k === 'scoring' || k === 'checkout' || k === 'history' ? 'more' : SUBTABS.some(([x]) => x === k) ? k : 'overview');
+export const PERIOD_LONG = { '7d': 'Letzte 7 Tage', '30d': 'Letzte 30 Tage', '1y': 'Letztes Jahr', all: 'Gesamt' };
 export const pct = (x) => (x === null || x === undefined ? '–' : `${fmt(x * 100)} %`);
 export const dateStr = (t) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const oppStr = (ids) => ids.map(nameOf).join(' · ');
@@ -27,9 +30,10 @@ export function statsHeader(pid) {
   return `<div class="st-head">
     <button class="st-who glint" data-act="statsWho" style="--gd:-6s">
       <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
+    <button class="sq st-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen">${icon('clock', 2, 22)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
-  ${seg('period', 'v', PERIOD_OPTS, S.statsPeriod)}`;
+  ${S.statsPeriod !== 'all' ? `<button class="period-chip" data-act="period" data-v="all">${icon('clock', 2, 15)}<span>${PERIOD_LONG[S.statsPeriod]}</span><b aria-label="Zurück auf Gesamt">×</b></button>` : ''}`;
 }
 
 /* ---------------- Unter-Reiter ---------------- */
@@ -89,10 +93,25 @@ export function doublesBlock(st, sel, withList = true) {
     ${withList ? legend : ''}`;
 }
 
-function historyTab(st) {
+/** Einklappbarer Abschnitt (zu Beginn zu), mit kurzer Zusammenfassung im Kopf */
+function fold(key, title, summary, body) {
+  const open = ui.statsOpen?.has(key);
+  return `<section class="fold ${open ? 'open' : ''}">
+    <button class="fold-h" data-act="statsFold" data-v="${key}"><span><b>${title}</b>${summary ? `<small>${summary}</small>` : ''}</span>${icon('chevR', 2.4, 18)}</button>
+    ${open ? `<div class="fold-b">${body}</div>` : ''}
+  </section>`;
+}
+
+/** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
+function moreTab(st) {
+  const c = st.counts;
   return block('', historyCharts(st))
-    + block('Legs', cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four'))
-    + block('Matches', matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
+    + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st))
+    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st))
+    + fold('legs', 'Legs', `Bestes ${st.bestLeg ? `${st.bestLeg} Darts` : '–'} · Ø ${fmt(st.avgLegDarts)} Darts`,
+      cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four'))
+    + fold('matches', 'Matches', `${st.matches} ${st.matches === 1 ? 'Match' : 'Matches'} · ${st.wins} Siege`,
+      matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
 }
 
 export function emptyState(pid, any) {
@@ -111,10 +130,10 @@ export function statsView() {
   const st = fullStats(S.matches, pid, S.statsPeriod);
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
-  const sub = SUBTABS.some(([k]) => k === S.statsSub) ? S.statsSub : 'overview';
-  const body = sub === 'scoring' ? scoringTab(st) : sub === 'checkout' ? checkoutTab(st) : sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'history' ? historyTab(st) : overviewTab(st);
+  const sub = subOf(S.statsSub);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'more' ? moreTab(st) : overviewTab(st);
   return `${head}
-    <nav class="subtabs">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}</nav>
+    <nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
     <div class="subbody sub-${sub}">${body}</div>
   </main>`;
 }

@@ -71,12 +71,15 @@ Eingabe-Scheibe und Doppel-Heatmap teilen einen Stil: warm-dunkle Felder (#1d191
 - Hauptaktion: `.btn.red.big` (eine pro Bildschirm). Zweitrangig: `.btn.dark`. Abbrechen/Gefährlich: `.btn.line` (rot bei Löschen).
 - Umschalter: `.seg` (aktiv = Creme mit Goldkante). Listen: `.slist` + `.srow`, Schalter `.tog`.
 - **Keine Monogramme/Initial-Logos** bei Spielernamen. Spielerkarte auf „Spielen“: flache Fläche (`--panel`, kein Verlauf), Goldrand,
-  Name mittig und direkt rechts daneben nur der Ø 501 – keine weiteren Zahlen.
+  mittig **nur Name und Zahl** (kein Trennstrich, kein „Ø 501“-Label): Name groß in IM Fell SC mit rotem Versatz-Schatten,
+  daneben der Ø 501 breit gezogen (`scaleX 1,32`), glühend mit Glitzer.
 - Medaillen: Ring in Gold/Silber/Bronze (`.medal.m1–m3`), keine Zahlen-Kreise.
 - Abschnittstitel: `.label` (Gold, Versalien, handgezogene Linie dahinter).
 - Diagramme: y-Achse passt sich den Werten an (`axisRange`), Quoten nie über 100 %.
+- Unter-Reiter (Statistik): höchstens drei; aktiver vergrößert, inaktive blass/kleiner, gleitender roter Strich.
+  Seltenes eingeklappt (`.fold` mit Kurzinfo). Filter wie der Zeitraum hinter einem Symbol-Knopf (Uhr), aktiver Filter als Chip mit ✕.
 - Doppel-Reiter ab 900 px Breite zweispaltig: Scheibe links (bleibt beim Scrollen stehen), Detail + Tabelle rechts; schmaler untereinander.
 
 ## Icon
 App-Icon bewusst schlicht: Zielscheibe (Goldring, Rot, Schwarz, Creme, rotes Bull) auf dunklem Grund – `tools/mkicon.mjs`.
-Das Wappen bleibt in der App (Splash, Anmeldung).
+Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) auf dunklem Grund. Das Wappen bleibt in der App (Splash, Anmeldung).

@@ -25,8 +25,8 @@ export function playView() {
   const others = Object.keys(GAMES).filter((id) => id !== 'x01');
   return `<main class="page">
     <button class="me" data-act="rename">
-      <span class="me-name">${esc(name)}</span>
-      <span class="me-avg"><small>Ø 501</small><span class="glitter"><b class="pop shimmer" data-t="${fmt(ov.avg)}">${fmt(ov.avg)}</b>${sparkles(7, 3)}</span></span>
+      <span class="me-name" data-t="${esc(name)}">${esc(name)}</span>
+      <span class="me-avg" title="Ø 501"><span class="glitter"><b class="pop shimmer" data-t="${fmt(ov.avg)}">${fmt(ov.avg)}</b>${sparkles(7, 3)}</span></span>
     </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero">

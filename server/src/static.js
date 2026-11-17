@@ -4,7 +4,7 @@ import { stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { join, normalize, extname, sep } from 'node:path';
 
-const FILES = new Set(['index.html', 'manifest.webmanifest', 'sw.js', 'icon-180.png', 'icon-512.png']);
+const FILES = new Set(['index.html', 'manifest.webmanifest', 'sw.js', 'icon-180.png', 'icon-512.png', 'favicon.svg']);
 const DIRS = new Set(['css', 'js', 'fonts', 'bots']);
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
