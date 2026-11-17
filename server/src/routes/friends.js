@@ -86,22 +86,24 @@ export function friendRoutes(r, { db, limits }) {
     const rel = relation(c.user.id, u.id);
     if (rel === 'friend') return { status: 'friend', user: u };
     if (rel === 'outgoing') return { status: 'outgoing', user: u };
-    if (rel === 'incoming') { q.accept.run(Date.now(), u.id, c.user.id); return { status: 'friend', user: u }; }
+    if (rel === 'incoming') { q.accept.run(Date.now(), u.id, c.user.id); c.log.info('friend_accepted', { other: u.id }); return { status: 'friend', user: u }; }
     if (q.pendingCount.get(c.user.id).n >= MAX_PENDING) throw new HttpError(429, 'too_many_pending', 'Zu viele offene Anfragen.');
     q.insert.run(c.user.id, u.id, Date.now());
+    c.log.info('friend_requested', { other: u.id });
     return { status: 201, body: { status: 'outgoing', user: u } };
   });
 
   r.post('/api/friends/:id/accept', (c) => {
     const u = target(c);
     if (q.accept.run(Date.now(), u.id, c.user.id).changes !== 1) throw new HttpError(404, 'no_request', 'Keine offene Anfrage von diesem Spieler.');
+    c.log.info('friend_accepted', { other: u.id });
     return { status: 'friend', user: u };
   });
 
   /** Freund entfernen, Anfrage ablehnen oder eigene Anfrage zurückziehen – alles dasselbe: Verbindung löschen. */
   r.delete('/api/friends/:id', (c) => {
     const u = target(c);
-    q.remove.run(c.user.id, u.id, u.id, c.user.id);
+    if (q.remove.run(c.user.id, u.id, u.id, c.user.id).changes) c.log.info('friend_removed', { other: u.id });
     return { status: 'none' };
   });
 

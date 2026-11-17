@@ -13,6 +13,12 @@ Environment=PORT=8080
 Environment=DATA_DIR=/var/lib/darts
 ExecStart=@NODE@ --disable-warning=ExperimentalWarning @APP_DIR@/server/src/server.js
 Restart=on-failure
+SyslogIdentifier=darts
+# Logs: JSON-Zeilen im Journal (deploy/logs.sh); Fehler gehen auf stderr → Priorität „err“
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=30s
+LogRateLimitBurst=2000
 RestartSec=3
 TimeoutStopSec=15
 StateDirectory=darts

@@ -526,13 +526,16 @@ const actions = {
   },
   async crRec() {
     const c = ui.caller;
-    c.err = null; c.rec = { state: 'rec' }; render();
-    const t0 = Date.now();
+    if (c.rec?.state === 'wait' || isRecording()) return;
+    c.err = null; c.rec = { state: 'wait' }; render(); // erst „Mikrofon wird freigegeben …“, Stopp gibt es noch nicht
     try {
       await startRecording((lv) => { const el = $('#crLevel'); if (el) el.style.transform = `scaleX(${lv.toFixed(3)})`; });
     } catch (e) {
       c.rec = null; c.err = e.name === 'NotAllowedError' ? 'Kein Zugriff aufs Mikrofon – bitte in den Einstellungen des Browsers erlauben.' : errMsg(e); render(); return;
     }
+    if (ui.caller !== c) { cancelRecording(); return; } // Screen inzwischen verlassen
+    const t0 = Date.now(); // die 5 s zählen erst ab jetzt, nicht schon während der Mikrofon-Abfrage
+    c.rec = { state: 'rec' }; render();
     clearInterval(crTimer);
     crTimer = setInterval(() => {
       const sec = (Date.now() - t0) / 1000, el = $('#crTime');
@@ -543,8 +546,12 @@ const actions = {
   async crStop() {
     clearInterval(crTimer);
     const c = ui.caller;
-    if (!c || c.rec?.state !== 'rec') return;
-    try { const r = await stopRecording(); c.rec = { state: 'done', ...r }; playBuffer(r.buffer); }
+    if (!c || c.rec?.state !== 'rec' || !isRecording()) return; // Stopp nur, wenn die Aufnahme wirklich läuft
+    try {
+      const r = await stopRecording();
+      if (!r) { c.rec = null; render(); return; }
+      c.rec = { state: 'done', ...r }; playBuffer(r.buffer);
+    }
     catch (e) { c.rec = null; c.err = errMsg(e); }
     render();
   },

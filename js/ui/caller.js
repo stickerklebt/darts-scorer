@@ -16,7 +16,10 @@ const wave = (peaks, cls = '') => `<svg class="cw ${cls}" viewBox="0 0 ${peaks.l
 function recorder() {
   const c = ui.caller, sel = c.sel, saved = callInfo(sel), r = c.rec;
   let body, btns;
-  if (r?.state === 'rec') {
+  if (r?.state === 'wait') {
+    body = `<p class="cr-hint">Mikrofon wird freigegeben … Bitte den Zugriff erlauben.</p>`;
+    btns = `<button class="btn red big" disabled>Warte auf Mikrofon …</button>`;
+  } else if (r?.state === 'rec') {
     body = `<div class="cr-live"><span class="cr-dot"></span><b id="crTime">0,0 s</b><span class="cr-meter"><i id="crLevel"></i></span></div>
       <p class="cr-hint">Sprich jetzt – höchstens 5 Sekunden.</p>`;
     btns = `<button class="btn red big cr-stop" data-act="crStop">${icon('minus', 3, 18)} Stopp</button>`;

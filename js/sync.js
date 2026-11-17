@@ -129,6 +129,7 @@ export function syncNow() {
 }
 
 function handleError(e) {
+  console.warn('[sync]', e?.status ?? '', e?.message || e);
   if (e instanceof ApiError && e.status === 401) { sessionLost(); return; }
   const offline = e instanceof ApiError && (e.status === 0 || e.code === 'no_server');
   sync.state = offline ? 'offline' : 'error';

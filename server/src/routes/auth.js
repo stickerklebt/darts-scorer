@@ -58,7 +58,7 @@ export function authRoutes(r, { db, sessions, config, limits }) {
       throw e;
     }
     sessions.start(c.req, c.res, id);
-    c.log.info('user_registered', { user: id });
+    c.log.info('user_registered', { u: id });
     return { status: 201, body: { user: publicUser({ id, email, username: name, createdAt: now }) } };
   }, { public: true });
 
@@ -70,12 +70,16 @@ export function authRoutes(r, { db, sessions, config, limits }) {
     limits.login.hit(`${c.ip}|${email}`);
     const u = q.byEmail.get(email);
     const ok = u ? await verifyPassword(password, u.pw_hash) : (await verifyPassword(password, await dummy), false);
-    if (!ok) throw new HttpError(401, 'bad_credentials', 'E-Mail oder Passwort ist falsch.');
+    if (!ok) {
+      c.log.warn('login_failed', { reason: u ? 'bad_password' : 'unknown_account', target: u?.id });
+      throw new HttpError(401, 'bad_credentials', 'E-Mail oder Passwort ist falsch.');
+    }
     limits.login.reset(`${c.ip}|${email}`);
     if (needsRehash(u.pw_hash, config.scryptLogN)) q.setHash.run(await hashPassword(password, config.scryptLogN), Date.now(), u.id);
     sessions.start(c.req, c.res, u.id);
+    c.log.info('login', { u: u.id });
     return { user: publicUser(u) };
   }, { public: true });
 
-  r.post('/api/auth/logout', (c) => { sessions.end(c.req, c.res); return { ok: true }; }, { public: true });
+  r.post('/api/auth/logout', (c) => { sessions.end(c.req, c.res); if (c.user) c.log.info('logout'); return { ok: true }; }, { public: true });
 }

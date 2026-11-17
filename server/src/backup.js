@@ -18,4 +18,4 @@ db.close();
 
 const old = readdirSync(dir).filter((f) => /^darts-.*\.db$/.test(f)).sort().slice(0, -keep);
 for (const f of old) rmSync(join(dir, f));
-console.log(JSON.stringify({ backup: file, removed: old.length }));
+console.log(JSON.stringify({ t: new Date().toISOString(), level: 'info', msg: 'backup', file, removed: old.length }));

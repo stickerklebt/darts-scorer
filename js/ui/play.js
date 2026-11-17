@@ -4,7 +4,7 @@ import { overview } from '../stats.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
 import { incomingCount } from './friends.js';
-import { cornerOrnament, badge, stars, icon, heroArt, fuse, MODE_COLORS } from './svg.js';
+import { cornerOrnament, badge, stars, icon, heroArt, fuse, sparkles, MODE_COLORS } from './svg.js';
 
 export const TABS = ['play', 'stats', 'friends'];
 export const tabIndex = () => Math.max(0, TABS.indexOf(S.tab));
@@ -24,10 +24,9 @@ export function playView() {
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   const others = Object.keys(GAMES).filter((id) => id !== 'x01');
   return `<main class="page">
-    <button class="me glint" data-act="rename" style="--gd:-3s">
-      <span class="me-mono"><span>${esc(name.slice(0, 1).toUpperCase())}</span></span>
-      <span class="me-txt"><b>${esc(name)}</b><small>${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'} · ${ov.wins} ${ov.wins === 1 ? 'Sieg' : 'Siege'}</small></span>
-      <span class="me-avg"><small>Ø 501</small><b class="pop">${fmt(ov.avg)}</b></span>
+    <button class="me" data-act="rename">
+      <span class="me-name">${esc(name)}</span>
+      <span class="me-avg"><small>Ø 501</small><span class="glitter"><b class="pop shimmer" data-t="${fmt(ov.avg)}">${fmt(ov.avg)}</b>${sparkles(7, 3)}</span></span>
     </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero">
@@ -44,7 +43,7 @@ export function playView() {
       </div>
     </section>
     <h2 class="label">Partyspiele</h2>
-    <div class="modes">${others.map((id) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]}">
+    <div class="modes">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
     <div class="home-btns">
       <button class="btn dark settings-btn" data-act="history">${icon('chart', 1.8, 18)} Spielhistorie</button>

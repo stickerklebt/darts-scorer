@@ -47,6 +47,13 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   `HttpError` mit deutscher Meldung. Schema-Änderungen nur als neuer Eintrag am Ende von `MIGRATIONS` in `db.js`.
   Statische Dateien nur über die Allowlist in `static.js` (neue Ordner dort eintragen). Content-Security-Policy erlaubt
   kein Inline-Skript (`script-src 'self'`) – Skripte immer als Datei. Server-Tests: `tests/server.test.mjs` (startet die App auf freiem Port).
+- **Logging** (`server/src/log.js`): eine JSON-Zeile pro Ereignis → systemd-Journal. Felder `t, level, msg` (snake_case),
+  `rid` (Request-ID, von nginx/Proxy übernommen oder neu, steht auch im Header `X-Request-Id` und bei 500ern in der Fehlermeldung),
+  `u` (Nutzer-id). In Routen immer `c.log` benutzen (hat rid + u). Stufen: `error` = Programmfehler/5xx, `warn` = 4xx,
+  fehlgeschlagene Anmeldung, Rate-Limit, App-Fehler, langsame Anfragen (> 1,5 s); `info` = Ereignisse (login, user_registered,
+  friend_*, call_*, sync mit Änderungen, Start/Stopp, Migrationen); `debug` (nicht ausgegeben) = Leer-Syncs. Statische Dateien
+  nur bei Fehlern. **Nie** E-Mail, Passwort, Token/Cookie loggen; IPs nur gekürzt (`anonIp`). App-Fehler aus dem Browser
+  meldet `js/errlog.js` an `POST /api/client-log` (max. 5 je Seitenaufruf, Server drosselt 20/min je IP).
 - Lokal mit Server: `Darts starten.command` (Node, Daten in `.data/`) oder Vorschau „darts-server“ (Port 8787, `.data/dev`).
 - **Nicht als Datei öffnen:** Firefox/Chrome laden ES-Module nicht über `file://` (sonst schwarzer Bildschirm). `js/filehint.js`
   zeigt dann nach 1,5 s einen Hinweis. Lokal starten: `Darts starten.command` (Doppelklick, Node-Server auf 127.0.0.1,
@@ -57,10 +64,10 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 
 ## Dateistruktur
 ```
-index.html              Gerüst, lädt css/, js/main.js (type="module") und js/filehint.js
+index.html              Gerüst, lädt css/, js/errlog.js (Fehler melden), js/main.js (type="module") und js/filehint.js
 deploy/  nginx.conf · darts.service · install.sh (einmalig) · update.sh · start.sh · stop.sh · logs.sh · backup.sh; README.md (Betrieb)
 server/src/             server.js · app.js · config.js · db.js · sessions.js · passwords.js · ratelimit.js · static.js ·
-                        validate.js · friend-stats.js · backup.js · routes/ (auth, account, sync, friends)
+                        validate.js · friend-stats.js · backup.js · log.js · routes/ (auth, account, sync, friends, caller, client-log)
 css/
   tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich, Papier, Handlinie)
   base.css              Reset, Typo, Buttons, Tabs, Dialoge

@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { openDb } from '../server/src/db.js';
 import { createApp } from '../server/src/app.js';
 import { loadConfig } from '../server/src/config.js';
-import { createLogger } from '../server/src/log.js';
+import { createLogger, anonIp } from '../server/src/log.js';
 import { hashPassword, verifyPassword } from '../server/src/passwords.js';
 import { checkUsername } from '../server/src/validate.js';
 import { createMatch } from '../js/match.js';
@@ -13,11 +13,12 @@ import * as X from '../js/x01.js';
 async function boot(over = {}) {
   const config = loadConfig({}, { scryptLogN: 10, logRequests: false, authRatePerMin: 1000, ...over });
   const db = openDb(':memory:');
-  const app = createApp({ config, db, log: createLogger({ silent: true }) });
+  const logs = [];
+  const app = createApp({ config, db, log: createLogger({ level: 'debug', sink: (e) => logs.push(e) }) });
   const srv = createServer(app.handler);
   await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
   const base = `http://127.0.0.1:${srv.address().port}`;
-  return { base, db, stop: () => new Promise((ok) => { app.close(); srv.close(() => { db.close(); ok(); }); }) };
+  return { base, db, logs, stop: () => new Promise((ok) => { app.close(); srv.close(() => { db.close(); ok(); }); }) };
 }
 
 /** Kleiner Client mit Cookie-Speicher (wie ein Browser) */
@@ -251,5 +252,52 @@ test('Eigener Caller: Ansage hochladen, auflisten, abrufen, löschen; nur WAV, n
     assert.equal((await b('GET', '/api/calls/180')).status, 404);
     assert.equal((await fetch(`${s.base}/api/calls/180`, { method: 'DELETE', headers: { Cookie: cookie } })).status, 200);
     assert.equal((await fetch(`${s.base}/api/calls/180`, { headers: { Cookie: cookie } })).status, 404);
+  } finally { await s.stop(); }
+});
+
+test('Logger: Stufen, feste Felder, Fehler mit Stack, gekürzte IP', () => {
+  const out = [];
+  const log = createLogger({ level: 'info', sink: (e) => out.push(e) });
+  log.debug('leise'); log.info('laut', { a: 1, b: undefined });
+  log.child({ rid: 'abc' }).error('kaputt', { e: new Error('Boom') });
+  assert.deepEqual(out.map((e) => e.msg), ['laut', 'kaputt']);
+  assert.equal('b' in out[0], false);
+  assert.equal(out[1].rid, 'abc');
+  assert.equal(out[1].err, 'Boom');
+  assert.match(out[1].stack, /Error: Boom/);
+  assert.equal(anonIp('203.0.113.77'), '203.0.113.0');
+  assert.equal(anonIp('::ffff:10.1.2.3'), '10.1.2.0');
+  assert.equal(anonIp('2001:db8:abcd:12::1'), '2001:db8:abcd::');
+});
+
+test('Logging im Server: Request-ID, Anmelde-Ereignisse ohne E-Mail/Passwort, App-Fehler', async () => {
+  const s = await boot({ logRequests: true });
+  try {
+    const a = client(s.base);
+    const r = await register(a, 'log@x.de', 'Logger');
+    assert.match(r.headers.get('x-request-id'), /^[0-9a-f]{16}$/);
+    // eigene Request-ID vom Proxy wird übernommen
+    const own = await fetch(`${s.base}/api/auth/email`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Request-Id': 'proxy-id-12345' }, body: '{"email":"x@y.de"}' });
+    assert.equal(own.headers.get('x-request-id'), 'proxy-id-12345');
+    await a('POST', '/api/auth/login', { email: 'log@x.de', password: 'falsch!!!' });
+    await a('POST', '/api/auth/login', { email: 'log@x.de', password: 'geheim123' });
+    await a('POST', '/api/sync', { since: 0 });                       // Leer-Abgleich → nur debug
+    assert.equal((await a('POST', '/api/client-log', { kind: 'error', msg: 'x is undefined', src: '/js/main.js', line: 12 })).status, 200);
+    await new Promise((ok) => setTimeout(ok, 30)); // Anfrage-Zeilen entstehen beim „finish“ der Antwort
+    const msgs = s.logs.map((e) => `${e.level}:${e.msg}`);
+    for (const m of ['info:user_registered', 'warn:login_failed', 'info:login', 'debug:sync', 'warn:client_error']) assert.ok(msgs.includes(m), m);
+    const failed = s.logs.find((e) => e.msg === 'login_failed');
+    assert.equal(failed.reason, 'bad_password');
+    const req401 = s.logs.find((e) => e.msg === 'req' && e.s === 401);
+    assert.equal(req401.level, 'warn');
+    assert.equal(req401.err, 'bad_credentials');
+    assert.ok(s.logs.every((e) => e.rid || e.msg === 'db_migrated'), 'jede Anfrage-Zeile hat eine rid');
+    const all = JSON.stringify(s.logs);
+    assert.ok(!all.includes('log@x.de') && !all.includes('geheim123') && !all.includes('darts_sid'), 'keine E-Mail, kein Passwort, kein Cookie');
+    // statische Dateien erzeugen keine Logzeilen (außer bei Fehlern)
+    const n = s.logs.length;
+    await fetch(`${s.base}/js/stats.js`);
+    await new Promise((ok) => setTimeout(ok, 20));
+    assert.equal(s.logs.length, n);
   } finally { await s.stop(); }
 });

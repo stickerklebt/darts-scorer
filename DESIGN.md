@@ -18,7 +18,6 @@ leicht wackelige Linien (`#rough`), gedruckte Kanten (`#ink`), kleine Schieflage
 | Aktion | `--red` (+ `--red-d` als Kante) | Hauptknöpfe, aktiver Reiter, Plakat-Schatten |
 | Treffer | `--green` = Double, `--red` = Triple | Scheiben, Kacheln, Lupe |
 | Medaillen | Gold #ffd45c · Silber #dfe4ea · Bronze #d9925a | Top 3 (Doppel) |
-| Plakat-Pastell | Rosa #e48aa6 · Himmelblau #7fb0dc · Creme | nur im Strahlenkranz der Hero-Karte |
 | Spielerfarben | `--p0`…`--p5` | Karten im Spiel, Diagramme |
 
 Doppel-Stufen (relativ zur eigenen Quote): grün #3f9a52 · hellgrün #93b04a · gold #c9a34e · orange #d27a3a · rot #c4452f;
@@ -45,13 +44,20 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
 - Tabellen und Listen: `font-variant-numeric: tabular-nums`.
 
 ## Flächen & Rahmen
-- **Karten** (`.kv-c`, Spielerkarte, Rekorder, Anmeldung): dunkler Verlauf, **Goldrand ringsum** (nie nur oben), Radius 10–14 px.
+- **Karten** (`.kv-c`, Rekorder, Anmeldung): dunkle Fläche, **Goldrand ringsum** (nie nur oben), Radius 10–14 px.
 - **Papierkarten** (Creme mit Kupferstich + `--paper-age`): nur für Rekorde/Regeln/Leere Zustände.
-- Hero-Karte: Doppelrahmen in Gold, Eck-Ornamente, Strahlenkranz (dreht sich in 160 s einmal).
+- Hero-Karte: Doppelrahmen in Gold, Eck-Ornamente; Hintergrund = ruhiger goldener Strahlenkranz mit Punktkreis, Lorbeer
+  und Sternen (`heroArt()`), keine Bildmotive.
 - Ecken: Knöpfe `--r-btn` 6 px, Flächen `--r-panel` 10 px, große Karten 14 px.
 
 ## Licht & Bewegung
-- `.glint`: Lichtpunkt wandert sehr langsam am Rand entlang (11 s), je Karte versetzt (`--gd`). Für Karten außerhalb des Spiels.
+- `.glint`: Lichtpunkt wandert am Rand entlang (5 s je Runde), je Karte versetzt (`--gd`). Lichtlinie `fuse()` ebenfalls zügig.
+- **Average oben** (Spielerkarte, Overall-Average): kräftiges goldenes Glühen (pulsiert), Lichtstreif über die Ziffern (`.shimmer`,
+  braucht `data-t` mit der Zahl) und Glitzer-Sterne (`sparkles()` in `svg.js`). Rekord-Karten: nur der Lichtstreif.
+- Statistik-Karten glimmen zeitversetzt kurz von innen auf, die Zahl wird dabei heller. Diagramme: Linien zeichnen sich ein,
+  Punkte und Balken wachsen nacheinander.
+- Partyspiel-Logos stehen meist still und hüpfen/kippen ab und zu leicht (jedes zu seiner Zeit), der Stern daneben funkelt.
+- Reiter „Spielen“: gezeichneter Dartpfeil (Spitze, Barrel mit Rillen, Schaft, Flights), fliegt beim Aktivieren ein und wippt ab und zu.
 - `fuse()`: Lichtlinie auf Goldrahmen (Hero, Rekorde, Overall-Average, Sieger).
 - Karten erscheinen nacheinander (`--i` × 45 ms), aktiver Reiter glimmt, große rote Knöpfe mit gelegentlichem Lichtstreif.
 - **Im laufenden Spiel kein Leuchten** – einzige Ausnahme: getroffene Felder der Aufnahme auf der Eingabe-Scheibe.
@@ -64,10 +70,12 @@ Eingabe-Scheibe und Doppel-Heatmap teilen einen Stil: warm-dunkle Felder (#1d191
 ## Bausteine
 - Hauptaktion: `.btn.red.big` (eine pro Bildschirm). Zweitrangig: `.btn.dark`. Abbrechen/Gefährlich: `.btn.line` (rot bei Löschen).
 - Umschalter: `.seg` (aktiv = Creme mit Goldkante). Listen: `.slist` + `.srow`, Schalter `.tog`.
-- Monogramm: runder Goldring + rote Kugel mit Initiale (`.me-mono`, klein `.me-mono.sm`).
+- **Keine Monogramme/Initial-Logos** bei Spielernamen. Spielerkarte auf „Spielen“: flache Fläche (`--panel`, kein Verlauf), Goldrand,
+  Name mittig und direkt rechts daneben nur der Ø 501 – keine weiteren Zahlen.
 - Medaillen: Ring in Gold/Silber/Bronze (`.medal.m1–m3`), keine Zahlen-Kreise.
 - Abschnittstitel: `.label` (Gold, Versalien, handgezogene Linie dahinter).
 - Diagramme: y-Achse passt sich den Werten an (`axisRange`), Quoten nie über 100 %.
+- Doppel-Reiter ab 900 px Breite zweispaltig: Scheibe links (bleibt beim Scrollen stehen), Detail + Tabelle rechts; schmaler untereinander.
 
 ## Icon
 App-Icon bewusst schlicht: Zielscheibe (Goldring, Rot, Schwarz, Creme, rotes Bull) auf dunklem Grund – `tools/mkicon.mjs`.

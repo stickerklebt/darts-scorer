@@ -39,8 +39,9 @@ export function callerRoutes(r, { db }) {
     if (data.length < 44 || data.toString('ascii', 0, 4) !== 'RIFF' || data.toString('ascii', 8, 12) !== 'WAVE') throw bad('bad_audio', 'Keine gültige WAV-Datei.');
     const now = Date.now();
     q.put.run(c.user.id, s, type === 'audio/wav' ? type : 'audio/wav', data, now);
+    c.log.info('call_saved', { score: s, bytes: data.length });
     return { score: s, size: data.length, updatedAt: now };
   });
 
-  r.delete('/api/calls/:score', (c) => { q.del.run(c.user.id, score(c)); return { ok: true }; });
+  r.delete('/api/calls/:score', (c) => { const s = score(c); if (q.del.run(c.user.id, s).changes) c.log.info('call_deleted', { score: s }); return { ok: true }; });
 }

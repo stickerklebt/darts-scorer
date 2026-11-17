@@ -225,7 +225,12 @@ const P = {
   plus: '<path d="M12 5v14M5 12h14"/>', minus: '<path d="M6 12h12"/>', up: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   shuffle: '<path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
   gear: '<path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/><path d="M10.5 2h3l.6 2.6 2 .9 2.3-1.4 2.1 2.1-1.4 2.3.9 2 2.6.6v3l-2.6.6-.9 2 1.4 2.3-2.1 2.1-2.3-1.4-2 .9-.6 2.6h-3l-.6-2.6-2-.9-2.3 1.4-2.1-2.1 1.4-2.3-.9-2L2 13.5v-3l2.6-.6.9-2-1.4-2.3 2.1-2.1 2.3 1.4 2-.9z"/>',
-  dart: '<path d="M21 3l-7.5 7.5"/><path d="M13.5 10.5L5 19"/><path d="M5 19l-2 2"/><path d="M21 3l-5 1 1 1-1 4 4-1 1 1z" fill="currentColor"/><path d="M8 14l2 2"/>',
+  // Dartpfeil schräg (Spitze unten links, Flights oben rechts): Spitze, Barrel mit Griffrillen, Schaft, zwei Flights
+  dart: '<g transform="rotate(-45 12 12)" stroke-linecap="round"><path d="M0.6 12H6" stroke-width="1.2"/>'
+    + '<path d="M6 10.5h2v3H6zM8.7 10.3h1.6v3.4H8.7zM11 10.5h1.8a1.5 1.5 0 0 1 0 3H11z" fill="currentColor" stroke="none"/>'
+    + '<path d="M13.5 12H16.6" stroke-width="1.3"/>'
+    + '<path d="M16 12L18.4 6.6H23.2L21.4 12Z" fill="currentColor" stroke="none"/><path d="M16 12L18.4 17.4H23.2L21.4 12Z" fill="currentColor" stroke="none" opacity=".6"/>'
+    + '<path d="M16 12H22.6" stroke-width=".8" opacity=".5"/></g>',
   people: '<circle cx="9" cy="8" r="3.6"/><path d="M2.5 20.5c0-3.8 2.9-6.3 6.5-6.3s6.5 2.5 6.5 6.3"/><path d="M15.6 4.6a3.4 3.4 0 010 6.6M17.8 14.6c2.3.7 3.7 2.8 3.7 5.9"/>',
   chart: '<path d="M3 21h18"/><path d="M6 17V11M11 17V6M16 17v-8M21 17v-4"/>',
   board: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>',
@@ -269,47 +274,45 @@ export const trophy = (C = COLORS) => {
 
 
 /* ---------- Funke an der Zündschnur: Lichtpunkt wandert eine Rahmenlinie entlang ---------- */
+/**
+ * Glitzer: kleine vierzackige Sterne, die an festen, leicht zufälligen Stellen kurz aufblitzen (je Stern eigener Takt).
+ * Für die eine wichtigste Zahl (Average) – nie im laufenden Spiel.
+ */
+export function sparkles(n = 6, seed = 1) {
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const r = (k) => { const v = Math.sin((i + 1) * 12.9898 * (seed + k) + 78.233) * 43758.5453; return v - Math.floor(v); };
+    const x = Math.round(-6 + r(1) * 112), y = Math.round(-10 + r(2) * 110), d = (r(3) * 6).toFixed(2), s = (0.55 + r(4) * 0.7).toFixed(2), t = (3.2 + r(5) * 3).toFixed(2);
+    out += `<i style="left:${x}%;top:${y}%;--d:-${d}s;--s:${s};--t:${t}s"><svg viewBox="-10 -10 20 20"><path d="M0-10C1 -2 2-1 10 0C2 1 1 2 0 10C-1 2-2 1-10 0C-2-1-1-2 0-10Z"/></svg></i>`;
+  }
+  return `<span class="sparkles" aria-hidden="true">${out}</span>`;
+}
+
 export const fuse = (inset = 6, secs = 24, rx = 3) => {
   // [Länge in % des Umfangs, Deckkraft]: kurzer heller Kopf, lange, immer schwächere Schleppe (Köpfe bündig)
   const layers = [[32, 0.14], [22, 0.2], [14, 0.3], [8, 0.45], [4, 0.65], [1.6, 1]];
-  const dur = Math.round(secs * 2.2);
+  const dur = Math.max(4, Math.round(secs * 0.9)); // schneller als früher (war × 2,2)
   return `<span class="fuse" style="inset:${inset}px" aria-hidden="true"><svg>${layers.map(([l, o]) => `<rect x="0" y="0" width="100%" height="100%" rx="${rx}" pathLength="100" stroke-dasharray="${l} ${100 - l}" opacity="${o}"><animate attributeName="stroke-dashoffset" from="${l - 30}" to="${l - 130}" dur="${dur}s" repeatCount="indefinite"/></rect>`).join('')}</svg></span>`;
 };
 
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
-/**
- * Hintergrund der Hero-Karte: Strahlenkranz im Stil der Siebziger-Plakate – weiche Rosa-, Himmelblau- und Cremestrahlen
- * in einem Kreis, zur Mitte abgedunkelt (die Zahl bleibt lesbar), außen ausgefranst. Darüber Lorbeer und Sterne in Gold.
- * Nur Stilmittel: keine Figuren, kein Wappen, kein Schriftzug.
- */
+/** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
 export function heroArt() {
   const C = COLORS;
-  const tint = ['#ee93ae', '#f6ecd6', '#86bce8', '#f6ecd6'];
-  let wedges = '';
-  const n = 40;
-  for (let i = 0; i < n; i++) {
-    const w = 360 / n, a0 = ((i * w - 90 + jit(i, 3) * 1.2) * Math.PI) / 180, a1 = (((i + 1) * w - 90 + jit(i + 1, 3) * 1.2) * Math.PI) / 180;
-    const R = 196 + jit(i, 7) * 8; // ausgefranster Rand
-    wedges += `<path d="M200 200 L${r2(200 + R * Math.cos(a0))} ${r2(200 + R * Math.sin(a0))} L${r2(200 + R * Math.cos(a1))} ${r2(200 + R * Math.sin(a1))} Z" fill="${tint[i % 4]}"/>`;
+  let rays = '';
+  for (let i = 0; i < 72; i++) {
+    const a = ((i * 5 + jit(i, 4) * 1.6) * Math.PI) / 180, r0 = (i % 2 ? 108 : 96) + jit(i, 6) * 5, r1 = (i % 6 === 0 ? 196 : i % 2 ? 170 : 184) + jit(i, 8) * 12;
+    rays += `<path d="M${r2(200 + r0 * Math.cos(a))} ${r2(200 + r0 * Math.sin(a))} L${r2(200 + r1 * Math.cos(a))} ${r2(200 + r1 * Math.sin(a))}"/>`;
   }
   let dots = '';
-  for (let i = 0; i < 36; i++) { const a = (i * 10 * Math.PI) / 180; dots += `<circle cx="${r2(200 + 96 * Math.cos(a))}" cy="${r2(200 + 96 * Math.sin(a))}" r="1.4"/>`; }
+  for (let i = 0; i < 36; i++) { const a = (i * 10 * Math.PI) / 180; dots += `<circle cx="${r2(200 + 90 * Math.cos(a))}" cy="${r2(200 + 90 * Math.sin(a))}" r="1.3"/>`; }
   return `<svg viewBox="0 0 400 400" aria-hidden="true">
-    <defs>
-      <radialGradient id="heroShade" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stop-color="#0b0a08" stop-opacity=".9"/><stop offset=".3" stop-color="#0b0a08" stop-opacity=".72"/>
-        <stop offset=".55" stop-color="#0b0a08" stop-opacity=".28"/><stop offset=".86" stop-color="#0b0a08" stop-opacity=".1"/><stop offset="1" stop-color="#0b0a08" stop-opacity=".75"/>
-      </radialGradient>
-      <radialGradient id="heroGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe9b0" stop-opacity=".22"/><stop offset="1" stop-color="#ffe9b0" stop-opacity="0"/></radialGradient>
-    </defs>
-    <g class="hero-rays" opacity=".78">${wedges}</g>
-    <circle cx="200" cy="200" r="206" fill="url(#heroShade)"/>
-    <circle cx="200" cy="200" r="120" fill="url(#heroGlow)"/>
-    <circle cx="200" cy="200" r="100" fill="none" stroke="${C.gold}" stroke-width=".9" opacity=".55"/>
-    <circle cx="200" cy="200" r="92" fill="none" stroke="${C.gold}" stroke-width=".5" opacity=".4" stroke-dasharray="2 3"/>
-    <g fill="${C.gold}" opacity=".55">${dots}</g>
-    <g opacity=".55">${laurelWreath(200, 214, 122, C.gold, 9)}</g>
-    <path d="${starPath(200, 58, 9, 3.8)}" fill="${C.gold}" opacity=".85"/>
-    <path d="${starPath(150, 70, 5, 2.1)}" fill="${C.gold}" opacity=".65"/><path d="${starPath(250, 70, 5, 2.1)}" fill="${C.gold}" opacity=".65"/>
+    <g stroke="${C.gold}" stroke-width=".7" opacity=".32">${rays}</g>
+    <circle cx="200" cy="200" r="92" fill="none" stroke="${C.gold}" stroke-width=".8" opacity=".45"/>
+    <circle cx="200" cy="200" r="86" fill="none" stroke="${C.gold}" stroke-width=".5" opacity=".35" stroke-dasharray="2 3"/>
+    <g fill="${C.gold}" opacity=".45">${dots}</g>
+    <g opacity=".5">${laurelWreath(200, 214, 118, C.gold, 9)}</g>
+    <path d="${starPath(200, 62, 9, 3.8)}" fill="${C.gold}" opacity=".8"/>
+    <path d="${starPath(150, 74, 5, 2.1)}" fill="${C.gold}" opacity=".6"/><path d="${starPath(250, 74, 5, 2.1)}" fill="${C.gold}" opacity=".6"/>
   </svg>`;
 }

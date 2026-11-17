@@ -26,6 +26,7 @@ export function accountRoutes(r, { db, sessions, config }) {
       if (/UNIQUE/.test(e.message)) throw new HttpError(409, 'username_taken', `„${name}“ ist schon vergeben.`);
       throw e;
     }
+    c.log.info('username_changed');
     return { user: publicUser({ ...c.user, username: name }) };
   });
 
@@ -36,6 +37,7 @@ export function accountRoutes(r, { db, sessions, config }) {
     if (next === b.current) throw bad('password_same', 'Das neue Passwort ist dasselbe wie das alte.');
     q.setHash.run(await hashPassword(next, config.scryptLogN), Date.now(), c.user.id);
     sessions.endOthers(c.user.id, c.user.sessionHash); // andere Geräte abmelden
+    c.log.info('password_changed');
     return { ok: true };
   });
 
@@ -44,7 +46,7 @@ export function accountRoutes(r, { db, sessions, config }) {
     await needPassword(c, (await c.json()).password);
     q.del.run(c.user.id);
     sessions.end(c.req, c.res);
-    c.log.info('user_deleted', { user: c.user.id });
+    c.log.info('user_deleted');
     return { ok: true };
   });
 }

@@ -3,7 +3,7 @@
 import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
-import { icon, stars, fuse } from './svg.js';
+import { icon, stars, fuse, sparkles } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, matchList } from './stats-extra.js';
 
@@ -18,14 +18,14 @@ export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
 const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub], i) => `<div class="kv-c glint" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
-const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
+const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows) => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<div class="rl"><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></div>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
   return `<div class="st-head">
-    <button class="st-who glint" data-act="statsWho" style="--gd:-6s"><span class="me-mono sm" style="${pcVars(Math.max(0, pi))}"><span>${esc(name.slice(0, 1).toUpperCase())}</span></span>
+    <button class="st-who glint" data-act="statsWho" style="--gd:-6s">
       <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
@@ -35,7 +35,7 @@ export function statsHeader(pid) {
 /* ---------------- Unter-Reiter ---------------- */
 function overviewTab(st) {
   const c = st.counts;
-  return `<div class="hero-stat">${fuse(5, 12)}<small>Overall-Average · 501</small><b>${fmt(st.avg, 2)}</b><em>${st.darts} Darts · ${st.points} Punkte</em></div>
+  return `<div class="hero-stat">${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter"><b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
       ['Bester Average', fmt(st.bestMatchAvg, 2)], ['First 9', fmt(st.f9, 2)],
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–'], ['Höchstes Checkout', st.highestCo ?? '–'],
@@ -77,13 +77,15 @@ export function doublesBlock(st, sel, withList = true) {
       <span class="hk-none"><i></i><small>unter ${MIN_ATTEMPTS} Versuchen</small></span>
     </div>
     <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>`;
-  return `<div class="heat">
+  return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board">${heatBoard(fields, f ? sel : null, rating)}</div>
-      ${withList ? `<div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>` : ''}
     </div>
+    ${withList ? '<div class="dbl-right">' : ''}
+      ${withList ? `<div class="heat-sel">${f ? `<b>${sel}</b><span>${f.attempts} ${f.attempts === 1 ? 'Versuch' : 'Versuche'} · ${f.hits} Treffer · ${pct(f.hits / f.attempts)}</span>` : '<span>Tippe auf ein Doppel für Details.</span>'}</div>` : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2>${seg('heatSort', 'v', [['rate', 'Beste zuerst'], ['field', 'Nach Zahl']], sort, 'seg sm')}</div>
       <div class="sbtable-wrap"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${medal(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
+    ${withList ? '</div>' : ''}</div>
     ${withList ? legend : ''}`;
 }
 

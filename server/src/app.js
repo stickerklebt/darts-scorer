@@ -1,6 +1,8 @@
 /* HTTP-Anwendung: Sicherheits-Header, API-Routen, statische Dateien, Fehlerbehandlung, Request-Log.
    createApp() ist ohne Netzwerk testbar (tests/server.test.mjs startet sie auf einem freien Port). */
 import { performance } from 'node:perf_hooks';
+import { randomBytes } from 'node:crypto';
+import { anonIp } from './log.js';
 import { HttpError, sendJson, readJson, readBinary, clientIp, isHttps } from './http.js';
 import { createRouter } from './router.js';
 import { createSessions } from './sessions.js';
@@ -11,6 +13,7 @@ import { accountRoutes } from './routes/account.js';
 import { syncRoutes } from './routes/sync.js';
 import { friendRoutes } from './routes/friends.js';
 import { callerRoutes } from './routes/caller.js';
+import { clientLogRoutes } from './routes/client-log.js';
 
 const CSP = [
   "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
@@ -24,6 +27,7 @@ export function createApp({ config, db, log }) {
     login: createLimiter({ limit: 10, windowMs: 15 * 60e3 }),      // Fehlversuche je IP + E-Mail
     sync: createLimiter({ limit: 240, windowMs: 60e3 }),
     search: createLimiter({ limit: 90, windowMs: 60e3 }),
+    clientLog: createLimiter({ limit: 20, windowMs: 60e3 }),       // Fehlermeldungen aus der App je IP
   };
   const router = createRouter();
   const deps = { db, sessions, config, limits, log };
@@ -32,6 +36,7 @@ export function createApp({ config, db, log }) {
   syncRoutes(router, deps);
   friendRoutes(router, deps);
   callerRoutes(router, deps);
+  clientLogRoutes(router, deps);
   router.get('/healthz', () => { db.prepare('SELECT 1').get(); return { ok: true }; }, { public: true });
   const serveStatic = createStatic(config.appDir);
 
@@ -62,42 +67,67 @@ export function createApp({ config, db, log }) {
     if (hit === 'method') throw new HttpError(405, 'method', 'Methode nicht erlaubt.');
     if (!hit) throw new HttpError(404, 'not_found', 'Unbekannte Adresse.');
     if (req.method !== 'GET' && req.method !== 'HEAD') checkOrigin(req);
+    const user = sessions.user(req, res);
+    res.locals.user = user?.id;
     const c = {
-      req, res, log, params: hit.params, query: url.searchParams, ip: clientIp(req, config.trustProxy),
-      user: sessions.user(req, res),
+      req, res, log: res.locals.log.child({ u: user?.id }), params: hit.params, query: url.searchParams, ip: clientIp(req, config.trustProxy),
+      user,
       json: () => readJson(req, config.maxBodyBytes),
       binary: (limit, types) => readBinary(req, limit, types),
     };
     if (!hit.route.opts.public && !c.user) throw new HttpError(401, 'unauthenticated', 'Bitte anmelden.');
-    res.locals = { user: c.user?.id };
     const out = await hit.route.handler(c);
     if (res.headersSent) return;
     if (out && typeof out.status === 'number' && 'body' in out) sendJson(res, out.status, out.body);
     else sendJson(res, 200, out ?? { ok: true });
   }
 
+  /** Request-ID: von nginx/Proxy übernehmen (X-Request-Id), sonst neu. Steht in jeder Logzeile der Anfrage und im Antwort-Header. */
+  const requestId = (req) => {
+    const h = String(req.headers['x-request-id'] || '');
+    return /^[\w-]{8,64}$/.test(h) ? h : randomBytes(8).toString('hex');
+  };
+  const SLOW_MS = 1500;
+
+  /** Eine Zeile pro Anfrage. Statische Dateien nur bei Fehlern (sonst Rauschen), Stufe nach Status. */
+  function logRequest(req, res, url, ms) {
+    if (!config.logRequests || url.pathname === '/healthz') return;
+    const api = url.pathname.startsWith('/api/'), s = res.statusCode, L = res.locals;
+    if (!api && s < 400 && url.pathname !== '/' && url.pathname !== '/index.html') return;
+    const expected = s === 401 && url.pathname === '/api/me'; // App fragt beim Start, ob jemand angemeldet ist
+    let level = s >= 500 ? 'error' : s >= 400 && !expected && s !== 404 ? 'warn' : 'info';
+    if (ms > SLOW_MS && level === 'info') level = 'warn';
+    L.log[level](ms > SLOW_MS ? 'req_slow' : 'req', {
+      m: req.method, p: url.pathname, s, ms: Math.round(ms), u: L.user, ip: anonIp(clientIp(req, config.trustProxy)),
+      bytes: Number(res.getHeader('content-length')) || undefined, err: L.err,
+    });
+  }
+
   const handler = async (req, res) => {
     const t0 = performance.now();
+    const rid = requestId(req);
+    res.locals = { rid, log: log.child({ rid }) };
+    res.setHeader('X-Request-Id', rid);
     let url;
     try { url = new URL(req.url, 'http://localhost'); } catch { res.writeHead(400).end(); return; }
-    res.on('finish', () => {
-      if (config.logRequests && url.pathname !== '/healthz') {
-        log.info('req', { m: req.method, p: url.pathname, s: res.statusCode, ms: Math.round(performance.now() - t0), u: res.locals?.user });
-      }
-    });
+    res.on('finish', () => logRequest(req, res, url, performance.now() - t0));
+    res.on('close', () => { if (!res.writableFinished) res.locals.log.warn('req_aborted', { m: req.method, p: url.pathname, ms: Math.round(performance.now() - t0) }); });
     securityHeaders(req, res);
     try {
       if (url.pathname.startsWith('/api/') || url.pathname === '/healthz') return await api(req, res, url);
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method', 'Methode nicht erlaubt.');
       if (!(await serveStatic(req, res, url.pathname))) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Nicht gefunden'); }
     } catch (e) {
-      if (res.headersSent) { res.destroy(); return; }
+      if (res.headersSent) { res.locals.log.error('response_failed', { p: url.pathname, e }); res.destroy(); return; }
       if (e instanceof HttpError) {
+        res.locals.err = e.code;
         const headers = e.extra?.retryAfter ? { 'Retry-After': String(e.extra.retryAfter) } : {};
         sendJson(res, e.status, { error: e.code, message: e.message, ...(e.extra || {}) }, headers);
       } else {
-        log.error('unhandled', { p: url.pathname, err: e.stack || String(e) });
-        sendJson(res, 500, { error: 'internal', message: 'Interner Fehler. Bitte später erneut versuchen.' });
+        res.locals.err = 'internal';
+        res.locals.log.error('unhandled', { m: req.method, p: url.pathname, u: res.locals.user, e });
+        // Request-ID mitschicken: wer einen Fehler meldet, kann sie nennen → passende Logzeile finden
+        sendJson(res, 500, { error: 'internal', message: `Interner Fehler. Bitte später erneut versuchen (Fehler-Nr. ${rid}).`, rid });
       }
     }
   };

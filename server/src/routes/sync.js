@@ -63,6 +63,11 @@ export function syncRoutes(r, { db, limits }) {
       if (!writeState && cur.state && cur.state_rev > since) out.state = JSON.parse(cur.state);
       if (conflict) out.stateConflict = true;
       if (resync) out.resync = true;
+      // Nur Abgleiche mit Änderungen als info – die regelmäßigen Leer-Abgleiche (jede Minute je Gerät) nur als debug
+      c.log[changed || conflict || resync || out.matches.length || out.removed.length ? 'info' : 'debug']('sync', {
+        since: b.since ?? 0, rev, up: rows.length, rm: remove.length, state: writeState || undefined,
+        down: out.matches.length || undefined, gone: out.removed.length || undefined, conflict: conflict || undefined, resync: resync || undefined,
+      });
       return out;
     });
   });

@@ -41,11 +41,11 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
   }
   const raw = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i)} ${y(p.v)}`).join('');
   const mv = values.map((_, i) => avg[i]).map((a, i) => (a === null ? null : `${x(i)} ${y(a)}`)).filter(Boolean);
-  const dots = pts.map((p) => `<rect x="${x(p.i) - 3}" y="${y(p.v) - 3}" width="6" height="6" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width="1"/>`).join('');
+  const dots = pts.map((p, k) => `<rect class="dt" style="--k:${k}" x="${x(p.i) - 3}" y="${y(p.v) - 3}" width="6" height="6" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width="1"/>`).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
     ${g}
-    <path d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".55" stroke-width="1.5"/>
-    ${mv.length > 1 ? `<path d="M${mv.join('L')}" fill="none" stroke="${COLORS.red}" stroke-width="3.5" stroke-linejoin="miter"/>` : ''}
+    <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".55" stroke-width="1.5"/>
+    ${mv.length > 1 ? `<path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="${COLORS.red}" stroke-width="3.5" stroke-linejoin="miter"/>` : ''}
     ${dots}
     <text x="${PAD.l}" y="${H - 6}" class="ax">${labelL}</text><text x="${W - PAD.r}" y="${H - 6}" class="ax" text-anchor="end">${labelR}</text>
   </svg>
@@ -62,7 +62,7 @@ export function barChart(items) {
   items.forEach(([lbl, c], i) => {
     const h = max ? (c / max) * ih : 0, x0 = r1(6 + i * bw + 4), w = r1(bw - 8), y0 = r1(PAD.t + ih - h);
     const col = i === n - 1 ? COLORS.red : i >= n - 3 ? COLORS.gold : COLORS.cream;
-    s += `<rect x="${x0}" y="${y0}" width="${w}" height="${r1(h)}" fill="${col}" stroke="${COLORS.ink}" stroke-width="1"/>`;
+    s += `<rect class="bar" style="--k:${i}" x="${x0}" y="${y0}" width="${w}" height="${r1(h)}" fill="${col}" stroke="${COLORS.ink}" stroke-width="1"/>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${y0 - 4}" class="bv" text-anchor="middle">${c}</text>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 14}" class="ax" text-anchor="middle">${lbl}</text>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 2}" class="ax dim" text-anchor="middle">${Math.round((c / total) * 100)}%</text>`;

@@ -125,23 +125,34 @@ export async function startRecording(onLevel) {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) throw new Error('Aufnehmen wird von diesem Browser nicht unterstützt.');
   if (!window.isSecureContext) throw new Error('Aufnehmen geht nur über HTTPS.');
   const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-  const a = audio();
-  const mr = new MediaRecorder(stream);
-  const chunks = [];
-  mr.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
-  let raf = 0, an = null;
-  if (a && onLevel) {
-    an = a.createAnalyser(); an.fftSize = 512;
-    a.createMediaStreamSource(stream).connect(an);
-    const d = new Uint8Array(an.fftSize);
-    const tick = () => { an.getByteTimeDomainData(d); let m = 0; for (const v of d) m = Math.max(m, Math.abs(v - 128)); onLevel(Math.min(1, m / 100)); raf = requestAnimationFrame(tick); };
-    tick();
+  let raf = 0;
+  try {
+    const mr = new MediaRecorder(stream);
+    const chunks = [];
+    mr.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+    // Pegelanzeige ist Zugabe: Firefox wirft hier, wenn Mikrofon und AudioContext verschiedene Abtastraten haben
+    // (z. B. 48 kHz gegen 44,1 kHz) – dann ohne Anzeige weiter aufnehmen statt abzubrechen.
+    const a = audio();
+    if (a && onLevel) {
+      try {
+        const an = a.createAnalyser(); an.fftSize = 512;
+        a.createMediaStreamSource(stream).connect(an);
+        const d = new Uint8Array(an.fftSize);
+        const tick = () => { an.getByteTimeDomainData(d); let m = 0; for (const v of d) m = Math.max(m, Math.abs(v - 128)); onLevel(Math.min(1, m / 100)); raf = requestAnimationFrame(tick); };
+        tick();
+      } catch (e) { cancelAnimationFrame(raf); raf = 0; console.warn('[caller] Pegelanzeige nicht möglich:', e?.message || e); }
+    }
+    const done = new Promise((ok) => { mr.onstop = () => ok(new Blob(chunks, { type: mr.mimeType || 'audio/webm' })); });
+    mr.start();
+    const timer = setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, MAX_SEC * 1000);
+    rec = { mr, stream, done, timer, raf };
+    return rec;
+  } catch (e) {
+    // Mikrofon nie angeschaltet lassen, wenn der Start scheitert
+    cancelAnimationFrame(raf);
+    stream.getTracks().forEach((t) => t.stop());
+    throw e;
   }
-  const done = new Promise((ok) => { mr.onstop = () => ok(new Blob(chunks, { type: mr.mimeType || 'audio/webm' })); });
-  mr.start();
-  const timer = setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, MAX_SEC * 1000);
-  rec = { mr, stream, done, timer, raf };
-  return rec;
 }
 /** Aufnahme beenden → { wav, buffer, peaks, duration } */
 export async function stopRecording() {

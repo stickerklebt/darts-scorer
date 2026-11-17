@@ -63,20 +63,24 @@ const MIGRATIONS = [
    );`,
 ];
 
-export function openDb(file) {
+export function openDb(file, log = null) {
   if (file !== ':memory:') mkdirSync(join(file, '..'), { recursive: true });
   const db = new DatabaseSync(file);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
-  migrate(db);
+  migrate(db, log);
   return db;
 }
 
-export function migrate(db) {
+export function migrate(db, log = null) {
   const v = db.prepare('PRAGMA user_version').get().user_version;
   for (let i = v; i < MIGRATIONS.length; i++) {
     tx(db, () => { db.exec(MIGRATIONS[i]); db.exec(`PRAGMA user_version = ${i + 1}`); });
+    log?.info('db_migrated', { to: i + 1 });
   }
+  return { from: v, to: Math.max(v, MIGRATIONS.length) };
 }
+/** Schema-Version der Datenbank */
+export const schemaVersion = (db) => db.prepare('PRAGMA user_version').get().user_version;
 
 /** Transaktion (sofortige Schreibsperre). node:sqlite ist synchron – zwischen BEGIN und COMMIT läuft nichts anderes. */
 export function tx(db, fn) {
