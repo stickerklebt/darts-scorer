@@ -9,6 +9,8 @@ import { esc } from './ui/common.js';
 import { tabsBar, playView, tabIndex } from './ui/play.js';
 import { authView } from './ui/auth.js';
 import { friendsView, friendView } from './ui/friends.js';
+import { historyView } from './ui/history.js';
+import { historyRows, deleteMatch } from './history.js';
 import { api } from './api.js';
 import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
 import { statsView } from './ui/stats-view.js';
@@ -65,6 +67,7 @@ function render() {
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
   else if (S.screen === 'friend' && ui.friend) html = friendView();
+  else if (S.screen === 'history') html = historyView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
@@ -497,6 +500,23 @@ const actions = {
     ui.modal = { type: 'delAcct', busy: true }; render();
     try { await api('DELETE', 'api/me', { password }); forget(); ui.modal = null; ui.friends = null; ui.fsearch = null; ui.auth = null; toast('Konto gelöscht'); }
     catch (e) { ui.modal = { type: 'delAcct', error: errMsg(e) }; }
+    render();
+  },
+  /* Spielhistorie */
+  history() { ui.histFrom = S.tab; ui.openHist = null; ui.modal = null; S.screen = 'history'; render(); window.scrollTo(0, 0); },
+  histBack() { S.screen = 'home'; S.tab = ui.histFrom || 'play'; ui.openHist = null; render(); window.scrollTo(0, 0); },
+  histOpen(el) { ui.openHist = ui.openHist === el.dataset.v ? null : el.dataset.v; render(); },
+  histFilter(el) { ui.histFilter = el.dataset.v; ui.openHist = null; render(); },
+  histDel(el) {
+    const r = historyRows(S.matches, S.mainId).find((x) => x.id === el.dataset.v);
+    if (!r) return;
+    const label = `${r.game === 'x01' && r.start ? r.start : GAMES[r.game]?.title || r.game} · ${new Date(r.date).toLocaleDateString('de-DE')} · ${r.result}`;
+    ui.modal = { type: 'histDel', id: r.id, label }; render();
+  },
+  histDelForce() {
+    const id = ui.modal?.id;
+    ui.modal = null; ui.openHist = null;
+    if (id && deleteMatch(S, id)) toast('Spiel gelöscht');
     render();
   },
   /* Freunde */

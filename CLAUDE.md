@@ -74,15 +74,16 @@ js/
   bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma, dsigma), Sprüche  ← zum Selbst-Ändern
   botsim.js             Bot-Wurfmodell: zielen + 2D-Normalstreuung, X01 und Partyspiele
   stats.js              Kennzahlen, Heatmap-Daten, relative Doppel-Bewertung (Stufen + Top 3), Schnellwahl (quickScores)
+  history.js            Spielhistorie: Zeilen aller Spiele (historyRows, resultText), Spiel löschen (deleteMatch)
   demo.js               Testdaten-Generator (fester Seed, demo: true), einmalig einfügen / gezielt entfernen
   games.js              Spielmodi (Titel, Regeln)
   ui/ svg.js · board.js (Eingabe-, Heatmap- und Echt-Scheibe) · charts.js · play.js · setup.js · game.js ·
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
-      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
+      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -121,6 +122,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
   und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
+- **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):
+  alle fertigen Spiele aller Modi, neueste zuerst, nach Monat gruppiert, Filter Alle · X01 · Cricket · Party. Zeile: S/N/=
+  aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)
+  und „Spiel löschen“ (mit Bestätigung). Gelöscht wird aus `S.matches` → fehlt in jeder Statistik, Sync löscht es auf dem
+  Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
 - **Freunde** (dritter Reiter): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.

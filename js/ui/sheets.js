@@ -88,6 +88,9 @@ export function sheetView() {
       ${pwField('delPw', 'Passwort', 'current-password')}
       ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
       <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="delAcctForce" ${md.busy ? 'disabled' : ''}>Endgültig löschen</button></div>`;
+  } else if (md.type === 'histDel') {
+    inner = `<h3>Spiel löschen?</h3><p>${esc(md.label)}<br>Das Spiel verschwindet aus der Historie und zählt nicht mehr in der Statistik – auch auf deinen anderen Geräten und bei deinen Freunden. Das lässt sich nicht rückgängig machen.</p>
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="histDelForce">Löschen</button></div>`;
   } else if (md.type === 'friendRemove') {
     inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;

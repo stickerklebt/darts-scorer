@@ -46,6 +46,9 @@ export function playView() {
     <h2 class="label">Partyspiele</h2>
     <div class="modes">${others.map((id) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
-    <button class="btn dark settings-btn" data-act="settings">${icon('gear', 1.8, 18)} Einstellungen</button>
+    <div class="home-btns">
+      <button class="btn dark settings-btn" data-act="history">${icon('chart', 1.8, 18)} Spielhistorie</button>
+      <button class="btn dark settings-btn" data-act="settings">${icon('gear', 1.8, 18)} Einstellungen</button>
+    </div>
   </main>`;
 }

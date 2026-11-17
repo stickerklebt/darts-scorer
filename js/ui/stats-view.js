@@ -83,7 +83,7 @@ export function doublesBlock(st, sel, withList = true) {
 function historyTab(st) {
   return block('', historyCharts(st))
     + block('Legs', cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four'))
-    + block('Matches', matchList(st));
+    + block('Matches', matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
 }
 
 export function emptyState(pid, any) {

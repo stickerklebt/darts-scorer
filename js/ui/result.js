@@ -36,7 +36,7 @@ export function x01Table(m) {
   return `<h2 class="label">Statistik</h2><div class="sbtable-wrap"><table class="sbtable">${head}${body}</table></div>${per}`;
 }
 
-function partyRanks(m) {
+export function partyRanks(m) {
   const ck = m.game === 'cricket' ? C.state(m, false) : null;
   const val = (s) => (ck ? (m.opts.mode === 'close' ? C.TARGETS.filter((t) => ck.marks[s][t] >= 3).length : ck.pts[s]) : G.score(m, s));
   const order = m.sides.map((side, s) => ({ side, s, v: val(s) })).sort((a, b) => b.v - a.v);

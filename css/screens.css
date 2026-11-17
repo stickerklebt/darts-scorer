@@ -853,3 +853,15 @@
 .acct-btns { margin-bottom: 14px; }
 .acct-btns .btn { font-size: 15px; letter-spacing: .08em; }
 .del-acct { width: 100%; margin-top: 8px; color: var(--dim); }
+
+/* ================= Spielhistorie ================= */
+.home-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.home-btns .settings-btn { margin-top: 0; }
+.history .seg { margin-bottom: 4px; }
+.hist-note { margin-bottom: 4px; }
+.hist .ml-res.d { background: var(--panel3); color: var(--cream2); }
+.hist .ml-res.n { background: var(--coal); color: var(--dim); }
+.hist-badge { display: flex; align-items: center; padding-left: 10px; flex: none; }
+.hist .ml-mid { padding-left: 10px; }
+.btn.hist-del { width: 100%; margin-top: 16px; color: var(--red); border-color: var(--red); }
+.btn.hist-link { width: 100%; margin-top: 12px; }
