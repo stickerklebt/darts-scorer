@@ -65,7 +65,8 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
 
 ## Scheiben
 Eingabe-Scheibe und Doppel-Heatmap teilen einen Stil: warm-dunkle Felder (#1d1913/#28221a), leicht getönte Ringe
-(Rot #8a3326, Grün #2a6b45), Golddrähte (35–45 % Deckkraft), Zahlen in `--gold-l`. Nachbau einer echten Scheibe nur beim Ausbullen.
+(Rot #8a3326, Grün #2a6b45), Golddrähte (35–45 % Deckkraft), Zahlen in `--gold-l`. Treffer/Zeiger/Lupe zeigen einen
+kleinen Dartpfeil (`dartGlyph()` in `ui/aimboard.js`: Creme-Barrel, rote Flights, Spitze = Treffpunkt). Nachbau einer echten Scheibe nur beim Ausbullen.
 
 ## Bausteine
 - Hauptaktion: `.btn.red.big` (eine pro Bildschirm). Zweitrangig: `.btn.dark`. Abbrechen/Gefährlich: `.btn.line` (rot bei Löschen).

@@ -29,6 +29,13 @@ export const fieldKey = (d) => (d.n === 0 ? 'miss' : d.n === 25 ? `b${d.m}` : `$
 export const fieldName = (d) => (d.n === 0 ? 'Daneben' : label(d));
 
 const r2 = (v) => Math.round(v * 100) / 100;
+
+/** Kleiner Dartpfeil, Spitze bei (0,0), Flights schräg nach oben rechts – für Treffer und Lupe */
+export const dartGlyph = (k = 1) => `<g class="adart" transform="scale(${k}) rotate(-45)">
+  <path d="M0 0H5" stroke="#f3e9d2" stroke-width=".9" stroke-linecap="round"/>
+  <rect x="5" y="-1.35" width="7.5" height="2.7" rx="1.1" fill="#f3e9d2"/><path d="M7 -1.35V1.35M9 -1.35V1.35" stroke="#0b0a08" stroke-width=".45" opacity=".55"/>
+  <path d="M12.5 0H16.5" stroke="#d9c9a3" stroke-width="1"/>
+  <path d="M15.6 0L18.4 -4.4H23L21.2 0Z" fill="#e5402c"/><path d="M15.6 0L18.4 4.4H23L21.2 0Z" fill="#a92a1b"/></g>`;
 const pt = (r, deg) => `${r2(r * Math.cos((deg * Math.PI) / 180))},${r2(r * Math.sin((deg * Math.PI) / 180))}`;
 const ring = (r0, r1, a0, a1) => `M${pt(r1, a0)} A${r1},${r1} 0 0,1 ${pt(r1, a1)} L${pt(r0, a1)} A${r0},${r0} 0 0,0 ${pt(r0, a0)} Z`;
 
@@ -67,7 +74,8 @@ export function aimBoard(hits = []) {
   if (lit.has('b2')) glow += `<circle class="aglow" r="${AR.bull}"/>`;
   const wires = `<g class="awire">${[AR.bull, AR.outer, AR.triIn, AR.triOut, AR.dblIn, AR.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(AR.outer, -99 + i * 18)}L${pt(AR.dblOut, -99 + i * 18)}"/>`).join('')}</g>`;
-  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle r="6.5"/><text text-anchor="middle" dominant-baseline="central">${i + 1}</text></g>`)).join('');
+  // Steckende Darts an der Wurfstelle (mit kleiner Nummer)
+  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<g transform="translate(-7 6)"><circle r="4.2"/><text text-anchor="middle" dominant-baseline="central">${i + 1}</text></g></g>`)).join('');
   return `<svg class="aimboard" viewBox="-${AR.edge} -${AR.edge} ${AR.edge * 2} ${AR.edge * 2}" role="img" aria-label="Dartscheibe – Finger auf die Stelle, wo der Dart steckt">
     <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
     <circle r="${AR.edge}" class="arim"/><circle r="${AR.dblOut + 1}" fill="${F.rim}"/>
@@ -82,7 +90,7 @@ export function aimLoupe(svg, x, y, clientX, clientY) {
   if (!lp) {
     lp = document.createElement('div');
     lp.className = 'loupe aim';
-    lp.innerHTML = `<svg class="aimboard lp">${svg.innerHTML}</svg><i class="cross"></i><span class="lp-t"></span>`;
+    lp.innerHTML = `<div class="lp-glass"><svg class="aimboard lp">${svg.innerHTML}</svg><svg class="lp-dart" viewBox="-30 -30 60 60">${dartGlyph(1.9)}<circle r="1.2" fill="#fff6dc"/></svg></div><span class="lp-t"></span>`;
     lp.querySelectorAll('.amark').forEach((n) => n.remove());
     document.body.appendChild(lp);
   }

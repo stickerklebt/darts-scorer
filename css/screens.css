@@ -1214,3 +1214,37 @@
 .fold.open .fold-h .ic { transform: rotate(-90deg); }
 .fold-b { padding: 4px 14px 16px; animation: sub-in .3s ease-out; }
 .fold-b .sblock:first-child .label, .fold-b > .record:first-child { margin-top: 6px; }
+
+/* ================= Bot am Zug: wirft dezent im Hintergrund, kein Vollbild in seiner Farbe ================= */
+.game.botturn .turnbar { background-color: var(--panel2); background-image: none; border-bottom-color: var(--line2); opacity: .7; }
+.game.botturn .sbp.on, .game.botturn .sbr.on {
+  background-color: #141210 !important; background-image: none !important; color: var(--cream2) !important;
+  border-color: var(--line2) !important; box-shadow: inset 3px 0 0 var(--pc), 0 0 0 1px rgba(255,255,255,.04) !important; flex-grow: 1 !important; }
+.game.botturn .sbp.on::after { display: none; }
+.game.botturn .sbp.on .sbp-name, .game.botturn .sbr.on .sbr-n > b { font-family: var(--f-num); font-size: 22px !important; letter-spacing: .08em; }
+.game.botturn .sbp.on .sbp-rem, .game.botturn .sbr.on .sbr-rem { color: var(--cream) !important; opacity: .9; }
+.game.botturn .sbp.on .sbp-stats { background: rgba(0,0,0,.2); }
+.game.botturn .sbp.off, .game.botturn .sbr.off { opacity: 1; filter: none; }
+.game.botturn .sbp.on .sbp-head::after { content: "wirft …"; margin-left: 10px; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--pc); opacity: .9; animation: blink 1.4s ease-in-out infinite; }
+.game.botturn .botpad { opacity: .75; }
+.game.botturn .bp-top { padding: 6px 10px; background: transparent; border-color: var(--line); }
+.game.botturn .bp-top .av, .game.botturn .bp-top > :first-child { transform: scale(.75); transform-origin: left center; }
+.game.botturn .bp-t b { font-size: 18px; }
+
+/* ================= Eingabe-Scheibe: Dartpfeil als Zeiger, steckende Darts, elegante Lupe ================= */
+.aimboard { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg transform='translate(3 29) rotate(-45)'%3E%3Cpath d='M0 0H6' stroke='%230b0a08' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M0 0H6' stroke='%23f3e9d2' stroke-width='1.4' stroke-linecap='round'/%3E%3Crect x='6' y='-2' width='10' height='4' rx='1.6' fill='%23f3e9d2' stroke='%230b0a08' stroke-width='.8'/%3E%3Cpath d='M16 0H21' stroke='%23d9c9a3' stroke-width='1.6'/%3E%3Cpath d='M20 0L24 -6H31L28.5 0Z' fill='%23e5402c' stroke='%230b0a08' stroke-width='.6'/%3E%3Cpath d='M20 0L24 6H31L28.5 0Z' fill='%23a92a1b' stroke='%230b0a08' stroke-width='.6'/%3E%3C/g%3E%3C/svg%3E") 3 29, crosshair; }
+.aimboard .amark .hole { fill: #0b0a08; }
+.aimboard .amark .adart { filter: drop-shadow(1px 1.5px .6px rgba(0,0,0,.6)); }
+.aimboard .amark g circle { fill: var(--ink); stroke: var(--gold-l); stroke-width: .9; }
+.aimboard .amark text { fill: var(--gold-l); font-family: var(--f-num); font-size: 6px; }
+.aimboard .amark { animation: dart-stick .28s cubic-bezier(.2,.9,.3,1.3) both; }
+@keyframes dart-stick { from { opacity: 0; transform-box: fill-box; } 60% { opacity: 1; } }
+
+.loupe.aim { width: 150px; height: 150px; border: 0; background: none; box-shadow: none; overflow: visible; border-radius: 50%; }
+.loupe.aim .lp-glass { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: var(--coal);
+  box-shadow: 0 0 0 1.5px rgba(236,201,106,.95), 0 0 0 5px rgba(11,10,8,.55), 0 0 0 6px rgba(212,166,58,.35), 0 14px 34px rgba(0,0,0,.65), 0 0 22px rgba(236,201,106,.25); }
+.loupe.aim .lp-glass::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 30% 22%, rgba(255,255,255,.16), transparent 42%), radial-gradient(circle, transparent 62%, rgba(0,0,0,.45) 100%); }
+.loupe.aim .lp-glass > svg.aimboard { width: 100%; height: 100%; }
+.loupe.aim .lp-dart { position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; margin: -30px 0 0 -30px; overflow: visible; filter: drop-shadow(1px 2px 1px rgba(0,0,0,.7)); }
+.loupe.aim .lp-t { bottom: auto; top: calc(100% + 8px); padding: 3px 14px; border-radius: 20px; border: 1px solid rgba(236,201,106,.7); box-shadow: 0 4px 12px rgba(0,0,0,.5); font-size: 20px; letter-spacing: .06em; }

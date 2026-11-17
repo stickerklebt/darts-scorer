@@ -112,7 +112,7 @@ tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · 
   lineup: [{ id, team }],                                     // id = Profil- oder Bot-id ('sensei-wu' …)
   teamMode, anwurf: 'list' | 'bull', demoSeeded,              // demoSeeded: Testdaten wurden schon einmal eingefügt
   opts: { x01: { start, out, mode, target }, highscore: { rounds }, shanghai: { rounds }, halveit: {}, atc: { bull } },
-  prefs: { voice: false, hints: true, dartInput: 'board' | 'keys', anim: true },   // aimV: einmal auf 'board' umgestellt
+  prefs: { voice: false, hints: true, dartInput: 'board' | 'keys', anim: true, ownCalls: true, showAvg: true },   // aimV: einmal auf 'board' umgestellt
   screen, tab, statsPid, statsPeriod, statsSub, cmpA, cmpB, game,
 }
 Match = { id, game, opts, demo?, first, startedAt, endedAt?, done, winners?, sides: [[id…]], playerIds, legs | turns, pending,
@@ -150,7 +150,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Finger drauf → Feld unter dem Finger leuchtet gold; nach 140 ms halten (oder beim Ziehen) erscheint die Lupe über dem Finger
   mit Fadenkreuz und Feldname; loslassen setzt den Dart (außerhalb des Double-Rings = daneben, dazu Knopf „Daneben“).
   Über der Scheibe drei Treffer-Kacheln (1 · T20 60 …, nächster Dart „Jetzt“), getroffene Felder der laufenden Aufnahme
-  leuchten mit Nummer an der Wurfstelle (`ui.aimPos`, nur flüchtig). Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
+  leuchten, an der Wurfstelle steckt ein kleiner Dartpfeil mit Nummer (`ui.aimPos`, nur flüchtig). Mauszeiger = Dartpfeil
+  (Spitze = Treffpunkt). Lupe: runder „Glas“-Ausschnitt mit feinem Goldring, Dartpfeil statt Fadenkreuz, Feldname als Pille darunter. Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
 - **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):
   alle fertigen Spiele aller Modi, neueste zuerst, nach Monat gruppiert, Filter Alle · X01 · Cricket · Party. Zeile: S/N/=
   aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)
@@ -161,6 +162,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
   „Zusammen spielen“ ist als „Kommt bald“ angekündigt (noch nicht gebaut).
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
+  **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel mit dünnem Farbstreifen links und „wirft …“,
+  Leuchtbalken neutral, Bot-Feld rechts verkleinert und gedämpft.
+- **Average im Spiel ausblendbar** (`prefs.showAvg`, Zahnrad im Spiel bzw. Einstellungen): blendet die Ø-Angaben in den Karten und beim Bot aus.
 - **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
   bei Solo ausgeblendet) · Start. „Mehr Optionen“ (aufklappbar, zeigt eingeklappt eine Zusammenfassung wie „501 · Double Out“):
   Jeder für sich/Teams, Startpunkte 301/501/701, Check-Out, Legs/Sets, Reihenfolge mischen, Spielregeln.

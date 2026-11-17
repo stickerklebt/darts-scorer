@@ -18,7 +18,11 @@ import { PLAYER_COLORS } from './svg.js';
 const whoText = (m, s, thrower) => (isBot(thrower) ? `${nameOf(thrower)} wirft` : isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
 const chipCls = (d) => (d.n === 25 && d.m === 2 ? 'b' : d.m === 2 ? 'd' : '');
 
+/** Ø-Angaben im Spiel ausblendbar (Einstellung „Average anzeigen“) */
+const statsShown = (stats) => (S.prefs.showAvg === false ? stats.filter(([k]) => k !== 'Ø') : stats);
+
 function scoreboard(items, cur, swap) {
+  items = items.map((it) => ({ ...it, stats: statsShown(it.stats) }));
   const anim = (s) => (s === cur && swap ? 'swap' : '');
   if (items.length <= 2) {
     return `<div class="duo ${items.length === 1 ? 'solo' : ''}">${items.map((it, s) => `<div class="sbp ${s === cur ? 'on' : 'off'} ${anim(s)}" style="${pcVars(s)}">
@@ -134,7 +138,8 @@ export function gameView() {
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
-  return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''}" style="${pcVars(cur)}">
+  const botTurn = isBot(thrower);
+  return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''} ${botTurn ? 'botturn' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
@@ -214,7 +219,7 @@ function hitsPad(m, thrower, cur) {
 function botPad(m, thrower, darts) {
   const sum = darts.reduce((a, d) => a + d.n * d.m, 0);
   return `<div class="botpad">
-    <div class="bp-top">${avatar(thrower, 64)}<div class="bp-t"><b>${esc(nameOf(thrower))}</b><span>wirft<i>.</i><i>.</i><i>.</i></span><small>Bot · Ø ${bot(thrower).avg}</small></div></div>
+    <div class="bp-top">${avatar(thrower, 64)}<div class="bp-t"><b>${esc(nameOf(thrower))}</b><span>wirft<i>.</i><i>.</i><i>.</i></span><small>Bot${S.prefs.showAvg === false ? '' : ` · Ø ${bot(thrower).avg}`}</small></div></div>
     <div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${darts[i] ? 'filled' : ''}">${darts[i] ? label(darts[i]) : '–'}</div>`).join('')}<div class="slot sum">${sum}</div></div>
     <button class="btn dark" data-act="undo">${icon('undo', 2.4, 18)} Letzte eigene Eingabe zurück</button>
   </div>`;
