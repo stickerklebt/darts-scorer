@@ -50,7 +50,33 @@ export const S = load();
 /** Flüchtiger UI-Zustand (nicht gespeichert). */
 export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, tabFrom: null, moreOpen: false };
 
-export function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ } }
+let saveHook = null;
+/** Wird nach jedem Speichern aufgerufen (Sync zum Server, siehe sync.js). */
+export const setSaveHook = (fn) => { saveHook = fn; };
+export function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ }
+  if (saveHook) saveHook();
+}
+/** Lokale Daten dieses Geräts komplett leeren (Abmelden, anderes Konto). Keine Testdaten nachladen. */
+export function clearLocal() {
+  try { localStorage.removeItem(KEY); } catch (e) { /* */ }
+  for (const k of Object.keys(S)) delete S[k];
+  Object.assign(S, DEF());
+  S.demoSeeded = true;
+  S.cleanV = 1;
+}
+/** Spielstand-Teile, die mit dem Konto synchronisiert werden (Matches laufen getrennt, UI-Zustand bleibt lokal). */
+export const SYNC_KEYS = ['version', 'mainId', 'profiles', 'lineup', 'teamMode', 'anwurf', 'opts', 'prefs', 'demoSeeded', 'cleanV'];
+/** Zustand vom Server übernehmen (Einstellungen mit Standardwerten auffüllen). */
+export function applyState(st) {
+  const def = DEF();
+  for (const k of SYNC_KEYS) {
+    if (!(k in st)) continue;
+    if (k === 'opts') S.opts = Object.fromEntries(Object.keys(def.opts).map((g) => [g, { ...def.opts[g], ...(st.opts?.[g] || {}) }]));
+    else if (k === 'prefs') S.prefs = { ...def.prefs, ...st.prefs };
+    else S[k] = st[k];
+  }
+}
 export function resetAll() {
   const seeded = S.demoSeeded; // Testdaten nach „Alle Daten löschen“ nicht erneut einfügen
   try { localStorage.removeItem(KEY); } catch (e) { /* */ }

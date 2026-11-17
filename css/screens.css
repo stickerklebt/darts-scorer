@@ -790,3 +790,66 @@
   .pad .entry .val { font-size: clamp(36px, 17dvh, 78px); }
   .co-c { font-size: 22px; }
 }
+
+/* ================= Konto & Freunde ================= */
+/* Drei Reiter oben */
+.tabs-in { grid-template-columns: repeat(3, 1fr); }
+.tabline { width: calc(100% / 3); }
+.tab { position: relative; }
+.tab-badge { position: relative; top: -8px; margin-left: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--red); color: var(--cream);
+  font-style: normal; font-size: 14px; line-height: 20px; letter-spacing: 0; box-shadow: 0 0 0 2px var(--ink); }
+@media (max-width: 440px) { .tab { font-size: 15px; letter-spacing: .1em; gap: 6px; } .tab .ic { width: 17px; height: 17px; } }
+@media (max-width: 350px) { .tab .ic { display: none; } }
+
+/* Anmeldung */
+.stage.auth { justify-content: flex-start; padding-top: calc(var(--sat) + 40px); }
+.stage.auth .stage-crest svg { width: min(46vw, 190px); }
+.auth-form { width: 100%; display: flex; flex-direction: column; align-items: stretch; }
+.auth-form h1 { text-align: center; font-size: 34px; }
+.field.name { text-transform: none; letter-spacing: .04em; }
+.auth-form p { margin-bottom: 20px; }
+.field.plain { text-transform: none; letter-spacing: .02em; font-family: var(--f-text); font-size: 20px; }
+.auth-mail { align-self: center; display: inline-flex; align-items: baseline; gap: 10px; margin: 0 0 18px; padding: 6px 12px; border: 1px solid var(--line2); color: var(--cream2);
+  font-family: var(--f-text); font-size: 17px; letter-spacing: .01em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-mail small { color: var(--gold); font-family: var(--f-num); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+.auth-lbl { text-align: left; margin: 0 2px 6px; font-size: 13px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.auth-err { margin: -4px 4px 14px !important; color: var(--red) !important; font-family: var(--f-text); font-size: 16px; line-height: 1.35; text-align: center; }
+.auth-note { margin: 16px 0 0 !important; font-size: 14px !important; color: var(--dim) !important; }
+.name-hint.ok { color: var(--green) !important; }
+.name-hint:not(.ok):not(.bad) { color: var(--muted) !important; font-weight: 400; }
+.stage .name-hint { text-align: left; }
+
+/* Freunde-Reiter */
+.me-card { cursor: default; }
+.me-card .pfname b { text-transform: none; }
+.friends .field.search { margin-bottom: 10px; }
+.sm-btn { height: 38px; padding: 0 12px; font-size: 14px; letter-spacing: .08em; flex: none; gap: 4px; }
+.srow .sm-btn + .sm-btn { margin-left: -4px; }
+.fsearch, .flist { margin-bottom: 4px; }
+.flist .srow { min-height: 62px; }
+.srow .lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.favg { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.favg small { font-size: 11px; font-weight: 800; letter-spacing: .14em; color: var(--gold); }
+.favg b { font-size: 28px; font-variant-numeric: tabular-nums; }
+.badge-n { display: inline-block; min-width: 22px; padding: 1px 6px; background: var(--red); color: var(--cream); border-radius: 11px; text-align: center; letter-spacing: 0; }
+.soon { position: relative; margin-top: 26px; padding: 18px 16px 16px; text-align: center; border: 1.5px dashed var(--gold); border-radius: var(--r-panel); }
+.soon b { display: block; margin: 6px 0 4px; font-family: var(--f-display); font-size: 22px; letter-spacing: .06em; text-transform: uppercase; }
+.soon p { margin: 0; color: var(--muted); font-family: var(--f-text); font-size: 16px; line-height: 1.35; }
+.soon-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg); background: var(--red); color: var(--cream); padding: 2px 10px;
+  font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; border-radius: var(--r-btn); white-space: nowrap; }
+.friend .hero-stat { margin-top: 14px; }
+.form-row { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+.form-row span { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 15px; border-radius: 4px; }
+.form-row .w { background: var(--green); color: var(--cream); }
+.form-row .l { background: var(--panel2); color: var(--muted); border: 1px solid var(--line2); }
+.btn.remove-friend { width: 100%; margin-top: 22px; color: var(--red); border-color: var(--red); }
+.minirow.games { margin-top: 0; }
+
+/* Konto in den Einstellungen */
+.acct .val { max-width: 58%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct .val.mail { font-family: var(--f-text); font-size: 15px; letter-spacing: .01em; }
+.acct .sync-ok { color: var(--green); }
+.acct .sync-offline, .acct .sync-error { color: var(--gold); }
+.acct-btns { margin-bottom: 14px; }
+.acct-btns .btn { font-size: 15px; letter-spacing: .08em; }
+.del-acct { width: 100%; margin-top: 8px; color: var(--dim); }

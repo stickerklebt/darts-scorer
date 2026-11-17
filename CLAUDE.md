@@ -1,7 +1,10 @@
 # Darts Scorer – Architektur & Regeln
 
 PWA für iPhone/iPad. Vanilla JS als ES-Module, kein Build-Step, keine Frameworks, keine CDNs.
-Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`stickerklebt/darts-scorer`, Branch `main`).
+Läuft im **Container** (`Dockerfile`, `docker-compose.yml`): Node-Server in `server/` liefert die App aus und speichert
+Konten, Spieldaten und Freundschaften in SQLite (`node:sqlite`, Volume `/data`). Keine npm-Abhängigkeiten – nur Node-Bordmittel.
+Das Gerät hält alles weiter in `localStorage` (offline spielbar), `js/sync.js` gleicht mit dem Konto ab.
+GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup: `README.md`.
 
 ## Regeln für die Arbeit
 - Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheiben, Animationen: eigene SVG/CSS/Canvas im Code. Keine Sounds.
@@ -28,17 +31,25 @@ Alles offline, Daten in `localStorage`. Veröffentlicht über GitHub Pages (`sti
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests.
 - App-Icon: Wappen aus `js/ui/svg.js` → `node tools/mkicon.mjs icon.svg` (bettet IM Fell ein, Federfilter), dann `qlmanage -t -s 1024 icon.svg`
   und mit `sips -Z 512/180` zu `icon-512.png` / `icon-180.png` verkleinern.
-- Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen.
-- **Nicht als Datei öffnen:** Firefox/Chrome laden ES-Module nicht über `file://` (sonst schwarzer Bildschirm). `index.html`
-  zeigt dann nach 1,5 s einen Hinweis mit Link zu GitHub Pages. Lokal starten: `Darts starten.command` (Doppelklick,
-  Python-Server auf 127.0.0.1, Port ab 8000, öffnet den Browser).
+- Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen. `/api/` wird nie gecacht.
+- **Server-Regeln:** keine npm-Pakete. Neue Endpunkte in `server/src/routes/`, Eingaben in `validate.js` prüfen, Fehler als
+  `HttpError` mit deutscher Meldung. Schema-Änderungen nur als neuer Eintrag am Ende von `MIGRATIONS` in `db.js`.
+  Statische Dateien nur über die Allowlist in `static.js` (neue Ordner dort eintragen). Content-Security-Policy erlaubt
+  kein Inline-Skript (`script-src 'self'`) – Skripte immer als Datei. Server-Tests: `tests/server.test.mjs` (startet die App auf freiem Port).
+- Lokal mit Server: `Darts starten.command` (Node, Daten in `.data/`) oder Vorschau „darts-server“ (Port 8787, `.data/dev`).
+- **Nicht als Datei öffnen:** Firefox/Chrome laden ES-Module nicht über `file://` (sonst schwarzer Bildschirm). `js/filehint.js`
+  zeigt dann nach 1,5 s einen Hinweis. Lokal starten: `Darts starten.command` (Doppelklick, Node-Server auf 127.0.0.1,
+  Port ab 8000, öffnet den Browser).
 - Statistik wird **immer aus gespeicherten Matches berechnet**, nie als Zähler mitgeführt. Keine Statistik/Funktion entfernen.
 - Animationen in der Konsole prüfen: `(await import('/js/ui/fx.js')).fxPlay('trophy', {score:180, name:'Test'})`,
   `__fxFreeze()` hält das Bild an (Seite im Hintergrund: Animationen per `document.getAnimations()` auf eine Zeit setzen).
 
 ## Dateistruktur
 ```
-index.html              Gerüst, lädt css/ und js/main.js (type="module")
+index.html              Gerüst, lädt css/, js/main.js (type="module") und js/filehint.js
+Dockerfile, docker-compose.yml, .env.example, deploy/Caddyfile (HTTPS), README.md (Betrieb)
+server/src/             server.js · app.js · config.js · db.js · sessions.js · passwords.js · ratelimit.js · static.js ·
+                        validate.js · friend-stats.js · backup.js · routes/ (auth, account, sync, friends)
 css/
   tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich, Papier, Handlinie)
   base.css              Reset, Typo, Buttons, Tabs, Dialoge
@@ -48,7 +59,9 @@ fonts/                  league-gothic.woff2, fell-sc.woff2, fell.woff2, fell-i.w
 bots/                   Optionale Bot-Bilder + bilder.json (Liste) + README.md
 js/
   main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
-  store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand
+  store.js              Laden/Speichern (Key `darts.v3`), Profile, Prefs, UI-Zustand, SYNC_KEYS, Save-Hook
+  api.js                fetch-Wrapper zum Server (ApiError, deutsche Meldungen)
+  sync.js               Konto (auth), Login/Logout, Delta-Sync mit dem Server (Meta in `darts.sync`)
   match.js              Match-Objekt, Werfer-Reihenfolge
   checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
   x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
@@ -63,11 +76,11 @@ js/
   games.js              Spielmodi (Titel, Regeln)
   ui/ svg.js · board.js (Eingabe-, Heatmap- und Echt-Scheibe) · charts.js · play.js · setup.js · game.js ·
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
-      compare.js · sheets.js · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
+      compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket
+tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -92,7 +105,24 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 - Doppelversuch (Double Out): Dart mit `before` gerade 2–40 oder 50.
 - Teams: Werfer = `side[(Aufnahmen der Seite im Match) % Teamgröße]`. Ausbullen wirft der Erste der Teamliste.
 
+## Server-Datenmodell (SQLite `/data/darts.db`)
+`users` (id, email klein, username, username_key klein + UNIQUE, pw_hash scrypt) · `sessions` (token_hash SHA-256, Ablauf) ·
+`user_state` (rev, state = JSON der SYNC_KEYS, state_rev) · `matches` (user_id, id, rev, deleted = Grabstein, data JSON) ·
+`friendships` (requester_id, addressee_id, status pending|accepted).
+Sync: Gerät schickt `{ since, upsert, remove, state? }`, bekommt Änderungen anderer Geräte seit `since`. Zustand nur bei
+bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (Server-Basis + eigene Spieler). Laufendes Match
+(`current`) und UI-Zustand bleiben lokal.
+
 ## Regeln der neuen Funktionen
+- **Anmeldung** beim Start (`ui/auth.js`): E-Mail → Konto vorhanden? Passwort : Passwort festlegen (2×, mind. 8) + eindeutiger
+  Name (3–20, Buchstaben/Ziffern/_.-, Groß/Klein egal eindeutig, Bot-Namen reserviert, Live-Prüfung). Hauptspieler = Kontoname
+  (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
+  (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
+  und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
+- **Freunde** (dritter Reiter): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
+  sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
+  vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
+  „Zusammen spielen“ ist als „Kommt bald“ angekündigt (noch nicht gebaut).
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
 - **Setup**: ein Screen – Modus · Spieler & Bots · Startpunkte/Runden · First to · Anwurf · Start; „Mehr Optionen“ (Out, Legs/Sets, Mischen, Regeln).
   Hinzufügen nur über **ein Plus** → Auswahlfenster: Neuer Spieler (Name eindeutig gegenüber Profilen und Bots, Groß/Klein und
@@ -143,4 +173,6 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 Update 1 (Meilensteine 1–4), Update 2 (Setup, Ausbullen, Animationen, Bots, Statistik) und Update 3 (Queen-Look zurück,
 Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) und Update 4 (Daten-Neustart, langsame Lichtlinie,
 vier neue Bots mit Zufallssprüchen) erledigt. Danach: Cricket, Eingabe ohne OK, Checkout unter dem Rest, Solo,
-Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details, Stand 17.11.2026.
+Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details,
+Container-Betrieb mit Server (Konto per E-Mail, Sync, Freunde mit Statistik), Stand 17.11.2026.
+Offen: Zusammen spielen, Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).

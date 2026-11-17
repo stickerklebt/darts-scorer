@@ -9,6 +9,18 @@ import { GAMES } from '../games.js';
 import { esc, seg, matchSummary } from './common.js';
 import { profilePicker } from './stats-view.js';
 import { comparePicker } from './compare.js';
+import { auth, sync } from '../sync.js';
+import { dateStr } from './stats-view.js';
+
+/** Sync-Stand in Worten */
+function syncText() {
+  if (sync.state === 'busy') return 'Wird gesichert …';
+  if (sync.state === 'ok') return `Gesichert${sync.at ? ` · ${new Date(sync.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : ''}`;
+  if (sync.state === 'offline') return 'Offline – wird nachgeholt';
+  if (sync.state === 'error') return 'Fehler – wird erneut versucht';
+  return '–';
+}
+const pwField = (id, ph, ac) => `<input id="${id}" class="field plain" type="password" placeholder="${ph}" autocomplete="${ac}">`;
 
 const tog = (k, lbl) => `<button class="srow" data-act="pref" data-k="${k}"><span class="lbl">${lbl}</span><span class="tog ${S.prefs[k] ? 'on' : ''}"></span></button>`;
 
@@ -30,11 +42,19 @@ export function sheetView() {
       <div class="slist">${info.map(([a, b]) => `<div class="srow"><span class="lbl">${a}</span><span class="val">${b}</span></div>`).join('')}</div>
       <div class="sbtns"><button class="btn line" data-act="abort" style="color:var(--red);border-color:var(--red)">Spiel beenden</button><button class="btn red" data-act="closeModal">Fertig</button></div>`;
   } else if (md.type === 'settings') {
+    const u = auth.user;
     inner = `<h3>Einstellungen</h3><p>${S.profiles.length} Spieler · ${S.matches.length} gespeicherte Spiele</p>
+      ${u ? `<div class="slist acct">
+        <button class="srow" data-act="rename"><span class="lbl">Name<small>Freunde finden dich darüber</small></span><span class="val">${esc(u.username)}</span>${icon('chevR', 2.4, 16)}</button>
+        <div class="srow"><span class="lbl">E-Mail<small>Konto seit ${dateStr(u.createdAt)}</small></span><span class="val mail">${esc(u.email)}</span></div>
+        <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
+      </div>
+      <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('anim', 'Animationen')}
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
-      <div class="sbtns"><button class="btn line" data-act="wipe" style="color:var(--red);border-color:var(--red)">Alle Daten löschen</button><button class="btn red" data-act="closeModal">Fertig</button></div>`;
+      <div class="sbtns"><button class="btn line" data-act="wipe" style="color:var(--red);border-color:var(--red)">Alle Daten löschen</button><button class="btn red" data-act="closeModal">Fertig</button></div>
+      ${u ? '<button class="btn textonly del-acct" data-act="delAcct">Konto löschen</button>' : ''}`;
   } else if (md.type === 'addPlayer') {
     inner = addPlayerSheet();
   } else if (md.type === 'pickCmp') {
@@ -42,11 +62,12 @@ export function sheetView() {
   } else if (md.type === 'pickStats') {
     inner = profilePicker();
   } else if (md.type === 'wipe') {
-    inner = `<h3>Alle Daten löschen?</h3><p>Alle Spieler, Spiele und Statistiken werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.</p>
+    inner = `<h3>Alle Daten löschen?</h3><p>Alle Spieler, Spiele und Statistiken werden endgültig gelöscht – auch in deinem Konto auf allen Geräten. Dein Konto und deine Freunde bleiben. Das lässt sich nicht rückgängig machen.</p>
       <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="wipeForce">Löschen</button></div>`;
   } else if (md.type === 'rename') {
-    inner = `<h3>Dein Name</h3><p>Der Hauptspieler dieser App.</p>
-      <input id="nameField" class="field" value="${esc(nameOf(S.mainId))}" maxlength="16" autocapitalize="words" spellcheck="false" enterkeyhint="done">
+    inner = `<h3>Dein Name</h3><p>Eindeutig – Freunde finden dich darüber. 3–20 Zeichen, ohne Leerzeichen.</p>
+      <input id="nameField" class="field name" value="${esc(auth.user?.username || nameOf(S.mainId))}" maxlength="20" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done">
+      <p id="nameHint" class="name-hint" aria-live="polite">${esc(md.error || '')}</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="saveName">Sichern</button></div>`;
   } else if (md.type === 'confirmNew') {
     inner = `<h3>Neues Spiel?</h3><p>Das laufende Spiel (${matchSummary(m)}) wird beendet und nicht gespeichert.</p>
@@ -54,6 +75,22 @@ export function sheetView() {
   } else if (md.type === 'demoWipe') {
     inner = `<h3>Testdaten entfernen?</h3><p>Alle Test-Matches und die Testspieler werden gelöscht. Deine echten Spiele und Spieler bleiben erhalten.</p>
       <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="demoWipeForce">Entfernen</button></div>`;
+  } else if (md.type === 'logoutUnsynced') {
+    inner = `<h3>Nicht gesichert</h3><p>${esc(sync.msg || 'Der Server ist gerade nicht erreichbar.')} Beim Abmelden werden die Daten von diesem Gerät entfernt – was noch nicht gesichert ist, geht verloren.</p>
+      <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="logoutForce">Trotzdem abmelden</button></div>`;
+  } else if (md.type === 'password') {
+    inner = `<h3>Passwort ändern</h3><p>Andere Geräte werden danach abgemeldet.</p>
+      ${pwField('pwOld', 'Aktuelles Passwort', 'current-password')}${pwField('pwNew', 'Neues Passwort (mind. 8 Zeichen)', 'new-password')}
+      ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
+      <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="pwSave" ${md.busy ? 'disabled' : ''}>Sichern</button></div>`;
+  } else if (md.type === 'delAcct') {
+    inner = `<h3>Konto löschen?</h3><p>Dein Konto, alle gespeicherten Spiele und deine Freundschaften werden endgültig gelöscht. Zur Bestätigung dein Passwort:</p>
+      ${pwField('delPw', 'Passwort', 'current-password')}
+      ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
+      <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="delAcctForce" ${md.busy ? 'disabled' : ''}>Endgültig löschen</button></div>`;
+  } else if (md.type === 'friendRemove') {
+    inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;
   } else if (md.type === 'abort') {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;

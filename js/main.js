@@ -6,7 +6,11 @@ import * as G from './party.js';
 import * as C from './cricket.js';
 import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
-import { onboardView, tabsBar, playView } from './ui/play.js';
+import { tabsBar, playView, tabIndex } from './ui/play.js';
+import { authView } from './ui/auth.js';
+import { friendsView, friendView } from './ui/friends.js';
+import { api } from './api.js';
+import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
 import { statsView } from './ui/stats-view.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
@@ -43,7 +47,7 @@ function patchChildren(a, b) {
   for (let i = an.length - 1; i >= bn.length; i--) an[i].remove();
 }
 function patchNode(x, y) {
-  if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName || (x.nodeType === 1 && x.namespaceURI !== y.namespaceURI)) { x.replaceWith(y); return; }
+  if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName || (x.nodeType === 1 && (x.namespaceURI !== y.namespaceURI || x.getAttribute('data-key') !== y.getAttribute('data-key')))) { x.replaceWith(y); return; }
   if (x.nodeType !== 1) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; return; }
   for (const at of [...x.attributes]) if (!y.hasAttribute(at.name)) x.removeAttribute(at.name);
   for (const at of [...y.attributes]) if (x.getAttribute(at.name) !== at.value) x.setAttribute(at.name, at.value);
@@ -51,15 +55,17 @@ function patchNode(x, y) {
   patchChildren(x, y);
 }
 function render() {
+  if (auth.user) ensureMainProfile();
   save();
   const m = S.current;
   let html;
-  if (!S.mainId || !profile(S.mainId)) html = onboardView();
+  if (!auth.user) html = authView();
   else if (S.screen === 'game' && m && !m.done) html = inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
-  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : playView()); }
+  else if (S.screen === 'friend' && ui.friend) html = friendView();
+  else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
@@ -70,7 +76,7 @@ function render() {
   // Tab-Strich gleitet von der alten zur neuen Position
   const tl = $('.tabline');
   if (tl) {
-    const to = S.tab === 'stats' && S.screen === 'home' ? 1 : 0;
+    const to = S.screen === 'home' ? tabIndex() : 0;
     if (ui.tabFrom !== null && ui.tabFrom !== to) requestAnimationFrame(() => requestAnimationFrame(() => tl.style.setProperty('--i', to)));
     else tl.style.setProperty('--i', to);
     ui.tabFrom = to;
@@ -363,7 +369,66 @@ function checkName() {
   inp.classList.toggle('bad', taken);
   if (btn) btn.disabled = !n || taken;
 }
+/* ---------------- Konto & Freunde (Server) ---------------- */
+const errMsg = (e) => e?.message || 'Unbekannter Fehler';
+async function loadFriends() {
+  if (!auth.user) return;
+  ui.friends ??= {};
+  try { ui.friends.data = await api('GET', 'api/friends'); ui.friends.error = null; }
+  catch (e) { ui.friends.error = errMsg(e); }
+  render();
+}
+let searchTimer = null, nameTimer = null;
+function searchFriends(q) {
+  ui.fsearch = { ...(ui.fsearch || {}), q, busy: true, error: null };
+  clearTimeout(searchTimer);
+  if (q.length < 2) { ui.fsearch.users = null; render(); return; }
+  searchTimer = setTimeout(async () => {
+    try { const r = await api('GET', `api/users/search?q=${encodeURIComponent(q)}`); if (ui.fsearch?.q === q) ui.fsearch = { q, users: r.users }; }
+    catch (e) { if (ui.fsearch?.q === q) ui.fsearch = { q, error: errMsg(e) }; }
+    render();
+  }, 250);
+}
+/** Live-Prüfung des Namens bei der Registrierung */
+function checkAuthName(v) {
+  const a = ui.auth, hint = $('#authNameHint');
+  clearTimeout(nameTimer);
+  if (!a || !hint) return;
+  const n = v.trim();
+  if (!n) { a.nameOk = false; a.nameHint = ''; hint.textContent = 'Freunde finden dich über diesen Namen. 3–20 Zeichen, ohne Leerzeichen.'; hint.className = 'name-hint'; return; }
+  nameTimer = setTimeout(async () => {
+    try {
+      const r = await api('GET', `api/auth/username?name=${encodeURIComponent(n)}`);
+      if ($('#authName')?.value.trim() !== n) return;
+      a.nameOk = r.available; a.nameHint = r.available ? `„${r.name}“ ist frei.` : r.reason;
+    } catch (e) { a.nameOk = false; a.nameHint = errMsg(e); }
+    const h = $('#authNameHint'); if (h) { h.textContent = a.nameHint; h.className = `name-hint ${a.nameOk ? 'ok' : 'bad'}`; }
+  }, 300);
+}
+async function authCall(fn) {
+  const a = ui.auth;
+  a.busy = true; a.error = null; render();
+  try { await fn(); } catch (e) { a.error = errMsg(e); }
+  a.busy = false; render();
+}
+async function friendCall(fn, okMsg) {
+  try { const r = await fn(); if (okMsg) toast(typeof okMsg === 'function' ? okMsg(r) : okMsg); }
+  catch (e) { toast(errMsg(e)); }
+  if (ui.fsearch?.q) searchFriends(ui.fsearch.q);
+  await loadFriends();
+}
+async function openFriend(id) {
+  const f = ui.friends?.data?.friends?.find((x) => x.id === id);
+  ui.friend = { id, name: f?.username, data: null };
+  S.screen = 'friend'; render(); window.scrollTo(0, 0);
+  try { const d = await api('GET', `api/friends/${encodeURIComponent(id)}`); if (ui.friend?.id === id) ui.friend.data = d; }
+  catch (e) { if (ui.friend?.id === id) ui.friend.error = errMsg(e); }
+  render();
+}
+
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'authName') checkAuthName(e.target.value);
+  if (e.target.id === 'friendSearch') searchFriends(e.target.value.trim().replace(/^@/, ''));
   if (e.target.id === 'newPlayer') checkName();
   if (e.target.id === 'pSearch') {
     const q = e.target.value.trim().toLowerCase();
@@ -378,21 +443,92 @@ const throwOne = (m, n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult)
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
 const actions = {
-  onboard() {
-    const n = field('nameField');
-    if (!n) return $('#nameField').focus();
-    S.mainId = ensureProfile(n);
-    S.lineup = [{ id: S.mainId, team: 'A' }];
-    seedDemo(S);
-    S.screen = 'home'; S.tab = 'play'; render();
+  /* Anmeldung: E-Mail → Passwort bzw. Registrierung */
+  authEmail() {
+    const email = field('authEmail');
+    if (!email) return $('#authEmail')?.focus();
+    ui.auth.email = email;
+    authCall(async () => {
+      const r = await api('POST', 'api/auth/email', { email });
+      ui.auth.step = r.exists ? 'login' : 'register';
+      ui.auth.nameHint = ''; ui.auth.nameOk = false;
+      setTimeout(() => $(r.exists ? '#authPw' : '#authName')?.focus(), 60);
+    });
   },
-  tab(el) { S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null; render(); window.scrollTo(0, 0); },
+  authBack() { ui.auth = { step: 'email', email: ui.auth?.email || '' }; render(); setTimeout(() => $('#authEmail')?.focus(), 60); },
+  authLogin() {
+    const password = $('#authPw')?.value || '';
+    if (!password) return $('#authPw')?.focus();
+    authCall(async () => {
+      const r = await api('POST', 'api/auth/login', { email: ui.auth.email, password });
+      ui.auth = null; S.screen = 'home'; S.tab = 'play';
+      await login(r.user);
+      loadFriends();
+    });
+  },
+  authRegister() {
+    const username = field('authName'), password = $('#authPw')?.value || '', pw2 = $('#authPw2')?.value || '';
+    if (!username) return $('#authName')?.focus();
+    if (password !== pw2) { ui.auth.error = 'Die beiden Passwörter sind nicht gleich.'; return render(); }
+    authCall(async () => {
+      const r = await api('POST', 'api/auth/register', { email: ui.auth.email, password, username });
+      ui.auth = null; S.screen = 'home'; S.tab = 'play';
+      await login(r.user);
+      loadFriends();
+    });
+  },
+  async logout() {
+    ui.modal = null; toast('Wird gesichert …'); render();
+    if (!(await logout())) { ui.modal = { type: 'logoutUnsynced' }; render(); return; }
+    ui.friends = null; ui.fsearch = null; ui.friend = null; ui.toast = null; render();
+  },
+  async logoutForce() { ui.modal = null; await logout(true); ui.friends = null; ui.fsearch = null; ui.friend = null; render(); },
+  pwOpen() { ui.modal = { type: 'password' }; render(); setTimeout(() => $('#pwOld')?.focus(), 60); },
+  async pwSave() {
+    const current = $('#pwOld')?.value || '', next = $('#pwNew')?.value || '';
+    ui.modal = { type: 'password', busy: true }; render();
+    try { await api('POST', 'api/me/password', { current, next }); ui.modal = null; toast('Passwort geändert'); }
+    catch (e) { ui.modal = { type: 'password', error: errMsg(e) }; }
+    render();
+  },
+  delAcct() { ui.modal = { type: 'delAcct' }; render(); setTimeout(() => $('#delPw')?.focus(), 60); },
+  async delAcctForce() {
+    const password = $('#delPw')?.value || '';
+    ui.modal = { type: 'delAcct', busy: true }; render();
+    try { await api('DELETE', 'api/me', { password }); forget(); ui.modal = null; ui.friends = null; ui.fsearch = null; ui.auth = null; toast('Konto gelöscht'); }
+    catch (e) { ui.modal = { type: 'delAcct', error: errMsg(e) }; }
+    render();
+  },
+  /* Freunde */
+  friendsReload() { ui.friends = null; render(); loadFriends(); },
+  friendAdd(el) { friendCall(() => api('POST', 'api/friends', { username: el.dataset.v }), (r) => (r.status === 'friend' ? `Ihr seid jetzt Freunde` : `Anfrage an ${r.user.username} gesendet`)); },
+  friendAccept(el) { friendCall(() => api('POST', `api/friends/${encodeURIComponent(el.dataset.v)}/accept`, {}), 'Freund hinzugefügt'); },
+  friendDecline(el) { friendCall(() => api('DELETE', `api/friends/${encodeURIComponent(el.dataset.v)}`), 'Anfrage abgelehnt'); },
+  friendCancel(el) { friendCall(() => api('DELETE', `api/friends/${encodeURIComponent(el.dataset.v)}`), 'Anfrage zurückgezogen'); },
+  friendOpen(el) { openFriend(el.dataset.v); },
+  friendRemove() { ui.modal = { type: 'friendRemove', name: ui.friend?.data?.user?.username || ui.friend?.name || '' }; render(); },
+  async friendRemoveForce() {
+    const id = ui.friend?.id;
+    ui.modal = null;
+    S.screen = 'home'; S.tab = 'friends'; ui.friend = null;
+    await friendCall(() => api('DELETE', `api/friends/${encodeURIComponent(id)}`), 'Freund entfernt');
+  },
+  backFriends() { S.screen = 'home'; S.tab = 'friends'; ui.friend = null; render(); window.scrollTo(0, 0); loadFriends(); },
+  tab(el) {
+    S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
+    render(); window.scrollTo(0, 0);
+    if (S.tab === 'friends') loadFriends();
+  },
   rename() { ui.modal = { type: 'rename' }; render(); setTimeout(() => $('#nameField')?.focus(), 50); },
-  saveName() {
-    const n = field('nameField'), other = findProfile(n);
+  async saveName() {
+    const n = field('nameField');
     if (!n) return;
-    if (other && other.id !== S.mainId) { toast(`„${other.name}“ gibt es schon`); return render(); }
-    profile(S.mainId).name = n; ui.modal = null; render();
+    if (n === auth.user?.username) { ui.modal = null; return render(); }
+    const other = findProfile(n);
+    if (other && other.id !== S.mainId) { ui.modal = { type: 'rename', error: `„${other.name}“ ist schon einer deiner Mitspieler.` }; return render(); }
+    try { const r = await api('PATCH', 'api/me', { username: n }); setUser(r.user); ui.modal = null; toast('Name geändert'); }
+    catch (e) { ui.modal = { type: 'rename', error: errMsg(e) }; }
+    render();
   },
   settings() { ui.modal = { type: 'settings' }; render(); },
   statsWho() { ui.modal = { type: 'pickStats' }; render(); },
@@ -508,7 +644,13 @@ document.addEventListener('keydown', (e) => {
   if (e.target.matches('input')) {
     if (e.key !== 'Enter') return;
     if (e.target.id === 'newPlayer') actions.addNew();
-    else if (e.target.id === 'nameField') (ui.modal ? actions.saveName : actions.onboard)();
+    else if (e.target.id === 'nameField') actions.saveName();
+    else if (e.target.id === 'authEmail') actions.authEmail();
+    else if (e.target.id === 'authPw' && ui.auth?.step === 'login') actions.authLogin();
+    else if (e.target.id === 'authName' || (e.target.id === 'authPw' && ui.auth?.step === 'register')) (e.target.id === 'authName' ? $('#authPw') : $('#authPw2'))?.focus();
+    else if (e.target.id === 'authPw2') actions.authRegister();
+    else if (e.target.id === 'pwNew') actions.pwSave();
+    else if (e.target.id === 'delPw') actions.delAcctForce();
     return;
   }
   const m = S.current;
@@ -568,7 +710,10 @@ if (!S.cleanV) {
   save();
 }
 seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellungen entfernbar)
+setOnChange(() => render());
+if (S.screen === 'friend') S.screen = 'home';
 render();
+bootAuth().then(() => { if (auth.user) loadFriends(); });
 probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';

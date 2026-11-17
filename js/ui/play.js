@@ -1,26 +1,20 @@
-/* Onboarding, Tabs, Tab „Spielen“, Tab „Statistiken“ (Platzhalter bis Meilenstein 3) */
+/* Tabs (Spielen · Statistik · Freunde) und Tab „Spielen“. Die Anmeldung steht in ui/auth.js. */
 import { S, ui, nameOf } from '../store.js';
 import { overview } from '../stats.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
-import { crest, divider, cornerOrnament, badge, stars, icon, heroArt, fuse, MODE_COLORS } from './svg.js';
+import { incomingCount } from './friends.js';
+import { cornerOrnament, badge, stars, icon, heroArt, fuse, MODE_COLORS } from './svg.js';
 
-export function onboardView() {
-  return `<div class="stage">
-    <div class="stage-crest">${crest({ size: 240 })}</div>
-    ${divider()}
-    <h1 class="display">Willkommen</h1>
-    <p>Wie heißt du? Du bist der Hauptspieler dieser App.</p>
-    <input id="nameField" class="field" placeholder="Dein Name" maxlength="16" autocomplete="given-name" autocapitalize="words" spellcheck="false" enterkeyhint="done">
-    <button class="btn red big" data-act="onboard">Los geht’s</button>
-  </div>`;
-}
+export const TABS = ['play', 'stats', 'friends'];
+export const tabIndex = () => Math.max(0, TABS.indexOf(S.tab));
 
 export function tabsBar() {
-  const i = S.tab === 'stats' ? 1 : 0;
+  const i = tabIndex(), n = incomingCount();
   return `<nav class="tabs"><div class="tabs-in">
     <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${icon('dart', 2)}<span>Spielen</span></button>
-    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Statistiken</span></button>
+    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Statistik</span></button>
+    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('people', 2)}<span>Freunde</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
 }
@@ -32,7 +26,7 @@ export function playView() {
   return `<main class="page">
     <button class="profile" data-act="rename">
       <span class="pfblock" style="${pcVars(0)}">${esc(name.slice(0, 1).toUpperCase())}</span>
-      <span class="pfname"><small>Hauptspieler · ${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'}</small><b>${esc(name)}</b></span>
+      <span class="pfname"><small>Du · ${ov.matches} ${ov.matches === 1 ? 'Match' : 'Matches'}</small><b>${esc(name)}</b></span>
       <span class="pfavg"><small>Ø 501</small><b>${fmt(ov.avg)}</b></span>
     </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}

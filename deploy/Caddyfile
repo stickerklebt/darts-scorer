@@ -1,0 +1,6 @@
+# HTTPS vor der App. Caddy holt und erneuert das Zertifikat selbst.
+# Wichtig: in .env TRUST_PROXY=true setzen, damit die App Client-IP und HTTPS aus den Headern liest.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:8080
+}

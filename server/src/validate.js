@@ -1,0 +1,36 @@
+/* Eingaben prüfen und normalisieren. Fehlermeldungen auf Deutsch, direkt für die App. */
+import { bad } from './http.js';
+import { BOTS } from '../../js/bots.js';
+
+export const USERNAME_MIN = 3, USERNAME_MAX = 20, PASSWORD_MIN = 8, PASSWORD_MAX = 128;
+const RESERVED = new Set(['admin', 'administrator', 'root', 'system', 'support', 'darts', 'bot', 'gast', 'guest', 'null', 'undefined',
+  ...BOTS.map((b) => b.name.toLowerCase().replace(/\s+/g, ''))]);
+
+export function normEmail(v) {
+  const e = typeof v === 'string' ? v.trim().toLowerCase() : '';
+  if (!e || e.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) throw bad('email_invalid', 'Bitte eine gültige E-Mail-Adresse eingeben.');
+  return e;
+}
+
+export const usernameKey = (u) => u.normalize('NFC').toLowerCase();
+
+/** Prüft einen Anzeigenamen. Gibt { name, key } zurück oder wirft einen 400er mit Grund. */
+export function checkUsername(v) {
+  const name = typeof v === 'string' ? v.trim().normalize('NFC') : '';
+  if (name.length < USERNAME_MIN) throw bad('username_short', `Der Name braucht mindestens ${USERNAME_MIN} Zeichen.`);
+  if (name.length > USERNAME_MAX) throw bad('username_long', `Der Name darf höchstens ${USERNAME_MAX} Zeichen haben.`);
+  if (!/^[\p{L}\p{N}][\p{L}\p{N}_.-]*$/u.test(name)) throw bad('username_chars', 'Erlaubt sind Buchstaben, Ziffern sowie _ . - (ohne Leerzeichen, Anfang mit Buchstabe oder Ziffer).');
+  const key = usernameKey(name);
+  if (RESERVED.has(key)) throw bad('username_reserved', `„${name}“ ist reserviert.`);
+  return { name, key };
+}
+
+export function checkPassword(v, email = '') {
+  if (typeof v !== 'string' || v.length < PASSWORD_MIN) throw bad('password_short', `Das Passwort braucht mindestens ${PASSWORD_MIN} Zeichen.`);
+  if (v.length > PASSWORD_MAX) throw bad('password_long', `Das Passwort darf höchstens ${PASSWORD_MAX} Zeichen haben.`);
+  if (email && v.trim().toLowerCase() === email) throw bad('password_email', 'Das Passwort darf nicht die E-Mail-Adresse sein.');
+  return v;
+}
+
+export const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= 80 && /^[\w.-]+$/.test(v);
+export const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
