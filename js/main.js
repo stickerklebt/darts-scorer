@@ -15,11 +15,12 @@ import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
 import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
 import { isBot, bot, BOTS, planLines } from './bots.js';
-import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt } from './botsim.js';
+import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt, sigmaFor } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
+import { entryDone, entryPossible } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 
@@ -77,7 +78,7 @@ function render() {
   scheduleBot();
 }
 
-let toastTimer = null;
+let toastTimer = null, autoTimer = null;
 function toast(msg) { ui.toast = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => { ui.toast = null; render(); }, 1800); }
 let momentTimer = null;
 function moment(mo, autoClose = 0) {
@@ -214,7 +215,7 @@ function botStep() {
   if (m.game === 'cricket') {
     const s = C.curSide(m);
     if (!m.pending.length) ui.botMarks[s] = [];
-    const d = throwAt(C.aim(m), b.sigma);
+    const aim = C.aim(m), d = throwAt(aim, sigmaFor(aim, b.sigma, b.dsigma));
     ui.botMarks[s] = [...(ui.botMarks[s] || []), { x: d.x, y: d.y, at: Date.now() }];
     handle(C.throwDart(m, d.n, d.m));
     return;
@@ -222,13 +223,13 @@ function botStep() {
   if (m.game === 'x01') {
     const s = X.curSide(m);
     if (!m.pending.length) ui.botMarks[s] = [];
-    const d = x01BotDart(m, b.sigma);
+    const d = x01BotDart(m, b.sigma, Math.random, b.dsigma);
     ui.botMarks[s] = [...(ui.botMarks[s] || []), { x: d.x, y: d.y, at: Date.now() }];
     handle(X.throwDart(m, d.n, d.m, { any: true }));
   } else {
     const s = G.curSide(m);
     if (!ui.botTurn || ui.botTurn.s !== s || ui.botTurn.mid !== m.id || ui.botTurn.n !== m.turns.length) { ui.botTurn = { s, mid: m.id, n: m.turns.length, darts: [] }; ui.botMarks[s] = []; }
-    const d = partyBotDart(m, s, ui.botTurn.darts, b.sigma);
+    const d = partyBotDart(m, s, ui.botTurn.darts, b.sigma, Math.random, b.dsigma);
     ui.botTurn.darts.push(d);
     ui.botMarks[s] = [...ui.botMarks[s], { x: d.x, y: d.y, at: Date.now() }];
     if (partyTurnDone(m, s, ui.botTurn.darts)) {
@@ -461,9 +462,13 @@ const actions = {
   key(el) {
     const next = (ui.entry + el.dataset.v).replace(/^0+(?=\d)/, '');
     if (Number(next) > 180) { toast('Maximal 180'); return render(); }
+    if (!entryPossible(next)) { toast(`${next} ist nicht möglich`); return render(); }
     ui.entry = next; render();
+    // Keine Ziffer kann mehr folgen (z. B. 43 → 430+ gibt es nicht) → ohne OK übernehmen, kurz sichtbar lassen
+    clearTimeout(autoTimer);
+    if (entryDone(next)) autoTimer = setTimeout(() => { if (ui.entry === next && S.screen === 'game' && !ui.modal) actions.ok(); }, 220);
   },
-  back() { if (ui.entry) { ui.entry = ui.entry.slice(0, -1); render(); } else undo(); },
+  back() { clearTimeout(autoTimer); if (ui.entry) { ui.entry = ui.entry.slice(0, -1); render(); } else undo(); },
   ok() { actions.submit(ui.entry === '' ? 0 : parseInt(ui.entry, 10)); },
   quick(el) { actions.submit(Number(el.dataset.v)); },
   submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },

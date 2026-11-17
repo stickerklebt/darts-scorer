@@ -24,7 +24,7 @@ function scoreboard(items, cur, swap) {
       <div class="sbp-head"><span class="sbp-name">${it.starter ? '<i class="throw"></i>' : ''}${esc(it.name)}</span>${it.right}</div>
       ${it.team ? `<div class="sbp-team">${it.team}</div>` : ''}
       ${it.extra || ''}
-      <div class="sbp-rem">${it.big}</div>
+      <div class="sbp-rem"><span>${it.big}</span>${it.co ? `<div class="sbp-co">${it.co}</div>` : ''}</div>
       <div class="sbp-stats">${it.stats.map(([k, v]) => `<span><small>${k}</small><b>${v}</b></span>`).join('')}</div>
     </div>`).join('')}</div>`;
   }
@@ -33,7 +33,7 @@ function scoreboard(items, cur, swap) {
     <span class="sbr-n"><b>${it.starter ? '<i class="throw"></i>' : ''}${esc(it.name)}</b>
       <small>${[it.team ? `<span class="whob">${it.team}</span>` : '', it.rowInfo, ...it.stats.slice(0, 2).map(([k, v]) => `${k} <b>${v}</b>`)].filter(Boolean).join(' · ')}</small></span>
     ${it.extra || ''}
-    <span class="sbr-rem">${it.big}</span>
+    <span class="sbr-rem">${it.big}${it.co ? `<span class="sbr-co">${it.co}</span>` : ''}</span>
   </div>`).join('')}</div>`;
 }
 
@@ -65,27 +65,28 @@ export function gameView() {
     const ps = X.pendingSum(m), sets = X.isSets(m);
     title = `${m.opts.start} · ${m.opts.out === 'double' ? 'Double Out' : 'Single Out'}`;
     sub = sets ? `Set ${l.set} · Leg ${m.legs.filter((x) => x.set === l.set).length} · First to ${m.opts.target} Sets` : `Leg ${m.legs.length} · First to ${m.opts.target} Legs`;
+    // Checkout-Weg bzw. Setup steht direkt unter dem Rest des werfenden Spielers
+    const mode = X.inputMode(m), before = X.curRem(m) - ps, left = 3 - m.pending.length;
+    let co = '';
+    if (mode === 'darts' && m.opts.out === 'double' && S.prefs.hints) {
+      const r = route(before, left);
+      if (r) co = r.map((d) => `<span class="co-c ${chipCls(d)}">${label(d)}</span>`).join('');
+      else { const su = setupFor(before, left); if (su) co = `<span class="co-l">Stellen</span><span class="co-c">${label(su.dart)}</span><span class="co-l">→ ${su.leave}</span>`; }
+    }
     const items = m.sides.map((side, s) => {
       const st = X.matchStats(m, { s });
       const mine = l.turns.filter((t) => t.s === s), last = mine[mine.length - 1];
       const next = throwerOf(m, s, X.sideTurnCount(m, s));
       return {
         name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === l.starter, extra: botBox(m, s, next),
-        big: X.rem(m, l, s) - (s === cur ? ps : 0),
+        big: X.rem(m, l, s) - (s === cur ? ps : 0), co: s === cur ? co : '',
         right: sets ? `<span class="setlbl">S${X.setsWon(m, s)} · L${X.legsInSet(m, s, l.set)}</span>` : pips(X.legsWon(m, s), m.opts.target),
         rowInfo: sets ? `S <b>${X.setsWon(m, s)}</b> L <b>${X.legsInSet(m, s, l.set)}</b>` : `Legs <b>${X.legsWon(m, s)}</b>`,
         stats: [['Ø', fmt(st.avg)], ['Letzte', last ? (last.bust ? 'Bust' : last.score) : '–'], ['Darts', mine.reduce((a, t) => a + t.darts, 0)]],
       };
     });
     board = scoreboard(items, cur, swap);
-    const mode = X.inputMode(m), before = X.curRem(m) - ps, left = 3 - m.pending.length;
-    let h = '';
-    if (mode === 'darts' && m.opts.out === 'double' && S.prefs.hints) {
-      const r = route(before, left);
-      if (r) h = `<span class="tk-l">Checkout</span>${r.map((d) => `<span class="tk-c ${chipCls(d)}">${label(d)}</span>`).join('')}`;
-      else { const su = setupFor(before, left); if (su) h = `<span class="tk-l">Setup</span><span class="tk-c">${label(su.dart)}</span><span class="tk-w">→ ${su.leave} Rest</span>`; }
-    }
-    hint = `<div class="ticker">${h || `<span class="tk-w">${esc(whoText(m, cur, thrower))}</span>`}</div>`;
+    hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     isBoard = mode === 'darts' && S.prefs.dartInput === 'board' && !isBot(thrower);
     pad = isBot(thrower) ? botPad(m, thrower, m.pending) : mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
   } else if (m.game === 'cricket') {

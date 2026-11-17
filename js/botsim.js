@@ -37,10 +37,14 @@ export function x01Aim(before, left, out = 'double') {
   return targetFor(before, left) || (before > 60 ? T20 : { n: Math.min(20, before - 2 > 0 ? before - 2 : 1), m: 1 });
 }
 
-/** Nächster Bot-Dart im laufenden X01-Match. */
-export function x01BotDart(m, sigma, r = Math.random) {
+/** Streuung für ein Ziel: Doppel (inkl. Bull 50) mit `dsigma` – so lassen sich Scoring und Checkout-Quote getrennt einstellen. */
+export const sigmaFor = (aim, sigma, dsigma = sigma) => (aim.m === 2 ? dsigma : sigma);
+
+/** Nächster Bot-Dart im laufenden X01-Match. `dsigma` = Streuung auf Doppel (Standard: wie sigma). */
+export function x01BotDart(m, sigma, r = Math.random, dsigma = sigma) {
   const before = X.curRem(m) - X.pendingSum(m), left = 3 - m.pending.length;
-  return throwAt(x01Aim(before, left, m.opts.out), sigma, r);
+  const aim = x01Aim(before, left, m.opts.out);
+  return throwAt(aim, sigmaFor(aim, sigma, dsigma), r);
 }
 
 /* ---------------- Partyspiele ---------------- */
@@ -82,10 +86,11 @@ export function partyValue(m, s, darts) {
 }
 
 /** Nächster Bot-Dart im Partyspiel; `darts` = bisherige Darts dieser Aufnahme. */
-export function partyBotDart(m, s, darts, sigma, r = Math.random) {
+export function partyBotDart(m, s, darts, sigma, r = Math.random, dsigma = sigma) {
   let pos = 0;
   if (m.game === 'atc') pos = G.atcPos(m, s) + partyValue(m, s, darts);
-  return throwAt(partyAim(m, pos), sigma, r);
+  const aim = partyAim(m, pos);
+  return throwAt(aim, sigmaFor(aim, sigma, dsigma), r);
 }
 /** Ist die Bot-Aufnahme fertig? (3 Darts oder Around the Clock geschafft) */
 export const partyTurnDone = (m, s, darts) => darts.length >= 3 || (m.game === 'atc' && G.atcPos(m, s) + partyValue(m, s, darts) >= G.atcTotal(m));

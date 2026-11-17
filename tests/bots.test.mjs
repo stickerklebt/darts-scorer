@@ -4,23 +4,38 @@ import * as X from '../js/x01.js';
 import * as G from '../js/party.js';
 import { BOTS, bot, planLines } from '../js/bots.js';
 import { rng, throwAt, x01Aim, x01BotDart, partyValue, partyTurnDone, partyBotDart } from '../js/botsim.js';
-import { simAverage } from '../tools/calibrate-bots.mjs';
+import { simStats, dblTarget } from '../tools/calibrate-bots.mjs';
 
 const CLASSIC = BOTS.filter((b) => !b.random);
-test('Bots: die drei bisherigen Bots unverändert (Average 40–45, Ereignis-Sprüche)', () => {
-  assert.deepEqual(CLASSIC.map((b) => [b.name, b.avg, b.sigma]), [['Sensei Wu', 45, 17.74], ['Super Mario', 42, 18.87], ['Shrek', 40, 19.8]]);
-  const avgs = CLASSIC.map((b) => b.avg);
-  assert.equal(new Set(avgs).size, 3);
-  for (const a of avgs) assert.ok(a >= 40 && a <= 45);
+test('Bots: Averages 40, 42, … 50 (je einmal), Phil Taylor bleibt bei 100; Ereignis-Sprüche', () => {
+  const others = BOTS.filter((b) => b.id !== 'phil-taylor').map((b) => b.avg).sort((a, b) => a - b);
+  assert.deepEqual(others, [40, 42, 44, 46, 48, 50]);
+  assert.equal(bot('phil-taylor').avg, 100);
+  for (const b of BOTS) assert.ok(b.sigma > 0 && b.dsigma > 0, `${b.name}: sigma und dsigma`);
   for (const b of CLASSIC) for (const k of ['start', 'good', 'oppBust', 'win', 'lose']) assert.ok(b.lines[k].length >= 2, `${b.name} ${k}`);
   for (const b of CLASSIC) assert.ok(Object.values(b.lines).flat().length >= 15, `${b.name}: mind. 15 Sprüche`);
 });
 
-test('Bots: Kalibrierung – Average über viele Legs = Ziel ± 1 (Simulation)', () => {
+test('Bots: Kalibrierung – Ø pro Leg über viele Legs = Ziel ± 1, Doppelquote passend (Simulation)', () => {
   for (const b of BOTS) {
-    const avg = simAverage(b.sigma, b.avg >= 90 ? 1200 : 2500, 2024);
-    assert.ok(Math.abs(avg - b.avg) <= (b.avg >= 90 ? 2 : 1), `${b.name}: ${avg.toFixed(2)} statt ${b.avg}`);
+    const st = simStats(b.sigma, b.dsigma, b.avg >= 90 ? 1500 : 3000, 2024);
+    assert.ok(Math.abs(st.avg - b.avg) <= (b.avg >= 90 ? 2 : 1), `${b.name}: Ø ${st.avg.toFixed(2)} statt ${b.avg}`);
+    assert.ok(Math.abs(st.dbl - dblTarget(b.avg)) <= 0.02, `${b.name}: Doppel ${(st.dbl * 100).toFixed(1)} % statt ${(dblTarget(b.avg) * 100).toFixed(1)} %`);
   }
+});
+
+test('Bots: stärkerer Average → besseres Scoring und bessere Doppelquote', () => {
+  const sorted = [...BOTS].sort((a, b) => a.avg - b.avg);
+  for (let i = 1; i < sorted.length; i++) {
+    assert.ok(sorted[i].sigma < sorted[i - 1].sigma, `${sorted[i].name} streut beim Scoring weniger`);
+    assert.ok(sorted[i].dsigma < sorted[i - 1].dsigma, `${sorted[i].name} trifft Doppel besser`);
+  }
+  // Doppel-Streuung wird nur aufs Doppel angewendet
+  const m = createMatch('x01', [['b']], { start: 501, out: 'double', mode: 'legs', target: 1 });
+  const r = rng(3);
+  let hits = 0;
+  for (let i = 0; i < 400; i++) { const d = x01BotDart(m, 80, r, 0); if (d.n === 20 && d.m === 3) hits++; }
+  assert.ok(hits < 100, 'Scoring nutzt sigma, nicht dsigma');
 });
 
 test('Bots: zielen wie ein Spieler (T20, im Finish nach Tabelle)', () => {
@@ -68,7 +83,7 @@ test('Bots: Partyspiele – Wertung wie bei menschlicher Eingabe', () => {
 
 test('Neue Bots: Namen, Averages, Avatare, Spruchlisten wörtlich', () => {
   const nb = BOTS.filter((b) => b.random);
-  assert.deepEqual(nb.map((b) => [b.name, b.avg]), [['Jensn Huang', 40], ['Michael Jackson', 40], ['Phil Taylor', 100], ['Dreimac', 40]]);
+  assert.deepEqual(nb.map((b) => b.name), ['Jensn Huang', 'Michael Jackson', 'Phil Taylor', 'Dreimac']);
   for (const b of nb) assert.ok(b.art, `${b.name}: gezeichneter Avatar`);
   assert.equal(bot('michael-jackson').startLine, 'Hee-hee!');
   for (const id of ['jensn-huang', 'phil-taylor', 'dreimac']) assert.equal(bot(id).startLine, undefined, `${id}: kein Spruch zum Start`);

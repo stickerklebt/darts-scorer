@@ -111,3 +111,9 @@ export const POSS = new Set();
 for (const a of VALS) for (const b of VALS) for (const c of VALS) POSS.add(a + b + c);
 export const upTo3 = (vals) => { const s = new Set([0]); for (let i = 0; i < 3; i++) for (const a of [...s]) for (const v of vals) s.add(a + v); return s; };
 export const ALL_DARTS = ALL;
+
+/** Summen-Eingabe fertig? Ja, wenn keine weitere Ziffer mehr eine mögliche Aufnahme ergibt
+    (z. B. „43“: 430–439 gibt es nicht → sofort übernehmen; „18“: 180 geht noch → warten). */
+export const entryDone = (str) => str !== '' && POSS.has(Number(str)) && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].some((d) => str !== '0' && POSS.has(Number(str + d)));
+/** Kann aus dieser Eingabe noch eine mögliche Aufnahme werden? (sonst Tippfehler, z. B. „179“) */
+export const entryPossible = (str) => POSS.has(Number(str)) || [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].some((d) => POSS.has(Number(str + d)));

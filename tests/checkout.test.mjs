@@ -58,3 +58,13 @@ test('Ziel eines Darts', () => {
   assert.equal(label(targetFor(41, 1)), 'S1'); // Setup auf 40
   assert.ok(isDoubleAttempt(32) && isDoubleAttempt(50) && !isDoubleAttempt(33) && !isDoubleAttempt(42));
 });
+
+test('Summen-Eingabe: ohne OK übernehmen, wenn keine Ziffer mehr folgen kann', async () => {
+  const { entryDone, entryPossible } = await import('../js/checkout.js');
+  for (const s of ['43', '19', '100', '140', '180', '26', '0', '99']) assert.equal(entryDone(s), true, s);
+  for (const s of ['', '1', '4', '9', '18', '17', '16', '10', '12']) assert.equal(entryDone(s), false, s);
+  assert.equal(entryPossible('179'), false);
+  assert.equal(entryPossible('17'), true);
+  assert.equal(entryPossible('163'), false);
+  assert.equal(entryPossible('160'), true);
+});

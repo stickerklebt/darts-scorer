@@ -1,15 +1,18 @@
 /* Bots: feste Gegner, die ab dem ersten Start da sind.
    Hier kannst du Namen, Farben und Sprüche frei ändern.
-   - avg:   Ziel-Average (3 Darts). Nur zur Anzeige – die Wurfstärke kommt aus `sigma`.
-   - sigma: Streuung jedes Darts in Millimetern (2D-Normalverteilung um den Zielpunkt).
-            Per Simulation kalibriert (tests/bots.test.mjs prüft: Average über viele Legs = avg ± 1).
+   - avg:    Ziel-Average (3 Darts) = Ø pro Leg, gemittelt über viele Legs. Nur zur Anzeige –
+             die Wurfstärke kommt aus `sigma` und `dsigma`.
+   - sigma:  Streuung beim Scoring in Millimetern (2D-Normalverteilung um den Zielpunkt).
+   - dsigma: Streuung auf Doppel (Checkout-Quote): Ø 40 → ca. 15 %, Ø 50 → ca. 19,5 %, Ø 100 → ca. 42 % pro Dart.
+             Beides per Simulation kalibriert: node tools/calibrate-bots.mjs
+             (tests/bots.test.mjs prüft Ø pro Leg = avg ± 1 und die Doppelquote).
    - lines: Sprüche als Sprechblase. Pro Spiel höchstens 3 pro Bot.
             start = Spielbeginn · good = eigener starker Wurf (100+ oder Finish ab 60) ·
             oppBust = Gegner überwirft · oppGood = Gegner wirft 140+ · win/lose = Spielende. */
 
 export const BOTS = [
   {
-    id: 'sensei-wu', name: 'Sensei Wu', initials: 'WU', avg: 45, sigma: 17.74, color: '#f3e9d2', ink: '#0b0a08',
+    id: 'sensei-wu', name: 'Sensei Wu', initials: 'WU', avg: 46, sigma: 20, dsigma: 15.84, color: '#f3e9d2', ink: '#0b0a08',
     lines: {
       start: [
         'Ein Pfeil, der zögert, findet nie sein Ziel.',
@@ -33,7 +36,7 @@ export const BOTS = [
     },
   },
   {
-    id: 'super-mario', name: 'Super Mario', initials: 'SM', avg: 42, sigma: 18.87, color: '#e5402c', ink: '#f3e9d2',
+    id: 'super-mario', name: 'Super Mario', initials: 'SM', avg: 42, sigma: 22.72, dsigma: 17.17, color: '#e5402c', ink: '#f3e9d2',
     lines: {
       start: [
         'Wahoo! Auf geht’s, Mamma mia, ich bin bereit!',
@@ -57,7 +60,7 @@ export const BOTS = [
     },
   },
   {
-    id: 'shrek', name: 'Shrek', initials: 'SH', avg: 40, sigma: 19.8, color: '#1f9a4c', ink: '#f3e9d2',
+    id: 'shrek', name: 'Shrek', initials: 'SH', avg: 48, sigma: 19.09, dsigma: 15.33, color: '#1f9a4c', ink: '#f3e9d2',
     lines: {
       start: [
         'Na schön. Werfen wir halt. Dann ist Ruhe.',
@@ -84,7 +87,7 @@ export const BOTS = [
      ausgelosten Aufnahmen (aus den ersten 8, nie der ersten). random.count = Sprüche pro Spiel,
      random.weights = gewichtete Ziehung, random.repeat = Wiederholung erlaubt, startLine = immer zum Spielstart. ---- */
   {
-    id: 'jensn-huang', name: 'Jensn Huang', initials: 'JH', avg: 40, sigma: 19.8, color: '#2f6fe4', ink: '#f3e9d2', art: 'jensn',
+    id: 'jensn-huang', name: 'Jensn Huang', initials: 'JH', avg: 50, sigma: 18.14, dsigma: 14.87, color: '#2f6fe4', ink: '#f3e9d2', art: 'jensn',
     random: { count: 2, lines: [
       'Ich will auch mal andere Darts ausprobieren.',
       'Man, meine Darts sind nicht so nice.',
@@ -101,7 +104,7 @@ export const BOTS = [
     ] },
   },
   {
-    id: 'michael-jackson', name: 'Michael Jackson', initials: 'MJ', avg: 40, sigma: 19.8, color: '#e5402c', ink: '#f3e9d2', art: 'mj',
+    id: 'michael-jackson', name: 'Michael Jackson', initials: 'MJ', avg: 44, sigma: 21.16, dsigma: 16.23, color: '#e5402c', ink: '#f3e9d2', art: 'mj',
     startLine: 'Hee-hee!',
     random: { count: 2, lines: [
       'Dirty Diana, ooohhhh!',
@@ -119,11 +122,11 @@ export const BOTS = [
     ] },
   },
   {
-    id: 'phil-taylor', name: 'Phil Taylor', initials: 'PT', avg: 100, sigma: 6.42, color: '#ffd23f', ink: '#0b0a08', art: 'phil',
+    id: 'phil-taylor', name: 'Phil Taylor', initials: 'PT', avg: 100, sigma: 6.7, dsigma: 6.86, color: '#ffd23f', ink: '#0b0a08', art: 'phil',
     random: { count: 2, repeat: true, lines: ['Power!', 'Easy.', 'Lightwork.'], weights: [60, 20, 20] },
   },
   {
-    id: 'dreimac', name: 'Dreimac', initials: 'DM', avg: 40, sigma: 19.8, color: '#8b5cf6', ink: '#f3e9d2', art: 'dreimac',
+    id: 'dreimac', name: 'Dreimac', initials: 'DM', avg: 40, sigma: 24.31, dsigma: 17.77, color: '#8b5cf6', ink: '#f3e9d2', art: 'dreimac',
     random: { count: 2, lines: [
       'negativ, absolut RIESEN ABGELEHNT',
       'cola!?',

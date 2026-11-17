@@ -71,7 +71,7 @@ export function setupView() {
     <h2 class="label"><i class="stepn">2</i>Spieler &amp; Bots</h2>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
-    <p class="foot">Bis zu ${MAX_PLAYERS} Spieler. ${S.teamMode ? 'Tippe auf „Team“, um Spieler zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge dieser Liste.' : ''}</p>
+    <p class="foot">${!S.teamMode && L.length === 1 && !isBot(L[0].id) ? '<b class="solo-hint">Solo: Du spielst allein, ganz ohne Gegner.</b> ' : ''}Bis zu ${MAX_PLAYERS} Spieler. ${S.teamMode ? 'Tippe auf „Team“, um Spieler zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge dieser Liste.' : ''}</p>
     <h2 class="label"><i class="stepn">3</i>Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>
     <h2 class="label"><i class="stepn">4</i>Anwurf</h2>
@@ -79,5 +79,5 @@ export function setupView() {
     <p class="foot">${nSides < 2 ? 'Bei nur einer Seite entfällt der Anwurf.' : S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>
     ${moreOptions(id)}
   </main>
-  <div class="dock"><div><button class="btn red big start" data-act="start">Start</button>${fuse(-3, 7, 2)}</div></div>`;
+  <div class="dock"><div><button class="btn red big start" data-act="start">${!S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</button>${fuse(-3, 7, 2)}</div></div>`;
 }
