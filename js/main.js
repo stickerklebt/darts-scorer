@@ -518,7 +518,7 @@ const actions = {
   },
   /* Eigener Caller */
   callerOpen() { ui.modal = null; ui.caller = { sel: ui.caller?.sel ?? 180 }; S.screen = 'caller'; render(); window.scrollTo(0, 0); },
-  crBack() { cancelRecording(); clearInterval(crTimer); ui.caller = null; S.screen = 'home'; S.tab = 'play'; render(); window.scrollTo(0, 0); },
+  crBack() { cancelRecording(); clearInterval(crTimer); ui.caller = null; S.screen = 'home'; S.tab = 'friends'; render(); window.scrollTo(0, 0); },
   crSel(el) {
     if (isRecording()) return;
     ui.caller = { sel: Number(el.dataset.v) }; render();

@@ -1312,3 +1312,30 @@
 }
 
 @media (max-width: 480px) { .subtabs.three button { font-size: 14px; letter-spacing: .08em; white-space: nowrap; } }
+
+/* ================= Regel: Ränder immer ringsum oder gar nicht – nie nur eine Seite (siehe DESIGN.md) ================= */
+.sheet { border: 1px solid rgba(212,166,58,.7) !important; box-shadow: 0 0 0 4px rgba(11,10,8,.6), 0 -10px 40px rgba(0,0,0,.5) !important; }
+.field, .stage.auth .field { border: 1px solid rgba(212,166,58,.55) !important; }
+.field:focus, .stage.auth .field:focus { border-color: var(--gold-l) !important; box-shadow: 0 0 0 3px rgba(212,166,58,.18); }
+.field.bad { border-color: var(--red) !important; }
+.seg button.on { box-shadow: inset 0 0 0 1px var(--gold) !important; }
+.toast { border: 1px solid var(--red) !important; }
+.heat-sel { border: 1px solid rgba(212,166,58,.45) !important; }
+.ml-detail { border-top: 1px solid var(--line) !important; }
+.cm-sec { border: 1px solid rgba(212,166,58,.6) !important; border-radius: var(--r-btn); margin: 6px 0; }
+.hero-band { border: 1px solid var(--gold) !important; border-radius: 4px; }
+.resume { border: 1px solid var(--red) !important; }
+.bo-chip.on { box-shadow: 0 0 0 1px var(--pc), 0 0 14px -4px var(--pc) !important; }
+
+/* ================= Backstage (dritter Reiter): Kacheln für Historie, Caller, Einstellungen, darunter Freunde ================= */
+.bs-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 6px; }
+.bs-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 112px; padding: 14px 8px; text-align: center;
+  border-radius: 14px; background: var(--panel); border: 1px solid rgba(212,166,58,.4); color: var(--gold-l); transition: transform .15s, border-color .2s; }
+.bs-tile:active { transform: scale(.97); }
+.bs-tile:hover { border-color: var(--gold); }
+.bs-tile b { font-size: 17px; letter-spacing: .12em; text-transform: uppercase; color: var(--cream); font-weight: 400; line-height: 1.1; }
+.bs-tile small { font-family: var(--f-text); font-size: 13px; color: var(--muted); line-height: 1.2; }
+@media (max-width: 400px) { .bs-tile b { font-size: 14px; letter-spacing: .06em; } .bs-tile small { display: none; } .bs-tile { min-height: 88px; } }
+.backstage .me-card { margin-top: 4px; }
+.me-card { padding-left: 4px; border-color: rgba(212,166,58,.4) !important; }
+.me-card::after { display: none; }

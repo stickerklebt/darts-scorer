@@ -14,7 +14,7 @@ export function tabsBar() {
   return `<nav class="tabs"><div class="tabs-in">
     <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${icon('dart', 2)}<span>Spielen</span></button>
     <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Statistik</span></button>
-    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('people', 2)}<span>Freunde</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
+    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('ticket', 2)}<span>Backstage</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
 }
@@ -45,9 +45,5 @@ export function playView() {
     <h2 class="label">Partyspiele</h2>
     <div class="modes">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
-    <div class="home-btns">
-      <button class="btn dark settings-btn" data-act="history">${icon('chart', 1.8, 18)} Spielhistorie</button>
-      <button class="btn dark settings-btn" data-act="settings">${icon('gear', 1.8, 18)} Einstellungen</button>
-    </div>
   </main>`;
 }

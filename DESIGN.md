@@ -44,6 +44,9 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
 - Tabellen und Listen: `font-variant-numeric: tabular-nums`.
 
 ## Flächen & Rahmen
+- **Ränder immer ringsum oder gar nicht – nie nur an einer Seite** (kein Goldstrich nur oben/links, keine einseitigen
+  Inset-Schatten). Gilt für jedes Fenster (`.sheet`), Felder (`.field`), Umschalter (`.seg`), Hinweise (`.toast`) und Karten.
+  Ausnahmen sind nur durchgehende Leisten über die ganze Breite (Reiterleiste oben, Dock unten, Tabellenlinien).
 - **Karten** (`.kv-c`, Rekorder, Anmeldung): dunkle Fläche, **Goldrand ringsum** (nie nur oben), Radius 10–14 px.
 - **Papierkarten** (Creme mit Kupferstich + `--paper-age`): nur für Rekorde/Regeln/Leere Zustände.
 - Hero-Karte: Doppelrahmen in Gold, Eck-Ornamente; Hintergrund = ruhiger goldener Strahlenkranz mit Punktkreis, Lorbeer

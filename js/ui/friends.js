@@ -50,9 +50,12 @@ export function friendsView() {
           <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
-  return `<main class="page friends">
+  // Backstage: alles rund ums Spiel außer Spielen und Statistik – Spielhistorie, eigener Caller, Einstellungen, Freunde
+  const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe']];
+  return `<main class="page friends backstage">
+    <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b><small>${sub}</small></button>`).join('')}</div>
+    <h2 class="label">Freunde${inc.length ? ` <span class="badge-n">${inc.length}</span>` : ''}</h2>
     <div class="profile me-card">
-      <span class="pfblock" style="${pcVars(0)}">${esc((me?.username || '?').slice(0, 1).toUpperCase())}</span>
       <span class="pfname"><small>Dein Name für Freunde</small><b>${esc(me?.username || '')}</b></span>
     </div>
     <h2 class="label">Freund hinzufügen</h2>
@@ -77,7 +80,6 @@ export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';
   const head = `<header class="bar"><button class="sq" data-act="backFriends" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">Freund</span><span class="sq ghost"></span></header>`;
   const top = `<div class="profile me-card">
-      <span class="pfblock" style="${pcVars(colorIdx(name || '?'))}">${esc((name || '?').slice(0, 1).toUpperCase())}</span>
       <span class="pfname"><small>${d?.user?.friendsSince ? `Freunde seit ${dateStr(d.user.friendsSince)}` : 'Freund'}</small><b>${esc(name)}</b></span>
     </div>`;
   if (!d) return `${head}<main class="page">${top}<p class="foot">${fr?.error ? esc(fr.error) : 'Lade Statistik …'}</p></main>`;
