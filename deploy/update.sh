@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Update: neuesten Stand holen, Tests laufen lassen, Server neu starten. Bei roten Tests bleibt der alte Stand.
-# Aufruf:  sudo deploy/update.sh
+# Aufruf:  bash deploy/update.sh   (sudo nicht nötig – das Skript holt sich die Rechte selbst)
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$APP_DIR"
-[ "$(id -u)" -eq 0 ] || { echo "Bitte mit sudo ausführen: sudo $0"; exit 1; }
+[ "$(id -u)" -eq 0 ] || exec sudo bash "$0" "$@"   # holt sich root-Rechte selbst (fragt ggf. nach dem Passwort)
 
 # git als Besitzer des Repos ausführen (sonst „dubious ownership“)
 OWNER="$(stat -c %U "$APP_DIR")"

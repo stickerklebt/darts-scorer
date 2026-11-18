@@ -14,11 +14,12 @@ nginx macht kein TLS und kennt keine Domain. HTTPS kommt vom Proxy davor; der mu
 
 ```bash
 sudo git clone https://github.com/stickerklebt/darts-scorer.git /opt/darts-scorer
-sudo /opt/darts-scorer/deploy/install.sh
+bash /opt/darts-scorer/deploy/install.sh
 ```
 
 `install.sh` legt den Systemnutzer `darts`, die Unit `darts.service`, `/etc/nginx/conf.d/darts.conf` und ein nächtliches
 Backup an (installiert nginx bei Bedarf, schaltet die nginx-Standardseite ab). Mehrfach ausführbar.
+Alle Skripte in `deploy/` holen sich root-Rechte selbst (fragen ggf. nach dem Passwort) – einfach mit `bash` starten, ohne `sudo`.
 
 ## Betrieb
 

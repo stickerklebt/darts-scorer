@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Einmalige Einrichtung auf dem Server (Linux mit systemd). Aufruf aus dem geklonten Repo:  sudo deploy/install.sh
+# Einmalige Einrichtung auf dem Server (Linux mit systemd). Aufruf aus dem geklonten Repo:  bash deploy/install.sh
 # Legt an: Systemnutzer „darts“, systemd-Unit, nginx-Konfiguration, nächtliches Backup (Cron). Mehrfach ausführbar.
 # Das Repo muss für den Nutzer darts lesbar sein (z. B. nach /opt/darts-scorer klonen, nicht in ein privates Home).
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-[ "$(id -u)" -eq 0 ] || { echo "Bitte mit sudo ausführen: sudo $0"; exit 1; }
+[ "$(id -u)" -eq 0 ] || exec sudo bash "$0" "$@"   # holt sich root-Rechte selbst (fragt ggf. nach dem Passwort)
 
 NODE="$(command -v node || true)"
 [ -n "$NODE" ] || { echo "Node.js fehlt (mind. 22.13), z. B. über https://nodejs.org oder NodeSource installieren."; exit 1; }
