@@ -9,7 +9,7 @@ import { x01Table, partyRanks } from './result.js';
 import { dateStr } from './stats-view.js';
 
 export const HISTORY_FILTER_OPTS = [['all', 'Alle'], ['x01', 'X01'], ['cricket', 'Cricket'], ['party', 'Party']];
-const OUT = { win: ['w', 'S'], loss: ['l', 'N'], draw: ['d', '='], solo: ['d', '1'] };
+const OUT = { win: ['w', 'S'], loss: ['l', 'N'], draw: ['d', '='], solo: ['t', 'T'] };
 const month = (t) => new Date(t).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
 const time = (t) => new Date(t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
@@ -19,7 +19,7 @@ function row(r) {
   const [cls, mark] = OUT[r.outcome] || ['n', '·'];
   const title = GAMES[r.game]?.title || r.game;
   const who = r.side < 0 ? `${esc(r.winners.map(sideName).join(' · '))} gewinnt`
-    : r.opp.length ? `gegen ${esc(r.opp.map(nameOf).join(' · '))}` : 'Solo';
+    : r.opp.length ? `gegen ${esc(r.opp.map(nameOf).join(' · '))}` : 'Training';
   return `<div class="ml hist ${open ? 'open' : ''}">
     <button class="ml-row" data-act="histOpen" data-v="${esc(r.id)}">
       <span class="ml-res ${cls}">${mark}</span>

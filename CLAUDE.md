@@ -162,7 +162,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
   „Zusammen spielen“ ist als „Kommt bald“ angekündigt (noch nicht gebaut).
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
-  **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel mit dünnem Farbstreifen links und „wirft …“,
+  **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel und glimmt nur leicht in seiner Farbe (Rand + Schein),
   Leuchtbalken neutral, Bot-Feld rechts verkleinert und gedämpft.
 - **Average im Spiel ausblendbar** (`prefs.showAvg`, Zahnrad im Spiel bzw. Einstellungen): blendet die Ø-Angaben in den Karten und beim Bot aus.
 - **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
@@ -174,9 +174,12 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   19, 100, 0 …), wird nach 220 ms automatisch übernommen (`entryDone` in `checkout.js`). Unmögliche Eingaben (179) → Hinweis.
   Die Eingabe steht im Querformat groß und mittig im freien Bereich über der Tastatur.
 - **Checkout-Weg** steht direkt unter dem Rest in der Karte des werfenden Spielers (`.sbp-co`), nicht mehr im Ticker.
-- **Solo**: ein Mensch allein spielt ohne Gegner (Setup zeigt „Solo starten“), alle Modi.
-- **Schnellwahl** über der Tastatur (X01-Summe, Highscore): erst ab 30 eigenen Summen-Aufnahmen (ohne Busts) des werfenden
-  Spielers, dann seine 8 häufigsten Scores nach Wert sortiert; sonst ausgeblendet. Shanghai/Halbieren behalten ihre Vielfachen.
+- **Solo**: ein Mensch allein spielt ohne Gegner (Setup zeigt „Solo starten“), alle Modi. Solo = **Training**: zählt weder als
+  Sieg noch als Niederlage (Siege, Siegquote, Serie nur aus Spielen mit Gegner); Historie/Matchliste/Form zeigen „T“ bzw. „Training“.
+- **Schnellwahl** über der Tastatur (X01-Summe, Highscore): gezählt werden nur die **letzten 50** eigenen Summen-Aufnahmen
+  (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
+  sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
+  Shanghai/Halbieren behalten ihre Vielfachen.
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
 - **Animationen** (`js/fx.js`):  26, 60 (4 s) · 100–120 Topf (4 s) · 121–179 Topf (5 s) · 180 Pokal (7 s) ·

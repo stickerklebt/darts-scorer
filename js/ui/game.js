@@ -160,7 +160,7 @@ function sumPad(m, thrower) {
   }
   const k = (v) => `<button class="key" data-act="key" data-v="${v}">${v}</button>`;
   const okLabel = m.game === 'halveit' && !ui.entry ? 'Verfehlt' : 'OK';
-  return `<div class="entry"><span class="who">${esc(nameOf(thrower))}</span><span class="val ${ui.entry ? '' : 'empty'}">${ui.entry || '0'}</span></div>
+  return `<div class="entry"><span class="who">${esc(nameOf(thrower))}</span><span class="val ${ui.entry ? '' : 'empty'} ${ui.quickFlash ? 'flash' : ''}">${ui.entry || '0'}</span></div>
     ${quick.length ? `<div class="quick" style="grid-template-columns:repeat(${quick.length},1fr)">${quick.map((v) => `<button data-act="quick" data-v="${v}">${v}</button>`).join('')}</div>` : ''}
     <div class="keys">${k(1)}${k(2)}${k(3)}${k(4)}${k(5)}${k(6)}${k(7)}${k(8)}${k(9)}
       <button class="key back" data-act="back" aria-label="${ui.entry ? 'Löschen' : 'Rückgängig'}">${ui.entry ? '⌫' : icon('undo', 2.4, 26)}</button>

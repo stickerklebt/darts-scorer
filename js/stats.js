@@ -38,15 +38,15 @@ export function doubleAttempts(matches, pid) {
 /** Grundkennzahlen eines Profils. */
 export function overview(matches, pid, period = 'all', now = Date.now()) {
   const ms = matchesOf(matches, pid, period, now);
-  let pts = 0, darts = 0, wins = 0, legsWon = 0, legsTotal = 0;
+  let pts = 0, darts = 0, wins = 0, legsWon = 0, legsTotal = 0, versus = 0;
   for (const m of ms) {
     const s = sideOf(m, pid);
     for (const t of turnsOf(m, pid)) { pts += t.score; darts += t.darts; }
-    if (m.winners?.includes(s)) wins++;
+    if (m.sides.length > 1) { versus++; if (m.winners?.includes(s)) wins++; } // Solo = Training, kein Sieg
     for (const l of m.legs) { if (l.winner === undefined) continue; legsTotal++; if (l.winner === s) legsWon++; }
   }
   return {
-    matches: ms.length, wins, winRate: ms.length ? wins / ms.length : null,
+    matches: ms.length, wins, winRate: versus ? wins / versus : null,
     points: pts, darts, avg: darts ? (pts / darts) * 3 : null, legsWon, legsTotal,
     doubles: doubleAttempts(ms, pid),
   };
@@ -68,7 +68,7 @@ export function movingAvg(values, w = 5) {
 
 export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const ms = matchesOf(matches, pid, period, now).slice().sort((a, b) => when(a) - when(b));
-  let pts = 0, darts = 0, f9p = 0, f9d = 0, wins = 0, legsWon = 0, legsTotal = 0, turns = 0, busts = 0;
+  let pts = 0, darts = 0, f9p = 0, f9d = 0, wins = 0, legsWon = 0, legsTotal = 0, turns = 0, busts = 0, versus = 0;
   let streak = 0, bestStreak = 0, bestMatchAvg = null, nine = 0, le15 = 0;
   const counts = { t180: 0, t140: 0, t100: 0, t60: 0 };
   const buckets = BUCKETS.map(() => 0);
@@ -76,7 +76,8 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [];
 
   for (const m of ms) {
-    const s = sideOf(m, pid), won = !!m.winners?.includes(s), date = when(m);
+    const solo = m.sides.length === 1; // gegen sich selbst = Training: zählt weder als Sieg noch als Niederlage
+    const s = sideOf(m, pid), won = !solo && !!m.winners?.includes(s), date = when(m);
     const opp = m.sides.filter((_, i) => i !== s).flat();
     let mp = 0, md = 0;
     for (const l of m.legs) {
@@ -113,17 +114,17 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     const mAvg = md ? (mp / md) * 3 : null;
     if (mAvg !== null && (bestMatchAvg === null || mAvg > bestMatchAvg)) bestMatchAvg = mAvg;
     const dbl = doubleAttempts([m], pid);
-    series.push({ id: m.id, date, avg: mAvg, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, won });
-    if (won) { wins++; streak++; bestStreak = Math.max(bestStreak, streak); } else streak = 0;
+    series.push({ id: m.id, date, avg: mAvg, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, won, solo });
+    if (!solo) { versus++; if (won) { wins++; streak++; bestStreak = Math.max(bestStreak, streak); } else streak = 0; }
     const result = m.opts.mode === 'sets'
       ? m.sides.map((_, i) => setsOf(m, i)).join(' : ') + ' Sets'
       : m.sides.map((_, i) => m.legs.filter((l) => l.winner === i).length).join(' : ') + ' Legs';
-    list.push({ id: m.id, date, opp, won, avg: mAvg, result, side: s });
+    list.push({ id: m.id, date, opp, won, solo, avg: mAvg, result, side: s });
   }
   const doubles = doubleAttempts(ms, pid);
   const fav = Object.entries(favourite).sort((a, b) => b[1] - a[1])[0] || null;
   return {
-    matches: ms.length, wins, winRate: ms.length ? wins / ms.length : null, bestStreak,
+    matches: ms.length, wins, winRate: versus ? wins / versus : null, bestStreak,
     avg: darts ? (pts / darts) * 3 : null, bestMatchAvg, f9: f9d ? (f9p / f9d) * 3 : null,
     legsWon, legsTotal, darts, points: pts, turns,
     top5: top.sort(byScoreThenDate).slice(0, 5), counts, perTurn: turns ? pts / turns : null, bustRate: turns ? busts / turns : null,
@@ -169,23 +170,32 @@ export function doubleRating(doubles) {
   return out;
 }
 
-/* ---------------- Schnellwahl: die 8 häufigsten eigenen Scores ---------------- */
+/* ---------------- Schnellwahl: häufigste eigene Scores der letzten Aufnahmen ---------------- */
 export const QUICK_MIN_TURNS = 30;
+export const QUICK_WINDOW = 50;
 /**
- * Häufigste Scores eines Spielers aus Summen-Eingaben (X01 ohne Busts, Highscore), über alle gespeicherten
- * Matches plus das laufende. Erst ab 30 solchen Aufnahmen; dann die 8 häufigsten, sortiert nach Wert.
+ * Häufigste Scores eines Spielers aus Summen-Eingaben (X01 ohne Busts und nur außerhalb des Checkout-Bereichs,
+ * also Rest vor der Aufnahme über 170; Highscore), über die gespeicherten Matches plus das laufende.
+ * Gezählt werden nur die letzten 50 solcher Aufnahmen; erst ab 30 davon erscheinen die 8 häufigsten, sortiert nach Wert.
  */
 export function quickScores(matches, pid, current = null, n = 8) {
-  const count = new Map();
-  let total = 0;
   const all = current && !matches.some((m) => m.id === current.id) ? [...matches, current] : matches;
-  for (const m of all) {
+  const ordered = all.slice().sort((a, b) => (a.startedAt ?? 0) - (b.startedAt ?? 0));
+  const seq = [];
+  for (const m of ordered) {
     if (m.game === 'x01') {
-      for (const l of m.legs) for (const t of l.turns) if (t.pid === pid && t.input === 'sum' && !t.bust) { total++; count.set(t.score, (count.get(t.score) || 0) + 1); }
+      for (const l of m.legs) for (const t of l.turns) {
+        if (t.pid !== pid || t.input !== 'sum' || t.bust) continue;
+        if (typeof t.startRem === 'number' && t.startRem <= 170) continue; // Checkout-Bereich zählt nicht
+        seq.push(t.score);
+      }
     } else if (m.game === 'highscore') {
-      for (const t of m.turns) if (t.pid === pid && !t.throws) { total++; count.set(t.v, (count.get(t.v) || 0) + 1); }
+      for (const t of m.turns) if (t.pid === pid && !t.throws) seq.push(t.v);
     }
   }
-  if (total < QUICK_MIN_TURNS) return [];
+  const recent = seq.slice(-QUICK_WINDOW);
+  if (recent.length < QUICK_MIN_TURNS) return [];
+  const count = new Map();
+  for (const v of recent) count.set(v, (count.get(v) || 0) + 1);
   return [...count.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0]).slice(0, n).map(([v]) => v).sort((a, b) => a - b);
 }

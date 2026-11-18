@@ -5,7 +5,7 @@ import { auth } from '../sync.js';
 import { movingAvg } from '../stats.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
-import { icon, fuse, stars, sparkles, COLORS } from './svg.js';
+import { icon, fuse, stars, sparkles, goldSmoke, numRing, COLORS } from './svg.js';
 import { lineChart } from './charts.js';
 import { pct, dateStr } from './stats-view.js';
 
@@ -86,7 +86,7 @@ export function friendView() {
   let body;
   if (x) {
     const avgs = x.form.map((s) => s.avg);
-    body = `<div class="hero-stat">${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter"><b class="shimmer" data-t="${fmt(x.avg, 2)}">${fmt(x.avg, 2)}</b>${sparkles(9, 5)}</span><em>${x.matches} ${x.matches === 1 ? 'Match' : 'Matches'} · ${x.legsWon}/${x.legsTotal} Legs</em></div>
+    body = `<div class="hero-stat">${goldSmoke('gsF')}${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(x.avg, 2)}">${fmt(x.avg, 2)}</b>${sparkles(9, 5)}</span><em>${x.matches} ${x.matches === 1 ? 'Match' : 'Matches'} · ${x.legsWon}/${x.legsTotal} Legs</em></div>
       ${cards([
         ['Bester Average', fmt(x.bestMatchAvg, 2)], ['First 9', fmt(x.f9, 2)],
         ['Höchste Aufnahme', x.highestTurn ?? '–'], ['Höchstes Checkout', x.highestCo ?? '–'],
@@ -96,7 +96,7 @@ export function friendView() {
       <div class="minirow"><span><small>Matches</small><b>${x.matches}</b></span><span><small>Längste Serie</small><b>${x.bestStreak}</b></span><span><small>Lieblingsdoppel</small><b>${x.favourite ? esc(x.favourite.field) : '–'}</b></span></div>
       <h2 class="label">Form · letzte ${x.form.length} Matches</h2>
       ${lineChart(avgs, movingAvg(avgs), { labelL: x.form[0] ? dateStr(x.form[0].date) : '', labelR: x.form.length ? dateStr(x.form[x.form.length - 1].date) : '' })}
-      <div class="form-row">${x.form.map((s) => `<span class="${s.won ? 'w' : 'l'}" title="${dateStr(s.date)}">${s.won ? 'S' : 'N'}</span>`).join('')}</div>`;
+      <div class="form-row">${x.form.map((s) => `<span class="${s.solo ? 't' : s.won ? 'w' : 'l'}" title="${dateStr(s.date)}">${s.solo ? 'T' : s.won ? 'S' : 'N'}</span>`).join('')}</div>`;
   } else {
     body = `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch kein 501</h2>
       <p>${esc(name)} hat noch kein 501-Match gespielt. Sobald das passiert, stehen hier Average, Doppelquote und Rekorde.</p></div></div>`;

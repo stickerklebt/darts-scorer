@@ -49,8 +49,8 @@ export function matchList(st) {
     const m = open ? S.matches.find((x) => x.id === r.id) : null;
     return `<div class="ml ${open ? 'open' : ''}">
       <button class="ml-row" data-act="openMatch" data-v="${r.id}">
-        <span class="ml-res ${r.won ? 'w' : 'l'}">${r.won ? 'S' : 'N'}</span>
-        <span class="ml-mid"><b>gegen ${esc(r.opp.map(nameOf).join(' · '))}</b><small>${dateStr(r.date)} · ${r.result}</small></span>
+        <span class="ml-res ${r.solo ? 't' : r.won ? 'w' : 'l'}">${r.solo ? 'T' : r.won ? 'S' : 'N'}</span>
+        <span class="ml-mid"><b>${r.solo ? 'Training' : `gegen ${esc(r.opp.map(nameOf).join(' · '))}`}</b><small>${dateStr(r.date)} · ${r.result}</small></span>
         <span class="ml-avg"><small>Ø</small><b>${fmt(r.avg)}</b></span>
       </button>
       ${m ? `<div class="ml-detail">${x01Table(m)}<h2 class="label">Aufnahmen</h2>${legsDetail(m)}</div>` : ''}

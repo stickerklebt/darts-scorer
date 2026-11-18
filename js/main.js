@@ -696,7 +696,17 @@ const actions = {
   },
   back() { clearTimeout(autoTimer); if (ui.entry) { ui.entry = ui.entry.slice(0, -1); render(); } else undo(); },
   ok() { actions.submit(ui.entry === '' ? 0 : parseInt(ui.entry, 10)); },
-  quick(el) { actions.submit(Number(el.dataset.v)); },
+  /** Schnellwahl: Zahl erst kurz groß im Eingabefeld zeigen (zur Kontrolle), dann übernehmen */
+  quick(el) {
+    const v = Number(el.dataset.v), m = S.current;
+    clearTimeout(autoTimer);
+    ui.entry = String(v); ui.quickFlash = true; render();
+    autoTimer = setTimeout(() => {
+      ui.quickFlash = false;
+      if (S.current === m && ui.entry === String(v) && S.screen === 'game' && !ui.modal) actions.submit(v);
+      else render();
+    }, 420);
+  },
   submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
@@ -855,6 +865,29 @@ if (S.screen === 'friend') S.screen = 'home';
 S.statsPeriod = 'all';
 render();
 bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); } });
+
+/* Average auf der Spielerkarte: beim App-Start einmal wie an einem Spielautomaten von 0 hochrattern, dann einrasten */
+function rollAvg(tries = 0) {
+  const el = document.querySelector('.me-avg b');
+  if (!el) { if (tries < 20 && !ui.avgRolled) setTimeout(() => rollAvg(tries + 1), 150); return; }
+  const target = parseFloat(String(el.textContent).replace(',', '.'));
+  ui.avgRolled = true;
+  if (!Number.isFinite(target) || target <= 0 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const fmt1 = (v) => v.toFixed(1).replace('.', ','), t0 = performance.now(), dur = 1300;
+  el.classList.add('rolling');
+  const step = (now) => {
+    const e = document.querySelector('.me-avg b');
+    if (!e) return;
+    const p = Math.min(1, (now - t0) / dur), ease = 1 - (1 - p) ** 3;
+    const jitter = (1 - p) * (Math.random() - 0.5) * target * 0.6; // schnelles Rattern, wird zum Ende ruhiger
+    const v = p < 1 ? Math.max(0, target * ease + jitter) : target;
+    e.textContent = fmt1(v); e.dataset.t = fmt1(v);
+    if (p < 1) requestAnimationFrame(step);
+    else { e.classList.remove('rolling'); e.classList.add('landed'); setTimeout(() => e.classList.remove('landed'), 800); }
+  };
+  requestAnimationFrame(step);
+}
+setTimeout(() => rollAvg(), 950); // nach dem Splash
 probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';

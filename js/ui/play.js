@@ -25,7 +25,7 @@ export function playView() {
   const others = Object.keys(GAMES).filter((id) => id !== 'x01');
   return `<main class="page">
     <button class="me" data-act="rename">
-      <span class="me-name" data-t="${esc(name)}">${esc(name)}</span>
+      <span class="me-name"><span class="nm">${esc(name)}</span><svg class="nm-trace" aria-hidden="true"><text x="0" y="0.84em">${esc(name)}</text><text class="t2" x="0" y="0.84em">${esc(name)}</text></svg></span>
       <span class="me-avg" title="Ø 501"><span class="glitter"><b class="pop shimmer" data-t="${fmt(ov.avg)}">${fmt(ov.avg)}</b>${sparkles(7, 3)}</span></span>
     </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
@@ -35,7 +35,7 @@ export function playView() {
       <div class="hero-band">${stars(2)}<span>Der Klassiker</span>${stars(2)}</div>
       <div class="hero-main">
         <div class="hero-title">${badge('x01', 46)}<b>X01</b></div>
-        <div class="hero-num">${o.start}</div>
+        <div class="hero-num">${o.start}${sparkles(5, 11)}</div>
       </div>
       <div class="hero-meta">${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}</div>
       <div class="hero-btns one">

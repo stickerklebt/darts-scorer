@@ -141,3 +141,13 @@ test('Schnellwahl: erst ab 30 Summen-Aufnahmen, dann 8 häufigste nach Wert sort
   const hs = { id: 'h', game: 'highscore', turns: Array(30).fill({ pid: 'b', v: 100 }) };
   assert.deepEqual(quickScores([], 'b', hs), [100]);
 });
+
+test('Schnellwahl: nur die letzten 50 Aufnahmen, Checkout-Bereich (Rest ≤ 170) zählt nicht', () => {
+  const turns = (sc, n, startRem = 501) => Array.from({ length: n }, () => ({ pid: 'a', input: 'sum', score: sc, startRem }));
+  const old = { id: 'o', game: 'x01', startedAt: 1, legs: [{ turns: turns(100, 60) }] };          // alt: 60× 100
+  const neu = { id: 'n', game: 'x01', startedAt: 2, legs: [{ turns: turns(45, 50) }] };           // neu: 50× 45
+  assert.deepEqual(quickScores([old, neu], 'a'), [45]);                                           // 100 fällt aus dem Fenster
+  const co = { id: 'c', game: 'x01', startedAt: 3, legs: [{ turns: turns(26, 40, 150) }] };      // im Checkout-Bereich
+  assert.deepEqual(quickScores([neu, co], 'a'), [45]);
+  assert.deepEqual(quickScores([co], 'a'), []);
+});

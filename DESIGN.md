@@ -56,6 +56,11 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
   braucht `data-t` mit der Zahl) und Glitzer-Sterne (`sparkles()` in `svg.js`). Rekord-Karten: nur der Lichtstreif.
 - Statistik-Karten glimmen zeitversetzt kurz von innen auf, die Zahl wird dabei heller. Diagramme: Linien zeichnen sich ein,
   Punkte und Balken wachsen nacheinander.
+- Startseite: Average rattert beim App-Start einmal wie ein Spielautomat von 0 hoch und rastet mit Blitz ein (`rollAvg` in
+  `main.js`); am Namen laufen ab und zu goldene Lichtspuren die Buchstabenkanten entlang (SVG-Text-Kontur). Hero: Sterne
+  funkeln, Strahlen drehen sich langsam, Punktkreis blinkt, 501 glimmt mit Glitzer, Spielen-Knopf atmet.
+- Overall-Average (Statistik/Freund): goldener Rauch im Hintergrund (`goldSmoke()`, feTurbulence, treibt wie im Wind, kaum
+  sichtbar), kräftiger Goldschein direkt hinter der Zahl, ab und zu ein Lichtstrich rund um die Zahl (`numRing()`).
 - Partyspiel-Logos stehen meist still und hüpfen/kippen ab und zu leicht (jedes zu seiner Zeit), der Stern daneben funkelt.
 - Reiter „Spielen“: gezeichneter Dartpfeil (Spitze, Barrel mit Rillen, Schaft, Flights), fliegt beim Aktivieren ein und wippt ab und zu.
 - `fuse()`: Lichtlinie auf Goldrahmen (Hero, Rekorde, Overall-Average, Sieger).

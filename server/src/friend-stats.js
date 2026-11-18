@@ -25,7 +25,7 @@ export function friendStats(state, matches) {
         doubles: { rate: st.doubles.rate, hits: st.doubles.hits, attempts: st.doubles.attempts },
         favourite: st.favourite, counts: st.counts,
         legsWon: st.legsWon, legsTotal: st.legsTotal, bestLeg: st.bestLeg, avgLegDarts: st.avgLegDarts, nine: st.nine,
-        form: st.series.slice(-FORM).map((s) => ({ date: s.date, avg: s.avg, won: s.won })),
+        form: st.series.slice(-FORM).map((s) => ({ date: s.date, avg: s.avg, won: s.won, solo: s.solo || undefined })),
       };
     }
   } catch { x501 = null; } // fehlerhafte Altdaten eines Nutzers sollen die Ansicht nicht sprengen

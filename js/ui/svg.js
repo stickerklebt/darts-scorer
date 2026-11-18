@@ -289,6 +289,17 @@ export function sparkles(n = 6, seed = 1) {
   return `<span class="sparkles" aria-hidden="true">${out}</span>`;
 }
 
+/** Goldener Rauch: Schwaden aus Rauschen (feTurbulence), treiben langsam seitlich wie im Wind. Nur Hintergrund, kaum sichtbar. */
+export const goldSmoke = (id = 'gs') => `<span class="smoke" aria-hidden="true"><svg viewBox="0 0 800 200" preserveAspectRatio="none">
+  <defs><filter id="${id}" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="3" seed="8" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.93  0 0 0 0 0.76  0 0 0 0 0.36  0 0 0 2.4 -1.15"/>
+    <feGaussianBlur stdDeviation="2"/></filter></defs>
+  <rect width="800" height="200" filter="url(#${id})"/></svg><svg class="s2" viewBox="0 0 800 200" preserveAspectRatio="none"><rect width="800" height="200" filter="url(#${id})"/></svg></span>`;
+
+/** Lichtstrich, der ab und zu um eine Zahl läuft (gerundetes Rechteck, Strich gleitet entlang) */
+export const numRing = () => '<span class="num-ring" aria-hidden="true"></span>';
+
 export const fuse = (inset = 6, secs = 24, rx = 3) => {
   // [Länge in % des Umfangs, Deckkraft]: kurzer heller Kopf, lange, immer schwächere Schleppe (Köpfe bündig)
   const layers = [[32, 0.14], [22, 0.2], [14, 0.3], [8, 0.45], [4, 0.65], [1.6, 1]];

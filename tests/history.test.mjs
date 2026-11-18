@@ -51,3 +51,14 @@ test('Löschen räumt den Ergebnis-Screen dieses Spiels ab', () => {
   deleteMatch(S, m.id);
   assert.equal(S.current, null);
 });
+
+test('Solo-Spiel ist Training: kein Sieg in Statistik und Siegquote', () => {
+  const solo = createMatch('x01', [['a']], { start: 501, out: 'double', mode: 'legs', target: 1 }, 0, 500);
+  X.submitSum(solo, 180); X.submitSum(solo, 180); X.throwDart(solo, 20, 3); X.throwDart(solo, 19, 3); X.throwDart(solo, 12, 2);
+  solo.endedAt = 500;
+  const ms = [solo, x01(1000)];
+  const ov = overview(ms, 'a'), fs = fullStats(ms, 'a');
+  assert.equal(ov.matches, 2); assert.equal(ov.wins, 1); assert.equal(ov.winRate, 1);
+  assert.equal(fs.wins, 1); assert.equal(fs.list.find((r) => r.id === solo.id).solo, true);
+  assert.equal(historyRows([solo], 'a')[0].outcome, 'solo');
+});
