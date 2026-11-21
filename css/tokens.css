@@ -1,11 +1,13 @@
 /* Design-Tokens: Queen-Look – heraldisch, Gold/Creme auf Schwarz, Pop-Art-Farbblöcke, Kupferstich.
    Hintergründe bleiben schlicht (keine Körnung, kein Rauschen); Details sitzen auf den Elementen. */
 /* Schriften (lokal, OFL): League Gothic – schmale Holzlettern-Plakatschrift für Zahlen und Beschriftungen;
-   IM Fell English SC – Bleisatz-Versalien für Überschriften; IM Fell English – Fließtext. Leicht unregelmäßig gedruckt. */
+   Cinzel – römische Versalien für Überschriften und Namen; IM Fell English – Fließtext. Leicht unregelmäßig gedruckt. */
 @font-face { font-family: 'League Gothic'; src: url(../fonts/league-gothic.woff2) format('woff2'); font-weight: 400; font-display: swap; }
 /* Ziffern in Überschriften/Text aus League Gothic (IM Fell hat Mediävalziffern: „01“ sähe aus wie „oi“) */
 @font-face { font-family: 'Fell Digits'; src: url(../fonts/league-gothic.woff2) format('woff2'); font-weight: 400; unicode-range: U+0030-0039; font-display: swap; }
-@font-face { font-family: 'IM Fell English SC'; src: url(../fonts/fell-sc.woff2) format('woff2'); font-weight: 400; font-display: swap; }
+/* Cinzel (OFL): römische Versalien mit Keilserifen wie auf alten Rock-Plakaten; Kleinbuchstaben als Kapitälchen. Nur der fette Schnitt,
+   als 400 eingetragen, damit alle Überschriften ihn ohne künstliches Fett nutzen. */
+@font-face { font-family: 'Cinzel'; src: url(../fonts/cinzel.woff2) format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'IM Fell English'; src: url(../fonts/fell.woff2) format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'IM Fell English'; src: url(../fonts/fell-i.woff2) format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
 
@@ -21,7 +23,7 @@
   --p0: var(--red); --p1: var(--blue); --p2: var(--yellow); --p3: var(--green); --p4: var(--violet); --p5: var(--cream);
   /* Schrift */
   --f-num: 'League Gothic', 'Arial Narrow', 'Helvetica Neue', sans-serif;
-  --f-display: 'Fell Digits', 'IM Fell English SC', 'Iowan Old Style', 'Times New Roman', serif;
+  --f-display: 'Fell Digits', 'Cinzel', 'Iowan Old Style', 'Times New Roman', serif;
   --f-text: 'Fell Digits', 'IM Fell English', 'Iowan Old Style', Georgia, serif;
   /* Ecken */
   --r-btn: 6px; --r-panel: 10px;

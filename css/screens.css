@@ -1076,7 +1076,7 @@
 .cgrid.pop-row .cnum { height: 52px; font-size: 26px; }
 
 /* ================= Namen einheitlich (siehe DESIGN.md › Schrift) ================= */
-/* Spielernamen auf Karten außerhalb des Spiels: IM Fell English SC, normale Schreibung (Großbuchstabe + Kapitälchen) */
+/* Spielernamen auf Karten außerhalb des Spiels: Cinzel, normale Schreibung (Großbuchstabe + Kapitälchen) */
 .me-txt b, .st-name b, .me-card .pfname b, .friend .pfname b {
   font-family: var(--f-display) !important; font-weight: 400 !important; font-size: 27px !important; letter-spacing: .03em !important;
   text-transform: none !important; line-height: 1.1 !important; }
@@ -1436,8 +1436,8 @@
 .pb-name { position: relative; min-width: 0; display: inline-block; isolation: isolate; }
 /* Name: fette Kontur, Glanz läuft durch die Buchstaben. Leuchten als zweite Textebene dahinter (text-shadow folgt den
    Buchstaben – kein filter auf dem Kasten, sonst malt Safari ein Rechteck). */
-.pb-name b { position: relative; display: block; font-family: var(--f-display); font-weight: 400; font-size: clamp(42px, 12vw, 68px); line-height: 1.1;
-  letter-spacing: .03em; white-space: nowrap; padding: 2px 4px;
+.pb-name b { position: relative; display: block; font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 9.5vw, 58px); line-height: 1.15;
+  letter-spacing: .02em; white-space: nowrap; padding: 2px 4px;
   -webkit-text-stroke: 2px #e9b440;
   background: linear-gradient(100deg, #e9b440 0%, #ffd86b 30%, #fff6d8 46%, #ffffff 50%, #ffd86b 60%, #c8901f 80%, #e9b440 100%) 0 0 / 300% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;

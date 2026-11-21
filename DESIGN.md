@@ -28,8 +28,8 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
 
 | Rolle | Schrift | Schreibung | Beispiel |
 |---|---|---|---|
-| Überschriften, Titel | IM Fell English SC (`--f-display`) | Versalien/Kapitälchen | „WILLKOMMEN“, „SPIEL LÖSCHEN?“ |
-| **Spielernamen auf Karten** (außerhalb des Spiels) | IM Fell English SC | **normal** (Lasse → großes L + Kapitälchen), 25–27 px | Spielen, Statistik-Kopf, Freunde, Freundesprofil |
+| Überschriften, Titel | Cinzel (`--f-display`) | Versalien/Kapitälchen | „WILLKOMMEN“, „SPIEL LÖSCHEN?“ |
+| **Spielernamen auf Karten** (außerhalb des Spiels) | Cinzel | **normal** (Lasse → großes L + Kapitälchen), 25–27 px | Spielen, Statistik-Kopf, Freunde, Freundesprofil |
 | Spielernamen im Spiel | League Gothic, Versalien; aktiver Spieler IM Fell SC groß | | Score-Karten |
 | Beschriftungen, Knöpfe, Reiter | League Gothic (`--f-num`), Versalien, Sperrung .12–.2em | | „Ø 501“, „SPIELEN“ |
 | Fließtext, Hinweise | IM Fell English (`--f-text`) | normal | Erklärungen, Leere Zustände |
@@ -95,6 +95,6 @@ Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) au
 
 ## Spieler-Banner
 Heraldisches Plakat ohne Hintergrundfläche: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold → zurück), Schwalbenschwanz-Enden,
-volle Breite. Name in IM Fell English SC, Gold mit Glanz und goldenem Leuchten; Ø in League Gothic, Gold mit rotem Versatz,
+volle Breite. Name in Cinzel, Gold mit Glanz und goldenem Leuchten; Ø in League Gothic, Gold mit rotem Versatz,
 durch eine feine Goldlinie vom Namen getrennt, dicht daneben. Darunter Abzeichen (Pokale mit Metallverlauf, Farbe = Stufe: Bronze, Silber,
 Gold, Königsrot, Legendär mit umlaufendem Lichtstrich; nicht erreicht = grau) zwischen grünen Ranken. Keine Wappen-/Logo-Motive.

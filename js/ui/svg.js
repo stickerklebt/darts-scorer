@@ -135,7 +135,7 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
       <path d="M44 203 Q100 192 156 203 M44 221 Q100 210 156 221" fill="none" stroke="${C.ink}" stroke-width=".5" stroke-opacity=".35" stroke-dasharray="1.6 2.4"/>
       <path d="M40 200 L40 228 M160 200 L160 228" stroke="${C.ink}" stroke-width=".8" stroke-opacity=".5"/>
       <path d="M24 210 L36 206 M26 222 L36 219 M176 210 L164 206 M174 222 L164 219" stroke="${C.ink}" stroke-width=".6" stroke-opacity=".45"/>
-      <text x="100" y="218" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', 'Times New Roman', serif" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
+      <text x="100" y="218" text-anchor="middle" font-family="'Fell Digits', 'Cinzel', 'Times New Roman', serif" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
     </g>` : '';
   return `<svg viewBox="0 0 200 240" width="${size}" height="${size * 1.2}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     ${bg ? `<rect x="-20" y="-20" width="240" height="280" fill="${bg}"/>` : ''}
@@ -181,7 +181,7 @@ export const stars = (n = 3, color = COLORS.gold, size = 12) =>
 export const ribbon = (text, fill = COLORS.red, ink = COLORS.cream) => `<svg class="ribbon" viewBox="0 0 220 40" aria-hidden="true">
   <path d="M0 10 L20 6 L20 36 L0 40 L8 23 Z M220 10 L200 6 L200 36 L220 40 L212 23 Z" fill="${fill}" opacity=".7"/>
   <path d="M14 2 H206 V32 H14 Z" fill="${fill}" stroke="${COLORS.ink}" stroke-width="2"/>
-  <text x="110" y="23" text-anchor="middle" font-family="'Fell Digits', 'IM Fell English SC', serif" font-size="15" letter-spacing="3" fill="${ink}">${text}</text>
+  <text x="110" y="23" text-anchor="middle" font-family="'Fell Digits', 'Cinzel', serif" font-size="15" letter-spacing="3" fill="${ink}">${text}</text>
 </svg>`;
 
 /* ---------- Spielmodus-Badges ---------- */

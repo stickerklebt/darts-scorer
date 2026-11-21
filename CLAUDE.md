@@ -13,7 +13,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   neue Regeln dort eintragen.
 - Kein Build-Tool, keine externen Libraries. Diagramme, Ornamente, Wappen, Dartscheiben, Animationen: eigene SVG/CSS/Canvas im Code. Keine Sounds.
 - Schriften lokal als `.woff2` (nur OFL): **League Gothic** (Zahlen, Beschriftungen, Knöpfe – schmale Holzlettern),
-  **IM Fell English SC** (Überschriften, Bleisatz-Versalien), **IM Fell English** (Fließtext). IM Fell hat Mediävalziffern –
+  **Cinzel** (Überschriften, Namen – römische Versalien, Queen-Plakat-Anmutung, nur der fette Schnitt), **IM Fell English** (Fließtext). IM Fell hat Mediävalziffern –
   deshalb kommen Ziffern in `--f-display`/`--f-text` per `unicode-range` aus League Gothic („Fell Digits“ in `tokens.css`).
   Nur ein Schnitt je Schrift, `font-synthesis: none` (kein künstliches Fett).
 - Design: **Queen-Look** – heraldisch, Gold/Creme auf Schwarz, Ornamente (Eck-Ornamente, Lorbeer, Sterne, Strahlenkranz),
@@ -73,7 +73,7 @@ css/
   base.css              Reset, Typo, Buttons, Tabs, Dialoge
   screens.css           Screens (Play, Setup, Spiel, Ausbullen, Leg-Info, Ergebnis, Statistik, Vergleich, Bots)
   fx.css                Vollbild-Animationen
-fonts/                  league-gothic.woff2, fell-sc.woff2, fell.woff2, fell-i.woff2, OFL-*.txt
+fonts/                  league-gothic.woff2, cinzel.woff2, fell.woff2, fell-i.woff2, OFL-*.txt
 bots/                   Optionale Bot-Bilder + bilder.json (Liste) + README.md
 js/
   main.js               Boot, Rendering, Aktionen, Match-Ablauf, Ausbullen-Steuerung, Bot-Steuerung, Sprüche, Undo
