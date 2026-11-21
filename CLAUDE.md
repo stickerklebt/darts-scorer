@@ -188,6 +188,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel und glimmt nur leicht in seiner Farbe (Rand + Schein),
   Leuchtbalken neutral, Bot-Feld rechts verkleinert und gedämpft.
 - **Average im Spiel ausblendbar** (`prefs.showAvg`, Zahnrad im Spiel bzw. Einstellungen): blendet die Ø-Angaben in den Karten und beim Bot aus.
+  Ebenso „Darts im Leg anzeigen“ (`prefs.showDarts`, X01): blendet die Darts-Zahl des laufenden Legs in den Karten aus.
 - **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
   bei Solo ausgeblendet) · Start. „Mehr Optionen“ (aufklappbar, zeigt eingeklappt eine Zusammenfassung wie „501 · Double Out“):
   Jeder für sich/Teams, Startpunkte 301/501/701, Check-Out, Legs/Sets, Reihenfolge mischen, Spielregeln.

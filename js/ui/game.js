@@ -19,7 +19,8 @@ const whoText = (m, s, thrower) => (isBot(thrower) ? `${nameOf(thrower)} wirft` 
 const chipCls = (d) => (d.n === 25 && d.m === 2 ? 'b' : d.m === 2 ? 'd' : '');
 
 /** Ø-Angaben im Spiel ausblendbar (Einstellung „Average anzeigen“) */
-const statsShown = (stats) => (S.prefs.showAvg === false ? stats.filter(([k]) => k !== 'Ø') : stats);
+/** Ø und Darts im Leg sind in den Einstellungen abschaltbar */
+const statsShown = (stats) => stats.filter(([k]) => !(k === 'Ø' && S.prefs.showAvg === false) && !(k === 'Darts' && S.prefs.showDarts === false));
 
 function scoreboard(items, cur, swap) {
   items = items.map((it) => ({ ...it, stats: statsShown(it.stats) }));
