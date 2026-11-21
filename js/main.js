@@ -1029,5 +1029,18 @@ document.body.appendChild(splash);
 setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
 if (S.screen === 'game') requestWakeLock();
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  // Neue Version übernommen → einmal neu laden, damit nicht der alte Stand weiterläuft. Nie mitten im Spiel:
+  // dann erst, sobald man das Spiel verlässt (Prüfung jede Sekunde).
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  const reloadWhenIdle = () => {
+    if (reloading) return;
+    if (S.screen === 'game' && S.current && !S.current.done) { setTimeout(reloadWhenIdle, 1000); return; }
+    reloading = true; save(); location.reload();
+  };
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) reloadWhenIdle(); });
+  navigator.serviceWorker.register('sw.js').then((r) => {
+    r.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) r.update().catch(() => {}); });
+  }).catch(() => {});
 }

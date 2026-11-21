@@ -43,6 +43,8 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   `tools/mkicon.mjs` → `node tools/mkicon.mjs icon.svg && qlmanage -t -s 1024 icon.svg`, dann mit `sips -Z 512/180`
   zu `icon-512.png` / `icon-180.png`. Das Wappen bleibt nur in der App (Splash, Anmeldung).
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen. `/api/` wird nie gecacht.
+  Neue Version (`controllerchange`) → App lädt sich einmal selbst neu, aber nie mitten im laufenden Spiel; beim Zurückholen
+  der App (`visibilitychange`) wird nach Updates gesucht.
 - **Server-Regeln:** keine npm-Pakete. Neue Endpunkte in `server/src/routes/`, Eingaben in `validate.js` prüfen, Fehler als
   `HttpError` mit deutscher Meldung. Schema-Änderungen nur als neuer Eintrag am Ende von `MIGRATIONS` in `db.js`.
   Statische Dateien nur über die Allowlist in `static.js` (neue Ordner dort eintragen). Content-Security-Policy erlaubt
