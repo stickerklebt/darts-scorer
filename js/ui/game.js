@@ -100,7 +100,7 @@ export function gameView() {
     board = scoreboard(items, cur, swap);
     hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     isBoard = mode === 'darts' && S.prefs.dartInput === 'board' && !isBot(thrower);
-    pad = isBot(thrower) ? botPad(m, thrower, m.pending) : mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, m.pending, cur) : mode === 'darts' ? (isBoard ? boardPad(m, thrower) : dartPad(m, thrower)) : sumPad(m, thrower);
   } else if (m.game === 'cricket') {
     cur = C.curSide(m); thrower = C.curThrower(m);
     const st = C.state(m), pts = m.opts.mode !== 'close';
@@ -119,7 +119,7 @@ export function gameView() {
     board = scoreboard(items, cur, swap) + ckGrid(m, st, cur);
     hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     isBoard = S.prefs.dartInput === 'board' && !isBot(thrower);
-    pad = isBot(thrower) ? botPad(m, thrower, m.pending) : isBoard ? boardPad(m, thrower, true) : cricketPad(m, thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, m.pending, cur) : isBoard ? boardPad(m, thrower, true) : cricketPad(m, thrower);
   } else {
     cur = G.curSide(m); thrower = G.curThrower(m);
     const round = G.round(m);
@@ -143,7 +143,7 @@ export function gameView() {
     else if (m.game === 'halveit') tgt = G.halfLabel(G.HALF[round]);
     else if (m.game === 'atc') tgt = G.atcLabel(G.atcPos(m, cur));
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
-    pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
+    pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : [], cur) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
   // Online: ist der Freund dran, wartet dieses Gerät – statt Eingabe ein Hinweis
   if (m.online && thrower !== S.mainId) {
@@ -230,11 +230,12 @@ function hitsPad(m, thrower, cur) {
 }
 
 /** Während ein Bot wirft: Bild, Name, die Darts der Aufnahme, Rückgängig (nimmt die letzte eigene Eingabe zurück). */
-function botPad(m, thrower, darts) {
-  const sum = darts.reduce((a, d) => a + d.n * d.m, 0);
-  return `<div class="botpad">
-    <div class="bp-top">${avatar(thrower, 64)}<div class="bp-t"><b>${esc(nameOf(thrower))}</b><span>wirft<i>.</i><i>.</i><i>.</i></span><small>Bot${S.prefs.showAvg === false ? '' : ` · Ø ${bot(thrower).avg}`}</small></div></div>
-    <div class="slots">${[0, 1, 2].map((i) => `<div class="slot ${darts[i] ? 'filled' : ''}">${darts[i] ? label(darts[i]) : '–'}</div>`).join('')}<div class="slot sum">${sum}</div></div>
+function botPad(m, thrower, darts, s) {
+  // Bot wirft: nur die Scheibe (groß, im Platz der Tastatur) mit seinen Darts und dem Feld daneben, darunter Rückgängig.
+  const marks = (ui.botMarks?.[s] || []).map((d) => ({ x: d.x, y: d.y, color: PLAYER_COLORS[s % 6], fly: Date.now() - d.at < 450 }));
+  const labels = marks.map((d, i) => (darts[i] ? `<g class="bp-lbl"><text x="${d.x + 16}" y="${d.y - 14}">${label(darts[i])}</text></g>` : '')).join('');
+  const board = realBoard(marks, 9).replace('</svg>', `${labels}</svg>`);
+  return `<div class="botpad"><div class="bp-board">${board}</div>
     <button class="btn dark" data-act="undo">${icon('undo', 2.4, 18)} Letzte eigene Eingabe zurück</button>
   </div>`;
 }

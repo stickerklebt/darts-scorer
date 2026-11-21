@@ -85,6 +85,12 @@ function render() {
   const key = `${S.screen}:${S.tab}`;
   if (ui.lastKey && ui.lastKey !== key) { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   ui.lastKey = key;
+  // Bot am Zug: Eingabebereich so hoch wie zuletzt die eigene Tastatur, damit die Karten oben nicht springen
+  const pad = app.querySelector('.game .pad');
+  if (pad) {
+    if (!pad.querySelector('.botpad')) { pad.style.minHeight = ''; pad.style.height = ''; ui.padH = pad.offsetHeight || ui.padH; }
+    else if (ui.padH) pad.style.height = `${ui.padH}px`;
+  }
   // Tab-Strich gleitet von der alten zur neuen Position
   const tl = $('.tabline');
   if (tl) {

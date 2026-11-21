@@ -1639,3 +1639,13 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .pb-slot:nth-child(3) .tb { transform: rotate(3deg) scale(.99); }
 .pb-l { transform: translateY(-50%) rotate(-3deg) !important; }
 .pb-r { transform: translateY(-48%) rotate(4deg) !important; }
+
+/* Bot wirft: statt Kasten + Slots die Scheibe groß im Platz der Tastatur, Darts mit Feldname, darunter Rückgängig.
+   Die Höhe bleibt wie bei der eigenen Eingabe (main.js merkt sich die Höhe der Tastatur) → oben springt nichts. */
+.botpad { display: flex; flex-direction: column; gap: 8px; padding: 0; height: 100%; }
+.bp-board { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.bp-board .realboard { width: auto; height: 100%; max-width: 100%; max-height: none; }
+.bp-lbl text { font-family: var(--f-num); font-size: 34px; fill: var(--cream); stroke: #0b0a08; stroke-width: 6px; paint-order: stroke; letter-spacing: .02em;
+  animation: bp-lbl .35s ease-out both; }
+@keyframes bp-lbl { from { opacity: 0; transform: translateY(6px); } }
+.game.botturn .botpad { opacity: 1 !important; }

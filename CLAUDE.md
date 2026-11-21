@@ -190,7 +190,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Statistik), ✕ verwirft es. So kann niemand fremde Averages verderben.
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
   **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel und glimmt nur leicht in seiner Farbe (Rand + Schein),
-  Leuchtbalken neutral, Bot-Feld rechts verkleinert und gedämpft.
+  Leuchtbalken neutral. Statt der Tastatur steht dann groß die Scheibe mit seinen Darts
+  (Feldname neben jedem Dart) und darunter nur „Letzte eigene Eingabe zurück“; der Bereich behält die Höhe der eigenen Tastatur
+  (`ui.padH`), damit oben nichts springt. Auf dem Handy keine kleine Scheibe in der Bot-Karte.
 - **Average im Spiel ausblendbar** (`prefs.showAvg`, Zahnrad im Spiel bzw. Einstellungen): blendet die Ø-Angaben in den Karten und beim Bot aus.
   Ebenso „Darts im Leg anzeigen“ (`prefs.showDarts`, X01): blendet die Darts-Zahl des laufenden Legs in den Karten aus.
 - **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
