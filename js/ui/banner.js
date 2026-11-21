@@ -160,7 +160,7 @@ export function playerBanner({ name, avg = null, badges = [null, null, null], st
   return `<section class="pbanner" aria-label="Banner von ${esc(name)}">
     <div class="pb-band">
       <div class="pb-ribbon"><div class="pb-in">
-        <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(10, 3)}</span>
+        <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(16, 3)}</span>
         <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b>${sparkles(5, 11)}</span>
       </div></div>
       ${bouquetLeft()}${bouquetRight()}${vineStrip()}
