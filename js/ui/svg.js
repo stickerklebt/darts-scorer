@@ -293,14 +293,14 @@ export function sparkles(n = 6, seed = 1) {
   return `<span class="sparkles" aria-hidden="true">${out}</span>`;
 }
 
-/** Goldener Rauch: scharfe Schwaden aus Rauschen (feTurbulence, kaum Weichzeichner, steile Kanten).
-    Links und rechts der Zahl eigene Schichten, die in verschiedene Richtungen wehen (CSS) – nicht alles in eine Richtung. */
+/** Goldener Rauch: ganz leichte, stark verschwommene Schwaden aus Rauschen (feTurbulence, kräftiger Weichzeichner, weiche Kanten).
+    Links und rechts der Zahl eigene Schichten, die sacht in verschiedene Richtungen treiben (CSS). Nur Hintergrund. */
 export const goldSmoke = (id = 'gs') => {
   const layer = (cls, freq, seed) => `<svg class="${cls}" viewBox="0 0 600 300" preserveAspectRatio="none"><defs><filter id="${id}${cls}" x="0" y="0" width="100%" height="100%">
-    <feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="4" seed="${seed}" result="n"/>
-    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.96  0 0 0 0 0.79  0 0 0 0 0.38  0 0 0 5.2 -2.75"/>
-    <feGaussianBlur stdDeviation="0.6"/></filter></defs><rect width="600" height="300" filter="url(#${id}${cls})"/></svg>`;
-  return `<span class="smoke" aria-hidden="true"><span class="sm-side sm-l">${layer('l1', '0.012 0.02', 8)}${layer('l2', '0.018 0.013', 21)}</span><span class="sm-side sm-r">${layer('r1', '0.014 0.019', 5)}${layer('r2', '0.02 0.012', 33)}</span></span>`;
+    <feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="2" seed="${seed}" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.93  0 0 0 0 0.76  0 0 0 0 0.36  0 0 0 2.2 -1.0"/>
+    <feGaussianBlur stdDeviation="9"/></filter></defs><rect width="600" height="300" filter="url(#${id}${cls})"/></svg>`;
+  return `<span class="smoke" aria-hidden="true"><span class="sm-side sm-l">${layer('l1', '0.006 0.01', 8)}${layer('l2', '0.009 0.007', 21)}</span><span class="sm-side sm-r">${layer('r1', '0.007 0.009', 5)}${layer('r2', '0.01 0.006', 33)}</span></span>`;
 };
 
 /** Lichtstrich, der ab und zu um eine Zahl läuft (gerundetes Rechteck, Strich gleitet entlang) */

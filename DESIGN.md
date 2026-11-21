@@ -62,8 +62,8 @@ Nur ein Schnitt je Schrift, `font-synthesis: none`. Ziffern kommen immer aus Lea
 - Startseite: Average rattert beim App-Start einmal wie ein Spielautomat von 0 hoch und rastet mit Blitz ein (`rollAvg` in
   `main.js`); am Namen laufen ab und zu goldene Lichtspuren die Buchstabenkanten entlang (SVG-Text-Kontur). Hero: Sterne
   funkeln, Strahlen drehen sich langsam, Punktkreis blinkt, 501 glimmt mit Glitzer, Spielen-Knopf atmet.
-- Overall-Average (Statistik/Freund): goldener Rauch im Hintergrund (`goldSmoke()`, feTurbulence, scharfe Schwaden,
-  links und rechts der Zahl eigene Schichten, die in verschiedene Richtungen wehen), kräftiger Goldschein direkt hinter der Zahl, ab und zu ein Lichtstrich rund um die Zahl (`numRing()`).
+- Overall-Average (Statistik/Freund): goldener Rauch im Hintergrund (`goldSmoke()`, feTurbulence, ganz leicht und stark
+  verschwommen, weich auslaufend; links und rechts der Zahl eigene Schichten, die sacht in verschiedene Richtungen treiben), kräftiger Goldschein direkt hinter der Zahl, ab und zu ein Lichtstrich rund um die Zahl (`numRing()`).
 - Partyspiel-Logos stehen meist still und hüpfen/kippen ab und zu leicht (jedes zu seiner Zeit), der Stern daneben funkelt.
 - Reiter „Spielen“: gezeichneter Dartpfeil (Spitze, Barrel mit Rillen, Schaft, Flights), fliegt beim Aktivieren ein und wippt ab und zu.
 - `fuse()`: Lichtlinie auf Goldrahmen (Hero, Rekorde, Overall-Average, Sieger).
