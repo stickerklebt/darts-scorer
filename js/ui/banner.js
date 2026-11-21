@@ -6,29 +6,38 @@ import { esc, fmt } from './common.js';
 import { COLORS, starPath, sparkles } from './svg.js';
 import { TROPHIES, CATEGORIES, TIER_NAMES, trophyById } from '../trophies.js';
 
-/** Farben je Stufe: [Schild, Rand, Pokal] */
-const TONES = {
-  bronze: ['#7a4420', '#d08a52', '#e0a36c'],
-  silver: ['#5c646d', '#e2e6ea', '#cfd5db'],
-  gold: ['#9c6f14', '#ffd86b', '#ffd23f'],
-  royal: ['#8e1022', '#ecc96a', '#ffd23f'],
-  legendary: ['#1a1408', '#fff4c4', '#ffe27a'],
-  none: ['#2a251e', '#4d4537', '#5b5140'],
+/** Metall je Stufe: Verlauf von links nach rechts (dunkel → hell → dunkel), dazu Sockel und Schild */
+const METAL = {
+  bronze: { m: ['#4e2810', '#9a5a2a', '#f0b98a', '#c47c42', '#5e3214'], base: '#1b1612', plate: '#c47c42' },
+  silver: { m: ['#4b4f54', '#a3a9b0', '#ffffff', '#c6cbd1', '#5c6166'], base: '#1b1a19', plate: '#c6cbd1' },
+  gold: { m: ['#6e4a0c', '#c9971f', '#fff0b0', '#e7b73c', '#7f560f'], base: '#151310', plate: '#e7b73c' },
+  royal: { m: ['#6e4a0c', '#c9971f', '#fff0b0', '#e7b73c', '#7f560f'], base: '#6e0a1a', plate: '#e7b73c' },
+  legendary: { m: ['#8a5c08', '#e8b52a', '#ffffff', '#ffd24a', '#9a6a0c'], base: '#0d0b08', plate: '#ffd24a' },
+  none: { m: ['#24211d', '#3d3831', '#5f584d', '#433d35', '#24211d'], base: '#191714', plate: '#3d3831' },
 };
 
-/** Ein Abzeichen: gleiches Pokal-Wappen für alle, Farbe nach Stufe (tier null = ausgegraut) */
+/** Ein Pokal (für alle Trophäen gleich): Schale mit zwei Henkeln, Knauf, Fuß, Marmorsockel mit Schild.
+    Farbe nach Stufe, nicht erreicht = dunkelgrau. */
 export function trophyBadge(tier, cls = '') {
-  const [shield, rim, cup] = TONES[tier] || TONES.none, K = COLORS.ink;
-  const star = tier ? (tier === 'royal' || tier === 'legendary' ? COLORS.goldL : COLORS.red) : '#3a342b';
-  return `<svg class="tb ${tier ? `t-${tier}` : 't-none'} ${cls}" viewBox="0 0 60 66" aria-hidden="true">
-    <path d="M30 3 L55 12 V34 C55 50 43 59 30 63 C17 59 5 50 5 34 V12 Z" fill="${K}"/>
-    <path d="M30 7 L51 14.5 V34 C51 47.5 41 55 30 58.8 C19 55 9 47.5 9 34 V14.5 Z" fill="${shield}" stroke="${rim}" stroke-width="2.6"/>
-    <path d="M30 7 L51 14.5 V22 L9 22 V14.5 Z" fill="#fff" fill-opacity="${tier ? 0.14 : 0.04}"/>
-    <path d="M20 19 H40 V27 C40 35 36 39 30 40 C24 39 20 35 20 27 Z" fill="${cup}" stroke="${K}" stroke-width="1.6"/>
-    <path d="M20 21 H15 C14 28 17 31 21 31 M40 21 H45 C46 28 43 31 39 31" fill="none" stroke="${K}" stroke-width="1.6"/>
-    <path d="M27 40 H33 V44 H27 Z M22 44 H38 V48 H22 Z" fill="${rim}" stroke="${K}" stroke-width="1.4"/>
-    <path d="${starPath(30, 28, 4.2, 1.8)}" fill="${star}"/>
-    ${tier === 'legendary' ? `<path class="tb-shine" d="M30 7 L51 14.5 V34 C51 47.5 41 55 30 58.8 C19 55 9 47.5 9 34 V14.5 Z" fill="none" stroke="#fff" stroke-width="2.6" pathLength="100" stroke-dasharray="14 86"/>` : ''}
+  const k = tier || 'none', c = METAL[k], id = `tm-${k}`;
+  const stops = c.m.map((col, i) => `<stop offset="${[0, 0.3, 0.48, 0.66, 1][i]}" stop-color="${col}"/>`).join('');
+  const bowl = 'M15 9 H45 C45 25 39.5 34.5 30 37.5 C20.5 34.5 15 25 15 9 Z';
+  return `<svg class="tb t-${k} ${cls}" viewBox="0 0 60 72" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" x2="1" y1="0" y2="0">${stops}</linearGradient>
+      <linearGradient id="${id}v" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient></defs>
+    <path d="M16 12 C5 11 4 26 18 29 M44 12 C55 11 56 26 42 29" fill="none" stroke="url(#${id})" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="${bowl}" fill="url(#${id})"/><path d="${bowl}" fill="url(#${id}v)"/>
+    <ellipse cx="30" cy="9" rx="15" ry="2.6" fill="${c.m[0]}"/><ellipse cx="30" cy="8.6" rx="13.4" ry="1.6" fill="${c.m[1]}" opacity=".7"/>
+    <path d="M20 12 C20 22 22.5 29 26 33" fill="none" stroke="#fff" stroke-opacity="${tier ? 0.75 : 0.12}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M27.5 37 H32.5 L32 41 H28 Z" fill="url(#${id})"/>
+    <ellipse cx="30" cy="42.5" rx="4.4" ry="2.4" fill="url(#${id})"/>
+    <path d="M28.6 44.5 H31.4 L32 50 H28 Z" fill="url(#${id})"/>
+    <path d="M23 54 C23 51 26 50 30 50 C34 50 37 51 37 54 Z" fill="url(#${id})"/>
+    <rect x="17" y="54" width="26" height="16" rx="1.5" fill="${c.base}"/>
+    <rect x="17" y="54" width="26" height="2" fill="#fff" fill-opacity=".1"/>
+    <rect x="21.5" y="58.5" width="17" height="7.5" rx="1" fill="${c.plate}" opacity="${tier ? 1 : 0.5}"/>
+    <path d="M24 61.2 H36 M25.5 63.6 H34.5" stroke="#000" stroke-opacity=".45" stroke-width=".8"/>
+    ${k === 'legendary' ? `<path class="tb-shine" d="${bowl}" fill="none" stroke="#fff" stroke-width="1.6" pathLength="100" stroke-dasharray="16 84"/>` : ''}
   </svg>`;
 }
 

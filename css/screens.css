@@ -1475,7 +1475,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
 @media (min-width: 560px) { .pb-in { min-height: 108px; gap: 22px; } .pb-slot { width: 70px; height: 76px; } }
 
 /* Stufen: Legendär glänzt (Lichtstrich läuft um das Schild), ausgegraut = noch nicht erreicht */
-.tb.t-none { opacity: .55; }
+.tb.t-none { opacity: .8; }
 .tb.t-legendary { filter: drop-shadow(0 0 8px rgba(255,226,122,.7)) drop-shadow(0 3px 0 rgba(0,0,0,.6)) !important; }
 .tb-shine { animation: tb-shine 3.2s linear infinite; }
 @keyframes tb-shine { to { stroke-dashoffset: -100; } }
@@ -1494,7 +1494,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .tp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
 .tp-c { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto auto; column-gap: 8px; align-items: center; text-align: left;
   padding: 8px; border-radius: 8px; background: rgba(243,233,210,.04); border: 1px solid rgba(212,166,58,.2); font: inherit; color: inherit; }
-.tp-c .tb { grid-row: 1 / span 4; width: 40px; height: 44px; }
+.tp-c .tb { grid-row: 1 / span 4; width: 40px; height: 48px; }
 .tp-c b { font-family: var(--f-num); font-weight: 400; font-size: 17px; line-height: 1.1; color: var(--cream); letter-spacing: .03em; }
 .tp-c small { font-family: var(--f-num); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
 .tp-c em { font-style: normal; font-size: 12.5px; line-height: 1.25; color: var(--muted); }
