@@ -134,7 +134,7 @@ function picker(slot, state, chosen) {
 /**
  * Banner. badges = [{ id, tier } | null] × 3. Mit state (eigene Trophäen) sind die Abzeichen antippbar und öffnen die Auswahl.
  */
-export function playerBanner({ name, avg = null, badges = [null, null, null], state = null }) {
+export function playerBanner({ name, avg = null, badges = [null, null, null], state = null, variant = '' }) {
   const edit = !!state, open = edit && Number.isInteger(ui.badgePick) ? ui.badgePick : null;
   const slots = badges.map((b, i) => {
     const t = b && trophyById(b.id);
@@ -144,7 +144,7 @@ export function playerBanner({ name, avg = null, badges = [null, null, null], st
       ? `<button class="pb-slot ${open === i ? 'on' : ''}" style="--k:${i}" data-act="badgeSlot" data-v="${i}" title="${esc(title)}" aria-label="${esc(title)} – ändern">${inner}</button>`
       : `<span class="pb-slot" style="--k:${i}" title="${esc(title)}">${inner}</span>`;
   }).join('');
-  return `<section class="pbanner" aria-label="Banner von ${esc(name)}">
+  return `<section class="pbanner ${variant ? `pb-${variant}` : ''}" aria-label="Banner von ${esc(name)}">
     <div class="pb-band">
       <div class="pb-ribbon"><div class="pb-in">
         <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(16, 3)}</span>

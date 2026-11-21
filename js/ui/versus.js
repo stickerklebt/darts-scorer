@@ -1,18 +1,18 @@
 /* Spiele mit Freunden: VS-Intro mit den Bannern beider Spieler und der Warte-Bildschirm, bis der Freund die Einladung annimmt. */
-import { nameOf } from '../store.js';
+import { S, nameOf } from '../store.js';
 import { esc, matchSummary } from './common.js';
 import { playerBanner } from './banner.js';
 import { icon } from './svg.js';
 
-const bannerOf = (m, pid) => {
+const bannerOf = (m, pid, mine) => {
   const b = m.banners?.[pid];
-  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null] });
+  // eigenes Banner rot, Gegner weiß
+  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white' });
 };
 
 /** Vollbild: Banner oben, großes VS, Banner unten (bei mehr Spielern alle untereinander). Antippen schließt. */
 export function vsView(m) {
-  const ids = m.sides.map((side) => side[0]);
-  const parts = ids.map((id, i) => `<div class="vs-b" style="--i:${i}">${bannerOf(m, id)}</div>`);
+  const parts = m.sides.map((side, i) => `<div class="vs-b" style="--i:${i}">${bannerOf(m, side[0], side.includes(S.mainId))}</div>`);
   return `<div class="vs-intro" data-act="vsClose">
     <div class="vs-in">${parts.join('<div class="vs-mid"><span>VS</span></div>')}</div>
     <p class="vs-tap">Antippen zum Starten</p>

@@ -175,7 +175,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Gegen Freunde spielen** (`js/online.js`, `ui/versus.js`, Server `routes/games.js`): Setup › Plus › Freunde › Freund wählen ›
   „Spielt auf meinem Gerät mit“ oder „Spielt auf seinem Gerät mit“. Aufstellungs-Eintrag `{ id: pid des Freundes (sein mainId),
   name, friend: { uid, mode: 'local' | 'remote' }, banner }`; Match bekommt `names`, `friends`, `banners` (Namen ohne eigenes Profil
-  über `nameOf` → `m.names`). Spiele mit Freunden starten mit dem VS-Intro (beide Banner).
+  über `nameOf` → `m.names`). Jedes Spiel mit Gegner (Freund, Gast, Bot) startet mit dem VS-Intro: eigenes Banner rot,
+  Gegner-Banner weiß (`variant: 'white'`); Bots mit ihrem Ø, Gäste ohne Ø (`addBanners` in `main.js`).
   · **Online** (`remote`): nur du gegen einen Freund, Anwurf ausgelost, kein Ausbullen. Einladung (`POST /api/games`, gilt 10 min)
   → beim Freund Fenster + Liste im Backstage → Annehmen. Laufendes Match steht in `games` (rev): wer dran ist, gibt ein und schickt
   den Stand (`PUT`, falscher rev → 409 mit aktuellem Stand), das andere Gerät fragt alle 1,2 s (`GET …?rev=`, nicht protokolliert).

@@ -2,6 +2,7 @@
 import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid } from './store.js';
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
+import { overview } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
@@ -377,6 +378,7 @@ function startGame() {
     m.friends = fr.map((e) => ({ pid: e.id, uid: e.friend.uid, name: e.name, mode: e.friend.mode }));
     m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null, badges: e.banner?.badges || [null, null, null] }])) };
   }
+  addBanners(S.current);
   if (remote.length) {
     const m = S.current, f = remote[0];
     m.online = { gid: m.id, role: 'host', rev: 0, status: 'invited', other: f.name };
@@ -385,7 +387,7 @@ function startGame() {
     invite(m, { uid: f.friend.uid, name: f.name }).then(render).catch((e) => { if (S.current === m) S.current = null; S.screen = 'setup'; toast(errMsg(e)); render(); });
     return;
   }
-  if (fr.length) showVs(S.current);
+  showVs(S.current);
   warmCalls();
   S.screen = 'game';
   ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
@@ -393,10 +395,25 @@ function startGame() {
   render();
 }
 
-/** VS-Intro mit den Bannern beider Spieler (Spiele mit Freunden), tippen oder nach 4 s weiter */
+/** Banner aller Seiten fürs VS-Intro (je Seite der Erste): ich mit Ø und Pokalen, Freunde wie vom Server, Bots mit ihrem Ø */
+function addBanners(m) {
+  if (m.sides.length < 2) return;
+  const b = { ...(m.banners || {}) };
+  for (const side of m.sides) {
+    const id = side[0];
+    if (b[id]) continue;
+    b[id] = id === S.mainId ? myBannerData()
+      : isBot(id) ? { name: bot(id).name, avg: bot(id).avg, badges: [null, null, null] }
+      : profile(id) ? { name: nameOf(id), avg: overview(S.matches, id).avg, badges: [null, null, null] }
+      : { name: nameOf(id), avg: null, badges: [null, null, null] };
+  }
+  m.banners = b;
+}
+
+/** VS-Intro mit den Bannern aller Seiten (sobald es einen Gegner gibt), tippen oder nach 4 s weiter */
 let vsTimer = null;
 function showVs(m) {
-  if (!m?.banners) return;
+  if (!m?.banners || m.sides.length < 2) return;
   ui.vs = m.id; clearTimeout(vsTimer);
   vsTimer = setTimeout(() => { if (ui.vs === m.id) { ui.vs = null; render(); } }, 4200);
 }
@@ -838,7 +855,8 @@ const actions = {
     if (m.online) { toast('Für eine Revanche lade deinen Freund neu ein'); return render(); }
     S.current = newMatch(m.game, m.sides, m.opts, m.first + 1, !!m.bull);
     if (m.names) S.current.names = m.names;
-    if (m.friends) { S.current.friends = m.friends; S.current.banners = m.banners; }
+    if (m.friends) S.current.friends = m.friends;
+    if (m.banners) { S.current.banners = m.banners; showVs(S.current); }
     S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
     requestWakeLock(); render();
   },
