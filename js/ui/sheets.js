@@ -115,13 +115,12 @@ export function sheetView() {
   return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' ? 'wide' : ''}">${inner}</div></div>`;
 }
 
-/** Spieler hinzufügen: drei Wege – neuer Spieler, bekannter Spieler (mit Suche), Bot */
+/** Spieler hinzufügen: drei Wege – Gast (nur dieses Spiel), Bot, Freund */
 function addPlayerSheet() {
-  const tab = ui.addTab || 'new';
+  const tab = ['guest', 'bot', 'friend'].includes(ui.addTab) ? ui.addTab : 'guest';
   const inLineup = new Set(S.lineup.map((e) => e.id));
-  const saved = S.profiles.filter((p) => !inLineup.has(p.id)).sort((a, b) => a.name.localeCompare(b.name, 'de'));
   const bots = BOTS.filter((b) => !inLineup.has(b.id));
-  const tabs = [['new', 'Neuer Spieler'], ['known', 'Bekannt'], ['bot', 'Bot'], ['friend', 'Freunde']];
+  const tabs = [['guest', 'Gast'], ['bot', 'Bot'], ['friend', 'Freunde']];
   let body;
   if (tab === 'friend') {
     const fr = (ui.friends?.data?.friends || []).filter((f) => f.pid);
@@ -138,17 +137,11 @@ function addPlayerSheet() {
     } else body = fr.length ? `<div class="slist">${fr.map((f) => `<button class="srow" data-act="addFriendPick" data-v="${esc(f.id)}" ${inLineup.has(f.pid) ? 'disabled' : ''}>
         <span class="pc sm" style="${pcVars(3)}">${esc(f.username.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(f.username)}<small>${inLineup.has(f.pid) ? 'spielt schon mit' : f.avg ? `Ø 501 ${String(Math.round(f.avg * 10) / 10).replace('.', ',')}` : 'Freund'}</small></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie im Backstage hinzu.' : 'Lade Freunde …'}</p>`;
-  } else if (tab === 'new') {
-    body = `<p class="ap-hint">Wie heißt der neue Mitspieler? Jeder Name gibt es nur einmal.</p>
+  } else if (tab === 'guest') {
+    body = `<p class="ap-hint">Wie heißt dein Gast? Er spielt nur dieses Spiel mit – nichts wird für ihn gespeichert, beim nächsten Spiel gibst du den Namen neu ein. Wer seine Statistik behalten will, legt ein Konto an und wird dein Freund.</p>
       <input id="newPlayer" class="field" placeholder="Name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
       <p id="nameHint" class="name-hint" aria-live="polite"></p>
       <button class="btn red big" id="addNewBtn" data-act="addNew" disabled>Hinzufügen</button>`;
-  } else if (tab === 'known') {
-    body = saved.length ? `${saved.length > 5 ? `<input id="pSearch" class="field search" placeholder="Suchen …" autocomplete="off" autocorrect="off" spellcheck="false">` : ''}
-      <div class="slist plist-pick">${saved.map((p) => `<button class="srow" data-act="addProfile" data-v="${p.id}" data-name="${esc(p.name.toLowerCase())}">
-        <span class="pc sm" style="${pcVars(S.profiles.indexOf(p))}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}</span>${icon('plus', 2.6, 18)}</button>`).join('')}</div>
-      <p class="foot nores" hidden>Kein Spieler gefunden.</p>`
-      : '<p class="ap-hint">Alle gespeicherten Spieler sind schon dabei – oder es gibt noch keine. Lege einfach einen neuen an.</p>';
   } else {
     body = bots.length ? `<div class="slist">${bots.map((b) => `<button class="srow botrow" data-act="addProfile" data-v="${b.id}">${avatar(b.id, 44)}
         <span class="lbl">${esc(b.name)}<small>Bot · Average ${b.avg}</small></span>${icon('plus', 2.6, 18)}</button>`).join('')}</div>`

@@ -364,14 +364,16 @@ function startGame() {
   const sides = buildSides();
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
   if (!S.lineup.some((e) => !isBot(e.id))) { toast('Mindestens ein Mensch muss mitspielen'); return render(); }
-  const fr = S.lineup.filter((e) => e.friend), remote = fr.filter((e) => e.friend.mode === 'remote');
+  const fr = S.lineup.filter((e) => e.friend), remote = fr.filter((e) => e.friend.mode === 'remote'), guests = S.lineup.filter((e) => e.guest);
   if (remote.length && (remote.length > 1 || S.lineup.length !== 2 || S.teamMode || !S.lineup.some((e) => e.id === S.mainId))) {
     toast('Online spielst du allein gegen einen Freund – nur ihr zwei in der Liste'); return render();
   }
   S.current = newMatch(S.game, sides, S.opts[S.game], remote.length ? Math.floor(Math.random() * 2) : 0, S.anwurf === 'bull' && !remote.length);
+  if (guests.length) S.current.names = { ...(S.current.names || {}), ...Object.fromEntries(guests.map((e) => [e.id, e.name])) };
+  S.lineup = S.lineup.filter((e) => !e.guest); // Gäste gibt es nur für dieses Spiel – beim nächsten Mal neu eingeben
   if (fr.length) {
     const m = S.current, me = myBannerData();
-    m.names = { [S.mainId]: nameOf(S.mainId), ...Object.fromEntries(fr.map((e) => [e.id, e.name])) };
+    m.names = { ...(m.names || {}), [S.mainId]: nameOf(S.mainId), ...Object.fromEntries(fr.map((e) => [e.id, e.name])) };
     m.friends = fr.map((e) => ({ pid: e.id, uid: e.friend.uid, name: e.name, mode: e.friend.mode }));
     m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null, badges: e.banner?.badges || [null, null, null] }])) };
   }
@@ -410,11 +412,13 @@ function addToLineup(id) {
 }
 
 /* ---------------- Spieler hinzufügen: Live-Prüfung des Namens, Suche ---------------- */
-function focusSheet() { if (ui.addTab === 'new') setTimeout(() => $('#newPlayer')?.focus(), 60); }
+function focusSheet() { if (ui.addTab === 'guest') setTimeout(() => $('#newPlayer')?.focus(), 60); }
+/** Gast-Name: nicht wie ein Bot, ein Profil oder jemand, der schon mitspielt (Groß/Klein egal) */
+const guestTaken = (n) => { const k = n.trim().toLowerCase(); return !!k && (nameTaken(n) || S.lineup.some((e) => nameOf(e.id).toLowerCase() === k)); };
 function checkName() {
   const inp = $('#newPlayer'), hint = $('#nameHint'), btn = $('#addNewBtn');
   if (!inp) return;
-  const n = inp.value.trim(), taken = nameTaken(n);
+  const n = inp.value.trim(), taken = guestTaken(n);
   if (hint) hint.textContent = taken ? `„${n}“ gibt es schon – bitte einen anderen Namen wählen.` : '';
   inp.classList.toggle('bad', taken);
   if (btn) btn.disabled = !n || taken;
@@ -718,7 +722,7 @@ const actions = {
     e.team = letters[(letters.indexOf(e.team) + 1) % letters.length];
     render();
   },
-  addPlayer() { if (!ui.friends?.data) loadFriends(); ui.addFriend = null; ui.modal = { type: 'addPlayer' }; ui.addTab = ui.addTab || (S.profiles.some((p) => !S.lineup.some((e) => e.id === p.id)) ? 'known' : 'new'); render(); focusSheet(); },
+  addPlayer() { if (!ui.friends?.data) loadFriends(); ui.addFriend = null; ui.modal = { type: 'addPlayer' }; if (!['guest', 'bot', 'friend'].includes(ui.addTab)) ui.addTab = 'guest'; render(); focusSheet(); },
   addTab(el) { ui.addTab = el.dataset.v; ui.addFriend = null; render(); focusSheet(); if (el.dataset.v === 'friend') loadFriends(); },
   addFriendPick(el) { ui.addFriend = el.dataset.v; render(); },
   addFriendBack() { ui.addFriend = null; render(); },
@@ -757,13 +761,17 @@ const actions = {
   },
   vsClose() { ui.vs = null; render(); },
   addNew() {
+    // Gast: kein Profil, keine Statistik – nur für dieses Spiel (danach wieder aus der Aufstellung)
     const n = field('newPlayer');
     if (!n) return $('#newPlayer')?.focus();
-    if (nameTaken(n)) { checkName(); return $('#newPlayer')?.focus(); }
-    const p = { id: uid('p'), name: n, createdAt: Date.now() };
-    S.profiles.push(p);
+    if (guestTaken(n)) { checkName(); return $('#newPlayer')?.focus(); }
+    if (S.lineup.length >= MAX_PLAYERS) { toast(`Maximal ${MAX_PLAYERS} Spieler`); return render(); }
+    if (S.lineup.some((e) => e.friend?.mode === 'remote')) { toast('Online spielst du nur gegen deinen Freund'); return render(); }
+    const teams = S.lineup.map((e) => e.team);
+    const team = teams.filter((t) => t === 'A').length <= teams.filter((t) => t === 'B').length ? 'A' : 'B';
+    S.lineup.push({ id: uid('g'), team, name: n, guest: true });
     ui.modal = null;
-    addToLineup(p.id);
+    render();
   },
   addProfile(el) { if (ui.modal?.type === 'addPlayer') ui.modal = null; addToLineup(el.dataset.v); },
   pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); render(); },
@@ -829,7 +837,8 @@ const actions = {
     const m = S.current;
     if (m.online) { toast('Für eine Revanche lade deinen Freund neu ein'); return render(); }
     S.current = newMatch(m.game, m.sides, m.opts, m.first + 1, !!m.bull);
-    if (m.friends) { S.current.names = m.names; S.current.friends = m.friends; S.current.banners = m.banners; }
+    if (m.names) S.current.names = m.names;
+    if (m.friends) { S.current.friends = m.friends; S.current.banners = m.banners; }
     S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
     requestWakeLock(); render();
   },
