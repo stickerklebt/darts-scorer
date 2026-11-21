@@ -7,7 +7,7 @@ import { icon } from './svg.js';
 const bannerOf = (m, pid, mine) => {
   const b = m.banners?.[pid];
   // eigenes Banner rot, Gegner weiß
-  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white' });
+  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white', pic: b?.bot || null });
 };
 
 /** Vollbild: Banner oben, großes VS, Banner unten (bei mehr Spielern alle untereinander). Antippen schließt. */

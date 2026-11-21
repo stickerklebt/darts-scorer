@@ -403,7 +403,7 @@ function addBanners(m) {
     const id = side[0];
     if (b[id]) continue;
     b[id] = id === S.mainId ? myBannerData()
-      : isBot(id) ? { name: bot(id).name, avg: bot(id).avg, badges: [null, null, null] }
+      : isBot(id) ? { name: bot(id).name, avg: bot(id).avg, bot: id, badges: (bot(id).badges || []).map(([t, tier]) => ({ id: t, tier })) }
       : profile(id) ? { name: nameOf(id), avg: overview(S.matches, id).avg, badges: [null, null, null] }
       : { name: nameOf(id), avg: null, badges: [null, null, null] };
   }
