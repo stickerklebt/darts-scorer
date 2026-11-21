@@ -1614,7 +1614,8 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .pb-white .pb-name b { -webkit-text-stroke-color: #7a0a1c; animation: pb-shine 2.6s linear infinite;
   background: linear-gradient(105deg, rgba(255,200,60,0) 42%, rgba(255,196,40,.95) 49%, rgba(255,200,60,0) 56%) 0 0 / 260% 100% no-repeat,
     linear-gradient(105deg, rgba(255,215,90,0) 44%, rgba(255,215,90,.7) 50%, rgba(255,215,90,0) 56%) 0 0 / 260% 100% no-repeat,
-    linear-gradient(180deg, #c41d33 0%, #8e1022 45%, #5e0816 60%, #a8142a 100%); }
+    linear-gradient(180deg, #c41d33 0%, #8e1022 45%, #5e0816 60%, #a8142a 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; } /* nach dem background-Kürzel nötig, sonst Kasten statt Buchstaben */
 .pb-white .pb-name b::before { color: #d9c9a3; -webkit-text-stroke-color: #d9c9a3; text-shadow: 2px 3px 0 rgba(110,85,40,.45); }
 .pb-white .pb-avg b { color: #1a1410; text-shadow: 3px 2px 0 var(--red), 5px 5px 0 var(--gold); }
 @keyframes pb-numglow-w { 50% { text-shadow: 3px 2px 0 var(--red), 5px 5px 0 var(--gold), 0 0 18px rgba(212,166,58,.6); } }

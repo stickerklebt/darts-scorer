@@ -2,10 +2,12 @@
 import { S, nameOf } from '../store.js';
 import { esc, matchSummary } from './common.js';
 import { playerBanner } from './banner.js';
+import { myBannerData } from './friends.js';
 import { icon } from './svg.js';
 
 const bannerOf = (m, pid, mine) => {
-  const b = m.banners?.[pid];
+  // eigenes Banner immer mit den eigenen, aktuellen Daten (Ø, gewählte Pokale) – auch auf dem Gerät des Eingeladenen
+  const b = pid === S.mainId ? myBannerData() : m.banners?.[pid];
   // eigenes Banner rot, Gegner weiß
   return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white', pic: b?.bot || null });
 };
