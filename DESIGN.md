@@ -102,3 +102,9 @@ unterschiedlich geneigt. Auf dem Band links der Name (Cinzel, Gold mit
 Glanz und Leuchten, Glitzer), daneben der Ø wie die große 501 (Creme, Versatz Rot/Schwarz/Gold). Schmuck im Queen-Stil: links ein Rosenstrauß (zwei Rosen, Knospen, gezackte Blätter,
 Dornenstiele, Gold-Schnörkel, Sterne), an der Kerbe ein kleiner Strauß.
 Darunter drei Pokale an Medaillenbändern (Rot mit Goldstreifen, Goldring), die leicht schwingen (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
+
+## Spielmodi (Kacheln und Abzeichen)
+Nur Gold, Schwarz und Orange (X01 bleibt rot). Erkennbar durch Kombination + Muster: Highscore Gold mit Rasterpunkten,
+Abzeichen schwarz/gold · Shanghai Schwarz mit goldenen Schrägstreifen, Abzeichen gold/schwarz · Halbieren Orange mit Schachbrett,
+Abzeichen schwarz/orange · Cricket Schwarz mit orangem Gitter, Abzeichen orange/schwarz · Around the Clock Gold mit Ringen,
+Abzeichen bronze/gold (`MODE_STYLE` in `svg.js`).

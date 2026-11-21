@@ -193,9 +193,21 @@ const SYMBOLS = {
   cricket: '<path d="M5 4l14 16M19 4L5 20" stroke="currentColor" stroke-width="2.6" fill="none"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
   atc: '<path d="M20 12a8 8 0 11-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19.5 2.5v4.5H15" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
 };
-export const MODE_COLORS = { x01: COLORS.red, highscore: COLORS.yellow, shanghai: COLORS.green, halveit: COLORS.blue, atc: COLORS.violet, cricket: COLORS.cream };
-export const badge = (game, size = 44) =>
-  `<span class="badge-mode" style="--badge-bg:${MODE_COLORS[game]};width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true">${SYMBOLS[game]}</svg></span>`;
+/* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
+   [Hintergrund des Abzeichens, Farbe des Symbols, Rand] – die Kachel auf „Spielen“ hat dazu ein eigenes Muster (screens.css). */
+const MODE_STYLE = {
+  x01: [COLORS.red, COLORS.ink, COLORS.ink],
+  highscore: ['#0b0a08', '#f0c24a', '#f0c24a'],
+  shanghai: ['#f0c24a', '#0b0a08', '#0b0a08'],
+  halveit: ['#0b0a08', '#f07a24', '#f07a24'],
+  cricket: ['#f07a24', '#0b0a08', '#0b0a08'],
+  atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
+};
+export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
+export const badge = (game, size = 44) => {
+  const [bg, ink, line] = MODE_STYLE[game] || MODE_STYLE.x01;
+  return `<span class="badge-mode" style="--badge-bg:${bg};--badge-ink:${ink};--badge-line:${line};width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true">${SYMBOLS[game]}</svg></span>`;
+};
 
 /* ---------- Comic: Dartpfeil als Raumschiff ---------- */
 export const rocketDart = () => `<svg class="rocket" viewBox="-110 -40 220 80" aria-hidden="true">

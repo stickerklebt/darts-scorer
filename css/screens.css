@@ -549,9 +549,9 @@
 .mode-art::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(11,10,8,.45); }
 .mode-art::after { content: "★"; position: absolute; right: 9px; top: 6px; font-size: 13px; color: var(--ink); opacity: .6; }
 .mode-name { padding: 10px 12px; font-family: var(--f-display); font-weight: 900; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; line-height: 1.15; }
-.badge-mode { display: inline-flex; align-items: center; justify-content: center; background: var(--badge-bg); color: var(--ink); position: relative;
-  border: 2px solid var(--ink); border-radius: 3px; box-shadow: 3px 3px 0 var(--ink); flex: none; }
-.badge-mode::before { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(11,10,8,.4); }
+.badge-mode { display: inline-flex; align-items: center; justify-content: center; background: var(--badge-bg); color: var(--badge-ink, var(--ink)); position: relative;
+  border: 2px solid var(--badge-line, var(--ink)); border-radius: 3px; box-shadow: 3px 3px 0 var(--ink); flex: none; }
+.badge-mode::before { content: ""; position: absolute; inset: 3px; border: 1px solid var(--badge-line, var(--ink)); opacity: .45; }
 .badge-mode svg { width: 62%; height: 62%; position: relative; }
 
 /* Setup: Plakat-Kopf und Spielregeln im Kupferstich */
@@ -1649,3 +1649,18 @@ button.pb-slot:active .tb { transform: scale(.94); }
   animation: bp-lbl .35s ease-out both; }
 @keyframes bp-lbl { from { opacity: 0; transform: translateY(6px); } }
 .game.botturn .botpad { opacity: 1 !important; }
+
+/* ================= Partyspiel-Kacheln: Gold · Schwarz · Orange, jede mit eigenem Muster ================= */
+.mode[data-v="highscore"] .mode-art { background-color: #d4a63a; background-image: var(--tex-halftone); }
+.mode[data-v="shanghai"] .mode-art { background-color: #14100b;
+  background-image: repeating-linear-gradient(135deg, rgba(231,183,60,.38) 0 3px, rgba(0,0,0,0) 3px 12px); }
+.mode[data-v="halveit"] .mode-art { background-color: #e2671c;
+  background-image: repeating-conic-gradient(rgba(0,0,0,.2) 0 25%, rgba(0,0,0,0) 0 50%); background-size: 16px 16px; }
+.mode[data-v="cricket"] .mode-art { background-color: #1c140a;
+  background-image: linear-gradient(rgba(240,122,36,.35) 1px, rgba(0,0,0,0) 1px), linear-gradient(90deg, rgba(240,122,36,.35) 1px, rgba(0,0,0,0) 1px);
+  background-size: 18px 18px; }
+.mode[data-v="atc"] .mode-art { background-color: #f0c24a;
+  background-image: repeating-radial-gradient(circle at 50% 50%, rgba(11,10,8,.28) 0 2px, rgba(0,0,0,0) 2px 11px); }
+/* Innenrahmen und Stern auf dunklen Kacheln in Gold */
+.mode[data-v="shanghai"] .mode-art::before, .mode[data-v="cricket"] .mode-art::before { border-color: rgba(231,183,60,.55); }
+.mode[data-v="shanghai"] .mode-art::after, .mode[data-v="cricket"] .mode-art::after { color: #f0c24a; opacity: .85; }
