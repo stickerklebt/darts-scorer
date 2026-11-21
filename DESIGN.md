@@ -104,7 +104,6 @@ Dornenstiele, Gold-Schnörkel, Sterne), an der Kerbe ein kleiner Strauß.
 Darunter drei Pokale an Medaillenbändern (Rot mit Goldstreifen, Goldring), die leicht schwingen (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
 
 ## Spielmodi (Kacheln und Abzeichen)
-Nur Gold, Schwarz und Orange (X01 bleibt rot). Erkennbar durch Kombination + Muster: Highscore Gold mit Rasterpunkten,
-Abzeichen schwarz/gold · Shanghai Schwarz mit goldenen Schrägstreifen, Abzeichen gold/schwarz · Halbieren Orange mit Schachbrett,
-Abzeichen schwarz/orange · Cricket Schwarz mit orangem Gitter, Abzeichen orange/schwarz · Around the Clock Gold mit Ringen,
-Abzeichen bronze/gold (`MODE_STYLE` in `svg.js`).
+Kacheln alle schwarz (einheitlich), Innenrahmen und Stern gold; erkennbar am Muster: Highscore goldene Rasterpunkte ·
+Shanghai goldene Schrägstreifen · Halbieren oranges Schachbrett · Cricket oranges Gitter · Around the Clock goldene Ringe.
+Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYLE` in `svg.js`); X01 bleibt rot.

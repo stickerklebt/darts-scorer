@@ -1650,17 +1650,13 @@ button.pb-slot:active .tb { transform: scale(.94); }
 @keyframes bp-lbl { from { opacity: 0; transform: translateY(6px); } }
 .game.botturn .botpad { opacity: 1 !important; }
 
-/* ================= Partyspiel-Kacheln: Gold · Schwarz · Orange, jede mit eigenem Muster ================= */
-.mode[data-v="highscore"] .mode-art { background-color: #d4a63a; background-image: var(--tex-halftone); }
-.mode[data-v="shanghai"] .mode-art { background-color: #14100b;
-  background-image: repeating-linear-gradient(135deg, rgba(231,183,60,.38) 0 3px, rgba(0,0,0,0) 3px 12px); }
-.mode[data-v="halveit"] .mode-art { background-color: #e2671c;
-  background-image: repeating-conic-gradient(rgba(0,0,0,.2) 0 25%, rgba(0,0,0,0) 0 50%); background-size: 16px 16px; }
-.mode[data-v="cricket"] .mode-art { background-color: #1c140a;
-  background-image: linear-gradient(rgba(240,122,36,.35) 1px, rgba(0,0,0,0) 1px), linear-gradient(90deg, rgba(240,122,36,.35) 1px, rgba(0,0,0,0) 1px);
+/* ================= Partyspiel-Kacheln: alle schwarz (einheitlich), erkennbar am Muster in Gold bzw. Orange ================= */
+.mode[data-v] .mode-art { background-color: #0f0c08; }
+.mode[data-v="highscore"] .mode-art { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2.25' cy='2.25' r='1.5' fill='%23e7b73c' fill-opacity='.45'/%3E%3Ccircle cx='6.75' cy='6.75' r='1.5' fill='%23e7b73c' fill-opacity='.45'/%3E%3C/svg%3E"); }
+.mode[data-v="shanghai"] .mode-art { background-image: repeating-linear-gradient(135deg, rgba(231,183,60,.34) 0 3px, rgba(0,0,0,0) 3px 12px); }
+.mode[data-v="halveit"] .mode-art { background-image: repeating-conic-gradient(rgba(240,122,36,.26) 0 25%, rgba(0,0,0,0) 0 50%); background-size: 16px 16px; }
+.mode[data-v="cricket"] .mode-art { background-image: linear-gradient(rgba(240,122,36,.38) 1px, rgba(0,0,0,0) 1px), linear-gradient(90deg, rgba(240,122,36,.38) 1px, rgba(0,0,0,0) 1px);
   background-size: 18px 18px; }
-.mode[data-v="atc"] .mode-art { background-color: #f0c24a;
-  background-image: repeating-radial-gradient(circle at 50% 50%, rgba(11,10,8,.28) 0 2px, rgba(0,0,0,0) 2px 11px); }
-/* Innenrahmen und Stern auf dunklen Kacheln in Gold */
-.mode[data-v="shanghai"] .mode-art::before, .mode[data-v="cricket"] .mode-art::before { border-color: rgba(231,183,60,.55); }
-.mode[data-v="shanghai"] .mode-art::after, .mode[data-v="cricket"] .mode-art::after { color: #f0c24a; opacity: .85; }
+.mode[data-v="atc"] .mode-art { background-image: repeating-radial-gradient(circle at 50% 50%, rgba(231,183,60,.3) 0 2px, rgba(0,0,0,0) 2px 11px); }
+.mode[data-v] .mode-art::before { border-color: rgba(231,183,60,.5); }
+.mode[data-v] .mode-art::after { color: #f0c24a; opacity: .85; }
