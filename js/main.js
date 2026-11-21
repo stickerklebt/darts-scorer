@@ -739,7 +739,7 @@ const actions = {
     e.team = letters[(letters.indexOf(e.team) + 1) % letters.length];
     render();
   },
-  addPlayer() { if (!ui.friends?.data) loadFriends(); ui.addFriend = null; ui.modal = { type: 'addPlayer' }; if (!['guest', 'bot', 'friend'].includes(ui.addTab)) ui.addTab = 'guest'; render(); focusSheet(); },
+  addPlayer() { if (!ui.friends?.data) loadFriends(); ui.addFriend = null; ui.modal = { type: 'addPlayer' }; if (!['friend', 'guest', 'bot'].includes(ui.addTab)) ui.addTab = 'friend'; render(); focusSheet(); },
   addTab(el) { ui.addTab = el.dataset.v; ui.addFriend = null; render(); focusSheet(); if (el.dataset.v === 'friend') loadFriends(); },
   addFriendPick(el) { ui.addFriend = el.dataset.v; render(); },
   addFriendBack() { ui.addFriend = null; render(); },

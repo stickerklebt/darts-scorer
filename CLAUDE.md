@@ -193,7 +193,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
   bei Solo ausgeblendet) · Start. „Mehr Optionen“ (aufklappbar, zeigt eingeklappt eine Zusammenfassung wie „501 · Double Out“):
   Jeder für sich/Teams, Startpunkte 301/501/701, Check-Out, Legs/Sets, Reihenfolge mischen, Spielregeln.
-  Hinzufügen nur über **ein Plus** → Auswahlfenster: Gast · Bot · Freunde. **Gast** = Name für genau dieses Spiel (kein Profil,
+  Hinzufügen nur über **ein Plus** → Auswahlfenster: Freunde · Gast · Bot (Freunde zuerst). **Gast** = Name für genau dieses Spiel (kein Profil,
   keine Statistik, `{ id: 'g_…', name, guest: true }`, Name eindeutig gegenüber Profilen, Bots und Aufstellung, Live-Hinweis);
   beim Start landet der Name in `m.names` und der Gast fliegt aus der Aufstellung – nächstes Spiel neu eingeben.
 - **Summen-Eingabe ohne OK**: kann keine weitere Ziffer mehr eine mögliche Aufnahme ergeben (43 → 430+ gibt es nicht,

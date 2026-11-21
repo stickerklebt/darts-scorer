@@ -115,12 +115,12 @@ export function sheetView() {
   return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' ? 'wide' : ''}">${inner}</div></div>`;
 }
 
-/** Spieler hinzufügen: drei Wege – Gast (nur dieses Spiel), Bot, Freund */
+/** Spieler hinzufügen: drei Wege – Freund, Gast (nur dieses Spiel), Bot */
 function addPlayerSheet() {
-  const tab = ['guest', 'bot', 'friend'].includes(ui.addTab) ? ui.addTab : 'guest';
+  const tab = ['friend', 'guest', 'bot'].includes(ui.addTab) ? ui.addTab : 'friend';
   const inLineup = new Set(S.lineup.map((e) => e.id));
   const bots = BOTS.filter((b) => !inLineup.has(b.id));
-  const tabs = [['guest', 'Gast'], ['bot', 'Bot'], ['friend', 'Freunde']];
+  const tabs = [['friend', 'Freunde'], ['guest', 'Gast'], ['bot', 'Bot']];
   let body;
   if (tab === 'friend') {
     const fr = (ui.friends?.data?.friends || []).filter((f) => f.pid);
