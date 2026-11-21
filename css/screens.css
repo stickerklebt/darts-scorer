@@ -1660,3 +1660,8 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .mode[data-v="atc"] .mode-art { background-image: repeating-radial-gradient(circle at 50% 50%, rgba(231,183,60,.14) 0 2px, rgba(0,0,0,0) 2px 11px); }
 .mode[data-v] .mode-art::before { border-color: rgba(231,183,60,.5); }
 .mode[data-v] .mode-art::after { color: #f0c24a; opacity: .85; }
+
+/* Eigenes Banner: Average in Gold (Weiß-Variante für Gegner bleibt schwarz) */
+.pbanner:not(.pb-white) .pb-avg b { color: #ffd25a; text-shadow: 3px 2px 0 #7a0a1c, 6px 6px 0 var(--ink), 7px 6px 0 #fff2c0; }
+@keyframes pb-numglow-g { 50% { text-shadow: 3px 2px 0 #7a0a1c, 6px 6px 0 var(--ink), 7px 6px 0 #fff2c0, 0 0 24px rgba(255,210,90,.6); } }
+.pbanner:not(.pb-white) .pb-avg b { animation-name: pb-numglow-g; }
