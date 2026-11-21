@@ -95,19 +95,6 @@ function bouquetRight() {
     ${star(16, 60, 3.6)}
   </svg>`;
 }
-/** Rankenband unten am Banner: dünne Dornenranke mit kleinen Blättern und Röschen */
-function vineStrip() {
-  let x = 70, g = '';
-  const pts = [];
-  while (x < 560) { pts.push(x); x += 46; }
-  g += `<path d="M60 9 ${pts.map((p, i) => `Q${p + 11} ${i % 2 ? 2 : 16} ${p + 23} 9`).join(' ')}" fill="none" stroke="#2f5e22" stroke-width="1.6"/>`;
-  pts.forEach((p, i) => {
-    g += leaf(p + 8, i % 2 ? 6 : 12, .55, i % 2 ? -40 : 40);
-    if (i % 3 === 1) g += rose(p + 23, 9, 5, i * 30, i % 2);
-    if (i % 3 === 2) g += star(p + 23, i % 2 ? 3 : 15, 2.4);
-  });
-  return `<svg class="pb-strip" viewBox="0 0 600 18" preserveAspectRatio="xMinYMid slice" aria-hidden="true">${g}</svg>`;
-}
 
 /** Medaillenband, an dem der Pokal vom Banner hängt: zwei Bänder (Rot mit Goldstreifen) laufen zu einem Goldring */
 const hanger = (i) => `<svg class="pb-hang" viewBox="0 0 40 34" aria-hidden="true">
@@ -163,7 +150,7 @@ export function playerBanner({ name, avg = null, badges = [null, null, null], st
         <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(16, 3)}</span>
         <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b>${sparkles(5, 11)}</span>
       </div></div>
-      ${bouquetLeft()}${bouquetRight()}${vineStrip()}
+      ${bouquetLeft()}${bouquetRight()}
     </div>
     <div class="pb-badges">${slots}</div>
     ${open !== null ? picker(open, state, badges.map((b) => b?.id || null)) : ''}

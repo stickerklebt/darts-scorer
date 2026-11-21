@@ -98,5 +98,5 @@ Spiel-Banner ohne Figuren: Band links gerade, rechts Kerbe (Schwalbenschwanz), 3
 Kopie als Materialdicke und ein weicher Schlagschatten (hebt sich ab). Innen Samt-Rot mit Tiefe: Lichtkante oben, Schatten unten und
 an den Rändern, feine Stoff-Rippen, Damast-Muster aus Goldrauten, Goldpunkten und geprägten Sternen. Auf dem Band links der Name (Cinzel, Gold mit
 Glanz und Leuchten, Glitzer), daneben der Ø wie die große 501 (Creme, Versatz Rot/Schwarz/Gold). Schmuck im Queen-Stil: links ein Rosenstrauß (zwei Rosen, Knospen, gezackte Blätter,
-Dornenstiele, Gold-Schnörkel, Sterne), an der Kerbe ein kleiner Strauß, unten eine Dornenranke mit Röschen.
+Dornenstiele, Gold-Schnörkel, Sterne), an der Kerbe ein kleiner Strauß.
 Darunter drei Pokale an Medaillenbändern (Rot mit Goldstreifen, Goldring), die leicht schwingen (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
