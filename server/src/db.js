@@ -61,6 +61,29 @@ const MIGRATIONS = [
      updated_at INTEGER NOT NULL,
      PRIMARY KEY (user_id, score)
    );`,
+  /* 3: Gegen Freunde spielen – Online-Spiele (zwei Geräte) und Bestätigungen für Spiele auf fremdem Gerät */
+  `CREATE TABLE games (
+     id          TEXT PRIMARY KEY,                -- = Match-id
+     host_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     guest_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     status      TEXT NOT NULL CHECK (status IN ('invited', 'active', 'done', 'declined', 'aborted')),
+     rev         INTEGER NOT NULL DEFAULT 1,      -- jede Eingabe erhöht rev (Abgleich zwischen den Geräten)
+     data        TEXT NOT NULL,                   -- JSON des laufenden Matches
+     created_at  INTEGER NOT NULL,
+     updated_at  INTEGER NOT NULL
+   );
+   CREATE INDEX games_guest ON games(guest_id, status);
+   CREATE INDEX games_host ON games(host_id, status);
+   CREATE TABLE match_confirms (
+     id          TEXT PRIMARY KEY,
+     from_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     to_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     match_id    TEXT NOT NULL,
+     data        TEXT NOT NULL,                   -- JSON des fertigen Matches
+     created_at  INTEGER NOT NULL,
+     UNIQUE (to_id, match_id)
+   );
+   CREATE INDEX match_confirms_to ON match_confirms(to_id);`,
 ];
 
 export function openDb(file, log = null) {

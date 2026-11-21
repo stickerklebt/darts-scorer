@@ -39,5 +39,5 @@ export function friendStats(state, matches) {
       badges = badgeSlots(state?.prefs?.badges, st).map((id) => (id ? { id, tier: st[id].tier } : null));
     }
   } catch { badges = [null, null, null]; }
-  return { total: mine.length, games, lastPlayed, x501, badges };
+  return { pid, total: mine.length, games, lastPlayed, x501, badges };
 }

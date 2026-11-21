@@ -301,3 +301,53 @@ test('Logging im Server: Request-ID, Anmelde-Ereignisse ohne E-Mail/Passwort, Ap
     assert.equal(s.logs.length, n);
   } finally { await s.stop(); }
 });
+
+test('Gegen Freunde: Online-Spiel einladen, annehmen, abwechselnd schreiben, Konflikt; Spiel auf fremdem Gerät bestätigen', async () => {
+  const s = await boot();
+  try {
+    const a = client(s.base), b = client(s.base), c = client(s.base);
+    const ua = (await register(a, 'a@g.de', 'Anna')).body.user;
+    const ub = (await register(b, 'b@g.de', 'Ben')).body.user;
+    await register(c, 'c@g.de', 'Carl');
+    await a('POST', '/api/sync', { since: 0, state: { mainId: 'pa', profiles: [{ id: 'pa', name: 'Anna' }] } });
+    await b('POST', '/api/sync', { since: 0, state: { mainId: 'pb', profiles: [{ id: 'pb', name: 'Ben' }] } });
+    const m = createMatch('x01', [['pa'], ['pb']], { start: 501, out: 'double', mode: 'legs', target: 1 }, 0);
+    assert.equal((await a('POST', '/api/games', { to: ub.id, match: m })).status, 403);       // noch keine Freunde
+    await a('POST', '/api/friends', { username: 'Ben' }); await b('POST', `/api/friends/${ua.id}/accept`, {});
+    const fl = (await a('GET', '/api/friends')).body.friends[0];
+    assert.equal(fl.pid, 'pb');
+
+    assert.equal((await a('POST', '/api/games', { to: ub.id, match: m })).status, 201);
+    const inbox = (await b('GET', '/api/games/inbox')).body.invites;
+    assert.equal(inbox[0].host, 'Anna');
+    assert.equal((await c('GET', `/api/games/${m.id}`)).status, 404);                          // Fremde sehen nichts
+    const g = (await b('POST', `/api/games/${m.id}/accept`, {})).body;
+    assert.equal(g.status, 'active');
+    assert.equal((await a('GET', `/api/games/${m.id}?rev=${g.rev}`)).body.same, true);
+    X.submitSum(m, 100);
+    const w = (await a('PUT', `/api/games/${m.id}`, { rev: g.rev, match: m })).body;
+    assert.equal(w.rev, g.rev + 1);
+    const stale = await b('PUT', `/api/games/${m.id}`, { rev: g.rev, match: m });           // alter Stand → 409 mit aktuellem
+    assert.equal(stale.status, 409);
+    assert.equal(stale.body.game.rev, w.rev);
+    const seen = (await b('GET', `/api/games/${m.id}?rev=${g.rev}`)).body;
+    assert.equal(seen.match.legs[0].turns[0].score, 100);
+    await b('POST', `/api/games/${m.id}/abort`, {});
+    assert.equal((await a('GET', `/api/games/${m.id}`)).body.status, 'aborted');
+
+    // Auf Annas Gerät gespielt → Ben muss bestätigen, erst dann ist es in seinem Konto
+    const done = match501('pa', 'pb', Date.now()); done.done = true;
+    assert.equal((await a('POST', '/api/confirms', { to: ub.id, match: done })).status, 201);
+    const list = (await b('GET', '/api/confirms')).body.confirms;
+    assert.equal(list.length, 1); assert.equal(list[0].sender, 'Anna');
+    assert.equal((await b('GET', `/api/friends/${ua.id}`)).status, 200);
+    let st = (await a('GET', `/api/friends/${ub.id}`)).body.stats;
+    assert.equal(st.total, 0);
+    assert.equal((await b('POST', `/api/confirms/${list[0].id}`, { accept: true })).body.ok, true);
+    st = (await a('GET', `/api/friends/${ub.id}`)).body.stats;
+    assert.equal(st.total, 1);
+    const sync = (await b('POST', '/api/sync', { since: 0 })).body;
+    assert.ok(sync.matches.some((x) => x.id === done.id));                                   // Bens Geräte bekommen es per Sync
+    assert.equal((await b('GET', '/api/confirms')).body.confirms.length, 0);
+  } finally { await s.stop(); }
+});

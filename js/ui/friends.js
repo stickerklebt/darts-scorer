@@ -5,6 +5,7 @@ import { auth } from '../sync.js';
 import { movingAvg, overview } from '../stats.js';
 import { playerBanner } from './banner.js';
 import { trophies, badgeSlots } from '../trophies.js';
+import { resultText } from '../history.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, fuse, stars, sparkles, goldSmoke, numRing, COLORS } from './svg.js';
@@ -22,9 +23,6 @@ const ago = (t) => {
 
 export const incomingCount = () => ui.friends?.data?.incoming?.length || 0;
 
-function soonCard(text) {
-  return `<div class="soon"><span class="soon-tag">Kommt bald</span>${stars(3, COLORS.gold, 11)}<b>Zusammen spielen</b><p>${text}</p></div>`;
-}
 
 function searchRows() {
   const fs = ui.fsearch;
@@ -49,6 +47,30 @@ function myTrophies() {
   if (tCache.key !== key) tCache = { key, state: trophies(S.matches, S.mainId, { since: profile(S.mainId)?.createdAt ?? null }) };
   return tCache.state;
 }
+/** Banner-Daten des Hauptspielers (Name, Ø, gewählte Abzeichen) – fürs VS-Intro im Match */
+export function myBannerData() {
+  const state = S.mainId ? myTrophies() : {};
+  return { name: nameOfMain(), avg: S.mainId ? overview(S.matches, S.mainId).avg : null,
+    badges: badgeSlots(S.prefs.badges, state).map((id) => (id ? { id, tier: state[id].tier } : null)) };
+}
+const nameOfMain = () => auth.user?.username || S.profiles.find((p) => p.id === S.mainId)?.name || '';
+
+/** Backstage ganz unten: Spiele, die auf dem Gerät eines Freundes gespielt wurden – Haken = zählt in meiner Statistik */
+function confirmBlock() {
+  const list = ui.confirms || [];
+  if (!list.length) return '';
+  return `<h2 class="label">Hast du diese Spiele gespielt? <span class="badge-n">${list.length}</span></h2>
+    <p class="foot">Gespielt auf dem Gerät eines Freundes. Erst mit deinem Haken zählen sie für deine Statistik.</p>
+    <div class="slist cf-list">${list.map((x) => {
+      const m = x.match, me = S.mainId, s = m.sides.findIndex((sd) => sd.includes(me));
+      const res = m.sides.length > 1 ? (m.winners?.includes(s) ? 'Sieg' : 'Niederlage') : 'Training';
+      const what = m.game === 'x01' ? `${m.opts.start}` : (GAMES[m.game]?.title || m.game);
+      return `<div class="srow cf-row"><span class="lbl">${esc(what)} gegen ${esc(x.sender)}<small>${dateStr(m.endedAt ?? x.at)} · ${res} · ${esc(resultText(m))}</small></span>
+        <button class="cf-btn no" data-act="confirmAns" data-v="${esc(x.id)}" data-ok="0" aria-label="Nicht gespielt">✕</button>
+        <button class="cf-btn yes" data-act="confirmAns" data-v="${esc(x.id)}" data-ok="1" aria-label="Ja, gespielt">✓</button></div>`;
+    }).join('')}</div>`;
+}
+
 function myBanner(name) {
   const state = S.mainId ? myTrophies() : {};
   const badges = badgeSlots(S.prefs.badges, state).map((id) => (id ? { id, tier: state[id].tier } : null));
@@ -70,6 +92,9 @@ export function friendsView() {
   const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe']];
   return `<main class="page friends backstage">
     <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b><small>${sub}</small></button>`).join('')}</div>
+    ${(ui.invites || []).length ? `<h2 class="label">Einladungen zum Spiel</h2><div class="slist">${ui.invites.map((v) => `<div class="srow">${chip(v.host)}
+      <span class="lbl">${esc(v.host)} möchte gegen dich spielen<small>${v.game === 'x01' ? `${v.opts?.start} · First to ${v.opts?.target}` : esc(GAMES[v.game]?.title || '')}</small></span>
+      <button class="btn line sm-btn" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red sm-btn" data-act="inviteYes" data-v="${esc(v.id)}">Spielen</button></div>`).join('')}</div>` : ''}
     <h2 class="label">Freunde${inc.length ? ` <span class="badge-n">${inc.length}</span>` : ''}</h2>
     ${myBanner(me?.username || '')}
     <h2 class="label">Freund hinzufügen</h2>
@@ -83,7 +108,7 @@ export function friendsView() {
     ${out.length ? `<h2 class="label">Gesendete Anfragen</h2>
       <div class="slist">${out.map((x) => `<div class="srow">${chip(x.username)}<span class="lbl">${esc(x.username)}<small>wartet auf Antwort</small></span>
         <button class="btn line sm-btn" data-act="friendCancel" data-v="${esc(x.id)}">Zurückziehen</button></div>`).join('')}</div>` : ''}
-    ${soonCard('Bald könnt ihr online gegeneinander werfen – jeder an seinem Board, live auf zwei Geräten.')}
+    ${confirmBlock()}
   </main>`;
 }
 
@@ -122,7 +147,7 @@ export function friendView() {
     <h2 class="label">Gespielt</h2>
     <div class="minirow games" style="grid-template-columns:repeat(${Math.max(1, Math.min(3, games.length))},1fr)">${games.length ? games.slice(0, 3).map(([g, n]) => `<span><small>${esc(GAMES[g]?.title || g)}</small><b>${n}</b></span>`).join('') : '<span><small>Spiele</small><b>0</b></span>'}</div>
     <p class="foot">${st.total} ${st.total === 1 ? 'Spiel' : 'Spiele'} insgesamt${st.lastPlayed ? ` · zuletzt ${ago(st.lastPlayed)}` : ''}.</p>
-    ${soonCard(`Gegen ${esc(name)} spielen – online, jeder an seinem Board. Kommt in einem der nächsten Updates.`)}
+    <p class="foot">Gegen ${esc(name)} spielen: Spielen › Modus wählen › Plus › Freunde.</p>
     <button class="btn line remove-friend" data-act="friendRemove">Freund entfernen</button>
   </main>`;
 }

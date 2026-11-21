@@ -90,7 +90,21 @@ export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toStri
 
 /* ---------- Profile ---------- */
 export const profile = (id) => S.profiles.find((p) => p.id === id);
-export const nameOf = (id) => profile(id)?.name ?? bot(id)?.name ?? '?';
+/** Namen von Freunden (keine eigenen Profile): aus der Aufstellung bzw. aus m.names der Matches */
+let namesIdx = { n: -1, map: new Map() };
+function friendName(id) {
+  const e = S.lineup.find((x) => x.id === id && x.name); if (e) return e.name;
+  if (S.current?.names?.[id]) return S.current.names[id];
+  if (namesIdx.n !== S.matches.length) {
+    const map = new Map();
+    for (const m of S.matches) if (m.names) for (const [k, v] of Object.entries(m.names)) map.set(k, v);
+    namesIdx = { n: S.matches.length, map };
+  }
+  return namesIdx.map.get(id);
+}
+export const nameOf = (id) => profile(id)?.name ?? bot(id)?.name ?? friendName(id) ?? '?';
+/** Ist dieser Spieler ein Freund aus einem anderen Konto (kein eigenes Profil, kein Bot)? */
+export const isFriendId = (id) => !profile(id) && !bot(id) && id !== S.mainId;
 export const findProfile = (name) => { const k = name.trim().toLowerCase(); return S.profiles.find((p) => p.name.toLowerCase() === k); };
 /** Ist der Name schon vergeben (Profil oder Bot)? Groß/Klein und Leerzeichen am Rand egal. */
 export const nameTaken = (name) => { const k = name.trim().toLowerCase(); return !!k && (!!findProfile(k) || BOTS.some((b) => b.name.toLowerCase() === k)); };

@@ -14,6 +14,7 @@ import { syncRoutes } from './routes/sync.js';
 import { friendRoutes } from './routes/friends.js';
 import { callerRoutes } from './routes/caller.js';
 import { clientLogRoutes } from './routes/client-log.js';
+import { gameRoutes } from './routes/games.js';
 
 const CSP = [
   "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
@@ -37,6 +38,7 @@ export function createApp({ config, db, log }) {
   friendRoutes(router, deps);
   callerRoutes(router, deps);
   clientLogRoutes(router, deps);
+  gameRoutes(router, deps);
   router.get('/healthz', () => { db.prepare('SELECT 1').get(); return { ok: true }; }, { public: true });
   const serveStatic = createStatic(config.appDir);
 
@@ -94,6 +96,7 @@ export function createApp({ config, db, log }) {
     if (!config.logRequests || url.pathname === '/healthz') return;
     const api = url.pathname.startsWith('/api/'), s = res.statusCode, L = res.locals;
     if (!api && s < 400 && url.pathname !== '/' && url.pathname !== '/index.html') return;
+    if (L.quiet && s < 400 && ms <= SLOW_MS) return; // regelmäßige Abfragen (laufendes Online-Spiel, Einladungen) nicht protokollieren
     const expected = s === 401 && url.pathname === '/api/me'; // App fragt beim Start, ob jemand angemeldet ist
     let level = s >= 500 ? 'error' : s >= 400 && !expected && s !== 404 ? 'warn' : 'info';
     if (ms > SLOW_MS && level === 'info') level = 'warn';

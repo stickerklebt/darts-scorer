@@ -1,5 +1,8 @@
 /* Einstieg: Rendering, Aktionen, Events. */
 import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid } from './store.js';
+import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
+import { myBannerData } from './ui/friends.js';
+import { vsView, onlineWaitView } from './ui/versus.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
@@ -65,7 +68,7 @@ function render() {
   const m = S.current;
   let html;
   if (!auth.user) html = authView();
-  else if (S.screen === 'game' && m && !m.done) html = inBulloff() ? bulloffView() : gameView() + momentView();
+  else if (S.screen === 'game' && m && !m.done) html = m.online && m.online.status !== 'active' ? onlineWaitView(m) : inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
@@ -73,6 +76,7 @@ function render() {
   else if (S.screen === 'history') html = historyView();
   else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
+  if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
   html += sheetView();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
@@ -89,6 +93,7 @@ function render() {
     ui.tabFrom = to;
   }
   scheduleBot();
+  syncIfChanged();
 }
 
 let toastTimer = null, autoTimer = null;
@@ -122,6 +127,7 @@ function finish() {
   const m = S.current;
   m.endedAt = Date.now();
   archive(m);
+  queueConfirms(m);
   say(`${sideName(m.sides[m.winners[0]])} gewinnt`);
   ui.endLines = botsInMatch(m).filter((id) => !bot(id).random).map((id) => ({ id, text: line(m, id, m.winners.includes(sideOfId(m, id)) ? 'win' : 'lose', 'end') })).filter((x) => x.text);
   ui.modal = null; ui.moment = null; ui.entry = ''; ui.mult = 1;
@@ -187,6 +193,7 @@ function lastEntryPid(m) {
 function undo() {
   const m = S.current;
   if (!m) return;
+  if (m.online && (m.done || lastEntryPid(m) !== S.mainId)) { toast('Rückgängig geht nur für deine eigene letzte Eingabe'); return render(); }
   clearTimeout(botTimer); botTimer = null;
   ui.modal = null; ui.moment = null; ui.entry = ''; ui.botTurn = null;
   if (m.done) { unarchive(m); m.endedAt = undefined; S.screen = 'game'; ui.endLines = null; requestWakeLock(); }
@@ -357,12 +364,39 @@ function startGame() {
   const sides = buildSides();
   if (S.teamMode && sides.length < 2) { toast('Mindestens zwei Teams nötig'); return render(); }
   if (!S.lineup.some((e) => !isBot(e.id))) { toast('Mindestens ein Mensch muss mitspielen'); return render(); }
-  S.current = newMatch(S.game, sides, S.opts[S.game], 0, S.anwurf === 'bull');
+  const fr = S.lineup.filter((e) => e.friend), remote = fr.filter((e) => e.friend.mode === 'remote');
+  if (remote.length && (remote.length > 1 || S.lineup.length !== 2 || S.teamMode || !S.lineup.some((e) => e.id === S.mainId))) {
+    toast('Online spielst du allein gegen einen Freund – nur ihr zwei in der Liste'); return render();
+  }
+  S.current = newMatch(S.game, sides, S.opts[S.game], remote.length ? Math.floor(Math.random() * 2) : 0, S.anwurf === 'bull' && !remote.length);
+  if (fr.length) {
+    const m = S.current, me = myBannerData();
+    m.names = { [S.mainId]: nameOf(S.mainId), ...Object.fromEntries(fr.map((e) => [e.id, e.name])) };
+    m.friends = fr.map((e) => ({ pid: e.id, uid: e.friend.uid, name: e.name, mode: e.friend.mode }));
+    m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null, badges: e.banner?.badges || [null, null, null] }])) };
+  }
+  if (remote.length) {
+    const m = S.current, f = remote[0];
+    m.online = { gid: m.id, role: 'host', rev: 0, status: 'invited', other: f.name };
+    S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
+    render();
+    invite(m, { uid: f.friend.uid, name: f.name }).then(render).catch((e) => { if (S.current === m) S.current = null; S.screen = 'setup'; toast(errMsg(e)); render(); });
+    return;
+  }
+  if (fr.length) showVs(S.current);
   warmCalls();
   S.screen = 'game';
   ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
   requestWakeLock();
   render();
+}
+
+/** VS-Intro mit den Bannern beider Spieler (Spiele mit Freunden), tippen oder nach 4 s weiter */
+let vsTimer = null;
+function showVs(m) {
+  if (!m?.banners) return;
+  ui.vs = m.id; clearTimeout(vsTimer);
+  vsTimer = setTimeout(() => { if (ui.vs === m.id) { ui.vs = null; render(); } }, 4200);
 }
 
 function addToLineup(id) {
@@ -605,7 +639,7 @@ const actions = {
     if (el.dataset.v === 'stats' && S.tab !== 'stats') S.statsPeriod = 'all'; // Statistik startet immer mit „Gesamt“
     S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
     render(); window.scrollTo(0, 0);
-    if (S.tab === 'friends') loadFriends();
+    if (S.tab === 'friends') { loadFriends(); loadConfirms(); }
   },
   rename() { ui.modal = { type: 'rename' }; render(); setTimeout(() => $('#nameField')?.focus(), 50); },
   async saveName() {
@@ -684,8 +718,44 @@ const actions = {
     e.team = letters[(letters.indexOf(e.team) + 1) % letters.length];
     render();
   },
-  addPlayer() { ui.modal = { type: 'addPlayer' }; ui.addTab = ui.addTab || (S.profiles.some((p) => !S.lineup.some((e) => e.id === p.id)) ? 'known' : 'new'); render(); focusSheet(); },
-  addTab(el) { ui.addTab = el.dataset.v; render(); focusSheet(); },
+  addPlayer() { if (!ui.friends?.data) loadFriends(); ui.addFriend = null; ui.modal = { type: 'addPlayer' }; ui.addTab = ui.addTab || (S.profiles.some((p) => !S.lineup.some((e) => e.id === p.id)) ? 'known' : 'new'); render(); focusSheet(); },
+  addTab(el) { ui.addTab = el.dataset.v; ui.addFriend = null; render(); focusSheet(); if (el.dataset.v === 'friend') loadFriends(); },
+  addFriendPick(el) { ui.addFriend = el.dataset.v; render(); },
+  addFriendBack() { ui.addFriend = null; render(); },
+  addFriend(el) {
+    const f = (ui.friends?.data?.friends || []).find((x) => x.id === el.dataset.v), mode = el.dataset.mode;
+    if (!f?.pid) return;
+    if (S.lineup.some((e) => e.id === f.pid)) { toast(`${f.username} ist schon dabei`); return render(); }
+    if (S.lineup.length >= MAX_PLAYERS) { toast(`Maximal ${MAX_PLAYERS} Spieler`); return render(); }
+    if (mode === 'remote') {
+      // Online: nur du gegen diesen Freund – andere Mitspieler fliegen raus, du kommst rein
+      S.lineup = S.lineup.filter((e) => e.id === S.mainId);
+      if (!S.lineup.length && S.mainId) S.lineup.push({ id: S.mainId, team: 'A' });
+      S.teamMode = false;
+    } else S.lineup = S.lineup.filter((e) => e.friend?.mode !== 'remote');
+    const teams = S.lineup.map((e) => e.team);
+    const team = teams.filter((t) => t === 'A').length <= teams.filter((t) => t === 'B').length ? 'A' : 'B';
+    S.lineup.push({ id: f.pid, team, name: f.username, friend: { uid: f.id, mode }, banner: { avg: f.avg, badges: f.badges } });
+    ui.modal = null; ui.addFriend = null;
+    toast(mode === 'remote' ? `${f.username} spielt auf seinem Gerät` : `${f.username} spielt hier mit`);
+    render();
+  },
+  async inviteYes(el) {
+    ui.modal = null; (ui.inviteSeen ??= new Set()).add(el.dataset.v);
+    try {
+      await acceptInvite(el.dataset.v);
+      S.screen = 'game'; ui.entry = ''; ui.moment = null; ui.mult = 1;
+      warmCalls(); requestWakeLock(); showVs(S.current);
+    } catch (e) { toast(errMsg(e)); }
+    render();
+  },
+  inviteNo(el) { ui.modal = null; declineInvite(el.dataset.v); render(); },
+  async confirmAns(el) {
+    try { await answerConfirm(el.dataset.v, el.dataset.ok === '1'); toast(el.dataset.ok === '1' ? 'Spiel übernommen' : 'Spiel abgelehnt'); }
+    catch (e) { toast(errMsg(e)); }
+    render();
+  },
+  vsClose() { ui.vs = null; render(); },
   addNew() {
     const n = field('newPlayer');
     if (!n) return $('#newPlayer')?.focus();
@@ -735,6 +805,7 @@ const actions = {
   board(el) { ui.mult = 1; handle(throwOne(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
   /** Dart von der Scheibe (Position in Scheiben-Einheiten) */
   aimDart(x, y) {
+    if (notMyTurn()) return;
     const m = S.current, d = fieldAt(x, y);
     ui.aimPos = (ui.aimPos || []).slice(0, m.pending.length);
     ui.aimPos.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
@@ -751,20 +822,26 @@ const actions = {
   gear() { ui.modal = { type: 'gear' }; render(); },
   pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
   abort() { ui.modal = { type: 'abort' }; render(); },
-  abortForce() { S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
+  abortForce() { if (S.current?.online) abortOnline(); S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
   closeModal() { ui.modal = null; render(); },
   scrim() { ui.modal = null; render(); },
   rematch() {
     const m = S.current;
+    if (m.online) { toast('Für eine Revanche lade deinen Freund neu ein'); return render(); }
     S.current = newMatch(m.game, m.sides, m.opts, m.first + 1, !!m.bull);
+    if (m.friends) { S.current.names = m.names; S.current.friends = m.friends; S.current.banners = m.banners; }
     S.screen = 'game'; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1;
     requestWakeLock(); render();
   },
 };
 
+const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board']);
+/** Online: nur wer dran ist, darf eingeben */
+const notMyTurn = () => { const m = S.current; return !!(m?.online && !m.done && S.screen === 'game' && curThrowerOf(m) !== S.mainId); };
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]');
   if (!el || el.disabled) return;
+  if (INPUT_ACTS.has(el.dataset.act) && notMyTurn()) { toast(`${nameOf(curThrowerOf(S.current))} ist dran`); render(); return; }
   if (el.dataset.act === 'scrim' && e.target !== el) return;
   actions[el.dataset.act]?.(el);
 });
@@ -783,7 +860,7 @@ document.addEventListener('keydown', (e) => {
   }
   const m = S.current;
   if (fxRunning()) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') stopFx(); return; }
-  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff() || isBot(curThrowerOf(m))) return;
+  if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff() || isBot(curThrowerOf(m)) || notMyTurn()) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
   if (m.game === 'cricket' || (m.game === 'x01' && X.inputMode(m) === 'darts')) { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
@@ -880,7 +957,20 @@ setOnChange(() => render());
 if (S.screen === 'friend') S.screen = 'home';
 S.statsPeriod = 'all';
 render();
-bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); } });
+initOnline({
+  render, toast, loggedIn: () => !!auth.user,
+  finished: () => finish(),
+  ended: (status) => {
+    const other = S.current?.online?.other || 'Dein Freund';
+    toast(status === 'declined' ? `${other} hat abgelehnt` : 'Das Online-Spiel wurde beendet');
+    S.current = null; S.screen = status === 'declined' ? 'setup' : 'home'; ui.vs = null; releaseWakeLock(); render();
+  },
+  updated: (prev, cur, started) => {
+    if (started) { requestWakeLock(); warmCalls(); showVs(cur); toast(`${cur.online.other} ist dabei – los geht's`); }
+  },
+});
+startOnlineLoops();
+bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox(); } });
 
 /* Average auf der Spielerkarte: beim App-Start einmal wie an einem Spielautomaten von 0 hochrattern, dann einrasten */
 function rollAvg(tries = 0) {

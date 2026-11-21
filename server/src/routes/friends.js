@@ -1,5 +1,5 @@
 /* Freunde: über den eindeutigen Namen suchen, Anfrage schicken, annehmen/ablehnen, entfernen, Profil mit Statistik.
-   Statistik nur für bestätigte Freunde. Gemeinsam spielen kommt später (hier noch nicht). */
+   Statistik nur für bestätigte Freunde. Gemeinsam spielen: routes/games.js. */
 import { HttpError, bad } from '../http.js';
 import { isId, usernameKey } from '../validate.js';
 import { friendStats } from '../friend-stats.js';
@@ -63,7 +63,7 @@ export function friendRoutes(r, { db, limits }) {
     const me = c.user.id;
     const friends = q.friends.all(me, me, me).map((f) => {
       const s = statsFor(f.id);
-      return { id: f.id, username: f.username, since: f.since, avg: s?.x501?.avg ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null };
+      return { id: f.id, username: f.username, since: f.since, pid: s?.pid ?? null, avg: s?.x501?.avg ?? null, badges: s?.badges ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null };
     });
     return { friends, incoming: q.incoming.all(me), outgoing: q.outgoing.all(me) };
   });

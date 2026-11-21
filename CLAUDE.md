@@ -67,7 +67,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 index.html              Gerüst, lädt css/, js/errlog.js (Fehler melden), js/main.js (type="module") und js/filehint.js
 deploy/  nginx.conf · darts.service · install.sh (einmalig) · update.sh · start.sh · stop.sh · logs.sh · backup.sh; README.md (Betrieb)
 server/src/             server.js · app.js · config.js · db.js · sessions.js · passwords.js · ratelimit.js · static.js ·
-                        validate.js · friend-stats.js · backup.js · log.js · routes/ (auth, account, sync, friends, caller, client-log)
+                        validate.js · friend-stats.js · backup.js · log.js · routes/ (auth, account, sync, friends, games, caller, client-log)
 css/
   tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich, Papier, Handlinie)
   base.css              Reset, Typo, Buttons, Tabs, Dialoge
@@ -129,7 +129,8 @@ Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: n
 ## Server-Datenmodell (SQLite `/var/lib/darts/darts.db`)
 `users` (id, email klein, username, username_key klein + UNIQUE, pw_hash scrypt) · `sessions` (token_hash SHA-256, Ablauf) ·
 `user_state` (rev, state = JSON der SYNC_KEYS, state_rev) · `matches` (user_id, id, rev, deleted = Grabstein, data JSON) ·
-`friendships` (requester_id, addressee_id, status pending|accepted) · `caller_clips` (user_id, score 0–180, WAV-Daten).
+`friendships` (requester_id, addressee_id, status pending|accepted) · `caller_clips` (user_id, score 0–180, WAV-Daten) ·
+`games` (Online-Spiel: host_id, guest_id, status invited|active|done|declined|aborted, rev, data) · `match_confirms` (from_id, to_id, match_id, data).
 Sync: Gerät schickt `{ since, upsert, remove, state? }`, bekommt Änderungen anderer Geräte seit `since`. Zustand nur bei
 bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (Server-Basis + eigene Spieler). Laufendes Match
 (`current`) und UI-Zustand bleiben lokal.
@@ -171,7 +172,18 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Freunde** (im Backstage): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
-  „Zusammen spielen“ ist als „Kommt bald“ angekündigt (noch nicht gebaut).
+- **Gegen Freunde spielen** (`js/online.js`, `ui/versus.js`, Server `routes/games.js`): Setup › Plus › Freunde › Freund wählen ›
+  „Spielt auf meinem Gerät mit“ oder „Spielt auf seinem Gerät mit“. Aufstellungs-Eintrag `{ id: pid des Freundes (sein mainId),
+  name, friend: { uid, mode: 'local' | 'remote' }, banner }`; Match bekommt `names`, `friends`, `banners` (Namen ohne eigenes Profil
+  über `nameOf` → `m.names`). Spiele mit Freunden starten mit dem VS-Intro (beide Banner).
+  · **Online** (`remote`): nur du gegen einen Freund, Anwurf ausgelost, kein Ausbullen. Einladung (`POST /api/games`, gilt 10 min)
+  → beim Freund Fenster + Liste im Backstage → Annehmen. Laufendes Match steht in `games` (rev): wer dran ist, gibt ein und schickt
+  den Stand (`PUT`, falscher rev → 409 mit aktuellem Stand), das andere Gerät fragt alle 1,2 s (`GET …?rev=`, nicht protokolliert).
+  Eingabe/Undo nur für den, der dran ist bzw. die eigene letzte Eingabe; Abbrechen beendet es für beide; keine Revanche-Taste.
+  Am Ende speichert jedes Gerät das Match im eigenen Konto. `S.current.online = { gid, role, rev, status, other }`.
+  · **Auf meinem Gerät** (`local`): am Ende geht das Match an den Freund (`POST /api/confirms`, offline über `S.outbox`).
+  Er sieht es im Backstage ganz unten „Hast du diese Spiele gespielt?“ → ✓ übernimmt es in sein Konto (zählt dann in seiner
+  Statistik), ✕ verwirft es. So kann niemand fremde Averages verderben.
 - **Aktiver Spieler**: Karte komplett in Spielerfarbe + großer Name, Rest abgedunkelt, Leuchtbalken oben (`.turnbar`), Wechsel ≤ 300 ms.
   **Bot am Zug** (`.game.botturn`): keine Vollfarbe – Karte bleibt dunkel und glimmt nur leicht in seiner Farbe (Rand + Schein),
   Leuchtbalken neutral, Bot-Feld rechts verkleinert und gedämpft.
@@ -242,4 +254,5 @@ Spieler-Plus, Schnellwahl, längere Animationen mit Pokal, Testdaten) und Update
 vier neue Bots mit Zufallssprüchen) erledigt. Danach: Cricket, Eingabe ohne OK, Checkout unter dem Rest, Solo,
 Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details,
 Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über nginx + systemd), Stand 17.11.2026.
-Offen: Zusammen spielen, Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
+Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
+Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).

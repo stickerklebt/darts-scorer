@@ -102,8 +102,14 @@ export function sheetView() {
   } else if (md.type === 'friendRemove') {
     inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;
+  } else if (md.type === 'invite') {
+    const v = md.inv, o = v.opts || {};
+    const what = v.game === 'x01' ? `${o.start} ${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}` : (GAMES[v.game]?.title || 'Spiel');
+    inner = `<div class="inv-head">${icon('signal', 2, 34)}<h3>${esc(v.host)} möchte gegen dich spielen</h3></div>
+      <p>${esc(what)} · jeder an seinem Gerät</p>
+      <div class="sbtns"><button class="btn line" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red" data-act="inviteYes" data-v="${esc(v.id)}">Annehmen</button></div>`;
   } else if (md.type === 'abort') {
-    inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.</p>
+    inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;
   }
   return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' ? 'wide' : ''}">${inner}</div></div>`;
@@ -115,9 +121,24 @@ function addPlayerSheet() {
   const inLineup = new Set(S.lineup.map((e) => e.id));
   const saved = S.profiles.filter((p) => !inLineup.has(p.id)).sort((a, b) => a.name.localeCompare(b.name, 'de'));
   const bots = BOTS.filter((b) => !inLineup.has(b.id));
-  const tabs = [['new', 'Neuer Spieler'], ['known', 'Bekannter Spieler'], ['bot', 'Bot als Gegner']];
+  const tabs = [['new', 'Neuer Spieler'], ['known', 'Bekannt'], ['bot', 'Bot'], ['friend', 'Freunde']];
   let body;
-  if (tab === 'new') {
+  if (tab === 'friend') {
+    const fr = (ui.friends?.data?.friends || []).filter((f) => f.pid);
+    const pick = ui.addFriend && fr.find((f) => f.id === ui.addFriend);
+    if (pick) {
+      body = `<p class="ap-hint">Wie spielt <b>${esc(pick.username)}</b> mit?</p>
+        <div class="fmode">
+          <button class="fm-btn" data-act="addFriend" data-v="${esc(pick.id)}" data-mode="local">${icon('user', 2, 28)}<b>Spielt auf meinem Gerät mit</b>
+            <small>Ihr gebt beide hier ein. Am Ende bestätigt ${esc(pick.username)} das Spiel in seiner App – erst dann zählt es für seine Statistik.</small></button>
+          <button class="fm-btn" data-act="addFriend" data-v="${esc(pick.id)}" data-mode="remote">${icon('signal', 2, 28)}<b>Spielt auf seinem Gerät mit</b>
+            <small>${esc(pick.username)} bekommt eine Einladung. Jeder wirft bei sich zu Hause und gibt seine Würfe selbst ein.</small></button>
+        </div>
+        <button class="btn line" data-act="addFriendBack">Anderen Freund wählen</button>`;
+    } else body = fr.length ? `<div class="slist">${fr.map((f) => `<button class="srow" data-act="addFriendPick" data-v="${esc(f.id)}" ${inLineup.has(f.pid) ? 'disabled' : ''}>
+        <span class="pc sm" style="${pcVars(3)}">${esc(f.username.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(f.username)}<small>${inLineup.has(f.pid) ? 'spielt schon mit' : f.avg ? `Ø 501 ${String(Math.round(f.avg * 10) / 10).replace('.', ',')}` : 'Freund'}</small></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
+      : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie im Backstage hinzu.' : 'Lade Freunde …'}</p>`;
+  } else if (tab === 'new') {
     body = `<p class="ap-hint">Wie heißt der neue Mitspieler? Jeder Name gibt es nur einmal.</p>
       <input id="newPlayer" class="field" placeholder="Name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
       <p id="nameHint" class="name-hint" aria-live="polite"></p>

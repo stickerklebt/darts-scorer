@@ -138,6 +138,8 @@ export function gameView() {
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
+  // Online: ist der Freund dran, wartet dieses Gerät – statt Eingabe ein Hinweis
+  if (m.online && thrower !== S.mainId) pad = `<div class="onl-turn"><span class="ot-dot"></span><b>${esc(nameOf(thrower))} wirft</b><small>auf seinem Gerät – du siehst jeden Dart hier</small></div>`;
   const botTurn = isBot(thrower);
   return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''} ${botTurn ? 'botturn' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
