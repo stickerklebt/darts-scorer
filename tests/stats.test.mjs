@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createMatch } from '../js/match.js';
 import * as X from '../js/x01.js';
-import { overview, doubleAttempts, matchesOf } from '../js/stats.js';
+import { overview, doubleAttempts, matchesOf, legDetail } from '../js/stats.js';
 
 const dart = (m, n, mult) => X.throwDart(m, n, mult);
 
@@ -150,4 +150,28 @@ test('Schnellwahl: nur die letzten 50 Aufnahmen, Checkout-Bereich (Rest ≤ 170)
   const co = { id: 'c', game: 'x01', startedAt: 3, legs: [{ turns: turns(26, 40, 150) }] };      // im Checkout-Bereich
   assert.deepEqual(quickScores([neu, co], 'a'), [45]);
   assert.deepEqual(quickScores([co], 'a'), []);
+});
+
+test('legDetail: Aufnahmen, geworfene Darts und Kennzahlen eines Legs', () => {
+  const m = nineDarter(Date.now());
+  const d = legDetail(m, 0, 'a');
+  assert.equal(d.no, 1); assert.equal(d.winner, 0); assert.equal(d.sides[0].s, 0);
+  const a = d.sides[0], b = d.sides[1];
+  assert.equal(a.turns.length, 3); assert.equal(a.darts, 9); assert.equal(a.avg, 167); assert.equal(a.t180, 2);
+  assert.equal(a.high, 180); assert.equal(a.checkout, 141); assert.equal(a.f9, 167);
+  assert.deepEqual(a.turns[2].throws, ['T20', 'T19', 'D12']); assert.equal(a.turns[2].rest, 0); assert.equal(a.turns[2].out, true);
+  assert.equal(a.turns[0].throws, null); assert.equal(a.turns[0].rest, 321);
+  assert.equal(b.avg, 60); assert.equal(b.turns.length, 2);
+  assert.equal(legDetail(m, 5, 'a'), null);
+  // Aus Sicht des Gegners steht dessen Seite zuerst
+  assert.equal(legDetail(m, 0, 'b').sides[0].s, 1);
+});
+
+test('fullStats: Verweise auf Rekord-Leg, besten Average, höchste Aufnahme und Checkout', () => {
+  const m = nineDarter(Date.now());
+  const st = fullStats([m], 'a');
+  assert.deepEqual(st.bestLegRef, { mid: m.id, li: 0 });
+  assert.deepEqual(st.bestAvgRef, { mid: m.id });
+  assert.equal(st.top5[0].mid, m.id); assert.equal(st.top5[0].li, 0); assert.equal(m.legs[0].turns[st.top5[0].ti].score, 180);
+  assert.equal(st.topCo[0].mid, m.id); assert.equal(m.legs[0].turns[st.topCo[0].ti].out, true);
 });

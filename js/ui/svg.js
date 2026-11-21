@@ -292,12 +292,14 @@ export function sparkles(n = 6, seed = 1) {
 }
 
 /** Goldener Rauch: Schwaden aus Rauschen (feTurbulence), treiben langsam seitlich wie im Wind. Nur Hintergrund, kaum sichtbar. */
-export const goldSmoke = (id = 'gs') => `<span class="smoke" aria-hidden="true"><svg viewBox="0 0 800 200" preserveAspectRatio="none">
-  <defs><filter id="${id}" x="0" y="0" width="100%" height="100%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.022" numOctaves="3" seed="8" result="n"/>
-    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.93  0 0 0 0 0.76  0 0 0 0 0.36  0 0 0 2.4 -1.15"/>
-    <feGaussianBlur stdDeviation="2"/></filter></defs>
-  <rect width="800" height="200" filter="url(#${id})"/></svg><svg class="s2" viewBox="0 0 800 200" preserveAspectRatio="none"><rect width="800" height="200" filter="url(#${id})"/></svg></span>`;
+export const goldSmoke = (id = 'gs') => {
+  // drei Schichten mit eigenem Rauschen (kaum gestreckt → wolkig statt streifig); CSS lässt sie kreisen, schwingen und wie Windböen anschwellen
+  const layer = (k, freq, seed) => `<svg class="s${k}" viewBox="0 0 600 300" preserveAspectRatio="none"><defs><filter id="${id}${k}" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="3" seed="${seed}" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.93  0 0 0 0 0.76  0 0 0 0 0.36  0 0 0 2.6 -1.2"/>
+    <feGaussianBlur stdDeviation="3"/></filter></defs><rect width="600" height="300" filter="url(#${id}${k})"/></svg>`;
+  return `<span class="smoke" aria-hidden="true">${layer(1, '0.007 0.011', 8)}${layer(2, '0.010 0.008', 21)}${layer(3, '0.013 0.017', 5)}</span>`;
+};
 
 /** Lichtstrich, der ab und zu um eine Zahl läuft (gerundetes Rechteck, Strich gleitet entlang) */
 export const numRing = () => '<span class="num-ring" aria-hidden="true"></span>';

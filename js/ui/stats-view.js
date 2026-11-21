@@ -6,6 +6,7 @@ import { esc, fmt, seg, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, matchList } from './stats-extra.js';
+import { recAttrs } from './legdetail.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Verlauf & mehr']];
@@ -20,9 +21,12 @@ export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
 
 const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
-const cards = (items, cls = '') => `<div class="kv ${cls}">${items.map(([k, v, sub], i) => `<div class="kv-c glint" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map(([k, v, sub, ref], i) => {
+  const tap = ref && v !== '–';
+  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
+}).join('')}</div>`;
 const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
-const rankList = (title, rows) => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<div class="rl"><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></div>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
+const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
   const name = nameOf(pid);
@@ -37,30 +41,30 @@ export function statsHeader(pid) {
 }
 
 /* ---------------- Unter-Reiter ---------------- */
-function overviewTab(st) {
+function overviewTab(st, pid) {
   const c = st.counts;
   return `<div class="hero-stat">${goldSmoke('gsS')}${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
-      ['Bester Average', fmt(st.bestMatchAvg, 2)], ['First 9', fmt(st.f9, 2)],
-      ['Höchste Aufnahme', st.top5[0]?.score ?? '–'], ['Höchstes Checkout', st.highestCo ?? '–'],
+      ['Bester Average', fmt(st.bestMatchAvg, 2), '', st.bestAvgRef], ['First 9', fmt(st.f9, 2)],
+      ['Höchste Aufnahme', st.top5[0]?.score ?? '–', '', st.top5[0]], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
       ['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
-      ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'],
-    ])}
+      ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
+    ], '', pid)}
     <div class="minirow"><span><small>Matches</small><b>${st.matches}</b></span><span><small>Siege</small><b>${st.wins}</b></span><span><small>Längste Serie</small><b>${st.bestStreak}</b></span></div>`;
 }
 
-function scoringTab(st) {
+function scoringTab(st, pid) {
   const c = st.counts;
-  return block('', rankList('Top 5 Aufnahmen', st.top5))
+  return block('', rankList('Top 5 Aufnahmen', st.top5, pid))
     + block('Anzahl', cards([['180', c.t180], ['140+', c.t140], ['100+', c.t100], ['60+', c.t60]], 'four'))
     + block('Pro Aufnahme', cards([['Ø Aufnahme', fmt(st.perTurn)], ['Bust-Quote', pct(st.bustRate)]]))
     + block('', distChart(st));
 }
 
-function checkoutTab(st) {
+function checkoutTab(st, pid) {
   return record('Höchstes Checkout', st.highestCo ?? '–', st.favourite ? `Lieblingsdoppel ${st.favourite.field} (${st.favourite.count}×)` : '')
     + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`]), 'three'))
-    + rankList('Top 5 Checkouts', st.topCo);
+    + rankList('Top 5 Checkouts', st.topCo, pid);
 }
 
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
@@ -102,13 +106,13 @@ function fold(key, title, summary, body) {
 }
 
 /** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
-function moreTab(st) {
+function moreTab(st, pid) {
   const c = st.counts;
   return block('', historyCharts(st))
-    + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st))
-    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st))
+    + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st, pid))
+    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid))
     + fold('legs', 'Legs', `Bestes ${st.bestLeg ? `${st.bestLeg} Darts` : '–'} · Ø ${fmt(st.avgLegDarts)} Darts`,
-      cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–'], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four'))
+      cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four', pid))
     + fold('matches', 'Matches', `${st.matches} ${st.matches === 1 ? 'Match' : 'Matches'} · ${st.wins} Siege`,
       matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
 }
@@ -130,7 +134,7 @@ export function statsView() {
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
-  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'more' ? moreTab(st) : overviewTab(st);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${head}
     <nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
     <div class="subbody sub-${sub}">${body}</div>

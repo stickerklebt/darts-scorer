@@ -1262,10 +1262,18 @@
 .hero-stat > small, .hero-stat > em, .hero-stat > .glitter { position: relative; z-index: 2; }
 .hero-stat .smoke { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; mix-blend-mode: screen;
   -webkit-mask: radial-gradient(ellipse 70% 80% at 50% 55%, #000 30%, transparent 85%); mask: radial-gradient(ellipse 70% 80% at 50% 55%, #000 30%, transparent 85%); }
-.hero-stat .smoke svg { position: absolute; top: -10%; left: -50%; width: 200%; height: 120%; animation: smoke-drift 26s linear infinite; }
-.hero-stat .smoke svg.s2 { opacity: .6; transform: scaleY(-1); animation: smoke-drift2 38s linear infinite; }
-@keyframes smoke-drift { from { transform: translateX(-25%) scaleY(1); } 50% { transform: translateX(0) scaleY(1.15); } to { transform: translateX(25%) scaleY(1); } }
-@keyframes smoke-drift2 { from { transform: translateX(25%) scaleY(-1.1); } to { transform: translateX(-25%) scaleY(-1); } }
+.hero-stat .smoke svg { position: absolute; top: -50%; left: -30%; width: 160%; height: 200%; will-change: transform, opacity; }
+/* Wind: Schicht 1 kreist, Schicht 2 schwingt hin und her und atmet, Schicht 3 kreist gegenläufig und schneller.
+   Die Deckkraft schwillt unregelmäßig an und ab (verschiedene Längen) → mal ruhig, mal weht es kräftig. */
+.hero-stat .smoke .s1 { animation: smoke-orbit 47s linear infinite, smoke-gust1 29s ease-in-out infinite; }
+.hero-stat .smoke .s2 { animation: smoke-sway 37s ease-in-out infinite, smoke-gust2 41s ease-in-out infinite; }
+.hero-stat .smoke .s3 { animation: smoke-orbit-r 23s linear infinite, smoke-gust3 53s ease-in-out infinite; }
+@keyframes smoke-orbit { from { transform: rotate(0deg) translateX(14%) rotate(0deg); } to { transform: rotate(360deg) translateX(14%) rotate(-360deg); } }
+@keyframes smoke-orbit-r { from { transform: rotate(0deg) translateX(9%) rotate(0deg) scaleX(-1); } to { transform: rotate(-360deg) translateX(9%) rotate(360deg) scaleX(-1); } }
+@keyframes smoke-sway { 0% { transform: translate(-16%, 4%) rotate(-5deg) scale(1); } 30% { transform: translate(6%, -6%) rotate(3deg) scale(1.12); } 55% { transform: translate(18%, 3%) rotate(6deg) scale(1.02); } 80% { transform: translate(-4%, 7%) rotate(-2deg) scale(1.1); } 100% { transform: translate(-16%, 4%) rotate(-5deg) scale(1); } }
+@keyframes smoke-gust1 { 0%, 100% { opacity: .2; } 18% { opacity: .75; } 40% { opacity: .3; } 62% { opacity: .15; } 82% { opacity: .65; } }
+@keyframes smoke-gust2 { 0%, 100% { opacity: .5; } 25% { opacity: .15; } 45% { opacity: .15; } 70% { opacity: .8; } 88% { opacity: .35; } }
+@keyframes smoke-gust3 { 0%, 100% { opacity: .1; } 15% { opacity: .1; } 38% { opacity: .7; } 55% { opacity: .55; } 75% { opacity: .1; } }
 /* kräftiges Gold direkt hinter der Zahl */
 .hero-stat .glitter::before { content: ""; position: absolute; left: -18%; right: -18%; top: 8%; bottom: 4%; z-index: -1; pointer-events: none; border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(255,205,90,.55), rgba(212,150,40,.22) 45%, transparent 72%); filter: blur(10px); animation: gold-breathe 4s ease-in-out infinite; }
@@ -1339,3 +1347,34 @@
 .backstage .me-card { margin-top: 4px; }
 .me-card { padding-left: 4px; border-color: rgba(212,166,58,.4) !important; }
 .me-card::after { display: none; }
+
+/* ---------- Leg-Detail (Fenster aus der Statistik) ---------- */
+.kv-c.tap, .rl.tap { cursor: pointer; font: inherit; color: inherit; text-align: left; }
+.kv-c.tap { width: 100%; }
+.kv-c.tap::after { content: "›"; position: absolute; right: 10px; top: 8px; font-size: 20px; line-height: 1; color: var(--gold); opacity: .8; z-index: 3; }
+.rl.tap { width: 100%; background: none; border-left: 0; border-right: 0; border-bottom: 0; }
+.rl.tap::after { content: "›"; font-size: 22px; line-height: 1; color: var(--red-d); align-self: center; }
+.rl.tap:active { background: rgba(11,10,8,.08); }
+.sheet.wide { max-width: 640px; }
+.ld-sub { margin-bottom: 10px !important; font-size: 15px !important; }
+.ld .label { margin-top: 18px; }
+.ld-who { margin: 14px 0 6px !important; font-size: 18px !important; text-align: left !important; border-left: 5px solid var(--pc, var(--gold)); padding-left: 8px; }
+.ld-who .tag { vertical-align: middle; margin-left: 6px; }
+.ld-line { margin: 0 0 8px !important; text-align: left !important; font-size: 15px !important; }
+.ld-kv { gap: 8px; margin-bottom: 4px; }
+.ld-kv .kv-c { padding: 9px 10px 8px; }
+.ld-kv .kv-c b { font-size: 26px; margin-top: 4px; }
+.ld-tbl { margin: 0; }
+.ld-tbl td, .ld-tbl th { text-align: right; }
+.ld-tbl th.l, .ld-tbl td.darts { text-align: left; }
+.ld-tbl td { font-size: 18px; padding: 8px 9px; }
+.ld-tbl td:first-child { font-size: 13px; letter-spacing: .1em; color: var(--muted); }
+.ld-tbl td small { display: block; font-size: 11px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.ld-tbl td.darts { white-space: normal; }
+.ld-tbl td.darts i { display: inline-block; min-width: 38px; margin: 0 4px 0 0; padding: 1px 6px; font-style: normal; text-align: center; border: 1px solid var(--line2); border-radius: 4px; font-size: 16px; }
+.ld-tbl td.darts i.miss { color: var(--muted); }
+.ld-tbl td.darts em { font-style: normal; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ld-tbl tr.co td { color: var(--gold); }
+.ld-tbl tr.bust td { color: var(--red); }
+.ld-tbl tr.hl td { background: var(--panel3); box-shadow: inset 3px 0 0 var(--gold); }
+.ld-tbl tr.hl td:nth-child(3) { color: var(--gold); }

@@ -619,6 +619,12 @@ const actions = {
     render();
   },
   settings() { ui.modal = { type: 'settings' }; render(); },
+  /* Rekord-Karte/Zeile in der Statistik → Leg bzw. Match im Detail */
+  rec(el) {
+    const d = el.dataset, num = (v) => (v === '' || v === undefined ? null : Number(v));
+    ui.modal = { type: 'leg', mid: d.m, li: num(d.l), ti: num(d.t), pid: d.p }; render();
+    document.querySelector('.sheet')?.scrollTo(0, 0);
+  },
   statsWho() { ui.modal = { type: 'pickStats' }; render(); },
   statsPick(el) { S.statsPid = el.dataset.v; ui.modal = null; ui.heatSel = null; render(); },
   period(el) { S.statsPeriod = el.dataset.v; if (ui.modal?.type === 'period') ui.modal = null; render(); },

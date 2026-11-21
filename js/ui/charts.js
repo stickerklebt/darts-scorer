@@ -41,7 +41,7 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
   }
   const raw = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i)} ${y(p.v)}`).join('');
   const mv = values.map((_, i) => avg[i]).map((a, i) => (a === null ? null : `${x(i)} ${y(a)}`)).filter(Boolean);
-  const dots = pts.map((p, k) => `<rect class="dt" style="--k:${k}" x="${x(p.i) - 3}" y="${y(p.v) - 3}" width="6" height="6" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width="1"/>`).join('');
+  const dots = pts.map((p, k) => `<rect class="dt" style="--k:${k}" x="${r1(x(p.i) - 2)}" y="${r1(y(p.v) - 2)}" width="4" height="4" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>`).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
     ${g}
     <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".55" stroke-width="1.5"/>

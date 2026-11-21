@@ -11,6 +11,7 @@ import { profilePicker } from './stats-view.js';
 import { comparePicker } from './compare.js';
 import { auth, sync } from '../sync.js';
 import { dateStr } from './stats-view.js';
+import { legSheet } from './legdetail.js';
 
 /** Sync-Stand in Worten */
 function syncText() {
@@ -60,6 +61,8 @@ export function sheetView() {
     inner = addPlayerSheet();
   } else if (md.type === 'pickCmp') {
     inner = comparePicker(md.k);
+  } else if (md.type === 'leg') {
+    inner = legSheet(md);
   } else if (md.type === 'pickStats') {
     inner = profilePicker();
   } else if (md.type === 'wipe') {
@@ -104,7 +107,7 @@ export function sheetView() {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;
   }
-  return `<div class="scrim" data-act="scrim"><div class="sheet">${inner}</div></div>`;
+  return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' ? 'wide' : ''}">${inner}</div></div>`;
 }
 
 /** Spieler hinzufügen: drei Wege – neuer Spieler, bekannter Spieler (mit Suche), Bot */

@@ -74,23 +74,25 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const buckets = BUCKETS.map(() => 0);
   const ranges = RANGES.map(() => ({ chances: 0, hits: 0 }));
   const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [];
+  let bestLegRef = null, bestAvgRef = null;
 
   for (const m of ms) {
     const solo = m.sides.length === 1; // gegen sich selbst = Training: zählt weder als Sieg noch als Niederlage
     const s = sideOf(m, pid), won = !solo && !!m.winners?.includes(s), date = when(m);
     const opp = m.sides.filter((_, i) => i !== s).flat();
     let mp = 0, md = 0;
-    for (const l of m.legs) {
+    for (const [li, l] of m.legs.entries()) {
       if (l.winner !== undefined) {
         legsTotal++;
         if (l.winner === s) {
           legsWon++;
           const d = l.turns.filter((t) => t.s === s).reduce((a, t) => a + t.darts, 0);
+          if (!legDarts.length || d < Math.min(...legDarts)) bestLegRef = { mid: m.id, li };
           legDarts.push(d); if (d <= 9) nine++; if (d <= 15) le15++;
         }
       }
       let n = 0;
-      for (const t of l.turns) {
+      for (const [ti, t] of l.turns.entries()) {
         if (t.pid !== pid) continue;
         turns++; pts += t.score; darts += t.darts; mp += t.score; md += t.darts;
         if (n < 3) { f9p += t.score; f9d += t.darts; }
@@ -99,9 +101,9 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
         const sc = t.score;
         if (sc === 180) counts.t180++; else if (sc >= 140) counts.t140++; else if (sc >= 100) counts.t100++; else if (sc >= 60) counts.t60++;
         buckets[BUCKETS.findIndex(([, lo, hi]) => sc >= lo && sc <= hi)]++;
-        top.push({ score: sc, date, opp });
+        top.push({ score: sc, date, opp, mid: m.id, li, ti });
         if (t.out) {
-          cos.push({ score: sc, date, opp, darts: t.darts });
+          cos.push({ score: sc, date, opp, darts: t.darts, mid: m.id, li, ti });
           const last = t.throws?.[t.throws.length - 1];
           if (last) { const k = label(last); favourite[k] = (favourite[k] || 0) + 1; }
         }
@@ -112,7 +114,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
       }
     }
     const mAvg = md ? (mp / md) * 3 : null;
-    if (mAvg !== null && (bestMatchAvg === null || mAvg > bestMatchAvg)) bestMatchAvg = mAvg;
+    if (mAvg !== null && (bestMatchAvg === null || mAvg > bestMatchAvg)) { bestMatchAvg = mAvg; bestAvgRef = { mid: m.id }; }
     const dbl = doubleAttempts([m], pid);
     series.push({ id: m.id, date, avg: mAvg, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, won, solo });
     if (!solo) { versus++; if (won) { wins++; streak++; bestStreak = Math.max(bestStreak, streak); } else streak = 0; }
@@ -133,7 +135,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     favourite: fav ? { field: fav[0], count: fav[1] } : null,
     dartsPerCheckout: doubles.hits ? doubles.attempts / doubles.hits : null,
     bestLeg: legDarts.length ? Math.min(...legDarts) : null, avgLegDarts: legDarts.length ? legDarts.reduce((a, b) => a + b, 0) / legDarts.length : null,
-    nine, le15, buckets, series, list: list.reverse(),
+    nine, le15, buckets, series, list: list.reverse(), bestLegRef, bestAvgRef,
   };
 }
 function setsOf(m, s) {
@@ -198,4 +200,42 @@ export function quickScores(matches, pid, current = null, n = 8) {
   const count = new Map();
   for (const v of recent) count.set(v, (count.get(v) || 0) + 1);
   return [...count.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0]).slice(0, n).map(([v]) => v).sort((a, b) => a - b);
+}
+
+/* ---------------- Leg im Detail: Kennzahlen je Seite + jede Aufnahme mit den geworfenen Darts ---------------- */
+/**
+ * Ein Leg eines X01-Matches, aufgeschlüsselt. `pid` bestimmt, welche Seite zuerst kommt.
+ * Je Seite: Kennzahlen (Ø, Darts, Aufnahmen, höchste, 100+/140+/180, First 9, Checkout) und alle Aufnahmen
+ * { i (Index im Leg), pid, startRem, score, darts, bust, out, rest, throws: ['T20','S5',…] oder null bei Summen-Eingabe }.
+ */
+export function legDetail(m, li, pid) {
+  const l = m.legs[li];
+  if (!l) return null;
+  const mine = Math.max(0, sideOf(m, pid));
+  const order = m.sides.map((_, s) => s).sort((a, b) => (a === mine ? -1 : a) - (b === mine ? -1 : b));
+  const sides = order.map((s) => {
+    const turns = [];
+    l.turns.forEach((t, i) => {
+      if (t.s !== s) return;
+      turns.push({
+        i, pid: t.pid, startRem: t.startRem, score: t.score, darts: t.darts, bust: !!t.bust, out: !!t.out,
+        rest: t.bust ? t.startRem : t.startRem - t.score, throws: t.throws ? t.throws.map(label) : null,
+      });
+    });
+    const pts = turns.reduce((a, t) => a + t.score, 0), darts = turns.reduce((a, t) => a + t.darts, 0);
+    const f9 = turns.slice(0, 3);
+    const f9d = f9.reduce((a, t) => a + t.darts, 0);
+    const co = turns.find((t) => t.out);
+    return {
+      s, won: l.winner === s, turns, darts, pts,
+      avg: darts ? (pts / darts) * 3 : null,
+      f9: f9d ? (f9.reduce((a, t) => a + t.score, 0) / f9d) * 3 : null,
+      high: turns.reduce((a, t) => Math.max(a, t.score), 0),
+      t100: turns.filter((t) => t.score >= 100 && t.score < 140).length,
+      t140: turns.filter((t) => t.score >= 140 && t.score < 180).length,
+      t180: turns.filter((t) => t.score === 180).length,
+      checkout: co ? co.score : null, busts: turns.filter((t) => t.bust).length,
+    };
+  });
+  return { li, no: li + 1, set: l.set, winner: l.winner, starter: l.starter, finished: l.winner !== undefined, mine, sides };
 }
