@@ -1449,7 +1449,7 @@
     radial-gradient(ellipse 78% 150% at 40% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,.62)),
     repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, rgba(0,0,0,0) 2px 7px),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23ffd86b' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M28 0L56 28L28 56L0 28Z'/%3E%3Cpath d='M28 10L46 28L28 46L10 28Z' stroke-opacity='.08'/%3E%3C/g%3E%3Cpath d='M28 19l2.6 6.3 6.8.4-5.2 4.3 1.8 6.6L28 33l-5.8 3.6 1.8-6.6-5.2-4.3 6.8-.4z' fill='%23000' fill-opacity='.28'/%3E%3Cg fill='%23ffd86b' fill-opacity='.35'%3E%3Ccircle cx='0' cy='28' r='1.6'/%3E%3Ccircle cx='56' cy='28' r='1.6'/%3E%3Ccircle cx='28' cy='0' r='1.6'/%3E%3Ccircle cx='28' cy='56' r='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 56px 56px,
-    linear-gradient(90deg, #3e040d, #9a1325 26%, #c81f35 50%, #9a1325 74%, #48050f); }
+    linear-gradient(90deg, #26020a, #620b19 26%, #861226 50%, #620b19 74%, #2c030b); }
 .pb-in::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 2px 0 rgba(255,240,200,.28), inset 0 -6px 10px rgba(0,0,0,.5), inset 10px 0 14px rgba(0,0,0,.35); }
 .pb-in .pb-vine { width: 52px; height: 22px; flex: none; }
 .pb-in .pb-vine.r { margin-left: auto; }
