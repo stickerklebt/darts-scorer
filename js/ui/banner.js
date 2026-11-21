@@ -85,7 +85,7 @@ export function playerBanner({ name, avg = null, badges = [null, null, null], st
     <div class="pb-ribbon"><div class="pb-in">
       ${vine(false)}
       <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(10, 3)}</span>
-      <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b></span>
+      <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b>${sparkles(5, 11)}</span>
       ${vine(true)}
     </div></div>
     <div class="pb-badges">${slots}</div>
