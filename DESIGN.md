@@ -92,3 +92,8 @@ kleinen Dartpfeil (`dartGlyph()` in `ui/aimboard.js`: Creme-Barrel, rote Flights
 ## Icon
 App-Icon bewusst schlicht: Zielscheibe (Goldring, Rot, Schwarz, Creme, rotes Bull) auf dunklem Grund – `tools/mkicon.mjs`.
 Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) auf dunklem Grund. Das Wappen bleibt in der App (Splash, Anmeldung).
+
+## Spieler-Banner
+Goldenes Band (Verlauf hell → dunkel, Rasterpunkte, zwei schwarze Linien, Schwalbenschwanz-Enden, leicht schief −1,2°) auf
+schwarzer Bühne mit langsam drehendem Strahlenkranz und rotem Pop-Art-Block. Name in IM Fell English SC, Creme mit schwarzer
+Kontur; Average in League Gothic im schwarzen Kästchen mit Goldrand. Abzeichen: Wappenschilde mit Goldrand, erscheinen nacheinander.

@@ -1,8 +1,9 @@
 /* Reiter „Freunde“: eigener Name, Suche nach eindeutigen Namen, Anfragen, Freundesliste.
    Freundesprofil: wichtigste 501-Kennzahlen (vom Server aus den Matches des Freundes berechnet). */
-import { ui } from '../store.js';
+import { S, ui } from '../store.js';
 import { auth } from '../sync.js';
-import { movingAvg } from '../stats.js';
+import { movingAvg, overview } from '../stats.js';
+import { playerBanner } from './banner.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, fuse, stars, sparkles, goldSmoke, numRing, COLORS } from './svg.js';
@@ -55,9 +56,7 @@ export function friendsView() {
   return `<main class="page friends backstage">
     <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b><small>${sub}</small></button>`).join('')}</div>
     <h2 class="label">Freunde${inc.length ? ` <span class="badge-n">${inc.length}</span>` : ''}</h2>
-    <div class="profile me-card">
-      <span class="pfname"><small>Dein Name für Freunde</small><b>${esc(me?.username || '')}</b></span>
-    </div>
+    ${playerBanner({ name: me?.username || '', avg: S.mainId ? overview(S.matches, S.mainId).avg : null, sub: 'Dein Name für Freunde' })}
     <h2 class="label">Freund hinzufügen</h2>
     <input id="friendSearch" class="field search" value="${esc(ui.fsearch?.q || '')}" placeholder="Namen suchen …" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search">
     ${searchRows()}
@@ -79,9 +78,7 @@ const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';
   const head = `<header class="bar"><button class="sq" data-act="backFriends" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">Freund</span><span class="sq ghost"></span></header>`;
-  const top = `<div class="profile me-card">
-      <span class="pfname"><small>${d?.user?.friendsSince ? `Freunde seit ${dateStr(d.user.friendsSince)}` : 'Freund'}</small><b>${esc(name)}</b></span>
-    </div>`;
+  const top = playerBanner({ name, avg: d?.stats?.x501?.avg ?? null, sub: d?.user?.friendsSince ? `Freunde seit ${dateStr(d.user.friendsSince)}` : 'Freund' });
   if (!d) return `${head}<main class="page">${top}<p class="foot">${fr?.error ? esc(fr.error) : 'Lade Statistik …'}</p></main>`;
   const st = d.stats || { total: 0, games: {} }, x = st.x501;
   const games = Object.entries(st.games || {}).sort((a, b) => b[1] - a[1]);

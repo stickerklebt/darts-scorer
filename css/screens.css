@@ -1411,3 +1411,36 @@
 .dt-tap .dt-ring { opacity: 0; transition: opacity .15s; }
 .dt-tap:hover .dt-ring, .dt-tap:active .dt-ring { opacity: 1; }
 .chart-key .ck-tap { margin-left: auto; color: var(--dim); }
+
+/* ================= Spieler-Banner (Backstage, Freundesprofil) ================= */
+/* Kulisse (SVG) · goldenes Band mit Schwalbenschwanz-Enden, Name links, Average rechts · darunter 3 Abzeichen */
+.pbanner { position: relative; overflow: hidden; margin: 4px 0 6px; padding: 26px 0 16px; border-radius: var(--r-panel);
+  border: 1px solid rgba(212,166,58,.55); background: #0b0a08; isolation: isolate; }
+.pb-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.pb-rays { transform-origin: 200px 92px; animation: pb-turn 90s linear infinite; }
+@keyframes pb-turn { to { transform: rotate(360deg); } }
+.pb-star { animation: pb-twinkle 4.5s ease-in-out infinite; animation-delay: calc(var(--k) * -0.8s); transform-box: fill-box; transform-origin: center; }
+@keyframes pb-twinkle { 0%, 100% { opacity: .9; transform: scale(1); } 50% { opacity: .35; transform: scale(.75); } }
+
+.pb-ribbon { position: relative; display: flex; align-items: center; gap: 12px; margin: 0 -2px; padding: 10px 34px 10px 34px; min-height: 74px;
+  background: linear-gradient(180deg, #f6d77e 0%, #e2b24a 45%, #b98724 100%); color: var(--ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 50%, 100% 100%, 0 100%, 22px 50%);
+  transform: rotate(-1.2deg); }
+.pb-ribbon::before { content: ""; position: absolute; inset: 5px 0; pointer-events: none;
+  border-top: 2px solid rgba(11,10,8,.65); border-bottom: 2px solid rgba(11,10,8,.65); }
+.pb-ribbon::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: var(--tex-halftone); opacity: .35; mix-blend-mode: multiply; }
+.pb-name { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; z-index: 1; }
+.pb-name small { font-family: var(--f-num); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #5a3f0c; line-height: 1.2; }
+.pb-name b { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 7.4vw, 36px); line-height: 1.05; color: var(--cream);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink), 3px 3px 0 var(--ink); }
+.pb-avg { position: relative; z-index: 1; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 78px; padding: 6px 10px 5px; border-radius: 8px; background: var(--ink); border: 2px solid var(--gold); box-shadow: 0 0 0 2px var(--ink), 0 0 14px rgba(255,210,90,.35); }
+.pb-avg small { font-family: var(--f-num); font-size: 11px; letter-spacing: .18em; color: var(--gold); line-height: 1; }
+.pb-avg b { font-family: var(--f-num); font-weight: 400; font-size: 34px; line-height: 1; color: var(--cream); transform: scaleX(var(--num-w)); margin-top: 2px; }
+
+.pb-badges { display: flex; justify-content: center; gap: 14px; margin-top: 14px; }
+.pb-badge { width: 52px; height: 58px; filter: drop-shadow(0 3px 0 rgba(0,0,0,.6)); animation: pb-pop .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(var(--k) * 90ms + 150ms); }
+@keyframes pb-pop { from { opacity: 0; transform: translateY(8px) scale(.7); } }
+@media (min-width: 560px) { .pbanner { padding: 32px 0 20px; } .pb-ribbon { min-height: 84px; padding: 10px 48px; } .pb-badge { width: 60px; height: 66px; } }
+@media (prefers-reduced-motion: reduce) { .pb-rays, .pb-star, .pb-badge { animation: none; } }

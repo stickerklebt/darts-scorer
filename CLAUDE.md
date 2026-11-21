@@ -159,6 +159,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
 - **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): oben drei Kacheln Spielhistorie · Eigener Caller ·
   Einstellungen, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
+- **Spieler-Banner** (`ui/banner.js`, `playerBanner`): statt der Namenskarte im Backstage und oben im Freundesprofil.
+  Kulisse im Queen-Look (Strahlenkranz, roter Pop-Art-Block mit Raster, Sterne – keine Cover-Motive), goldenes Band mit
+  Schwalbenschwanz-Enden: Name links, Ø 501 rechts, darunter 3 Abzeichen (vorerst Platzhalter-Pokale, werden noch überarbeitet).
 - **Freunde** (im Backstage): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
