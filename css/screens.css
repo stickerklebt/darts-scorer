@@ -1428,27 +1428,36 @@
 .pbanner { position: relative; margin: 6px 0 8px; }
 /* Stil wie ein heraldisches Plakat: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold), Name in Karminrot (Fell SC),
    Average in Gold, grüne Ranken. Nur Stilmittel – kein Wappen, kein Logo. */
-.pb-ribbon { position: relative; filter: drop-shadow(0 4px 0 rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(226,103,28,.18));
-  background: linear-gradient(90deg, #7d150f 0%, #d2451a 18%, #f2a93b 38%, #ffe08a 50%, #f2a93b 62%, #d2451a 82%, #7d150f 100%);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 30px) 50%, 100% 100%, 0 100%, 30px 50%); }
-.pb-in { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 92px; padding: 10px 52px; margin: 5px 0;
-  background: radial-gradient(ellipse 70% 120% at 50% 50%, #1d140c, #0b0a08 70%); color: var(--cream);
-  clip-path: polygon(6px 0, calc(100% - 6px) 0, calc(100% - 33px) 50%, calc(100% - 6px) 100%, 6px 100%, 33px 50%); }
-.pb-in::before { content: ""; position: absolute; inset: 6px 30px; pointer-events: none;
-  border-top: 1px solid rgba(242,169,59,.55); border-bottom: 1px solid rgba(242,169,59,.55); }
-.pb-name { position: relative; z-index: 1; min-width: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(40px, 11.5vw, 64px); line-height: 1;
-  color: #e23d55; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 4px 2px; letter-spacing: .02em;
-  text-shadow: 0 1px 0 #ff8a9a, 2px 3px 0 #4a0710, 0 0 18px rgba(226,61,85,.35); }
-.pb-avg { position: relative; z-index: 1; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 4px 10px 2px; border-left: 1px solid rgba(242,169,59,.45); }
-.pb-avg small { font-family: var(--f-num); font-size: 12px; letter-spacing: .2em; color: #f2a93b; line-height: 1; }
-.pb-avg b { font-family: var(--f-num); font-weight: 400; font-size: clamp(42px, 11.5vw, 60px); line-height: .95; margin: 2px 6px 0; transform: scaleX(var(--num-w));
-  color: #ffd86b; text-shadow: 2px 2px 0 #7d150f !important; filter: none !important; }
+/* Nur Name und Zahl, eingerahmt von Rosenranken – keine Linien, kein Rahmen. Name fett (Kontur), glänzt und glitzert. */
+.pb-ribbon { position: relative; }
+.pb-in { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 92px; padding: 8px 6px;
+  background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(120,20,30,.28), transparent 75%); }
+.pb-in .pb-vine { width: 64px; height: 24px; flex: none; }
+.pb-name { position: relative; min-width: 0; display: inline-block; }
+.pb-name b { display: block; font-family: var(--f-display); font-weight: 400; font-size: clamp(42px, 12vw, 68px); line-height: 1.05; letter-spacing: .03em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 6px;
+  -webkit-text-stroke: 2.2px #e8344f; paint-order: stroke fill;
+  background: linear-gradient(100deg, #ff4d66 0%, #ff4d66 38%, #fff1f3 48%, #ffd86b 52%, #ff4d66 62%, #ff4d66 100%) 0 0 / 300% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 6px rgba(255,77,102,.9)) drop-shadow(0 0 18px rgba(255,60,90,.6)) drop-shadow(2px 3px 0 #4a0710);
+  animation: pb-shine 2.6s linear infinite, pb-glow 1.8s ease-in-out infinite; }
+@keyframes pb-shine { from { background-position: 100% 0; } to { background-position: -50% 0; } }
+@keyframes pb-glow { 0%, 100% { filter: drop-shadow(0 0 5px rgba(255,77,102,.8)) drop-shadow(0 0 14px rgba(255,60,90,.45)) drop-shadow(2px 3px 0 #4a0710); }
+  50% { filter: drop-shadow(0 0 10px rgba(255,120,140,1)) drop-shadow(0 0 30px rgba(255,60,90,.85)) drop-shadow(2px 3px 0 #4a0710); } }
+.pb-name .sparkles { position: absolute; inset: -6px -10px; pointer-events: none; }
+.pb-name .sparkles i { position: absolute; width: 14px; height: 14px; animation: pb-spark var(--t) ease-in-out infinite; animation-delay: var(--d); transform: scale(var(--s)); }
+.pb-name .sparkles svg { width: 100%; height: 100%; fill: #fff6d8; filter: drop-shadow(0 0 4px #ffd86b); }
+@keyframes pb-spark { 0%, 70%, 100% { opacity: 0; transform: scale(.2) rotate(0deg); } 80% { opacity: 1; transform: scale(var(--s)) rotate(45deg); } 90% { opacity: .2; transform: scale(.4) rotate(90deg); } }
+.pb-avg { flex: none; display: flex; align-items: center; }
+.pb-avg b { font-family: var(--f-num); font-weight: 400; font-size: clamp(44px, 12vw, 66px); line-height: 1; margin: 0 6px; transform: scaleX(var(--num-w));
+  color: #ffd86b; text-shadow: 2px 3px 0 #7d150f, 0 0 16px rgba(255,216,107,.45); }
+@media (max-width: 420px) { .pb-in { gap: 8px; } .pb-in .pb-vine { width: 34px; } }
+@media (prefers-reduced-motion: reduce) { .pb-name b, .pb-name .sparkles i { animation: none; } }
 
 .pb-badges { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 12px; }
-.pb-vine { width: 74px; height: 26px; flex: none; opacity: .9; }
+.pb-vine { flex: none; opacity: .95; }
 .pb-vine.r { transform: scaleX(-1); }
-@media (max-width: 400px) { .pb-vine { width: 40px; } .pb-badges { gap: 10px; } }
+@media (max-width: 400px) { .pb-badges { gap: 10px; } }
 .pb-slot { position: relative; width: 62px; height: 68px; padding: 0; display: grid; place-items: center; border-radius: 10px;
   animation: pb-pop .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(var(--k) * 90ms + 120ms); }
 .pb-slot .tb { width: 100%; height: 100%; filter: drop-shadow(0 3px 0 rgba(0,0,0,.6)); transition: transform .15s; }
@@ -1458,7 +1467,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
   color: var(--gold); font-family: var(--f-num); font-size: 30px; }
 @keyframes pb-pop { from { opacity: 0; transform: translateY(8px) scale(.7); } }
 .pb-since { text-align: center; margin: 4px 0 0 !important; }
-@media (min-width: 560px) { .pb-in { min-height: 108px; padding: 12px 70px; gap: 22px; } .pb-slot { width: 70px; height: 76px; } }
+@media (min-width: 560px) { .pb-in { min-height: 108px; gap: 22px; } .pb-slot { width: 70px; height: 76px; } }
 
 /* Stufen: Legendär glänzt (Lichtstrich läuft um das Schild), ausgegraut = noch nicht erreicht */
 .tb.t-none { opacity: .55; }

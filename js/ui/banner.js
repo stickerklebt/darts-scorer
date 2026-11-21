@@ -3,7 +3,7 @@
    (erreichte farbig in ihrer Stufe, noch nicht erreichte ausgegraut). */
 import { ui } from '../store.js';
 import { esc, fmt } from './common.js';
-import { COLORS, starPath } from './svg.js';
+import { COLORS, starPath, sparkles } from './svg.js';
 import { TROPHIES, CATEGORIES, TIER_NAMES, trophyById } from '../trophies.js';
 
 /** Farben je Stufe: [Schild, Rand, Pokal] */
@@ -37,7 +37,8 @@ const vine = (flip) => `<svg class="pb-vine ${flip ? 'r' : ''}" viewBox="0 0 120
   <path d="M118 6 C96 4 86 18 70 18 C56 18 54 8 44 10 C34 12 34 26 22 26 C12 26 8 18 4 22" fill="none" stroke="#3f7a2c" stroke-width="2.2" stroke-linecap="round"/>
   <path d="M44 10 C40 18 46 22 50 20 M70 18 C72 26 80 28 82 24 M22 26 C20 32 26 36 30 32" fill="none" stroke="#3f7a2c" stroke-width="1.6" stroke-linecap="round"/>
   ${[[96, 8, -30], [78, 15, 20], [58, 13, -40], [36, 15, 30], [14, 24, -20], [50, 20, 60], [82, 24, -10]].map(([x, y, r]) => `<path d="M${x} ${y} c3 -5 9 -5 11 -1 c-3 4 -8 5 -11 1z" transform="rotate(${r} ${x} ${y})" fill="#5aa13c" stroke="#1d3a14" stroke-width=".8"/>`).join('')}
-  <circle cx="4" cy="22" r="2.4" fill="#c8243a"/></svg>`;
+  <g transform="translate(6 22)"><circle r="6.2" fill="#9e1028"/><path d="M-4 -1 C-3 -5 3 -5 4 -1 C3 3 -3 3 -4 -1Z" fill="#d42a44"/>
+    <path d="M-2 -1.5 C-1 -3.5 2 -3 2 -0.5 C1 1.5 -1.5 1 -2 -1.5Z" fill="#f0566c"/><circle r="1.1" fill="#7a0a1c"/></g></svg>`;
 
 /** Fortschritt einer noch nicht (ganz) erreichten Stufe als kurzer Text */
 function progress(t, st) {
@@ -82,10 +83,12 @@ export function playerBanner({ name, avg = null, badges = [null, null, null], st
   }).join('');
   return `<section class="pbanner" aria-label="Banner von ${esc(name)}">
     <div class="pb-ribbon"><div class="pb-in">
-      <b class="pb-name">${esc(name)}</b>
-      <span class="pb-avg"><small>Ø 501</small><b class="pop">${avg === null || avg === undefined ? '–' : fmt(avg)}</b></span>
+      ${vine(false)}
+      <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(10, 3)}</span>
+      <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b></span>
+      ${vine(true)}
     </div></div>
-    <div class="pb-badges">${vine(false)}${slots}${vine(true)}</div>
+    <div class="pb-badges">${slots}</div>
     ${open !== null ? picker(open, state, badges.map((b) => b?.id || null)) : ''}
   </section>`;
 }
