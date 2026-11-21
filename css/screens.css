@@ -1429,10 +1429,17 @@
 /* Stil wie ein heraldisches Plakat: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold), Name in Karminrot (Fell SC),
    Average in Gold, grüne Ranken. Nur Stilmittel – kein Wappen, kein Logo. */
 /* Nur Name und Zahl, eingerahmt von Rosenranken – keine Linien, kein Rahmen. Name fett (Kontur), glänzt und glitzert. */
-.pb-ribbon { position: relative; }
-.pb-in { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 92px; padding: 8px 6px;
-  background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(120,85,20,.22), transparent 75%); }
-.pb-in .pb-vine { width: 64px; height: 24px; flex: none; }
+/* Band wie ein Spiel-Banner: links gerade, rechts Kerbe (Schwalbenschwanz), Goldrand, innen tiefes Rot mit
+   geprägtem Sternmuster und Lichtkante oben. Name und Zahl stehen auf dem Band. Keine Figuren. */
+.pb-ribbon { position: relative; padding: 3px; background: linear-gradient(180deg, #ffe39a, #d4a63a 45%, #8a5e12);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 50%, 100% 100%, 0 100%); filter: drop-shadow(0 4px 0 rgba(0,0,0,.6)); }
+.pb-in { position: relative; display: flex; align-items: center; justify-content: flex-start; gap: 14px; min-height: 96px; padding: 8px 64px 8px 18px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 32px) 50%, 100% 100%, 0 100%); overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0) 38%, rgba(0,0,0,.25)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='%23000' fill-opacity='.22'%3E%3Cpath d='M11 4l2 5.2 5.6.3-4.3 3.5 1.5 5.4L11 15.3 6.2 18.4l1.5-5.4-4.3-3.5 5.6-.3z'/%3E%3Cpath d='M33 26l2 5.2 5.6.3-4.3 3.5 1.5 5.4-4.8-3.1-4.8 3.1 1.5-5.4-4.3-3.5 5.6-.3z'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 44px 44px, linear-gradient(90deg, #8e1022, #b3192c 55%, #8e1022); }
+.pb-in::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,.18); pointer-events: none; }
+.pb-in .pb-vine { width: 52px; height: 22px; flex: none; }
+.pb-in .pb-vine.r { margin-left: auto; }
 .pb-name { position: relative; min-width: 0; display: inline-block; isolation: isolate; }
 /* Name: fette Kontur, Glanz läuft durch die Buchstaben. Leuchten als zweite Textebene dahinter (text-shadow folgt den
    Buchstaben – kein filter auf dem Kasten, sonst malt Safari ein Rechteck). */
@@ -1451,12 +1458,12 @@
 .pb-name .sparkles { position: absolute; inset: -6px -10px; pointer-events: none; z-index: 1; }
 /* Average wie die große 501 auf der Startseite: Creme, Versatz Rot/Schwarz/Gold, Bleisatz-Kante, glimmt, Glitzer */
 .pb-avg { position: relative; flex: none; display: flex; align-items: center; }
-.pb-avg b { display: inline-block; font-family: var(--f-num); font-weight: 400; font-size: clamp(54px, 15vw, 84px); line-height: .9; margin: 0 10px 0 4px;
+.pb-avg b { display: inline-block; font-family: var(--f-num); font-weight: 400; font-size: clamp(50px, 13vw, 76px); line-height: .9; margin: 0 10px 0 4px;
   transform: scaleX(var(--num-w)); transform-origin: center; font-variant-numeric: tabular-nums; color: var(--cream);
   text-shadow: 3px 2px 0 var(--red), 6px 7px 0 var(--ink), 8px 6px 0 var(--gold); filter: url(#ink); animation: pb-numglow 4.5s ease-in-out infinite; }
 @keyframes pb-numglow { 50% { text-shadow: 3px 2px 0 var(--red), 6px 7px 0 var(--ink), 8px 6px 0 var(--gold), 0 0 26px rgba(255,214,120,.55); } }
 .pb-avg .sparkles { position: absolute; inset: -8px; pointer-events: none; }
-@media (max-width: 420px) { .pb-in { gap: 8px; } .pb-in .pb-vine { width: 34px; } }
+@media (max-width: 420px) { .pb-in { gap: 8px; padding: 8px 46px 8px 12px; } .pb-in .pb-vine { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pb-name b, .pb-name b::before, .pb-avg b { animation: none; } }
 
 .pb-badges { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 12px; }
@@ -1472,7 +1479,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
   color: var(--gold); font-family: var(--f-num); font-size: 30px; }
 @keyframes pb-pop { from { opacity: 0; transform: translateY(8px) scale(.7); } }
 .pb-since { text-align: center; margin: 4px 0 0 !important; }
-@media (min-width: 560px) { .pb-in { min-height: 108px; gap: 22px; } .pb-slot { width: 70px; height: 76px; } }
+@media (min-width: 560px) { .pb-in { min-height: 108px; gap: 20px; } .pb-slot { width: 70px; height: 76px; } }
 
 /* Stufen: Legendär glänzt (Lichtstrich läuft um das Schild), ausgegraut = noch nicht erreicht */
 .tb.t-none { opacity: .8; }

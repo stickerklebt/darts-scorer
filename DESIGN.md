@@ -94,7 +94,7 @@ App-Icon bewusst schlicht: Zielscheibe (Goldring, Rot, Schwarz, Creme, rotes Bul
 Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) auf dunklem Grund. Das Wappen bleibt in der App (Splash, Anmeldung).
 
 ## Spieler-Banner
-Heraldisches Plakat ohne Hintergrundfläche: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold → zurück), Schwalbenschwanz-Enden,
-volle Breite. Name in Cinzel, Gold mit Glanz und goldenem Leuchten; Ø in League Gothic, Gold mit rotem Versatz,
-durch eine feine Goldlinie vom Namen getrennt, dicht daneben. Darunter Abzeichen (Pokale mit Metallverlauf, Farbe = Stufe: Bronze, Silber,
-Gold, Königsrot, Legendär mit umlaufendem Lichtstrich; nicht erreicht = grau) zwischen grünen Ranken. Keine Wappen-/Logo-Motive.
+Spiel-Banner ohne Figuren: Band links gerade, rechts Kerbe (Schwalbenschwanz), 3 px Goldrand (Verlauf hell → dunkel), innen tiefes
+Rot mit geprägtem Sternmuster und heller Lichtkante oben, leichter Schatten nach unten. Auf dem Band links der Name (Cinzel, Gold mit
+Glanz und Leuchten, Glitzer), daneben der Ø wie die große 501 (Creme, Versatz Rot/Schwarz/Gold). Rosenranken an den Enden (nur breit).
+Darunter drei Pokale (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
