@@ -159,9 +159,15 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
 - **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): oben drei Kacheln Spielhistorie · Eigener Caller ·
   Einstellungen, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
-- **Spieler-Banner** (`ui/banner.js`, `playerBanner`): statt der Namenskarte im Backstage und oben im Freundesprofil.
-  Kulisse im Queen-Look (Strahlenkranz, roter Pop-Art-Block mit Raster, Sterne – keine Cover-Motive), goldenes Band mit
-  Schwalbenschwanz-Enden: Name links, Ø 501 rechts, darunter 3 Abzeichen (vorerst Platzhalter-Pokale, werden noch überarbeitet).
+- **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
+  von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben,
+  darunter 3 Abzeichen mit grünen Ranken. Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
+- **Trophäen** (`js/trophies.js`, aus den Matches berechnet, läuft auch auf dem Server): Katalog `TROPHIES` (Scoring, Finishes,
+  Legs, Einzeldart, Laufbahn, Bots), Stufen bronze · silver · gold · royal (Königsrot) · legendary (nur 9-Darter).
+  Alle haben vorerst dasselbe Pokal-Wappen (`trophyBadge`), Farbe = erreichte Stufe, nicht erreicht = ausgegraut.
+  Eigenes Banner: Abzeichen antippen → darunter Auswahl aller Trophäen; nur erreichte wählbar, keine doppelt.
+  Wahl in `prefs.badges` (synchronisiert); Freunde sehen sie über `friend-stats.js` (`badges`). Doppelquote im Match erst ab
+  3 Versuchen; Robin Hood = zwei eigene Darts beim Ausbullen unter 2 mm auseinander.
 - **Freunde** (im Backstage): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.

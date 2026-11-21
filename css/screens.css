@@ -1423,34 +1423,72 @@
 .chart-key .ck-tap { margin-left: auto; color: var(--dim); }
 
 /* ================= Spieler-Banner (Backstage, Freundesprofil) ================= */
-/* Kulisse (SVG) · goldenes Band mit Schwalbenschwanz-Enden, Name links, Average rechts · darunter 3 Abzeichen */
-.pbanner { position: relative; overflow: hidden; margin: 4px 0 6px; padding: 26px 0 16px; border-radius: var(--r-panel);
-  border: 1px solid rgba(212,166,58,.55); background: #0b0a08; isolation: isolate; }
-.pb-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
-.pb-rays { transform-origin: 200px 92px; animation: pb-turn 90s linear infinite; }
-@keyframes pb-turn { to { transform: rotate(360deg); } }
-.pb-star { animation: pb-twinkle 4.5s ease-in-out infinite; animation-delay: calc(var(--k) * -0.8s); transform-box: fill-box; transform-origin: center; }
-@keyframes pb-twinkle { 0%, 100% { opacity: .9; transform: scale(1); } 50% { opacity: .35; transform: scale(.75); } }
-
-.pb-ribbon { position: relative; display: flex; align-items: center; gap: 12px; margin: 0 -2px; padding: 10px 34px 10px 34px; min-height: 74px;
-  background: linear-gradient(180deg, #f6d77e 0%, #e2b24a 45%, #b98724 100%); color: var(--ink);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 50%, 100% 100%, 0 100%, 22px 50%);
-  transform: rotate(-1.2deg); }
-.pb-ribbon::before { content: ""; position: absolute; inset: 5px 0; pointer-events: none;
-  border-top: 2px solid rgba(11,10,8,.65); border-bottom: 2px solid rgba(11,10,8,.65); }
-.pb-ribbon::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: var(--tex-halftone); opacity: .35; mix-blend-mode: multiply; }
-.pb-name { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; z-index: 1; }
-.pb-name small { font-family: var(--f-num); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #5a3f0c; line-height: 1.2; }
-.pb-name b { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 7.4vw, 36px); line-height: 1.05; color: var(--cream);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  text-shadow: 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink), 3px 3px 0 var(--ink); }
+/* Kein Hintergrund: nur das goldene Band, von links bis rechts mit sichtbaren Schwalbenschwanz-Enden.
+   Name und Average groß und dicht beieinander in der Mitte, darunter die drei Abzeichen. */
+.pbanner { position: relative; margin: 6px 0 8px; }
+/* Stil wie ein heraldisches Plakat: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold), Name in Karminrot (Fell SC),
+   Average in Gold, grüne Ranken. Nur Stilmittel – kein Wappen, kein Logo. */
+.pb-ribbon { position: relative; filter: drop-shadow(0 4px 0 rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(226,103,28,.18));
+  background: linear-gradient(90deg, #7d150f 0%, #d2451a 18%, #f2a93b 38%, #ffe08a 50%, #f2a93b 62%, #d2451a 82%, #7d150f 100%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 30px) 50%, 100% 100%, 0 100%, 30px 50%); }
+.pb-in { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 92px; padding: 10px 52px; margin: 5px 0;
+  background: radial-gradient(ellipse 70% 120% at 50% 50%, #1d140c, #0b0a08 70%); color: var(--cream);
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, calc(100% - 33px) 50%, calc(100% - 6px) 100%, 6px 100%, 33px 50%); }
+.pb-in::before { content: ""; position: absolute; inset: 6px 30px; pointer-events: none;
+  border-top: 1px solid rgba(242,169,59,.55); border-bottom: 1px solid rgba(242,169,59,.55); }
+.pb-name { position: relative; z-index: 1; min-width: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(40px, 11.5vw, 64px); line-height: 1;
+  color: #e23d55; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 4px 2px; letter-spacing: .02em;
+  text-shadow: 0 1px 0 #ff8a9a, 2px 3px 0 #4a0710, 0 0 18px rgba(226,61,85,.35); }
 .pb-avg { position: relative; z-index: 1; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-width: 78px; padding: 6px 10px 5px; border-radius: 8px; background: var(--ink); border: 2px solid var(--gold); box-shadow: 0 0 0 2px var(--ink), 0 0 14px rgba(255,210,90,.35); }
-.pb-avg small { font-family: var(--f-num); font-size: 11px; letter-spacing: .18em; color: var(--gold); line-height: 1; }
-.pb-avg b { font-family: var(--f-num); font-weight: 400; font-size: 34px; line-height: 1; color: var(--cream); transform: scaleX(var(--num-w)); margin-top: 2px; }
+  padding: 4px 10px 2px; border-left: 1px solid rgba(242,169,59,.45); }
+.pb-avg small { font-family: var(--f-num); font-size: 12px; letter-spacing: .2em; color: #f2a93b; line-height: 1; }
+.pb-avg b { font-family: var(--f-num); font-weight: 400; font-size: clamp(42px, 11.5vw, 60px); line-height: .95; margin: 2px 6px 0; transform: scaleX(var(--num-w));
+  color: #ffd86b; text-shadow: 2px 2px 0 #7d150f !important; filter: none !important; }
 
-.pb-badges { display: flex; justify-content: center; gap: 14px; margin-top: 14px; }
-.pb-badge { width: 52px; height: 58px; filter: drop-shadow(0 3px 0 rgba(0,0,0,.6)); animation: pb-pop .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(var(--k) * 90ms + 150ms); }
+.pb-badges { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 12px; }
+.pb-vine { width: 74px; height: 26px; flex: none; opacity: .9; }
+.pb-vine.r { transform: scaleX(-1); }
+@media (max-width: 400px) { .pb-vine { width: 40px; } .pb-badges { gap: 10px; } }
+.pb-slot { position: relative; width: 62px; height: 68px; padding: 0; display: grid; place-items: center; border-radius: 10px;
+  animation: pb-pop .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(var(--k) * 90ms + 120ms); }
+.pb-slot .tb { width: 100%; height: 100%; filter: drop-shadow(0 3px 0 rgba(0,0,0,.6)); transition: transform .15s; }
+button.pb-slot:active .tb { transform: scale(.94); }
+.pb-slot.on { box-shadow: 0 0 0 2px var(--gold), 0 0 14px rgba(255,210,90,.35); }
+.pb-empty { width: 50px; height: 56px; display: grid; place-items: center; border: 2px dashed rgba(212,166,58,.45); border-radius: 12px 12px 24px 24px;
+  color: var(--gold); font-family: var(--f-num); font-size: 30px; }
 @keyframes pb-pop { from { opacity: 0; transform: translateY(8px) scale(.7); } }
-@media (min-width: 560px) { .pbanner { padding: 32px 0 20px; } .pb-ribbon { min-height: 84px; padding: 10px 48px; } .pb-badge { width: 60px; height: 66px; } }
-@media (prefers-reduced-motion: reduce) { .pb-rays, .pb-star, .pb-badge { animation: none; } }
+.pb-since { text-align: center; margin: 4px 0 0 !important; }
+@media (min-width: 560px) { .pb-in { min-height: 108px; padding: 12px 70px; gap: 22px; } .pb-slot { width: 70px; height: 76px; } }
+
+/* Stufen: Legendär glänzt (Lichtstrich läuft um das Schild), ausgegraut = noch nicht erreicht */
+.tb.t-none { opacity: .55; }
+.tb.t-legendary { filter: drop-shadow(0 0 8px rgba(255,226,122,.7)) drop-shadow(0 3px 0 rgba(0,0,0,.6)) !important; }
+.tb-shine { animation: tb-shine 3.2s linear infinite; }
+@keyframes tb-shine { to { stroke-dashoffset: -100; } }
+
+/* Auswahl aller Trophäen (öffnet sich unter dem Banner) */
+.tpick { position: relative; margin-top: 14px; padding: 12px 12px 14px; border-radius: var(--r-panel); background: linear-gradient(180deg, #1e1a15, #16130f);
+  border: 1px solid rgba(212,166,58,.5); animation: sub-in .3s cubic-bezier(.2,.9,.3,1); }
+.tp-arrow { position: absolute; top: -8px; left: calc(50% + (var(--slot) - 1) * 76px - 8px); width: 16px; height: 16px; transform: rotate(45deg);
+  background: #1e1a15; border-left: 1px solid rgba(212,166,58,.5); border-top: 1px solid rgba(212,166,58,.5); }
+@media (min-width: 560px) { .tp-arrow { left: calc(50% + (var(--slot) - 1) * 86px - 8px); } }
+.tp-head { display: flex; align-items: center; gap: 10px; }
+.tp-head > b { font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--cream); }
+.tp-head > small { flex: 1; font-family: var(--f-num); font-size: 13px; letter-spacing: .1em; color: var(--muted); }
+.tp-x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); color: var(--cream2); font-size: 20px; line-height: 1; flex: none; }
+.tpick h4 { margin: 14px 0 8px; font-family: var(--f-num); font-weight: 400; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.tp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.tp-c { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto auto; column-gap: 8px; align-items: center; text-align: left;
+  padding: 8px; border-radius: 8px; background: rgba(243,233,210,.04); border: 1px solid rgba(212,166,58,.2); font: inherit; color: inherit; }
+.tp-c .tb { grid-row: 1 / span 4; width: 40px; height: 44px; }
+.tp-c b { font-family: var(--f-num); font-weight: 400; font-size: 17px; line-height: 1.1; color: var(--cream); letter-spacing: .03em; }
+.tp-c small { font-family: var(--f-num); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.tp-c em { font-style: normal; font-size: 12.5px; line-height: 1.25; color: var(--muted); }
+.tp-c i { font-style: normal; font-family: var(--f-num); font-size: 12px; color: var(--dim); }
+.tp-c.locked, .tp-c:disabled { opacity: 1; }
+.tp-c.locked b { color: var(--muted); }
+.tp-c.locked small { color: var(--dim); }
+.tp-c.got:active { transform: scale(.97); }
+.tp-c.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 12px rgba(255,210,90,.25); }
+.tp-c.used { opacity: .7; }
+@media (prefers-reduced-motion: reduce) { .pb-slot, .tb-shine { animation: none; } }

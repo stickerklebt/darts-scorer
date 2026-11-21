@@ -633,6 +633,16 @@ const actions = {
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
   heatSort(el) { ui.heatSort = el.dataset.v; render(); },
+  /* Banner: Abzeichen-Platz antippen → Auswahl darunter auf/zu; Trophäe wählen → in den Platz (synchronisiert über prefs) */
+  badgeSlot(el) { const i = Number(el.dataset.v); ui.badgePick = ui.badgePick === i ? null : i; render(); },
+  badgeSet(el) {
+    const i = ui.badgePick, id = el.dataset.v || null;
+    if (!Number.isInteger(i)) return;
+    const b = Array.isArray(S.prefs.badges) ? S.prefs.badges.slice(0, 3) : [];
+    while (b.length < 3) b.push(null);
+    if (id) for (let k = 0; k < 3; k++) if (b[k] === id) b[k] = null; // keine Trophäe doppelt
+    b[i] = id; S.prefs.badges = b; ui.badgePick = null; render();
+  },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
   compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
   backStats() { S.screen = 'home'; S.tab = 'stats'; render(); window.scrollTo(0, 0); },

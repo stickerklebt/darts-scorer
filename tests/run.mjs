@@ -2,7 +2,7 @@
 const tests = [];
 globalThis.test = (name, fn) => tests.push({ name, fn });
 
-const files = ['checkout.test.mjs', 'x01.test.mjs', 'party.test.mjs', 'stats.test.mjs', 'bulloff.test.mjs', 'fx.test.mjs', 'bots.test.mjs', 'demo.test.mjs', 'cricket.test.mjs', 'server.test.mjs', 'history.test.mjs', 'aimboard.test.mjs', 'caller.test.mjs'];
+const files = ['checkout.test.mjs', 'x01.test.mjs', 'party.test.mjs', 'stats.test.mjs', 'bulloff.test.mjs', 'fx.test.mjs', 'bots.test.mjs', 'demo.test.mjs', 'cricket.test.mjs', 'server.test.mjs', 'history.test.mjs', 'aimboard.test.mjs', 'caller.test.mjs', 'trophies.test.mjs'];
 for (const f of files) {
   globalThis.__file = f;
   const before = tests.length;

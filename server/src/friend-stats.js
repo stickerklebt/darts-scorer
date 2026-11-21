@@ -1,6 +1,7 @@
 /* Statistik eines Freundes – wie in der App immer aus den gespeicherten Matches berechnet (gleicher Code: js/stats.js).
    Freunde sehen nur Kennzahlen des Hauptspielers, nie die einzelnen Matches oder Namen von Mitspielern. */
 import { fullStats } from '../../js/stats.js';
+import { trophies, badgeSlots } from '../../js/trophies.js';
 
 const FORM = 10; // letzte Matches für die Formkurve
 
@@ -29,5 +30,14 @@ export function friendStats(state, matches) {
       };
     }
   } catch { x501 = null; } // fehlerhafte Altdaten eines Nutzers sollen die Ansicht nicht sprengen
-  return { total: mine.length, games, lastPlayed, x501 };
+  // Banner: die drei Abzeichen, die der Freund gewählt hat (nur erreichte, mit Stufe)
+  let badges = [null, null, null];
+  try {
+    if (pid) {
+      const since = (state.profiles || []).find((p) => p?.id === pid)?.createdAt ?? null;
+      const st = trophies(mine, pid, { since });
+      badges = badgeSlots(state?.prefs?.badges, st).map((id) => (id ? { id, tier: st[id].tier } : null));
+    }
+  } catch { badges = [null, null, null]; }
+  return { total: mine.length, games, lastPlayed, x501, badges };
 }
