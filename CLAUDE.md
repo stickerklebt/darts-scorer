@@ -182,7 +182,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   · **Online** (`remote`): nur du gegen einen Freund, Anwurf ausgelost, kein Ausbullen. Einladung (`POST /api/games`, gilt 10 min)
   → beim Freund Fenster + Liste im Backstage → Annehmen. Laufendes Match steht in `games` (rev): wer dran ist, gibt ein und schickt
   den Stand (`PUT`, falscher rev → 409 mit aktuellem Stand), das andere Gerät fragt alle 1,2 s (`GET …?rev=`, nicht protokolliert).
-  Eingabe/Undo nur für den, der dran ist bzw. die eigene letzte Eingabe; Abbrechen beendet es für beide; keine Revanche-Taste.
+  Eingabe/Undo nur für den, der dran ist bzw. die eigene letzte Eingabe (Knopf „Meine letzte Aufnahme zurücknehmen“ im Warte-Feld,
+  solange der Freund noch keinen Dart eingegeben hat); Abbrechen beendet es für beide; keine Revanche-Taste.
   Am Ende speichert jedes Gerät das Match im eigenen Konto. `S.current.online = { gid, role, rev, status, other }`.
   · **Auf meinem Gerät** (`local`): am Ende geht das Match an den Freund (`POST /api/confirms`, offline über `S.outbox`).
   Er sieht es im Backstage ganz unten „Hast du diese Spiele gespielt?“ → ✓ übernimmt es in sein Konto (zählt dann in seiner

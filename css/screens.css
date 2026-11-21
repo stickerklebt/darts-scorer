@@ -1628,3 +1628,5 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .pb-pic { flex: none; width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 3px solid #e7b73c; box-shadow: 0 0 0 2px #3a2606, 0 4px 8px rgba(0,0,0,.5); background: #1a1410; position: relative; z-index: 1; }
 .pb-pic > * { width: 100% !important; height: 100% !important; display: block; }
 @media (max-width: 420px) { .pb-pic { width: 48px; height: 48px; } }
+
+.onl-turn .ot-undo { margin-top: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; height: 46px; font-size: 16px; }

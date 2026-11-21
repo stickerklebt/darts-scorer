@@ -59,6 +59,12 @@ const teamLine = (side, next) => `<span class="tt">TEAM</span>${side.map((id) =>
 
 const pips = (won, total) => (total > 7 ? `<span class="setlbl">${won}</span>` : `<span class="pips">${Array.from({ length: total }, (_, i) => `<i class="${i < won ? 'w' : ''}"></i>`).join('')}</span>`);
 
+/** Wer hat die letzte fertige Aufnahme geworfen? */
+function lastTurnPid(m) {
+  if (m.game === 'x01') { for (let i = m.legs.length - 1; i >= 0; i--) { const ts = m.legs[i].turns; if (ts.length) return ts[ts.length - 1].pid; } return null; }
+  return m.turns.length ? m.turns[m.turns.length - 1].pid : null;
+}
+
 export function gameView() {
   const m = S.current;
   let title, sub, cur, board, hint, pad, thrower, isBoard = false;
@@ -140,7 +146,12 @@ export function gameView() {
     pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : []) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
   // Online: ist der Freund dran, wartet dieses Gerät – statt Eingabe ein Hinweis
-  if (m.online && thrower !== S.mainId) pad = `<div class="onl-turn"><span class="ot-dot"></span><b>${esc(nameOf(thrower))} wirft</b><small>auf seinem Gerät – du siehst jeden Dart hier</small></div>`;
+  if (m.online && thrower !== S.mainId) {
+    // Solange der Freund noch nichts eingegeben hat, kann ich meine letzte Aufnahme zurücknehmen
+    const mineLast = !m.pending?.length && lastTurnPid(m) === S.mainId;
+    pad = `<div class="onl-turn"><span class="ot-dot"></span><b>${esc(nameOf(thrower))} wirft</b><small>auf seinem Gerät – du siehst jeden Dart hier</small>
+      ${mineLast ? `<button class="btn line ot-undo" data-act="undo">${icon('undo', 2.4, 18)} Meine letzte Aufnahme zurücknehmen</button>` : ''}</div>`;
+  }
   const botTurn = isBot(thrower);
   return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''} ${botTurn ? 'botturn' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
