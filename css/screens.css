@@ -1471,7 +1471,7 @@
 .pb-name .sparkles { position: absolute; inset: 8% 4%; pointer-events: none; z-index: 1; }
 /* Average wie die große 501 auf der Startseite: Creme, Versatz Rot/Schwarz/Gold, Bleisatz-Kante, glimmt, Glitzer */
 .pb-avg { position: relative; flex: none; display: flex; align-items: center; }
-.pb-avg b { display: inline-block; font-family: var(--f-num); font-weight: 400; font-size: clamp(50px, 13vw, 76px); line-height: .9; margin: 0 10px 0 4px;
+.pb-avg b { display: inline-block; font-family: var(--f-num); font-weight: 400; font-size: clamp(44px, 11.5vw, 66px); line-height: .9; margin: 0 10px 0 4px;
   transform: scaleX(var(--num-w)); transform-origin: center; font-variant-numeric: tabular-nums; color: var(--cream);
   text-shadow: 3px 2px 0 var(--red), 6px 7px 0 var(--ink), 8px 6px 0 var(--gold); filter: url(#ink); animation: pb-numglow 4.5s ease-in-out infinite; }
 @keyframes pb-numglow { 50% { text-shadow: 3px 2px 0 var(--red), 6px 7px 0 var(--ink), 8px 6px 0 var(--gold), 0 0 26px rgba(255,214,120,.55); } }
@@ -1577,7 +1577,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .cf-btn.no:active { border-color: var(--red); color: var(--red); }
 
 /* ================= Banner: Rosen-Schmuck und hängende Pokale ================= */
-.pb-band { position: relative; z-index: 2; margin: 18px 8px 0 24px; }
+.pb-band { position: relative; z-index: 2; width: fit-content; max-width: calc(100% - 32px); margin: 18px auto 0; } /* so breit wie Name + Zahl */
 .pb-deco { position: absolute; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
 .pb-l { left: -30px; top: 50%; width: 112px; height: 132px; transform: translateY(-50%); }
 .pb-r { right: -6px; top: 50%; width: 76px; height: 102px; transform: translateY(-50%); }
