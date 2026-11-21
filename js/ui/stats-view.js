@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, TIERS, MIN_ATTEMPTS } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleMisses, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
@@ -23,7 +23,7 @@ const block = (title, body) => `<section class="sblock">${title ? `<h2 class="la
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map(([k, v, sub, ref], i) => {
   const tap = ref && v !== '–';
-  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
+  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
 }).join('')}</div>`;
 const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
@@ -67,11 +67,24 @@ function checkoutTab(st, pid) {
     + rankList('Top 5 Checkouts', st.topCo, pid);
 }
 
+/** Fenster unter der Scheibe für das angetippte Doppel: Quote und die 3 häufigsten Fehlwürfe (auch Busts) */
+const missName = (k) => (k === 'Miss' ? '0' : k);
+function dblInfo(st, key) {
+  const f = st.doubles.fields[key];
+  const head = `<div class="di-head"><b>${key}</b>${f ? `<span><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${f.hits} / ${f.attempts}</em></span>` : ''}
+    <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
+  if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
+  const miss = doubleMisses(st.doubles, key);
+  const rows = miss.map((x, i) => `<div class="di-row" style="--i:${i}"><span class="di-f ${x.field === 'Miss' ? 'zero' : ''}">${missName(x.field)}${x.field === 'Miss' ? '<small>daneben</small>' : ''}</span>
+    <span class="di-bar"><i style="width:${Math.max(4, Math.round(x.rate * 100))}%"></i></span><span class="di-p">${pct(x.rate)}<small>${x.count}×</small></span></div>`).join('');
+  return `<div class="dbl-info"><span class="di-arrow"></span>${head}
+    ${miss.length ? `<h4>Statt ${key} getroffen</h4>${rows}` : `<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p>`}</div>`;
+}
+
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
     Liste: beste Quote zuerst oder nach Zahl; Erklärung der Farben klein am Ende. */
 export function doublesBlock(st, sel, withList = true) {
   const fields = st.doubles.fields, rating = doubleRating(st.doubles);
-  const f = sel && fields[sel] ? fields[sel] : null;
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
   const sort = ui.heatSort === 'field' ? 'field' : 'rate';
   const num = (k) => (k === 'Bull' ? 25 : Number(k.slice(1)));
@@ -86,7 +99,8 @@ export function doublesBlock(st, sel, withList = true) {
     </div>
     <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>`;
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
-      <div class="heat-board">${heatBoard(fields, f ? sel : null, rating)}</div>
+      <div class="heat-board">${heatBoard(fields, sel || null, rating)}</div>
+      ${withList && sel ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? '<div class="dbl-right">' : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2>${seg('heatSort', 'v', [['rate', 'Beste zuerst'], ['field', 'Nach Zahl']], sort, 'seg sm')}</div>
@@ -108,7 +122,7 @@ function fold(key, title, summary, body) {
 /** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
   const c = st.counts;
-  return block('', historyCharts(st))
+  return block('', historyCharts(st, pid))
     + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st, pid))
     + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid))
     + fold('legs', 'Legs', `Bestes ${st.bestLeg ? `${st.bestLeg} Darts` : '–'} · Ø ${fmt(st.avgLegDarts)} Darts`,

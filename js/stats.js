@@ -16,9 +16,10 @@ export function matchesOf(matches, pid, period = 'all', now = Date.now()) {
 export const turnsOf = (m, pid) => m.legs.flatMap((l) => l.turns.filter((t) => t.pid === pid));
 const sideOf = (m, pid) => m.sides.findIndex((s) => s.includes(pid));
 
-/** Doppelversuche (nur Double Out): jeder Dart mit Rest gerade 2–40 oder 50. */
+/** Doppelversuche (nur Double Out): jeder Dart mit Rest gerade 2–40 oder 50.
+    outcomes[Feld][getroffen] = Anzahl: was bei Versuchen auf dieses Doppel wirklich getroffen wurde (auch bei Bust). */
 export function doubleAttempts(matches, pid) {
-  const fields = {};
+  const fields = {}, outcomes = {};
   let attempts = 0, hits = 0;
   for (const m of matches) {
     if (m.opts.out !== 'double') continue;
@@ -29,10 +30,13 @@ export function doubleAttempts(matches, pid) {
         attempts++; if (hit) hits++;
         fields[key] ??= { attempts: 0, hits: 0 };
         fields[key].attempts++; if (hit) fields[key].hits++;
+        const got = label(th);
+        outcomes[key] ??= {};
+        outcomes[key][got] = (outcomes[key][got] ?? 0) + 1;
       }
     }
   }
-  return { attempts, hits, rate: attempts ? hits / attempts : null, fields };
+  return { attempts, hits, rate: attempts ? hits / attempts : null, fields, outcomes };
 }
 
 /** Grundkennzahlen eines Profils. */
@@ -163,6 +167,15 @@ export function doubleTier(hits, attempts, overall) {
   return TIERS.find((t) => ratio >= t.min).k;
 }
 /** Für jedes Feld: { tier, top } – top = Platz 1–3 der besten Doppel (nur mit genug Versuchen und mind. einem Treffer). */
+/** Die häufigsten Fehlwürfe auf ein Doppel: [{ field, count, rate }] (rate = Anteil an allen Versuchen), höchstens n. */
+export function doubleMisses(doubles, key, n = 3) {
+  const f = doubles.fields[key], o = doubles.outcomes?.[key];
+  if (!f || !o) return [];
+  return Object.entries(o).filter(([k]) => k !== key)
+    .map(([field, count]) => ({ field, count, rate: count / f.attempts }))
+    .sort((a, b) => b.count - a.count || a.field.localeCompare(b.field)).slice(0, n);
+}
+
 export function doubleRating(doubles) {
   const out = {};
   const ok = Object.entries(doubles.fields).filter(([, f]) => f.attempts >= MIN_ATTEMPTS && f.hits > 0)

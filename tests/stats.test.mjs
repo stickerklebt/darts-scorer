@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createMatch } from '../js/match.js';
 import * as X from '../js/x01.js';
-import { overview, doubleAttempts, matchesOf, legDetail } from '../js/stats.js';
+import { overview, doubleAttempts, matchesOf, legDetail, doubleMisses } from '../js/stats.js';
 
 const dart = (m, n, mult) => X.throwDart(m, n, mult);
 
@@ -174,4 +174,15 @@ test('fullStats: Verweise auf Rekord-Leg, besten Average, höchste Aufnahme und 
   assert.deepEqual(st.bestAvgRef, { mid: m.id });
   assert.equal(st.top5[0].mid, m.id); assert.equal(st.top5[0].li, 0); assert.equal(m.legs[0].turns[st.top5[0].ti].score, 180);
   assert.equal(st.topCo[0].mid, m.id); assert.equal(m.legs[0].turns[st.topCo[0].ti].out, true);
+});
+
+test('Doppel antippen: häufigste Fehlwürfe, auch Busts (S1/D20 auf D1)', () => {
+  const m = createMatch('x01', [['a']], { start: 2, out: 'double', mode: 'legs', target: 1 });
+  dart(m, 1, 1);                       // Rest 2 → S1 = Bust (Versuch auf D1)
+  dart(m, 20, 2);                      // D20 = Bust
+  dart(m, 0, 1); dart(m, 0, 1); dart(m, 1, 2); // daneben, daneben, D1 Check
+  const d = doubleAttempts([m], 'a');
+  assert.deepEqual(d.fields.D1, { attempts: 5, hits: 1 });
+  assert.deepEqual(doubleMisses(d, 'D1').map((x) => [x.field, x.count]), [['Miss', 2], ['D20', 1], ['S1', 1]]);
+  assert.equal(doubleMisses(d, 'D1')[0].rate, 0.4);
 });

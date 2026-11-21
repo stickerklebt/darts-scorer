@@ -50,7 +50,6 @@ export function sheetView() {
         <div class="srow"><span class="lbl">E-Mail<small>Konto seit ${dateStr(u.createdAt)}</small></span><span class="val mail">${esc(u.email)}</span></div>
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
-      <div class="slist"><button class="srow caller-row" data-act="callerOpen"><span class="lbl">Eigener Caller<small>Zahlen selbst einsprechen – im Spiel hörst du deine Stimme</small></span>${icon('chevR', 2.4, 16)}</button></div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('anim', 'Animationen')}
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>

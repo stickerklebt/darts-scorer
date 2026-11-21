@@ -6,6 +6,7 @@ import { lineChart, barChart } from './charts.js';
 import { x01Table } from './result.js';
 import { esc, fmt, pcVars } from './common.js';
 import { dateStr } from './stats-view.js';
+import { recAttrs } from './legdetail.js';
 
 
 function legsDetail(m) {
@@ -33,11 +34,12 @@ function legsDetail(m) {
 const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {});
 
 /** Verlauf: Average und Doppelquote pro Match */
-export function historyCharts(st) {
+export function historyCharts(st, pid = '') {
+  const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
   const avgs = st.series.map((s) => s.avg);
   const dbl = st.series.map((s) => (s.dbl === null ? null : s.dbl * 100));
-  return `<h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), ends(st))}
-    <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
+  return `<h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), { ...ends(st), taps })}
+    <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
 }
 /** Scoring: Verteilung der Aufnahmen */
 export const distChart = (st) => `<h3 class="ch-h">Verteilung der Aufnahmen</h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`;

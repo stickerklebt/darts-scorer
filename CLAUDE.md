@@ -140,7 +140,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
   und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
-- **Eigener Caller** (Einstellungen › Eigener Caller, Screen `caller`): Zahl wählen (Beliebt + alle möglichen 0–180), aufnehmen
+- **Eigener Caller** (Backstage › Eigener Caller, Screen `caller`; nicht mehr in den Einstellungen): Zahl wählen (Beliebt + alle möglichen 0–180), aufnehmen
   (max. 5 s, Pegel + Zeit live), anhören, speichern/löschen. Wirft der **Hauptspieler** in X01 oder Highscore genau eine
   eingesprochene Zahl (kein Bust), spielt seine Aufnahme statt der Computerstimme (`prefs.ownCalls`, unabhängig von „Ansage“);
   weitere Computer-Ansagen warten, bis sie fertig ist. Ablage im Konto (`/api/calls`, PUT nur `audio/wav`, max. 400 KB, 200 Stück),
@@ -210,6 +210,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   als Medaillen-Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
+  Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und den 3 häufigsten Fehlwürfen auf dieses Doppel
+  in % aller Versuche, „0“ = daneben, Busts zählen mit (`doubleAttempts().outcomes`, `doubleMisses` in `stats.js`).
+  Punkte im Verlaufsdiagramm antippen → Match-Detail (wie Rekord-Karten). Unter-Reiter ohne Unschärfe/Skalierung (nur Schriftgröße).
 
 - **Testdaten** (`js/demo.js`): ~60 × 501 über 90 Tage (Hauptspieler, „Test-Tim“, „Test-Ben“) + 5 Partyspiele, Würfe aus dem
   Wurfmodell (über 170 als Summe, darunter Einzeldarts), verschiedene Lieblingsdoppel. Einmalig beim Start (`S.demoSeeded`,

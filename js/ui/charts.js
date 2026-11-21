@@ -25,7 +25,7 @@ const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.l
  * values: Zahlen oder null (Lücke), avg: gleitender Schnitt (gleiche Länge)
  * fmt: Beschriftung der y-Achse, maxHint: feste Obergrenze (z. B. 1 für Quoten)
  */
-export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '' } = {}) {
+export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '', taps = null } = {}) {
   const pts = values.map((v, i) => ({ v, a: avg[i], i })).filter((p) => p.v !== null);
   if (!pts.length) return '<p class="chart-empty">Noch keine Daten in diesem Zeitraum.</p>';
   const { lo, hi } = axisRange([...pts.map((p) => p.v), ...avg.filter((a) => a !== null && a !== undefined)], maxHint);
@@ -41,7 +41,11 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
   }
   const raw = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i)} ${y(p.v)}`).join('');
   const mv = values.map((_, i) => avg[i]).map((a, i) => (a === null ? null : `${x(i)} ${y(a)}`)).filter(Boolean);
-  const dots = pts.map((p, k) => `<rect class="dt" style="--k:${k}" x="${r1(x(p.i) - 2)}" y="${r1(y(p.v) - 2)}" width="4" height="4" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>`).join('');
+  // taps[i]: data-Attribute zum Antippen des Punkts (z. B. Match öffnen) – unsichtbare, größere Trefferfläche
+  const dots = pts.map((p, k) => {
+    const d = `<rect class="dt" style="--k:${k}" x="${r1(x(p.i) - 2)}" y="${r1(y(p.v) - 2)}" width="4" height="4" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>`;
+    return taps?.[p.i] ? `<g class="dt-tap" ${taps[p.i]}><circle cx="${x(p.i)}" cy="${y(p.v)}" r="${Math.min(10, Math.max(5, iw / n / 2))}" fill="transparent"/><circle class="dt-ring" cx="${x(p.i)}" cy="${y(p.v)}" r="5" fill="none" stroke="${COLORS.gold}" stroke-width="1.4"/>${d}</g>` : d;
+  }).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
     ${g}
     <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".55" stroke-width="1.5"/>
@@ -49,7 +53,7 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
     ${dots}
     <text x="${PAD.l}" y="${H - 6}" class="ax">${labelL}</text><text x="${W - PAD.r}" y="${H - 6}" class="ax" text-anchor="end">${labelR}</text>
   </svg>
-  <div class="chart-key"><span><i style="background:${COLORS.cream}"></i>pro Match</span><span><i style="background:${COLORS.red}"></i>gleitender Schnitt (5)</span></div>`;
+  <div class="chart-key"><span><i style="background:${COLORS.cream}"></i>pro Match</span><span><i style="background:${COLORS.red}"></i>gleitender Schnitt (5)</span>${taps ? '<span class="ck-tap">Punkt antippen = Match</span>' : ''}</div>`;
 }
 
 /** Balken: items [[label, count]] – der letzte (180) wird rot hervorgehoben. */

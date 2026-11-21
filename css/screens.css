@@ -594,7 +594,7 @@
 .record > div, .empty-card > div { background: var(--cream); border: 2px solid var(--ink); outline: 1px solid var(--ink); outline-offset: 3px; padding: 14px 12px; position: relative; }
 .record > div::before, .record > div::after { content: "❧"; position: absolute; top: 8px; font-size: 16px; color: var(--red-d); }
 .record > div::before { left: 10px; } .record > div::after { right: 10px; transform: scaleX(-1); }
-.record small { font-family: var(--f-display); font-weight: 900; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; }
+.record small { display: block; padding: 0 26px; font-family: var(--f-display); font-weight: 900; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; }
 .record b { display: block; font-size: 76px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; margin: 4px 0; text-shadow: 3px 3px 0 var(--gold); }
 .record em { font-style: normal; color: #4a4134; font-size: 15px; }
 .rlist { margin: 10px 0; background-image: none; border: 2px solid var(--ink); outline: 1px solid var(--cream2); outline-offset: -6px; padding: 14px 14px 8px; }
@@ -1187,8 +1187,8 @@
 .subtabs.three { display: grid; grid-template-columns: repeat(3, 1fr); margin: 16px 0 6px; padding: 0; overflow: visible; }
 .subtabs.three::after { display: none; }
 .subtabs.three button { height: 52px; font-size: 16px; letter-spacing: .14em; border-bottom: 0; color: var(--cream2);
-  opacity: .42; transform: scale(.9) translateY(2px); filter: blur(.2px); transition: opacity .3s ease, transform .35s cubic-bezier(.2,.9,.3,1.2), filter .3s; }
-.subtabs.three button.on { opacity: 1; transform: scale(1.12); filter: none; color: var(--cream); text-shadow: 0 0 14px rgba(229,64,44,.45); }
+  opacity: .5; font-size: 14.5px; padding-top: 3px; transition: opacity .3s ease, font-size .3s ease, color .3s; }
+.subtabs.three button.on { opacity: 1; font-size: 18px; padding-top: 0; color: var(--cream); text-shadow: 0 0 14px rgba(229,64,44,.45); }
 .subtabs.three button:not(.on):hover { opacity: .7; }
 .subtabs.three .sub-line { position: absolute; left: 0; bottom: 0; height: 3px; width: calc(100% / 3); pointer-events: none;
   transform: translateX(calc(var(--n, 0) * 100%)); transition: transform .4s cubic-bezier(.2,.9,.3,1.1); }
@@ -1319,7 +1319,7 @@
   .num-ring, .me-name .nm-trace { display: none; }
 }
 
-@media (max-width: 480px) { .subtabs.three button { font-size: 14px; letter-spacing: .08em; white-space: nowrap; } }
+@media (max-width: 480px) { .subtabs.three button { font-size: 13px; letter-spacing: .08em; white-space: nowrap; } .subtabs.three button.on { font-size: 16px; } }
 
 /* ================= Regel: Ränder immer ringsum oder gar nicht – nie nur eine Seite (siehe DESIGN.md) ================= */
 .sheet { border: 1px solid rgba(212,166,58,.7) !important; box-shadow: 0 0 0 4px rgba(11,10,8,.6), 0 -10px 40px rgba(0,0,0,.5) !important; }
@@ -1351,7 +1351,10 @@
 /* ---------- Leg-Detail (Fenster aus der Statistik) ---------- */
 .kv-c.tap, .rl.tap { cursor: pointer; font: inherit; color: inherit; text-align: left; }
 .kv-c.tap { width: 100%; }
-.kv-c.tap::after { content: "›"; position: absolute; right: 10px; top: 8px; font-size: 20px; line-height: 1; color: var(--gold); opacity: .8; z-index: 3; }
+/* Pfeil als eigenes Element (::after gehört dem Glimmen der Karte), Beschriftung hält Abstand zum Pfeil */
+.kv-c.tap { position: relative; display: block; }
+.kv-c.tap small { padding-right: 18px; }
+.kv-go { position: absolute; right: 10px; top: 10px; font-style: normal; font-family: var(--f-num); font-size: 20px; line-height: 1; color: var(--gold); opacity: .85; z-index: 3; pointer-events: none; }
 .rl.tap { width: 100%; background: none; border-left: 0; border-right: 0; border-bottom: 0; }
 .rl.tap::after { content: "›"; font-size: 22px; line-height: 1; color: var(--red-d); align-self: center; }
 .rl.tap:active { background: rgba(11,10,8,.08); }
@@ -1378,3 +1381,33 @@
 .ld-tbl tr.bust td { color: var(--red); }
 .ld-tbl tr.hl td { background: var(--panel3); box-shadow: inset 3px 0 0 var(--gold); }
 .ld-tbl tr.hl td:nth-child(3) { color: var(--gold); }
+
+/* ================= Doppel antippen: Quote + die 3 häufigsten Fehlwürfe (auch Busts) ================= */
+.dbl-info { position: relative; margin: 14px auto 0; max-width: 440px; padding: 14px 16px 12px; border-radius: var(--r-panel);
+  background: linear-gradient(180deg, #1e1a15, #16130f); border: 1px solid rgba(212,166,58,.45); animation: sub-in .3s cubic-bezier(.2,.9,.3,1); }
+.di-head { display: flex; align-items: center; gap: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(212,166,58,.25); }
+.di-head > b { font-family: var(--f-num); font-size: 44px; line-height: 1; color: var(--gold-l); transform: scaleX(var(--num-w)); transform-origin: left center; min-width: 70px; }
+.di-head > span { flex: 1; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.di-head small, .dbl-info h4 { font-family: var(--f-num); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+.di-head strong { font-family: var(--f-num); font-size: 30px; font-weight: 400; color: var(--cream); line-height: 1; }
+.di-head em { font-style: normal; font-family: var(--f-num); font-size: 15px; color: var(--muted); }
+.di-x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); color: var(--cream2); font-size: 20px; line-height: 1; flex: none; }
+.dbl-info h4 { margin: 10px 0 6px; }
+.di-row { display: grid; grid-template-columns: 74px 1fr 70px; align-items: center; gap: 10px; padding: 5px 0;
+  animation: rise .35s cubic-bezier(.2,.9,.3,1) both; animation-delay: calc(var(--i) * 60ms); }
+.di-f { font-family: var(--f-num); font-size: 26px; line-height: 1; color: var(--cream); display: flex; align-items: baseline; gap: 6px; }
+.di-f.zero { color: var(--red); }
+.di-f small { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.di-bar { height: 10px; border-radius: 5px; background: rgba(243,233,210,.08); overflow: hidden; }
+.di-bar i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--gold), var(--gold-l)); }
+.di-row:has(.zero) .di-bar i { background: linear-gradient(90deg, var(--red-d), var(--red)); }
+.di-p { text-align: right; font-family: var(--f-num); font-size: 20px; color: var(--cream); line-height: 1; }
+.di-p small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.di-none { margin: 10px 0 2px; color: var(--muted); }
+.dbl-layout .dbl-info { max-width: 520px; }
+
+/* Verlaufsdiagramm: Punkte antippen öffnet das Match */
+.dt-tap { cursor: pointer; }
+.dt-tap .dt-ring { opacity: 0; transition: opacity .15s; }
+.dt-tap:hover .dt-ring, .dt-tap:active .dt-ring { opacity: 1; }
+.chart-key .ck-tap { margin-left: auto; color: var(--dim); }
