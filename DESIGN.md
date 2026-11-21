@@ -95,6 +95,6 @@ Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) au
 
 ## Spieler-Banner
 Heraldisches Plakat ohne Hintergrundfläche: schwarzes Band mit Flammen-Rand (Rot → Orange → Gold → zurück), Schwalbenschwanz-Enden,
-volle Breite. Name in IM Fell English SC, Karminrot (#e23d55) mit dunkelrotem Versatz; Ø in League Gothic, Gold mit rotem Versatz,
+volle Breite. Name in IM Fell English SC, Gold mit Glanz und goldenem Leuchten; Ø in League Gothic, Gold mit rotem Versatz,
 durch eine feine Goldlinie vom Namen getrennt, dicht daneben. Darunter Abzeichen (Wappenschilde, Farbe = Stufe: Bronze, Silber,
 Gold, Königsrot, Legendär mit umlaufendem Lichtstrich; nicht erreicht = grau) zwischen grünen Ranken. Keine Wappen-/Logo-Motive.
