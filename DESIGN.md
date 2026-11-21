@@ -96,5 +96,6 @@ Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) au
 ## Spieler-Banner
 Spiel-Banner ohne Figuren: Band links gerade, rechts Kerbe (Schwalbenschwanz), 3 px Goldrand (Verlauf hell → dunkel), innen tiefes
 Rot mit geprägtem Sternmuster und heller Lichtkante oben, leichter Schatten nach unten. Auf dem Band links der Name (Cinzel, Gold mit
-Glanz und Leuchten, Glitzer), daneben der Ø wie die große 501 (Creme, Versatz Rot/Schwarz/Gold). Rosenranken an den Enden (nur breit).
-Darunter drei Pokale (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
+Glanz und Leuchten, Glitzer), daneben der Ø wie die große 501 (Creme, Versatz Rot/Schwarz/Gold). Schmuck im Queen-Stil: links ein Rosenstrauß (zwei Rosen, Knospen, gezackte Blätter,
+Dornenstiele, Gold-Schnörkel, Sterne), an der Kerbe ein kleiner Strauß, unten eine Dornenranke mit Röschen.
+Darunter drei Pokale an Medaillenbändern (Rot mit Goldstreifen, Goldring), die leicht schwingen (Metallverlauf je Stufe: Bronze, Silber, Gold, Königsrot, Legendär; nicht erreicht = grau).
