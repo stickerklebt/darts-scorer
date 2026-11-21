@@ -67,14 +67,14 @@ function checkoutTab(st, pid) {
     + rankList('Top 5 Checkouts', st.topCo, pid);
 }
 
-/** Fenster unter der Scheibe für das angetippte Doppel: Quote und die 3 häufigsten Fehlwürfe (auch Busts) */
+/** Fenster unter der Scheibe für das angetippte Doppel: Quote und die 5 häufigsten Fehlwürfe (auch Busts) */
 const missName = (k) => (k === 'Miss' ? '0' : k);
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
   const head = `<div class="di-head"><b>${key}</b>${f ? `<span><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${f.hits} / ${f.attempts}</em></span>` : ''}
     <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
-  const miss = doubleMisses(st.doubles, key);
+  const miss = doubleMisses(st.doubles, key, 5);
   const rows = miss.map((x, i) => `<div class="di-row" style="--i:${i}"><span class="di-f ${x.field === 'Miss' ? 'zero' : ''}">${missName(x.field)}${x.field === 'Miss' ? '<small>daneben</small>' : ''}</span>
     <span class="di-bar"><i style="width:${Math.max(4, Math.round(x.rate * 100))}%"></i></span><span class="di-p">${pct(x.rate)}<small>${x.count}×</small></span></div>`).join('');
   return `<div class="dbl-info"><span class="di-arrow"></span>${head}
