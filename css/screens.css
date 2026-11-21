@@ -1433,21 +1433,22 @@
    geprägtem Sternmuster und Lichtkante oben. Name und Zahl stehen auf dem Band. Keine Figuren. */
 /* Band: Goldrand, darunter eine dunkle Kopie als Materialdicke (3D) und ein weicher Schlagschatten → hebt sich ab.
    Innen Samt-Rot mit Tiefe: Lichtkante oben, Schatten unten und an den Rändern, feine Stoff-Rippen, Damast-Muster (Goldrauten + Sterne). */
-.pb-band::before { content: ""; position: absolute; left: 4%; right: 6%; top: 30%; bottom: -18px; z-index: -2; border-radius: 50%;
-  background: rgba(0,0,0,.85); filter: blur(16px); pointer-events: none; }
-.pb-band::after { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: -1; transform: translate(3px, 7px);
-  background: linear-gradient(180deg, #4a0a10, #1c0306); clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 50%, 100% 100%, 0 100%); pointer-events: none; }
-.pb-ribbon { position: relative; padding: 3px; background: linear-gradient(180deg, #fff0b8, #e7b73c 30%, #b5841c 70%, #6e4a0c);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 50%, 100% 100%, 0 100%); }
+.pb-band::before { content: ""; position: absolute; left: 2%; right: 4%; top: 25%; bottom: -24px; z-index: -2; border-radius: 50%;
+  background: rgba(0,0,0,.95); filter: blur(18px); pointer-events: none; }
+.pb-band::after { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: -1; transform: translate(4px, 9px);
+  background: linear-gradient(180deg, #3a0409, #120102); clip-path: polygon(0 2px, 18% 0, 47% 3px, 74% 1px, 100% 0, calc(100% - 34px) 50%, 100% 100%, 81% calc(100% - 3px), 52% 100%, 24% calc(100% - 2px), 0 100%); pointer-events: none; }
+.pb-ribbon { position: relative; padding: 3px; background: linear-gradient(180deg, #fff6cc, #f0c24a 28%, #a8771a 72%, #5a3a08);
+  clip-path: polygon(0 2px, 18% 0, 47% 3px, 74% 1px, 100% 0, calc(100% - 34px) 50%, 100% 100%, 81% calc(100% - 3px), 52% 100%, 24% calc(100% - 2px), 0 100%); }
 .pb-in { position: relative; display: flex; align-items: center; justify-content: flex-start; gap: 14px; min-height: 96px; padding: 8px 64px 8px 18px;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 32px) 50%, 100% 100%, 0 100%); overflow: hidden;
+  clip-path: polygon(0 2px, 18% 0, 47% 3px, 74% 1px, 100% 0, calc(100% - 32px) 50%, 100% 100%, 81% calc(100% - 3px), 52% 100%, 24% calc(100% - 2px), 0 100%); overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.24) 0, rgba(255,255,255,.06) 16%, rgba(255,255,255,0) 38%),
-    linear-gradient(0deg, rgba(0,0,0,.5) 0, rgba(0,0,0,0) 42%),
-    radial-gradient(ellipse 80% 150% at 42% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 .9'/%3E%3C/filter%3E%3Crect width='220' height='120' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E") 0 0 / 220px 120px,
+    linear-gradient(180deg, rgba(255,235,220,.3) 0, rgba(255,255,255,.07) 14%, rgba(255,255,255,0) 36%),
+    linear-gradient(0deg, rgba(0,0,0,.62) 0, rgba(0,0,0,0) 45%),
+    radial-gradient(ellipse 78% 150% at 40% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,.62)),
     repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, rgba(0,0,0,0) 2px 7px),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23ffd86b' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M28 0L56 28L28 56L0 28Z'/%3E%3Cpath d='M28 10L46 28L28 46L10 28Z' stroke-opacity='.08'/%3E%3C/g%3E%3Cpath d='M28 19l2.6 6.3 6.8.4-5.2 4.3 1.8 6.6L28 33l-5.8 3.6 1.8-6.6-5.2-4.3 6.8-.4z' fill='%23000' fill-opacity='.28'/%3E%3Cg fill='%23ffd86b' fill-opacity='.35'%3E%3Ccircle cx='0' cy='28' r='1.6'/%3E%3Ccircle cx='56' cy='28' r='1.6'/%3E%3Ccircle cx='28' cy='0' r='1.6'/%3E%3Ccircle cx='28' cy='56' r='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 56px 56px,
-    linear-gradient(90deg, #5e0816, #a8142a 30%, #c41d33 52%, #a8142a 75%, #6e0a1a); }
+    linear-gradient(90deg, #3e040d, #9a1325 26%, #c81f35 50%, #9a1325 74%, #48050f); }
 .pb-in::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 2px 0 rgba(255,240,200,.28), inset 0 -6px 10px rgba(0,0,0,.5), inset 10px 0 14px rgba(0,0,0,.35); }
 .pb-in .pb-vine { width: 52px; height: 22px; flex: none; }
 .pb-in .pb-vine.r { margin-left: auto; }
@@ -1464,8 +1465,8 @@
     linear-gradient(180deg, #ffffff 0%, #fffaf0 35%, #f3e6c4 55%, #ffffff 75%, #f6ead0 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: pb-shine 2.6s linear infinite, pb-edge 1.3s ease-in-out infinite; }
-.pb-name b::before { content: attr(data-t); position: absolute; inset: 0; padding: inherit; z-index: -1; color: #3a2606; -webkit-text-stroke: 1.6px #3a2606;
-  background: none; text-shadow: 2px 3px 0 #1a0f02; }
+.pb-name b::before { content: attr(data-t); position: absolute; inset: 0; padding: inherit; z-index: -1; color: #1a0f02; -webkit-text-stroke: 2.4px #1a0f02;
+  background: none; text-shadow: 3px 4px 0 #0a0501, 0 0 2px #000; }
 @keyframes pb-shine { 0% { background-position: 140% 0, 220% 0, 0 0; } 100% { background-position: -60% 0, 40% 0, 0 0; } }
 @keyframes pb-edge { 0%, 100% { -webkit-text-stroke-color: #e9b440; } 50% { -webkit-text-stroke-color: #ffd23f; } }
 .pb-name .sparkles { position: absolute; inset: 8% 4%; pointer-events: none; z-index: 1; }
@@ -1580,7 +1581,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .cf-btn.no:active { border-color: var(--red); color: var(--red); }
 
 /* ================= Banner: Rosen-Schmuck und hängende Pokale ================= */
-.pb-band { position: relative; z-index: 2; width: fit-content; max-width: calc(100% - 32px); margin: 18px auto 0; } /* so breit wie Name + Zahl */
+.pb-band { position: relative; z-index: 2; width: fit-content; max-width: calc(100% - 32px); margin: 18px auto 0; transform: rotate(-.8deg); } /* so breit wie Name + Zahl */
 .pb-deco { position: absolute; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
 .pb-l { left: -30px; top: 50%; width: 112px; height: 132px; transform: translateY(-50%); }
 .pb-r { right: -6px; top: 50%; width: 76px; height: 102px; transform: translateY(-50%); }
@@ -1630,3 +1631,10 @@ button.pb-slot:active .tb { transform: scale(.94); }
 @media (max-width: 420px) { .pb-pic { width: 48px; height: 48px; } }
 
 .onl-turn .ot-undo { margin-top: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; height: 46px; font-size: 16px; }
+
+/* Handgemacht statt perfekt: Pokale leicht unterschiedlich (Neigung, Größe), Rosen-Sträuße minimal schief */
+.pb-slot:nth-child(1) .tb { transform: rotate(-2.5deg) scale(.97); }
+.pb-slot:nth-child(2) .tb { transform: rotate(1.5deg) scale(1.04); }
+.pb-slot:nth-child(3) .tb { transform: rotate(3deg) scale(.99); }
+.pb-l { transform: translateY(-50%) rotate(-3deg) !important; }
+.pb-r { transform: translateY(-48%) rotate(4deg) !important; }
