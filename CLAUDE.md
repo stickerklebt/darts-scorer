@@ -261,7 +261,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   **Die Tafel ist die Eingabe** (`ckBoard` in `ui/game.js`): Mitte die Zahlen 20–15 als Knöpfe Single · Double · Triple
   (kleine Ringe um die Zahl: 1 = Single, 2 = Double, 3 = Triple), Bull als 25 (1 Ring) · Bull (2 Ringe); links/rechts die Treffer der Spieler (gerade Seiten links, ungerade rechts):
   1 = Schrägstrich, 2 = X, 3 = X im Kreis. Haben alle ein Feld zu, wird die Zeile durchgestrichen und gesperrt.
-  Leiste darüber: 3 Dart-Felder, Rückgängig, Daneben, Weiter (Rest der Aufnahme = daneben). Keine Dartscheiben-Eingabe mehr. Keine Animationen, nicht in der Statistik.
+  Leiste darüber: 3 Dart-Felder, Rückgängig, Daneben. Keine Dartscheiben-Eingabe. Bot am Zug: Tafel bleibt (gesperrt), nur eine winzige
+  Scheibe neben seinem Namen in der Karte. Keine Animationen, nicht in der Statistik.
   Bots zielen auf die höchste offene Zahl bzw. punkten, wenn sie hinten liegen.
 
 ## Stand

@@ -1670,7 +1670,7 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .modes.one { grid-template-columns: 1fr; }
 .modes.one .mode-art { height: 120px; }
 .ckb { display: flex; flex-direction: column; gap: 8px; }
-.ckb-bar { display: grid; grid-template-columns: repeat(3, 1fr) 48px auto auto; gap: 6px; align-items: stretch; }
+.ckb-bar { display: grid; grid-template-columns: repeat(3, 1fr) 48px auto; gap: 6px; align-items: stretch; }
 .ckd { height: 46px; display: grid; place-items: center; border-radius: var(--r-btn); border: 1px dashed var(--line2); font-family: var(--f-num); font-size: 22px; color: var(--muted); }
 .ckd.on { border-style: solid; border-color: var(--gold); color: var(--cream); background: rgba(212,166,58,.08); }
 .ckb-btn { height: 46px; padding: 0 12px; border-radius: var(--r-btn); border: 1px solid var(--line2); background: var(--panel2); color: var(--cream2);
@@ -1719,3 +1719,13 @@ svg.ckm.k3 { stroke: var(--gold-l); }
 .ckn.m3 .ckring i { border-color: #f07a24; }
 .ckmid.bull .ckring b { font-size: 15px; }
 .ckn:active .ckring i { border-color: var(--ink); }
+
+/* Cricket: Bot wirft → Tafel bleibt, nur gesperrt; seine kleine Scheibe steht winzig neben seinem Namen in der Karte */
+.ckb.locked .ckn { opacity: .5; }
+.ckb.locked .ckn:disabled { opacity: .5; }
+.ckb.locked .ckr.dead .ckn { opacity: .25; }
+.cricket .duo .botbox { position: absolute; right: 8px; top: 6px; bottom: auto; padding: 0; gap: 4px; z-index: 2; }
+.cricket .duo .botbox .av { width: 26px !important; height: 26px !important; }
+.cricket .duo .minib { display: block !important; width: 30px; height: 30px; }
+.cricket .duo .sbp:has(.botbox) .sbp-rem { padding-right: 0; }
+.cricket .duo .speech { top: 40px; bottom: auto; }

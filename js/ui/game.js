@@ -118,7 +118,7 @@ export function gameView() {
     });
     board = scoreboard(items, cur, swap);
     hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
-    pad = isBot(thrower) ? botPad(m, thrower, m.pending, cur) : ckBoard(m, st, cur);
+    pad = ckBoard(m, st, cur, isBot(thrower)); // auch wenn der Bot wirft: Tafel bleibt (gesperrt), kein großes Dartboard
   } else {
     cur = G.curSide(m); thrower = G.curThrower(m);
     const round = G.round(m);
@@ -246,23 +246,22 @@ const ckMark = (k) => (k <= 0 ? '<i class="ckm"></i>' : `<svg class="ckm k${Math
   <path d="M5 19 L19 5"/>${k >= 2 ? '<path d="M5 5 L19 19"/>' : ''}${k >= 3 ? '<circle cx="12" cy="12" r="10"/>' : ''}</svg>`);
 /** Zahl mit kleinen Ringen drum herum: 1 Ring = Single, 2 = Double, 3 = Triple (Bull: 1 = 25, 2 = Bull) */
 const ringed = (txt, k) => `<span class="ckring">${Array.from({ length: k }, (_, i) => `<i style="--r:${i}"></i>`).join('')}<b>${txt}</b></span>`;
-function ckBoard(m, st, cur) {
+function ckBoard(m, st, cur, locked = false) {
   const left = m.sides.map((_, s) => s).filter((s) => s % 2 === 0), right = m.sides.map((_, s) => s).filter((s) => s % 2 === 1);
   const markCells = (list, t) => list.map((s) => `<span class="ckc ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${ckMark(st.marks[s][t])}</span>`).join('');
   const head = (list) => list.map((s) => `<span class="ckh ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${esc(nameOf(m.sides[s][0]))}</span>`).join('');
   const rows = C.TARGETS.map((t) => {
     const dead = st.marks.every((mk) => mk[t] >= 3);
-    const btn = (mult) => `<button class="ckn m${mult}" data-act="ckHit" data-n="${t}" data-m="${mult}" ${dead ? 'disabled' : ''}>${ringed(t === 25 ? (mult === 2 ? 'Bull' : '25') : t, mult)}</button>`;
+    const btn = (mult) => `<button class="ckn m${mult}" data-act="ckHit" data-n="${t}" data-m="${mult}" ${dead || locked ? 'disabled' : ''}>${ringed(t === 25 ? (mult === 2 ? 'Bull' : '25') : t, mult)}</button>`;
     const mid = t === 25 ? `${btn(1)}${btn(2)}` : `${btn(1)}${btn(2)}${btn(3)}`;
     return `<div class="ckr ${dead ? 'dead' : ''}"><span class="cks l">${markCells(left, t)}</span><span class="ckmid ${t === 25 ? 'bull' : ''}">${mid}</span><span class="cks r">${markCells(right, t)}</span></div>`;
   }).join('');
   const p = m.pending;
   const slotsHtml = [0, 1, 2].map((i) => `<span class="ckd ${p[i] ? 'on' : ''}">${p[i] ? (p[i].n === 0 ? '–' : label(p[i])) : ''}</span>`).join('');
-  return `<div class="ckb">
+  return `<div class="ckb ${locked ? 'locked' : ''}">
     <div class="ckb-bar">${slotsHtml}
       <button class="ckb-btn" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 20)}</button>
-      <button class="ckb-btn miss" data-act="ckMiss">Daneben</button>
-      <button class="ckb-btn go" data-act="ckNext">${p.length ? 'Weiter' : '3× daneben'}</button></div>
+      <button class="ckb-btn miss" data-act="ckMiss" ${locked ? 'disabled' : ''}>Daneben</button></div>
     <div class="ckb-grid"><div class="ckr ckhead"><span class="cks l">${head(left)}</span><span class="ckmid"></span><span class="cks r">${head(right)}</span></div>${rows}</div>
   </div>`;
 }
