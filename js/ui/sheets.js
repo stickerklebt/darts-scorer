@@ -114,6 +114,18 @@ export function sheetView() {
         <button class="srow" data-act="camSingle"><span class="lbl">Nur dieses Gerät<small>Kamera und Scoreboard auf demselben Gerät</small></span>${icon('chevR', 2.4, 16)}</button>
       </div>
       <div class="sbtns">${on ? '<button class="btn line" data-act="camOff">Kamera trennen</button>' : ''}<button class="btn red" data-act="closeModal">Schließen</button></div>`;
+  } else if (md.type === 'camCtl') {
+    const c = link.cams.find((x) => x.code === md.code);
+    if (!c) inner = '<h3>Kamera getrennt</h3><div class="sbtns"><button class="btn red" data-act="closeModal">Schließen</button></div>';
+    else inner = `<h3>Kamera ${c.n}</h3><p class="cc-state">${esc(c.text || (c.status === 'connected' ? 'verbunden' : 'verbinde …'))}</p>
+      ${c.lenses.length > 1 ? `<h4 class="cc-h">Objektiv</h4><div class="cc-lens">${c.lenses.map((l) => `<button class="${l.id === c.lens ? 'on' : ''}" data-act="camLens" data-v="${esc(l.id)}">${esc(l.label)}</button>`).join('')}</div>` : ''}
+      <div class="slist">
+        <button class="srow" data-act="camRemote" data-v="${c.code}"><span class="lbl">${c.calibrated ? 'Neu einrichten' : 'Einrichten'}<small>Livebild, 4 Punkte, Kontrolle, Testdart</small></span>${icon('chevR', 2.4, 16)}</button>
+        <button class="srow" data-act="camPause"><span class="lbl">${c.paused ? 'Erkennung fortsetzen' : 'Erkennung pausieren'}</span></button>
+        <button class="srow" data-act="camDbg"><span class="lbl">Debug-Ansicht am Handy<small>Differenzbild, Achse und Spitze</small></span><span class="tog ${S.prefs.camDebug ? 'on' : ''}"></span></button>
+        <button class="srow" data-act="camStopRemote"><span class="lbl" style="color:var(--red)">Kamera am Handy beenden</span></button>
+      </div>
+      <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>`;
   } else if (md.type === 'camConnect') {
     inner = `<h3>Kamera-Gerät verbinden</h3><p>Am Kamera-Gerät: Kamera › „Als Kamera-Gerät nutzen“. Dort steht ein 6-stelliger Code.</p>
       <input id="camCode" class="field cam-code" inputmode="numeric" maxlength="7" placeholder="000 000" autocomplete="off" value="${esc(link.role === 'ctl' ? link.code || '' : '')}">

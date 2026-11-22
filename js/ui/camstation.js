@@ -60,7 +60,7 @@ export function stationMessage(m) {
   if (m.type === 'turnChanged') { st.player = m.bot ? `${m.name} (Bot)` : m.name || ''; if (m.bot) st.status = 'Bot wirft – Kamera wartet'; paint(); }
   else if (m.type === 'takeout') { st.det?.takeout(); setStatus('Bereit'); }
   else if (m.type === 'throwCorrected') setStatus(`Korrigiert: ${m.label}`);
-  else if (m.type === 'hello') send({ type: 'calibrationStatus', ok: !!st.calib });
+  else if (m.type === 'hello') { send({ type: 'calibrationStatus', ok: !!st.calib }); send({ type: 'camStatus', text: st.status, paused: !!st.paused, alarm: !!st.alarm }); sendCams(); }
   // Einrichtung vom anderen Gerät
   else if (m.type === 'previewOn') { st.previewUntil = Date.now() + 3 * 60e3; previewLoop(); }
   else if (m.type === 'previewOff') st.previewUntil = 0;
@@ -69,7 +69,15 @@ export function stationMessage(m) {
     const cal = { pts: m.pts, vw: st.video.videoWidth, vh: st.video.videoHeight, thumb: thumb(st.video), at: Date.now() };
     try { localStorage.setItem('darts.calib', JSON.stringify(cal)); } catch { /* */ }
     st.det?.destroy(); st.det = null; useCalib(cal);
-  } else if (m.type === 'recalibrate') { st.det?.destroy(); st.det = null; st.calib = null; send({ type: 'calibrationStatus', ok: false }); setStatus('Wird am anderen Gerät eingerichtet …'); }
+  }
+  // Fernsteuerung von der Regie: Objektiv, Pause, Debug, Beenden – am Handy muss nichts mehr angetippt werden
+  else if (m.type === 'listCams') sendCams();
+  else if (m.type === 'useCam' && m.id) switchCam(m.id);
+  else if (m.type === 'pause') { if (!st.paused) togglePause(); }
+  else if (m.type === 'resume') { if (st.paused) togglePause(); }
+  else if (m.type === 'debug') stationDebug(!!m.on);
+  else if (m.type === 'stop') closeStation();
+  else if (m.type === 'recalibrate') { st.det?.destroy(); st.det = null; st.calib = null; send({ type: 'calibrationStatus', ok: false }); setStatus('Wird am anderen Gerät eingerichtet …'); }
 }
 
 /** Livebild ans andere Gerät (kleines JPEG, ~1 pro Sekunde, solange es angefordert ist) */
@@ -144,7 +152,9 @@ function onEvent(e) {
 
 function setStatus(t, alarm = false) {
   if (!st) return;
+  const changedText = st.status !== t;
   st.status = t; st.alarm = alarm;
+  if (st.mode === 'cam' && changedText) send({ type: 'camStatus', text: t, paused: !!st.paused, alarm });
   const s = st.el?.querySelector('.cs-st'); if (s) { s.textContent = t; s.classList.toggle('alarm', alarm); }
 }
 
@@ -191,12 +201,33 @@ async function onClick(e) {
   const c = b.dataset.cs;
   if (c === 'off') return closeStation();
   if (c === 'calib') return calibrateNow();
-  if (c === 'pause') { st.paused = !st.paused; if (st.paused) { st.det?.stop(); setStatus('Pausiert'); } else { st.det?.resume(); st.det?.start(); setStatus('Bereit'); } return paint(); }
+  if (c === 'pause') return togglePause();
   if (c === 'overlay') { st.overlay = !st.overlay; return paint(); }
   if (c === 'share') {
     const url = `${location.origin}${location.pathname}?join=${link.code}`;
     try { if (navigator.share) await navigator.share({ title: 'Darts – Kamera verbinden', text: `Code ${link.code}`, url }); else { await navigator.clipboard.writeText(url); st.hooks.toast?.('Link kopiert'); } } catch { /* abgebrochen */ }
   }
+}
+
+function togglePause() {
+  st.paused = !st.paused;
+  if (st.paused) { st.det?.stop(); setStatus('Pausiert'); } else { st.det?.resume(); st.det?.start(); setStatus(st.calib ? 'Bereit' : 'Wird an der Regie eingerichtet …'); }
+  paint();
+}
+const currentCamId = () => st?.video?.srcObject?.getVideoTracks?.()[0]?.getSettings?.().deviceId || null;
+function sendCams() {
+  if (!st) return;
+  send({ type: 'cams', list: st.cams.map((c, i) => ({ id: c.deviceId, label: c.label || `Kamera ${i + 1}` })), current: currentCamId() });
+}
+/** Anderes Objektiv (Weitwinkel/Tele): Kamera neu starten, Einrichtung danach neu */
+async function switchCam(id) {
+  try {
+    const v = await startCamera(id);
+    st.det?.destroy(); st.det = null; st.calib = null; st.video = v;
+    send({ type: 'calibrationStatus', ok: false });
+    setStatus('Objektiv gewechselt – bitte an der Regie einrichten');
+    paint(); sendCams();
+  } catch (e) { setStatus(e.message, true); }
 }
 
 /** Debug: Differenzbild, Achse und Spitze über das Livebild legen */

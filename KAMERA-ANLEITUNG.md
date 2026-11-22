@@ -23,6 +23,10 @@ Sobald das Handy steht, fasst man es nicht mehr an – eingerichtet wird deshalb
 4. Oben rechts zeigt ein kleines Schild den Stand: **● Kamera verbunden** (grün), **● Verbinde …** (gelb), **● Getrennt** (rot).
    Bricht die Verbindung ab, versucht die App es alle 3 Sekunden neu – das Spiel läuft solange mit Eingabe von Hand weiter.
 
+**Alles Weitere passiert an der Regie** – das Handy wird nach dem Aufstellen nicht mehr angefasst. In der Kamera-Liste über das
+**Zahnrad** je Kamera: Objektiv wählen (Weitwinkel/Tele), Erkennung pausieren/fortsetzen, Debug-Ansicht, neu einrichten, Kamera beenden.
+Der aktuelle Stand des Handys („Bereit“, „Bewegung …“, „Dart erkannt: T20“) steht dort live.
+
 Steht das Handy noch genauso wie beim letzten Mal, nimmt es die alte Einrichtung automatisch.
 **Zwei Kameras (z. B. Handy + altes iPad):** Am zweiten Gerät mit demselben Konto anmelden. Der Startbildschirm fragt
 **„Regie“** (hier wird gespielt) oder **„Kamera“** (filmt mit). Als Kamera wählen, aufstellen – die Regie verbindet sie selbst und

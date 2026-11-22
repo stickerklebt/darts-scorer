@@ -17,7 +17,7 @@ const save = () => { try { if (link.role) localStorage.setItem(KEY, JSON.stringi
 
 function summarize() {
   const list = [...conns.values()];
-  link.cams = list.map((c) => ({ code: c.code, n: c.n, status: c.status, calibrated: c.calibrated, moved: c.moved }));
+  link.cams = list.map((c) => ({ code: c.code, n: c.n, status: c.status, calibrated: c.calibrated, moved: c.moved, text: c.text || '', paused: !!c.paused, lenses: c.lenses || [], lens: c.lens || null }));
   link.code = link.role === 'cam' ? list[0]?.code ?? null : null;
   link.status = !list.length ? 'off' : list.some((c) => c.status === 'connected') ? 'connected' : list.some((c) => c.status === 'connecting') ? 'connecting' : 'lost';
   link.calibrated = list.some((c) => c.status === 'connected' && c.calibrated);
@@ -96,6 +96,8 @@ function add(code) {
           if (m.type === 'ping') { send({ type: 'pong' }, code); continue; }
           if (m.type === 'calibrationStatus') { c.calibrated = !!m.ok; if (m.ok) c.moved = false; changed(); }
           if (m.type === 'cameraMoved') { c.moved = true; changed(); }
+          if (m.type === 'camStatus') { c.text = m.text; c.paused = !!m.paused; changed(); }
+          if (m.type === 'cams') { c.lenses = m.list || []; c.lens = m.current; changed(); }
           onMsg(m, code);
         }
         const st = r.peerAge !== null && r.peerAge < 6000 ? 'connected' : 'connecting';

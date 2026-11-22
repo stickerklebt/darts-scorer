@@ -835,6 +835,12 @@ const actions = {
     render();
   },
   camDrop(el) { camUnlink(el.dataset.v); render(); },
+  /* Regie steuert das Handy fern: Objektiv, Pause, Debug, Beenden */
+  camCtl(el) { const code = el.dataset.v; ui.modal = { type: 'camCtl', code }; camSend({ type: 'listCams' }, code); render(); },
+  camLens(el) { camSend({ type: 'useCam', id: el.dataset.v }, ui.modal?.code); toast('Objektiv wird gewechselt – danach neu einrichten'); },
+  camPause() { const c = link.cams.find((x) => x.code === ui.modal?.code); if (c) camSend({ type: c.paused ? 'resume' : 'pause' }, c.code); },
+  camDbg() { S.prefs.camDebug = !S.prefs.camDebug; camSend({ type: 'debug', on: S.prefs.camDebug }, ui.modal?.code); render(); },
+  camStopRemote() { const code = ui.modal?.code; camSend({ type: 'stop' }, code); setTimeout(() => camUnlink(code), 800); ui.modal = null; toast('Kamera wird beendet'); render(); },
   camResumeYes() { ui.modal = null; render(); openStation('cam', stationHooks); },
   camResumeNo() { ui.modal = null; camUnlink(); render(); },
   camOff() { ui.modal = null; if (stationMode()) closeStation(); if (link.role) camUnlink(); ui.ct = null; render(); },

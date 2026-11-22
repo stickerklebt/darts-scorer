@@ -223,6 +223,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   ANDEREN Gerät mit demselben Konto: Startbildschirm zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
   Assistent `ui/camsetup.js` mit Livebild (`previewOn` → `frame` ~1/s, 640 px), Standbild (`still` → 1280 px), 4 Punkte mit Lupe,
   Overlay-Kontrolle, `calibrate { pts }` ans Handy, Testdart. Gleiches Bild wie zuletzt → Handy nimmt die alte Kalibrierung selbst.
+  **Am Handy nur starten + aufstellen**, alles andere an der Regie: Zahnrad je Kamera (`camCtl`) → Objektiv (`listCams`/`cams`/`useCam`),
+  Pause/Weiter (`pause`/`resume`), Debug (`debug`), Beenden (`stop`); Handy meldet `camStatus { text, paused }`.
   **Mehrere Kameras + Regie:** Läuft im Konto schon eine Kamera, fragt jedes weitere angemeldete Gerät auf dem Startbildschirm
   „Regie“ (Hauptgerät, hier wird gespielt) oder „Kamera“ (filmt mit). Die Regie verbindet sich mit ALLEN Kameras des Kontos
   (`/api/camlink/mine` → `codes`, neue Kameras werden automatisch dazugenommen), jede wird einzeln eingerichtet (`camRemote` mit Code).

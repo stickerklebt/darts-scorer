@@ -17,6 +17,7 @@ export function openRemoteSetup({ code, n = 1, toast, onDone }) {
   S.el.addEventListener('click', onClick);
   send({ type: 'recalibrate' }, code);
   send({ type: 'previewOn' }, code);
+  send({ type: 'listCams' }, code);
   render();
 }
 export function closeRemoteSetup(silent = false) {
@@ -34,6 +35,7 @@ export function setupMessage(m, code) {
     else { S.img = m; S.frameAt = Date.now(); updateLive(); }
     return true;
   }
+  if (m.type === 'cams') { S.lenses = m.list || []; S.lens = m.current; if (S.step === 1) render(); return true; }
   if (m.type === 'throw' && S.step === 4) { S.test.unshift(`${m.label} (${Math.round((m.confidence ?? 1) * 100)} %)`); render(); return true; }
   return false;
 }
@@ -52,7 +54,8 @@ function render() {
     S.el.innerHTML = `<div class="cal-h"><small>Kamera ${S.n} einrichten · 1 von 4</small><b>Handy aufstellen</b></div>
       <div class="rs-two">${live}<div class="rs-help"><p class="cal-big">Stell dein Handy seitlich neben das Board (Stuhl, Regal oder Klemmhalter), ca. 40–80 cm entfernt,
         etwa auf Boardhöhe oder leicht darunter, schräg auf das Board gerichtet. Mindestens 30 cm außerhalb des Boardrands, damit keine Darts
-        das Handy treffen.</p><p class="cal-big"><b>Das ganze Board muss im Bild sein</b> – links siehst du live, was das Handy sieht.</p>${SKETCH}</div></div>
+        das Handy treffen.</p><p class="cal-big"><b>Das ganze Board muss im Bild sein</b> – links siehst du live, was das Handy sieht.</p>
+        ${(S.lenses || []).length > 1 ? `<div class="cc-lens"><small>Objektiv am Handy:</small>${S.lenses.map((l) => `<button class="${l.id === S.lens ? 'on' : ''}" data-r="lens" data-id="${l.id}">${l.label}</button>`).join('')}</div>` : ''}${SKETCH}</div></div>
       <div class="cal-btns"><button data-r="cancel">Abbrechen</button><button class="go" data-r="next">Steht – weiter</button></div>`;
   } else if (S.step === 2) {
     const done = S.pts.length === 4;
@@ -143,6 +146,7 @@ function onClick(e) {
   const b = e.target.closest('[data-r]'); if (!b || b.disabled || !S) return;
   const c = b.dataset.r;
   if (c === 'cancel') return closeRemoteSetup();
+  if (c === 'lens') { send({ type: 'useCam', id: b.dataset.id }, S.code); S.lens = b.dataset.id; S.img = null; setTimeout(() => send({ type: 'previewOn' }, S.code), 1500); return render(); }
   if (c === 'reset') { S.pts = []; return render(); }
   if (c === 'still') { S.still = null; S.pts = []; return render(); }
   if (c === 'redo') { S.step = 2; return render(); }
