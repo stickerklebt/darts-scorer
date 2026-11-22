@@ -4,7 +4,7 @@
 import { homography, project, CALIB_TARGETS } from './homography.js';
 import { Detector, rgbaToGray } from './detect-core.js';
 
-const FPS = 12, MAX_W = 800;
+const FPS = 10, IDLE_FPS = 4, MAX_W = 640; // Akku schonen: kleiner rechnen, in Ruhe nur 4 Bilder/s
 
 export class CamDetector {
   /** video: laufendes <video>; pts: 4 Kalibrierpunkte (0–1, relativ zum Video); onEvent(e) */
@@ -43,7 +43,7 @@ export class CamDetector {
   resume() { this.worker ? this.worker.postMessage({ type: 'resume' }) : Object.assign(this.local, { paused: false, empty: null }); }
   loop() {
     if (!this.running) return;
-    this.t = setTimeout(() => this.loop(), 1000 / FPS);
+    this.t = setTimeout(() => this.loop(), 1000 / (performance.now() - (this.lastMotion || 0) > 20000 ? IDLE_FPS : FPS));
     if (document.hidden || this.busy || !this.video.videoWidth) return;
     const { x, y, w, h } = this.crop;
     this.ctx.drawImage(this.video, x, y, w, h, 0, 0, this.w, this.h);
@@ -53,6 +53,7 @@ export class CamDetector {
   }
   result(d) {
     this.busy = false;
+    if (d.state === 'motion' || d.event) this.lastMotion = performance.now();
     if (d.event === 'takeout') this.dartIndex = 0;
     if (d.event === 'dart') { this.dartIndex = Math.min(3, this.dartIndex + 1); d.dartIndex = this.dartIndex; d.snapshot = this.snapshot(d.tip); d.tipVideo = [this.crop.x + d.tip[0] / this.s, this.crop.y + d.tip[1] / this.s]; }
     this.onEvent(d);

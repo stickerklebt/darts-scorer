@@ -24,6 +24,15 @@ export function fieldAt(x, y) {
   return { n, m: 1, z: r < AR.triIn ? 'i' : 'o' };
 }
 /** Schlüssel eines Feldes für die SVG-Markierung */
+/** Board-mm (Kamera) → Koordinaten dieser Scheibe (Ringe sind hier breiter gezeichnet, darum stückweise umrechnen) */
+const MMR = [0, 6.35, 15.9, 99, 107, 162, 170, 225];
+export function mmToAim(x, y) {
+  const ARR = [0, AR.bull, AR.outer, AR.triIn, AR.triOut, AR.dblIn, AR.dblOut, AR.edge], r = Math.hypot(x, y);
+  if (!r) return [0, 0];
+  let rr = AR.edge;
+  for (let i = 0; i < MMR.length - 1; i++) if (r <= MMR[i + 1]) { rr = ARR[i] + ((r - MMR[i]) / (MMR[i + 1] - MMR[i])) * (ARR[i + 1] - ARR[i]); break; }
+  return [(x * rr) / r, (y * rr) / r];
+}
 export const fieldKey = (d) => (d.n === 0 ? 'miss' : d.n === 25 ? `b${d.m}` : `${d.n}-${d.m}${d.m === 1 ? d.z || 'o' : ''}`);
 /** Feldname für Anzeige: „T20“, „S13“, „D16“, „Bull“, „25“, „Daneben“ */
 export const fieldName = (d) => (d.n === 0 ? 'Daneben' : label(d));

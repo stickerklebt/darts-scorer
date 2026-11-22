@@ -12,7 +12,7 @@ import { project } from './homography.js';
 import { scoreFromBoardMM } from './board-geometry.js';
 
 export const PARAMS = {
-  stableMs: 500, motionMean: 1.4, motionFrac: 0.004, diffThr: 24,
+  stableMs: 450, motionMean: 1.4, motionFrac: 0.0015, diffThr: 24, recheckMs: 900,
   minArea: 0.00025, maxArea: 0.06, bigChange: 0.18, emptyLike: 0.006, moveGain: 0.55,
 };
 
@@ -31,10 +31,13 @@ export function rgbaToGray(rgba, w, h) {
   for (let i = 0, j = 0; i < g.length; i++, j += 4) g[i] = (rgba[j] * 77 + rgba[j + 1] * 150 + rgba[j + 2] * 29) >> 8;
   return g;
 }
-/** Binärmaske |a − b| > thr (nur innerhalb mask) und Anteil der gesetzten Pixel */
-export function diffMask(a, b, w, h, thr, mask) {
+/** Mittlere Helligkeit (für den Ausgleich der automatischen Belichtung der Handykamera) */
+export function meanOf(g, mask) { let s = 0, n = 0; for (let i = 0; i < g.length; i += 2) { if (mask && !mask[i]) continue; s += g[i]; n++; } return n ? s / n : 0; }
+/** Binärmaske |a − b| > thr (nur innerhalb mask) und Anteil der gesetzten Pixel. comp: Helligkeitsunterschied ausgleichen */
+export function diffMask(a, b, w, h, thr, mask, comp = false) {
+  const off = comp ? meanOf(b, mask) - meanOf(a, mask) : 0;
   const m = new Uint8Array(w * h); let n = 0, area = 0;
-  for (let i = 0; i < m.length; i++) { if (mask && !mask[i]) continue; area++; if (Math.abs(a[i] - b[i]) > thr) { m[i] = 1; n++; } }
+  for (let i = 0; i < m.length; i++) { if (mask && !mask[i]) continue; area++; if (Math.abs(a[i] + off - b[i]) > thr) { m[i] = 1; n++; } }
   return { m, frac: area ? n / area : 0 };
 }
 export function meanDiff(a, b, mask) {
@@ -90,12 +93,16 @@ export function dartAxis(px, w) {
   const len = Math.max(1, tMax - tMin), band = len * 0.2;
   const spread = (fromMin) => { let lo = Infinity, hi = -Infinity, n = 0; for (const [t, s] of proj) if (fromMin ? t <= tMin + band : t >= tMax - band) { lo = Math.min(lo, s); hi = Math.max(hi, s); n++; } return n ? hi - lo + 1 : 0; };
   const wMin = spread(true), wMax = spread(false);
-  const tipAtMin = wMin <= wMax, edge = tipAtMin ? tMin : tMax;
-  // Spitze: Mittel der Pixel ganz am schmalen Ende (letzte 4 % der Länge)
-  let sx = 0, sy = 0, n = 0;
-  proj.forEach(([t], i) => { if (tipAtMin ? t <= edge + len * 0.04 : t >= edge - len * 0.04) { sx += px[i] % w; sy += (px[i] / w) | 0; n++; } });
+  const tipAtMin = wMin <= wMax;
+  // Endpunkte: Mittel der Pixel ganz am jeweiligen Ende (letzte 4 % der Länge)
+  const endPt = (atMin) => {
+    const edge = atMin ? tMin : tMax; let sx = 0, sy = 0, n = 0;
+    proj.forEach(([t], i) => { if (atMin ? t <= edge + len * 0.04 : t >= edge - len * 0.04) { sx += px[i] % w; sy += (px[i] / w) | 0; n++; } });
+    return [sx / n, sy / n];
+  };
+  const tip = endPt(tipAtMin), tail = endPt(!tipAtMin);
   let sMax = 0; for (const [, s] of proj) sMax = Math.max(sMax, Math.abs(s));
-  return { tip: [sx / n, sy / n], axis: [ux, uy], center: [mx, my], length: len, width: 2 * sMax + 1, elong: len / (2 * sMax + 1),
+  return { tip, tail, axis: [ux, uy], center: [mx, my], length: len, width: 2 * sMax + 1, elong: len / (2 * sMax + 1),
     endRatio: Math.min(wMin, wMax) / Math.max(1, Math.max(wMin, wMax)) };
 }
 
@@ -122,7 +129,7 @@ export class Detector {
     Object.assign(this, { w, h, H, mask, p: { ...PARAMS, ...params } });
     this.reset();
   }
-  reset() { this.empty = null; this.ref = null; this.prev = null; this.lastMove = 0; this.checked = true; this.darts = 0; this.paused = false; }
+  reset() { this.empty = null; this.ref = null; this.prev = null; this.lastMove = 0; this.lastEval = 0; this.checked = true; this.darts = 0; this.paused = false; this.bigRuns = 0; }
   /** Referenz neu setzen (z. B. „Darts gezogen“ auf dem Steuer-Gerät) */
   takeout(g = this.prev) { if (g) { this.empty = g; this.ref = g; } this.darts = 0; this.checked = true; }
   feed(gray, t) {
@@ -134,22 +141,35 @@ export class Detector {
     const { frac } = diffMask(prev, g, w, h, p.diffThr, mask);
     const moving = meanDiff(prev, g, mask) > p.motionMean || frac > p.motionFrac;
     if (moving) { this.lastMove = t; this.checked = false; return { state: 'motion' }; }
-    if (this.paused || this.checked || t - this.lastMove < p.stableMs) return { state: this.paused ? 'paused' : 'ready' };
-    this.checked = true;
-    const vsRef = diffMask(this.ref, g, w, h, p.diffThr, mask);
-    const vsEmpty = diffMask(this.empty, g, w, h, p.diffThr, mask);
+    if (this.paused) return { state: 'paused' };
+    // Ausgewertet wird nach jeder Bewegung, sobald es ruhig ist – und zusätzlich regelmäßig, denn ein Dart von der Seite
+    // gesehen verändert oft zu wenig, um als Bewegung zu gelten.
+    if (t - this.lastMove < p.stableMs || (this.checked && t - this.lastEval < p.recheckMs)) return { state: 'ready' };
+    this.checked = true; this.lastEval = t;
+    const vsRef = diffMask(this.ref, g, w, h, p.diffThr, mask, true);
+    const vsEmpty = diffMask(this.empty, g, w, h, p.diffThr, mask, true);
     if (this.darts > 0 && vsEmpty.frac < p.emptyLike && vsRef.frac > vsEmpty.frac) { this.takeout(g); return { state: 'ready', event: 'takeout' }; }
+    if (this.darts === 0 && vsEmpty.frac < p.emptyLike * 0.4) this.empty = g; // leeres Board mitführen (Licht ändert sich langsam)
     if (vsRef.frac > p.bigChange) {
       const sh = bestShift(this.ref, g, w, h, 6, mask);
       if (sh.gain > p.moveGain && (sh.dx || sh.dy)) { this.paused = true; return { state: 'paused', event: 'moved', shift: sh }; }
+      // Bleibt das Bild ruhig, aber ganz anders (Licht an/aus): nach drei Prüfungen als neue Referenz nehmen
+      if (++this.bigRuns >= 3) { this.ref = g; if (!this.darts) this.empty = g; this.bigRuns = 0; }
       return { state: 'ready' };
     }
+    this.bigRuns = 0;
     const area = (mask ? mask.reduce((a, v) => a + v, 0) : w * h);
     const m = close(open(vsRef.m, w, h), w, h);
     const comps = components(m, w, h, Math.max(4, Math.round(area * p.minArea))).filter((c) => c.length <= area * p.maxArea);
     if (!comps.length) return { state: 'ready' };
     const ax = dartAxis(comps[0], w);
-    const [bx, by] = project(this.H, ax.tip[0], ax.tip[1]);
+    // Von der Seite gesehen ragt die Flight übers Board hinaus – ihr Ende landet in Board-Koordinaten oft außerhalb.
+    // Darum: ein Ende AUF dem Board schlägt ein Ende daneben (sonst würde ein Dart in der Mitte als 0 gewertet).
+    const at = (p) => { const [x, y] = project(this.H, p[0], p[1]); return { p, x, y, on: Math.hypot(x, y) <= 172 }; };
+    const A = at(ax.tip), B = at(ax.tail);
+    const pick = A.on || !B.on ? A : B;
+    if (pick === B) { ax.tip = B.p; ax.endRatio = Math.max(ax.endRatio, 0.81); } // Spitze unsicher → etwas weniger Konfidenz
+    const bx = pick.x, by = pick.y;
     const score = scoreFromBoardMM(bx, by);
     this.ref = g; this.darts++;
     return { state: 'ready', event: 'dart', tip: ax.tip, axis: ax, boardX: bx, boardY: by, score,

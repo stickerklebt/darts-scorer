@@ -40,7 +40,7 @@ import { crest } from './ui/svg.js';
 import { entryDone, entryPossible } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
-import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR } from './ui/aimboard.js';
+import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim } from './ui/aimboard.js';
 import { callerView } from './ui/caller.js';
 import { loadCalls, clearCalls, playCall, warmCalls, startRecording, stopRecording, cancelRecording, isRecording, saveCall, deleteCall, playBuffer, callInfo } from './caller.js';
 
@@ -853,7 +853,13 @@ const actions = {
     if (link.role === 'ctl') camSend({ type: 'throwCorrected', id: d.id, label: d.label }, d.code || null);
     ui.modal = null; render();
   },
-  camMiss() { camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 }); },
+  camMiss() {
+    const i = Number.isInteger(ui.camSel) ? ui.camSel : null;
+    if (i !== null && ui.ct?.darts?.[i]) { Object.assign(ui.ct.darts[i], { n: 0, m: 1, label: 'MISS', conf: 1, fixed: true, ax: undefined, ay: undefined }); ui.camSel = null; return render(); }
+    camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 });
+  },
+  camSel(el) { const i = Number(el.dataset.v); ui.camSel = ui.camSel === i ? null : i; if (ui.ct) { clearTimeout(commitTimer); clearInterval(tickTimer); ui.ct.deadline = null; } render(); },
+  camKeys() { ui.camManual = !ui.camManual; ui.camSel = null; render(); },
   camEnd() { commitCam(true); },
   camOk() { commitCam(true); },
   camPulled() { if (link.role === 'ctl') camSend({ type: 'takeout' }); stationTakeout(); if (ui.ct && !ui.ct.darts.length) ui.ct = null; toast('Darts gezogen'); render(); },
@@ -911,6 +917,17 @@ const actions = {
   /** Dart von der Scheibe (Position in Scheiben-Einheiten) */
   aimDart(x, y) {
     if (notMyTurn()) return;
+    // Kamera-Scheibe: ausgewählten Kasten korrigieren – sonst selbst einen Dart eintragen
+    if (ui.camPadOn) {
+      const f = fieldAt(x, y), d = { n: f.n, m: f.n === 0 ? 1 : f.m, z: f.z, ax: Math.round(x * 10) / 10, ay: Math.round(y * 10) / 10, label: labelOf(f), conf: 1, fixed: true };
+      const i = Number.isInteger(ui.camSel) ? ui.camSel : null;
+      if (i !== null && ui.ct?.darts?.[i]) {
+        const old = ui.ct.darts[i]; Object.assign(old, d, { id: old.id, code: old.code, snapshot: old.snapshot });
+        if (link.role === 'ctl') camSend({ type: 'throwCorrected', id: old.id, label: d.label }, old.code || null);
+        ui.camSel = null; render();
+      } else camAdd({ id: `h${Date.now()}`, ...d, fixed: false });
+      return;
+    }
     const m = S.current, d = fieldAt(x, y);
     ui.aimPos = (ui.aimPos || []).slice(0, m.pending.length);
     ui.aimPos.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
@@ -951,7 +968,7 @@ const actions = {
   },
 };
 
-const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext', 'camMiss', 'camEnd', 'camOk', 'camFixSet']);
+const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext', 'camMiss', 'camEnd', 'camOk', 'camFixSet', 'camSel']);
 /** Online: nur wer dran ist, darf eingeben */
 const notMyTurn = () => { const m = S.current; return !!(m?.online && !m.done && S.screen === 'game' && curThrowerOf(m) !== S.mainId); };
 document.addEventListener('click', (e) => {
@@ -1013,7 +1030,7 @@ function armCommit() {
 /** Aufnahme werten: erkannte (ggf. korrigierte) Darts in die Engine, fehlende als daneben, wenn die Aufnahme noch offen ist */
 function commitCam(fill) {
   clearTimeout(commitTimer); clearInterval(tickTimer);
-  const m = S.current, ct = ui.ct; ui.ct = null;
+  const m = S.current, ct = ui.ct; ui.ct = null; ui.camSel = null;
   if (!m || m.done || !ct) return render();
   if (ui.modal?.type === 'camFix') ui.modal = null;
   const one = (n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult) : X.throwDart(m, n, mult, { any: true }));
@@ -1025,6 +1042,7 @@ function commitCam(fill) {
 }
 /** Kamera-Wurf annehmen (Nachricht `throw`). Mehrere Kameras: kurz (1,2 s) auf die anderen warten und zusammenführen. */
 let fuse = null;
+function camThrowPos(msg) { if (!Number.isFinite(msg.boardX)) return {}; const [ax, ay] = mmToAim(msg.boardX, msg.boardY); return { ax, ay }; }
 function camThrow(msg, code = null) {
   if (readyCams() < 2) return addThrow(msg, code);
   if (fuse && !fuse.list.some((x) => x.code === code)) { fuse.list.push({ ...msg, code }); if (fuse.list.length >= readyCams()) flushFuse(); return; }
@@ -1033,7 +1051,7 @@ function camThrow(msg, code = null) {
 }
 function flushFuse() { if (!fuse) return; clearTimeout(fuse.timer); const list = fuse.list; fuse = null; const f = fuseThrows(list); addThrow(f, f.code); }
 function addThrow(msg, code) {
-  camAdd({ id: msg.id, code, n: msg.segment, m: msg.multiplier || 1, label: msg.label, conf: msg.confidence ?? 1, snapshot: msg.snapshot || null, x: msg.boardX, y: msg.boardY });
+  camAdd({ id: msg.id, code, n: msg.segment, m: msg.multiplier || 1, label: msg.label, conf: msg.confidence ?? 1, snapshot: msg.snapshot || null, x: msg.boardX, y: msg.boardY, ...camThrowPos(msg) });
 }
 const stationHooks = {
   toast, debug: !!S.prefs.camDebug,

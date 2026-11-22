@@ -48,3 +48,24 @@ test('Erkennung: verschobenes Bild wird als verschoben erkannt', () => {
   const s = bestShift(a, b, W, Hh);
   assert.equal(s.dx, -4); assert.ok(s.gain > 0.5);
 });
+
+test('Erkennung: Dart ohne erkennbare Bewegung wird trotzdem gefunden, Helligkeit wird ausgeglichen', () => {
+  const d = new Detector(W, Hh, H, null, { stableMs: 300 });
+  let t = 0;
+  for (let i = 0; i < 6; i++) d.feed(blank(), (t += 120));
+  // Kamera regelt etwas heller nach + kleiner Dart, ohne dass vorher Bewegung erkannt wurde
+  const lit = drawDart(blank().fill(130), 100, 48);
+  const ev = []; for (let i = 0; i < 12; i++) { const r = d.feed(lit, (t += 120)); if (r.event) ev.push(r); }
+  assert.equal(ev.length, 1); assert.equal(ev[0].score.label, 'T20');
+});
+
+test('Erkennung: liegt das breite Ende auf dem Board und das schmale daneben, zählt das Ende auf dem Board', () => {
+  const d = new Detector(W, Hh, H, null, { stableMs: 300 });
+  let t = 0;
+  for (let i = 0; i < 6; i++) d.feed(blank(), (t += 120));
+  // „Dart“ im Bull: dickes Ende in der Mitte, dünner Strich weit nach außen (über den Rand hinaus)
+  const img = blank();
+  for (let k = 0; k <= 80; k++) { const x = 100 + k, half = k < 20 ? 3 : 0; for (let dy = -half; dy <= half; dy++) img[(100 + dy) * W + x] = 30; }
+  const ev = []; for (let i = 0; i < 12; i++) { const r = d.feed(img, (t += 120)); if (r.event) ev.push(r); }
+  assert.equal(ev.length, 1); assert.notEqual(ev[0].score.label, 'MISS');
+});

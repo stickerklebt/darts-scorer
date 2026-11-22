@@ -10,6 +10,7 @@ import { throwerOf } from '../match.js';
 import { quickScores } from '../stats.js';
 import { icon } from './svg.js';
 import { fieldAt, fieldName, aimBoard } from './aimboard.js';
+import { labelOf } from '../board-geometry.js';
 import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
 import { avatar } from './avatar.js';
@@ -76,7 +77,29 @@ function camBar(m, thrower) {
     ? (auto && ui.ct?.deadline ? `<span class="cb-count">Wertung in <b>${Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000))}</b> s</span>` : '<button class="btn red" data-act="camOk">OK</button>')
     : `<button class="btn line" data-act="camEnd" ${d.length ? '' : 'disabled'}>Aufnahme beenden</button>`;
   return `<div class="cambar"><div class="cb-slots">${slot(0)}${slot(1)}${slot(2)}</div><div class="cb-mini">${realBoard(marks, 11)}</div>
-    <div class="cb-acts"><button class="btn line" data-act="camMiss" ${d.length >= 3 ? 'disabled' : ''}>Miss / 0</button>${end}<button class="btn line" data-act="camPulled">Darts gezogen</button></div></div>`;
+    <div class="cb-acts"><button class="btn line" data-act="camMiss" ${d.length >= 3 ? 'disabled' : ''}>Miss / 0</button>${end}<button class="btn line" data-act="camPulled">Darts gezogen</button></div>
+    ${m.game === 'x01' && ui.camManual ? '<button class="btn line cb-back" data-act="camKeys">Zur Kamera-Scheibe</button>' : ''}</div>`;
+}
+
+/** Kamera-Spiel: große Scheibe mit Punkten, wo die Darts stecken; darunter 3 Kästen. Kasten antippen → aufs richtige Feld tippen. */
+function camPad(m, thrower) {
+  const d = ui.ct?.darts || [], sel = Number.isInteger(ui.camSel) ? ui.camSel : null;
+  const hits = d.map((x) => ({ n: x.n, m: x.m, z: x.z, x: x.ax, y: x.ay }));
+  const slot = (i) => {
+    const x = d[i];
+    if (!x) return `<span class="cp-slot empty">${i + 1}. Dart</span>`;
+    return `<button class="cp-slot ${x.conf < 0.7 ? 'check' : ''} ${sel === i ? 'sel' : ''}" data-act="camSel" data-v="${i}"><b>${x.n === 0 ? '0' : esc(labelOf(x).replace('BULL', 'Bull'))}</b>
+      <small>${sel === i ? 'jetzt aufs Feld tippen' : x.conf < 0.7 ? 'bitte prüfen' : x.fixed ? 'korrigiert' : 'antippen zum Ändern'}</small></button>`;
+  };
+  const auto = S.prefs.camAuto !== false;
+  const end = d.length === 3
+    ? (auto && ui.ct?.deadline ? `<span class="cb-count">Wertung in <b>${Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000))}</b> s</span>` : '<button class="btn red" data-act="camOk">OK</button>')
+    : `<button class="btn line" data-act="camEnd" ${d.length ? '' : 'disabled'}>Aufnahme beenden</button>`;
+  const hint = sel !== null ? 'Tippe auf das Feld, das wirklich getroffen wurde' : d.length < 3 ? `${esc(nameOf(thrower))} wirft – die Kamera trägt jeden Dart ein` : 'Alles richtig? Sonst Kasten antippen';
+  return `<div class="campad"><div class="cp-head"><span>${hint}</span><b>Rest ${X.curRem(m) - X.pendingSum(m) - d.reduce((a, x) => a + x.n * x.m, 0)}</b></div>
+    <div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>
+    <div class="cp-slots">${slot(0)}${slot(1)}${slot(2)}</div>
+    <div class="cp-acts"><button class="btn line" data-act="camMiss">${sel !== null ? 'War daneben' : 'Miss / 0'}</button>${end}<button class="btn line" data-act="camPulled">Darts gezogen</button><button class="btn line" data-act="camKeys">Tastatur</button></div></div>`;
 }
 
 /** Wer hat die letzte fertige Aufnahme geworfen? */
@@ -164,6 +187,9 @@ export function gameView() {
     hint = `<div class="ticker">${tgt ? `<span class="tk-l">Ziel</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span>` : ''}<span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = isBot(thrower) ? botPad(m, thrower, ui.botTurn?.s === cur ? ui.botTurn.darts : [], cur) : m.game === 'atc' ? hitsPad(m, thrower, cur) : sumPad(m, thrower);
   }
+  // Kamera (X01): statt Tastatur die Kamera-Scheibe mit den Treffern; Tastatur nur auf Wunsch (Notfall)
+  ui.camPadOn = false;
+  if (m.game === 'x01' && ui.camLive && !ui.camManual && !isBot(thrower) && !(m.online && thrower !== S.mainId)) { pad = camPad(m, thrower); isBoard = true; ui.camPadOn = true; }
   // Online: ist der Freund dran, wartet dieses Gerät – statt Eingabe ein Hinweis
   if (m.online && thrower !== S.mainId) {
     // Solange der Freund noch nichts eingegeben hat, kann ich meine letzte Aufnahme zurücknehmen
@@ -180,7 +206,7 @@ export function gameView() {
       <div class="gbar-r"><button class="sq cam-btn ${ui.camLive ? 'on' : ''}" data-act="cam" aria-label="Kamera">${icon('cam', 1.9)}</button>
       <button class="sq" data-act="gear" aria-label="Einstellungen">${icon('gear', 1.8)}</button></div>
     </header>
-    <div class="gmain"><div class="gleft">${board}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${camBar(m, thrower)}${pad}</div></div>
+    <div class="gmain"><div class="gleft">${board}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${ui.camPadOn ? '' : camBar(m, thrower)}${pad}</div></div>
   </div>`;
 }
 

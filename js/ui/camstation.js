@@ -178,7 +178,16 @@ function paint() {
     st.el.innerHTML = `<div class="cs-vid"><canvas class="cs-ov"></canvas></div><div class="cs-st">${st.status}</div>
       <div class="cs-b"><button data-cs="calib">Kalibrieren</button><button data-cs="pause">${st.paused ? 'Weiter' : 'Pause'}</button><button data-cs="off">Aus</button></div>${camSel}
       <small class="cs-beta">Nur Vorschlag – korrigierbar</small>`;
+  } else if (!(st.awake > Date.now())) {
+    // Stromsparen: schwarzer Bildschirm (OLED braucht dann kaum Strom), nur roter Punkt + kurzer Stand. Video läuft unsichtbar weiter.
+    st.el.classList.add('saver');
+    const conn = link.status === 'connected' ? 'Regie verbunden' : link.status === 'lost' ? 'Getrennt – verbinde neu …' : 'Warte auf Regie …';
+    st.el.innerHTML = `<div class="cs-vid"></div><div class="cs-saver"><span class="cs-dot ${st.paused ? 'off' : ''}"></span><b>Kamera läuft</b>
+      <small class="cs-st ${st.alarm ? 'alarm' : ''}">${st.status}</small><small>${conn}</small><em>Antippen für Einstellungen</em></div>`;
+    st.el.querySelector('.cs-vid').appendChild(st.video);
+    return;
   } else {
+    st.el.classList.remove('saver');
     const dot = link.status === 'connected' ? 'ok' : link.status === 'lost' ? 'bad' : 'wait';
     st.el.innerHTML = `<div class="cs-top"><span class="cs-link ${dot}">● ${link.status === 'connected' ? 'Steuer-Gerät verbunden' : link.status === 'lost' ? 'Getrennt – verbinde neu …' : 'Warte auf Steuer-Gerät …'}</span>
         <span class="cs-code"><small>Code</small><b>${link.code ? link.code.replace(/(\d{3})(\d{3})/, '$1 $2') : '……'}</b></span></div>
@@ -197,7 +206,10 @@ function paint() {
 }
 
 async function onClick(e) {
-  const b = e.target.closest('[data-cs]'); if (!b || !st) return;
+  if (!st) return;
+  if (st.mode === 'cam' && !(st.awake > Date.now())) { wake(); return; } // erst aufwecken
+  if (st.mode === 'cam') wake();
+  const b = e.target.closest('[data-cs]'); if (!b) return;
   const c = b.dataset.cs;
   if (c === 'off') return closeStation();
   if (c === 'calib') return calibrateNow();
@@ -209,6 +221,13 @@ async function onClick(e) {
   }
 }
 
+/** Einstellungen am Handy kurz zeigen (15 s), dann wieder schwarz */
+let sleepT = null;
+function wake() {
+  st.awake = Date.now() + 15e3; clearTimeout(sleepT);
+  sleepT = setTimeout(() => { if (st) { st.awake = 0; paint(); } }, 15e3);
+  paint();
+}
 function togglePause() {
   st.paused = !st.paused;
   if (st.paused) { st.det?.stop(); setStatus('Pausiert'); } else { st.det?.resume(); st.det?.start(); setStatus(st.calib ? 'Bereit' : 'Wird an der Regie eingerichtet …'); }

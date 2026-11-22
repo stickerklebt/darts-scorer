@@ -1883,3 +1883,42 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .cc-lens small { width: 100%; color: var(--muted); font-size: 14px; }
 .cc-lens button { height: 40px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 14px; }
 .cc-lens button.on { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+/* Einrichten an der Regie: kein natives Bild-Ziehen, Testdart mit aufploppenden Treffern */
+.rs-img { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; pointer-events: none; }
+.rs-live { user-select: none; -webkit-user-select: none; cursor: crosshair; }
+.calib .cal-h b { font-size: clamp(20px, 3vw, 30px); line-height: 1.2; }
+.rs-two.test { grid-template-columns: 1.6fr 1fr; }
+.rs-pops { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.rs-pop { padding: 14px 16px; border-radius: 4px; background: #14110d; border: 1px solid var(--line2); font-family: var(--f-num); font-size: 26px; color: var(--cream); }
+.rs-pop:first-child { border-color: var(--gold); font-size: 34px; color: var(--gold-l); }
+.rs-pop.new { animation: rs-pop .45s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes rs-pop { from { opacity: 0; transform: translateX(30px) scale(.9); } }
+.rs-pop small { display: block; font-size: 13px; color: #ffd23f; }
+.rs-pop.unsure { border-color: #6b5a1c; }
+.rs-idle { color: var(--muted); font-family: var(--f-num); font-size: 22px; }
+
+/* Kamera-Gerät im Stromsparmodus: schwarz, roter Punkt, kaum Text – Video unsichtbar weiter aktiv */
+.camstation.saver { background: #000; justify-content: center; align-items: center; }
+.camstation.saver .cs-vid { position: absolute; left: 0; top: 0; width: 2px; height: 2px; opacity: .01; overflow: hidden; border: 0; flex: none; }
+.cs-saver { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; color: #6f6656; }
+.cs-saver b { font-family: var(--f-num); font-weight: 400; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: #8a8070; }
+.cs-saver small { font-size: 14px; color: #5b5346; } .cs-saver small.cs-st { font-family: var(--f-num); font-size: 18px; color: #8a8070; } .cs-saver .alarm { color: #b8402c; }
+.cs-saver em { font-style: normal; font-size: 12px; color: #3d372e; margin-top: 18px; }
+.cs-dot { width: 16px; height: 16px; border-radius: 50%; background: #c8241a; box-shadow: 0 0 10px rgba(200,36,26,.7); animation: cs-rec 2s ease-in-out infinite; }
+.cs-dot.off { background: #3d372e; box-shadow: none; animation: none; }
+@keyframes cs-rec { 50% { opacity: .35; } }
+/* Spiel mit Kamera: große Scheibe, 3 Kästen darunter */
+.campad { display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
+.cp-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; color: var(--gold-l); font-size: 15px; }
+.cp-head b { font-family: var(--f-num); font-weight: 400; font-size: 22px; color: var(--cream); letter-spacing: .04em; }
+.campad .aimbox { flex: 1; min-height: 200px; }
+.cp-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.cp-slot { height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; background: #1a1612; border: 1px solid var(--line2); color: var(--cream); }
+.cp-slot b { font-family: var(--f-num); font-weight: 400; font-size: 30px; line-height: 1; }
+.cp-slot small { font-size: 11px; color: var(--muted); }
+.cp-slot.empty { color: var(--dim); font-family: var(--f-num); font-size: 16px; border-style: dashed; }
+.cp-slot.check { border-color: #ffd23f; background: #2a2208; } .cp-slot.check small { color: #ffd23f; }
+.cp-slot.sel { border: 2px solid var(--gold); background: #2a2208; } .cp-slot.sel small { color: var(--gold-l); }
+.cp-acts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.cp-acts .btn { height: 44px; font-size: 14px; padding: 0 4px; border-radius: 4px; }
+.cb-back { width: 100%; margin-top: 6px; height: 38px; font-size: 14px; }

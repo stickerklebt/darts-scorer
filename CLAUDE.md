@@ -223,6 +223,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   ANDEREN Gerät mit demselben Konto: Startbildschirm zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
   Assistent `ui/camsetup.js` mit Livebild (`previewOn` → `frame` ~1/s, 640 px), Standbild (`still` → 1280 px), 4 Punkte mit Lupe,
   Overlay-Kontrolle, `calibrate { pts }` ans Handy, Testdart. Gleiches Bild wie zuletzt → Handy nimmt die alte Kalibrierung selbst.
+  Kamera-Handy im **Stromsparmodus**: schwarzer Bildschirm, roter Punkt „Kamera läuft“, Antippen zeigt 15 s die Knöpfe; Erkennung
+  640 px, 10 Bilder/s, nach 20 s Ruhe 4 Bilder/s. Erkennung prüft auch ohne Bewegung alle 0,9 s, gleicht Helligkeit aus, nimmt
+  bei dauerhaft anderem Licht eine neue Referenz; ein Dart-Ende AUF dem Board schlägt eines daneben (sonst Bull = 0).
   **Am Handy nur starten + aufstellen**, alles andere an der Regie: Zahnrad je Kamera (`camCtl`) → Objektiv (`listCams`/`cams`/`useCam`),
   Pause/Weiter (`pause`/`resume`), Debug (`debug`), Beenden (`stop`); Handy meldet `camStatus { text, paused }`.
   **Mehrere Kameras + Regie:** Läuft im Konto schon eine Kamera, fragt jedes weitere angemeldete Gerät auf dem Startbildschirm
@@ -230,8 +233,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`/api/camlink/mine` → `codes`, neue Kameras werden automatisch dazugenommen), jede wird einzeln eingerichtet (`camRemote` mit Code).
   Sehen 2+ Kameras denselben Dart, wartet die Regie bis 1,2 s und führt zusammen (`camfuse.js`: gleich → sicherer, uneinig → gelb).
   Keine CDN-Bibliotheken (CSP `script-src 'self'`): kein OpenCV.js, kein PeerJS, kein QR-Code – stattdessen Code + „Link teilen“.
-  Im Spiel (`camBar` in `ui/game.js`, Logik `camAdd/commitCam` in `main.js`): 3 Slots, Mini-Board, Konfidenz < 0,7 gelb,
-  Korrektur-Fenster (`camFix`), Miss / 0, Aufnahme beenden, Darts gezogen; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für
+  Im Spiel X01 (`camPad` in `ui/game.js`): statt Tastatur große Eingabe-Scheibe mit den Treffern (mm → `mmToAim`), darunter 3 Kästen;
+  Kasten antippen → aufs richtige Feld tippen (oder „War daneben“); ohne Auswahl trägt ein Tipp aufs Board selbst einen Dart ein;
+  „Tastatur“ nur als Notfall. Cricket: `camBar` (3 Slots, Mini-Board) über der Tafel. Logik `camAdd/commitCam` in `main.js`; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für
   Dart in die Engine. Setup-Schalter „Mit Kamera-Erkennung spielen“ (`prefs.camPlay`, nur X01/Cricket). Bots/fremder Zug: ignoriert.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
