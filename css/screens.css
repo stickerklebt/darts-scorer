@@ -1708,3 +1708,6 @@ svg.ckm.k3 { stroke: var(--gold-l); }
   .ckb-btn { padding: 0 8px; font-size: 15px; } }
 /* Cricket: Karten oben kompakter, damit die Tafel Platz hat */
 @media (orientation: portrait) { .cricket .gleft { flex: 1 1 auto; } .cricket .sbp-rem { font-size: clamp(44px, 13vw, 96px); } }
+
+/* Rekord-Karte: Titel, Zahl, Zusatz immer untereinander und mittig (die Zahl ist inline-block wegen der Verbreiterung) */
+.record > div { display: flex; flex-direction: column; align-items: center; }

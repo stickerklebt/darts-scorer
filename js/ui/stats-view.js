@@ -62,7 +62,7 @@ function scoringTab(st, pid) {
 }
 
 function checkoutTab(st, pid) {
-  return record('Höchstes Checkout', st.highestCo ?? '–', st.favourite ? `Lieblingsdoppel ${st.favourite.field} (${st.favourite.count}×)` : '')
+  return record('Höchstes Checkout', st.highestCo ?? '–', '')
     + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`]), 'three'))
     + rankList('Top 5 Checkouts', st.topCo, pid);
 }
