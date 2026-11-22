@@ -1711,3 +1711,11 @@ svg.ckm.k3 { stroke: var(--gold-l); }
 
 /* Rekord-Karte: Titel, Zahl, Zusatz immer untereinander und mittig (die Zahl ist inline-block wegen der Verbreiterung) */
 .record > div { display: flex; flex-direction: column; align-items: center; }
+
+/* Cricket-Knöpfe: Zahl mit 1–3 kleinen Ringen (Single/Double/Triple) statt Punkten */
+.ckring { position: relative; display: grid; place-items: center; width: 34px; height: 34px; }
+.ckring b { position: relative; font-weight: 400; font-size: 17px; line-height: 1; }
+.ckring i { position: absolute; inset: calc(6px - var(--r) * 3px); border-radius: 50%; border: 1.3px solid var(--gold); opacity: .85; }
+.ckn.m3 .ckring i { border-color: #f07a24; }
+.ckmid.bull .ckring b { font-size: 15px; }
+.ckn:active .ckring i { border-color: var(--ink); }

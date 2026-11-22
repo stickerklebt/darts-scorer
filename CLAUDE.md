@@ -259,7 +259,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   „Mit Punkten“: Treffer auf eigene, beim Gegner offene Felder zählen Feldwert; Sieg = alles zu und nicht hinten.
   „Nur Schließen“: wer zuerst alles zu hat. Rundenlimit (15/20/25) → meiste Punkte, dann meiste Treffer.
   **Die Tafel ist die Eingabe** (`ckBoard` in `ui/game.js`): Mitte die Zahlen 20–15 als Knöpfe Single · Double · Triple
-  (Punkte darunter), Bull als 25 · Bull; links/rechts die Treffer der Spieler (gerade Seiten links, ungerade rechts):
+  (kleine Ringe um die Zahl: 1 = Single, 2 = Double, 3 = Triple), Bull als 25 (1 Ring) · Bull (2 Ringe); links/rechts die Treffer der Spieler (gerade Seiten links, ungerade rechts):
   1 = Schrägstrich, 2 = X, 3 = X im Kreis. Haben alle ein Feld zu, wird die Zeile durchgestrichen und gesperrt.
   Leiste darüber: 3 Dart-Felder, Rückgängig, Daneben, Weiter (Rest der Aufnahme = daneben). Keine Dartscheiben-Eingabe mehr. Keine Animationen, nicht in der Statistik.
   Bots zielen auf die höchste offene Zahl bzw. punkten, wenn sie hinten liegen.

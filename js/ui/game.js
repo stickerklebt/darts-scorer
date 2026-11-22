@@ -244,14 +244,15 @@ function botPad(m, thrower, darts, s) {
    1 = Schrägstrich, 2 = X, 3 = X im Kreis. Haben alle ein Feld zu, wird die ganze Zeile durchgestrichen. */
 const ckMark = (k) => (k <= 0 ? '<i class="ckm"></i>' : `<svg class="ckm k${Math.min(k, 3)}" viewBox="0 0 24 24" aria-hidden="true">
   <path d="M5 19 L19 5"/>${k >= 2 ? '<path d="M5 5 L19 19"/>' : ''}${k >= 3 ? '<circle cx="12" cy="12" r="10"/>' : ''}</svg>`);
-const dots = (k) => `<small>${'•'.repeat(k)}</small>`;
+/** Zahl mit kleinen Ringen drum herum: 1 Ring = Single, 2 = Double, 3 = Triple (Bull: 1 = 25, 2 = Bull) */
+const ringed = (txt, k) => `<span class="ckring">${Array.from({ length: k }, (_, i) => `<i style="--r:${i}"></i>`).join('')}<b>${txt}</b></span>`;
 function ckBoard(m, st, cur) {
   const left = m.sides.map((_, s) => s).filter((s) => s % 2 === 0), right = m.sides.map((_, s) => s).filter((s) => s % 2 === 1);
   const markCells = (list, t) => list.map((s) => `<span class="ckc ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${ckMark(st.marks[s][t])}</span>`).join('');
   const head = (list) => list.map((s) => `<span class="ckh ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${esc(nameOf(m.sides[s][0]))}</span>`).join('');
   const rows = C.TARGETS.map((t) => {
     const dead = st.marks.every((mk) => mk[t] >= 3);
-    const btn = (mult) => `<button class="ckn m${mult}" data-act="ckHit" data-n="${t}" data-m="${mult}" ${dead ? 'disabled' : ''}>${t === 25 ? 'Bull' : t}${dots(mult)}</button>`;
+    const btn = (mult) => `<button class="ckn m${mult}" data-act="ckHit" data-n="${t}" data-m="${mult}" ${dead ? 'disabled' : ''}>${ringed(t === 25 ? (mult === 2 ? 'Bull' : '25') : t, mult)}</button>`;
     const mid = t === 25 ? `${btn(1)}${btn(2)}` : `${btn(1)}${btn(2)}${btn(3)}`;
     return `<div class="ckr ${dead ? 'dead' : ''}"><span class="cks l">${markCells(left, t)}</span><span class="ckmid ${t === 25 ? 'bull' : ''}">${mid}</span><span class="cks r">${markCells(right, t)}</span></div>`;
   }).join('');
