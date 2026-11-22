@@ -24,6 +24,15 @@ export function fieldAt(x, y) {
   return { n, m: 1, z: r < AR.triIn ? 'i' : 'o' };
 }
 /** Schlüssel eines Feldes für die SVG-Markierung */
+/** Mitte eines Feldes { n, m } auf dieser Scheibe (für angesagte Darts) – Single = äußeres Single-Feld, daneben = außerhalb des Doppels */
+export function aimCenter(d) {
+  if (d.n === 0) return { x: 0, y: -(AR.dblOut + AR.edge) / 2 };
+  if (d.n === 25) return d.m === 2 ? { x: 0, y: 0 } : { x: 0, y: -(AR.bull + AR.outer) / 2 };
+  const a = ((ORDER.indexOf(d.n) * 18 - 90) * Math.PI) / 180;
+  const r = d.m === 3 ? (AR.triIn + AR.triOut) / 2 : d.m === 2 ? (AR.dblIn + AR.dblOut) / 2 : (AR.triOut + AR.dblIn) / 2;
+  return { x: r * Math.cos(a), y: r * Math.sin(a) };
+}
+
 /** Board-mm (Kamera) → Koordinaten dieser Scheibe (Ringe sind hier breiter gezeichnet, darum stückweise umrechnen) */
 const MMR = [0, 6.35, 15.9, 99, 107, 162, 170, 225];
 export function mmToAim(x, y) {

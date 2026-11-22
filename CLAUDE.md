@@ -254,7 +254,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (Ziffern oder Wörter wie „siebenunddreißig“, „hundertvierzig“) und „Bust/nichts/null/überworfen“ = 0, alles andere ignoriert.
   Mehrere Zahlen nacheinander = mehrere Aufnahmen. Angesagt geht auch unter 170 Rest (`submitSum(m, v, { voice: true })`, Turn-input
   'voice', Finish mit Dartzahl aus der Checkout-Tabelle, keine Einzeldarts → zählt nicht in die Doppelquote). Eigene Ansagen der App
-  werden ignoriert: solange das Mikrofon an ist, sagt die App nichts (keine Computerstimme, kein eigener Caller). Eine Zahl wird
+  werden ignoriert. **Checkout-Modus** (Rest ≤ 170, Einzeldarts): Dart für Dart in der Wurf-Reihenfolge ansagen – „Single/Einfach“,
+  „Double/Doppel“, „Triple/Tripel“ + Zahl, „Bull“ (50), „25“/„Single Bull“, „daneben/null/miss“ (0); auch „D16“, „T20“; ohne Vorsatz =
+  Single (`parseDarts`). Jeder Dart wird wie ein Tipp auf die Scheibe rechts eingetragen (`aimCenter` → `aimDart`). Weiter:
+  solange das Mikrofon an ist, sagt die App nichts (keine Computerstimme, kein eigener Caller). Eine Zahl wird
   eingetragen, sobald sie 0,7 s stabil erkannt ist (Zwischenergebnisse), „1“ zählt sofort als 1. Mikrofon aus, sobald man das Spiel verlässt.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.

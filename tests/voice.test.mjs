@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { parseScores, wordNumber } from '../js/voice.js';
+import { parseScores, wordNumber, parseDarts } from '../js/voice.js';
 
 test('Mikrofon: Zahlen als Ziffern und Wörter, Bust/nichts/null = 0, alles andere ignoriert', () => {
   assert.deepEqual(parseScores('37'), [37]);
@@ -18,4 +18,15 @@ test('Mikrofon: Zahlen als Ziffern und Wörter, Bust/nichts/null = 0, alles ande
   assert.deepEqual(parseScores('250'), []);
   assert.equal(wordNumber('neunundneunzig'), 99);
   assert.equal(wordNumber('hundertundeins'), 101);
+});
+
+test('Mikrofon im Checkout: Dart für Dart mit Single/Double/Doppel/Triple, Bull, daneben', () => {
+  assert.deepEqual(parseDarts('Triple 20, Single 5, Double 16'), [{ n: 20, m: 3 }, { n: 5, m: 1 }, { n: 16, m: 2 }]);
+  assert.deepEqual(parseDarts('Doppel sechzehn'), [{ n: 16, m: 2 }]);
+  assert.deepEqual(parseDarts('T20 D10'), [{ n: 20, m: 3 }, { n: 10, m: 2 }]);
+  assert.deepEqual(parseDarts('Bull'), [{ n: 25, m: 2 }]);
+  assert.deepEqual(parseDarts('Single Bull'), [{ n: 25, m: 1 }]);
+  assert.deepEqual(parseDarts('25'), [{ n: 25, m: 1 }]);
+  assert.deepEqual(parseDarts('daneben, 19, Doppel 1'), [{ n: 0, m: 1 }, { n: 19, m: 1 }, { n: 1, m: 2 }]);
+  assert.deepEqual(parseDarts('ähm was'), []);
 });

@@ -65,3 +65,32 @@ export function startVoice({ text, state }) {
   return true;
 }
 export function stopVoice() { want = false; try { rec?.stop(); } catch { /* */ } rec = null; onState('off'); }
+
+/* ---------- Checkout-Modus: Dart für Dart ansagen ---------- */
+const MULT = { single: 1, einfach: 1, einzel: 1, einzelne: 1, s: 1, double: 2, doppel: 2, doppelt: 2, doppelte: 2, d: 2, dabble: 2, dobble: 2, triple: 3, tripel: 3, trippel: 3, dreifach: 3, treble: 3, t: 3 };
+const ZERO_DART = new Set(['null', 'daneben', 'miss', 'nichts', 'vorbei', 'zero', 'bust']);
+const num = (tok) => (/^\d{1,2}$/.test(tok) ? Number(tok) : wordNumber(tok));
+
+/**
+ * „Triple 20, Single 5, Double 16“ → [{ n: 20, m: 3 }, { n: 5, m: 1 }, { n: 16, m: 2 }]. Auch „D16“, „T 20“, „Doppel sechzehn“,
+ * „Bull“/„Bullseye“ (= 50), „25“/„Single Bull“ (= 25), „daneben/null/miss“ (= 0). Zahl ohne Vorsatz = Single. Max. 3 Darts.
+ */
+export function parseDarts(text) {
+  const toks = String(text || '').toLowerCase().replace(/[.,!?;:]/g, ' ').replace(/\b([sdt])(\d{1,2})\b/g, '$1 $2').replace(/bulls\s*eye/g, 'bullseye').split(/\s+/).filter(Boolean);
+  const out = [];
+  let mult = null;
+  for (const tok of toks) {
+    if (out.length >= 3) break;
+    if (tok in MULT) { mult = MULT[tok]; continue; }
+    if (tok === 'bull' || tok === 'bullseye' || tok === 'bulle') { out.push(mult === 1 ? { n: 25, m: 1 } : { n: 25, m: 2 }); mult = null; continue; }
+    if (ZERO_DART.has(tok)) { out.push({ n: 0, m: 1 }); mult = null; continue; }
+    const n = num(tok);
+    if (n === null) continue;
+    if (n === 25) out.push({ n: 25, m: mult === 2 ? 2 : 1 });
+    else if (n === 50) out.push({ n: 25, m: 2 });
+    else if (n >= 1 && n <= 20) out.push({ n, m: mult || 1 });
+    else if (n === 0) out.push({ n: 0, m: 1 });
+    mult = null;
+  }
+  return out;
+}

@@ -11,7 +11,7 @@ import { fuseThrows } from './camfuse.js';
 import { labelOf } from './board-geometry.js';
 import { openRemoteSetup, setupMessage, setupOpen } from './ui/camsetup.js';
 import { camFrame, paintCamViews, keepPreview, camBigView } from './ui/camview.js';
-import { parseScores, startVoice, stopVoice, voiceOn, voiceSupported } from './voice.js';
+import { parseScores, parseDarts, startVoice, stopVoice, voiceOn, voiceSupported } from './voice.js';
 import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
@@ -39,10 +39,10 @@ import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crest } from './ui/svg.js';
-import { entryDone, entryPossible } from './checkout.js';
+import { entryDone, entryPossible, label } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
-import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim } from './ui/aimboard.js';
+import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim, aimCenter } from './ui/aimboard.js';
 import { callerView } from './ui/caller.js';
 import { loadCalls, clearCalls, playCall, warmCalls, startRecording, stopRecording, cancelRecording, isRecording, saveCall, deleteCall, playBuffer, callInfo } from './caller.js';
 
@@ -1128,7 +1128,19 @@ setInterval(async () => {
 /* ---------------- Mikrofon: angesagte Punktzahlen eintragen ---------------- */
 function onVoice(text) {
   if (window.speechSynthesis?.speaking) return; // nur falls doch gerade etwas gesprochen wird
-  const scores = parseScores(text), m = S.current;
+  const m = S.current;
+  // Checkout-Modus (Rest ≤ 170): Dart für Dart ansagen – „Triple 20, Single 5, Double 16“ – jeder Dart landet auf der Scheibe rechts
+  if (m && !m.done && m.game === 'x01' && X.inputMode(m) === 'darts' && S.screen === 'game' && !ui.modal && !ui.vs && !inBulloff()) {
+    const darts = parseDarts(text);
+    ui.micHeard = darts.length ? `Gehört: ${darts.map((d) => (d.n === 0 ? '0' : label(d))).join(' · ')}` : `„${String(text).trim().slice(0, 30)}“`;
+    for (const d of darts) {
+      if (isBot(curThrowerOf(m)) || notMyTurn() || m.done || X.inputMode(m) !== 'darts') break;
+      const p = aimCenter(d);
+      actions.aimDart(p.x, p.y);
+    }
+    return render();
+  }
+  const scores = parseScores(text);
   ui.micHeard = scores.length ? `Gehört: ${scores.map((v) => (v === 0 ? '0' : v)).join(' · ')}` : `„${String(text).trim().slice(0, 30)}“`;
   if (!scores.length || S.screen !== 'game' || !m || m.done || m.game !== 'x01' || ui.modal || ui.vs || inBulloff()) return render();
   for (const v of scores) {
