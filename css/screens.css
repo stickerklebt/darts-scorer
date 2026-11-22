@@ -1943,3 +1943,11 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Dart-Nummer (römisch) direkt auf der Flight – nicht mehr als Kreis neben der Spitze */
 .aimboard .amark text.anr { fill: #fff6dc; font-family: var(--f-display); font-size: 6.5px; paint-order: stroke; stroke: #0b0a08; stroke-width: 1.6px; }
+
+/* Kamerabild im Spiel unter den Spielerkarten links (antippen → groß) */
+.cam-under { flex: none; height: min(30vh, 300px); display: flex; }
+.cam-under .cam-live.thumb { position: relative; right: auto; top: auto; width: 100%; max-width: none; height: 100%; aspect-ratio: auto; }
+.rs-q { margin: 4px 0; font-family: var(--f-num); font-size: 16px; letter-spacing: .03em; } .rs-q.ok { color: #6fd17f; } .rs-q.bad { color: #ffb02e; }
+.rs-side small { color: var(--muted); font-size: 13px; line-height: 1.3; }
+.rs-side button.yes { background: var(--red); border-color: var(--red); height: 60px; font-size: 20px; }
+.calib.remote .rs-two.one { flex: 1; min-height: 0; display: flex; }

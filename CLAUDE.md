@@ -231,6 +231,14 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Regie zeigt im Spiel oben rechts über der Scheibe das Livebild (`ui/camview.js`, antippen → groß, rote Kreise = erkannte Darts);
   jede Kamera meldet ihren Gerätenamen („Kamera 1 · iPhone“). Einrichten Schritt 2: „Tippe auf die genaue Mitte der D20/D6/D3/D11“,
   Schritt 3: Punkte ziehen oder rechts „D20 neu setzen“ usw.
+  **Präzision:** Kamera-Pose aus der Homographie (`poseFromH`, Brennweite aus den Bedingungen r1⟂r2 / |r1|=|r2|, nur wenn nicht entartet);
+  Spitzenwahl über die Board-Normale (`tipByNormal`, bei schräger Kamera), sonst Flight-Profil. Feinstufe (`refineTip`, Hauptthread in
+  `detector.js`): 160×160 Videopixel um die grobe Spitze, 4 Bilder gemittelt, gegen Vollauflösungs-Referenz, RANSAC-Achse nur aus
+  Spitze+Barrel, Profil in 0,25 px → Subpixel-Spitze (synthetisch < 1 px); > 6 mm Abweichung → grob behalten. Bekannte Darts als Maske:
+  stößt die Spitze daran, gilt sie als verdeckt (Sicherheit ≤ 0,75). Kalibrierung: Zusatzpunkte durch Tippen auf eine goldene Linie
+  (Ring/Draht, dann ziehen), automatische Verfeinerung `calib-refine.js` (Ring- und Drahtkanten im Standbild, 14 Runden robuste
+  Homographie, synthetisch 3,5 mm → 0,25 mm), Anzeige „Kalibrierung: ±x mm“. Markierungen: feines Fadenkreuz, „I · T12“, Farbe nach
+  Sicherheit. Livebild im Spiel unter den Spielerkarten links.
   **Am Handy nur starten + aufstellen**, alles andere an der Regie: Zahnrad je Kamera (`camCtl`) → Objektiv (`listCams`/`cams`/`useCam`),
   Pause/Weiter (`pause`/`resume`), Debug (`debug`), Beenden (`stop`); Handy meldet `camStatus { text, paused }`.
   **Mehrere Kameras + Regie:** Läuft im Konto schon eine Kamera, fragt jedes weitere angemeldete Gerät auf dem Startbildschirm

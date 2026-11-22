@@ -8,7 +8,7 @@
      · großer Teil verändert, sonst                        → nichts (jemand steht davor) – nächste Ruhe abwarten
      · neue, längliche Kontur in plausibler Größe          → 'dart'     (Spitze = schmales Ende der Hauptachse)
    Nach jedem Dart wird das aktuelle Bild die neue Referenz. */
-import { project } from './homography.js';
+import { project, inv3, poseFromH } from './homography.js';
 import { scoreFromBoardMM } from './board-geometry.js';
 
 export const PARAMS = {
@@ -151,14 +151,35 @@ export function confidence(ax, score, candidates) {
   return Math.round(c * 100) / 100;
 }
 
+/**
+ * Welches Ende ist die Spitze? Über die Board-Normale: Ein Dart ragt senkrecht aus dem Board heraus. Steckt Ende E im Board,
+ * muss das andere Ende in der Richtung liegen, in die ein Punkt „E + 50 mm aus dem Board“ im Bild wandert. Das Ende, für das das
+ * besser passt, ist die Spitze. → { tipFirst: true|false|null (unklar), margin }
+ */
+export function tipByNormal(ax, H, pose) {
+  // Nur bei schräger Kamera aussagekräftig (von vorn zeigt die Normale fast genau auf die Kamera) – sonst Flight-Profil
+  if (!pose || Math.abs(pose.r3[2]) > 0.94) return { tipFirst: null, margin: 0 };
+  const score = (E, O) => {
+    const [bx, by] = project(H, E[0], E[1]), [qx, qy] = pose.project3(bx, by, 50);
+    const vx = qx - E[0], vy = qy - E[1], dx = O[0] - E[0], dy = O[1] - E[1];
+    const nv = Math.hypot(vx, vy), nd = Math.hypot(dx, dy);
+    return nv > 0.5 && nd > 0.5 ? (vx * dx + vy * dy) / (nv * nd) : 0;
+  };
+  const a = score(ax.tip, ax.tail), b = score(ax.tail, ax.tip);
+  return { tipFirst: Math.abs(a - b) < 0.25 ? null : a > b, margin: Math.abs(a - b) };
+}
+
 export class Detector {
   constructor(w, h, H, mask, params = {}) {
     Object.assign(this, { w, h, H, mask, p: { ...PARAMS, ...params } });
+    // Kamera-Pose aus der Kalibrierung (Hauptpunkt = Videomitte in Ausschnitt-Koordinaten); ohne Angabe: Ausschnittmitte
+    const Hb = inv3(H), pp = this.p.pp || [w / 2, h / 2];
+    this.pose = Hb ? poseFromH(Hb, pp[0], pp[1], this.p.fGuess || Math.max(w, h) * 1.1) : null;
     this.reset();
   }
-  reset() { this.empty = null; this.ref = null; this.prev = null; this.lastMove = 0; this.lastEval = 0; this.checked = true; this.darts = 0; this.paused = false; this.bigRuns = 0; }
+  reset() { this.empty = null; this.ref = null; this.prev = null; this.lastMove = 0; this.lastEval = 0; this.checked = true; this.darts = 0; this.paused = false; this.bigRuns = 0; this.dartMask = null; }
   /** Referenz neu setzen (z. B. „Darts gezogen“ auf dem Steuer-Gerät) */
-  takeout(g = this.prev) { if (g) { this.empty = g; this.ref = g; } this.darts = 0; this.checked = true; }
+  takeout(g = this.prev) { if (g) { this.empty = g; this.ref = g; } this.darts = 0; this.checked = true; this.dartMask = null; }
   feed(gray, t) {
     const { w, h, mask, p } = this;
     const g = blur3(gray, w, h);
@@ -189,17 +210,95 @@ export class Detector {
     const m = close(open(vsRef.m, w, h), w, h);
     const comps = components(m, w, h, Math.max(4, Math.round(area * p.minArea))).filter((c) => c.length <= area * p.maxArea);
     if (!comps.length) return { state: 'ready' };
-    const ax = dartAxis(mergeDart(comps, w), w);
-    // Von der Seite gesehen ragt die Flight übers Board hinaus – ihr Ende landet in Board-Koordinaten oft außerhalb.
-    // Darum: ein Ende AUF dem Board schlägt ein Ende daneben (sonst würde ein Dart in der Mitte als 0 gewertet).
-    const at = (p) => { const [x, y] = project(this.H, p[0], p[1]); return { p, x, y, on: Math.hypot(x, y) <= 172 }; };
-    const A = at(ax.tip), B = at(ax.tail);
-    const pick = A.on || !B.on ? A : B;
-    if (pick === B) { ax.tip = B.p; ax.endRatio = Math.max(ax.endRatio, 0.81); } // Spitze unsicher → etwas weniger Konfidenz
-    const bx = pick.x, by = pick.y;
+    const blob = mergeDart(comps, w), ax = dartAxis(blob, w);
+    // 1) Board-Normale (Kamera-Pose) entscheidet, welches Ende im Board steckt. 2) Sonst Flight-Profil (dartAxis).
+    // 3) Erst wenn beides unklar ist: ein Ende auf dem Board schlägt eines weit daneben.
+    const nrm = tipByNormal(ax, this.H, this.pose);
+    if (nrm.tipFirst === false) { [ax.tip, ax.tail] = [ax.tail, ax.tip]; }
+    let byNormal = nrm.tipFirst !== null;
+    if (!byNormal && !ax.flightClear) {
+      const on = (q) => { const [x, y] = project(this.H, q[0], q[1]); return Math.hypot(x, y) <= 172; };
+      if (!on(ax.tip) && on(ax.tail)) [ax.tip, ax.tail] = [ax.tail, ax.tip];
+    }
+    if (!byNormal && !ax.flightClear) ax.endRatio = Math.max(ax.endRatio, 0.81); // Spitze unsicher
+    const [bx, by] = project(this.H, ax.tip[0], ax.tip[1]);
     const score = scoreFromBoardMM(bx, by);
+    // Verdeckt? Die Spitze stößt an einen schon steckenden Dart → Spitze evtl. nicht sichtbar
+    let hidden = false;
+    if (this.dartMask) { const tx = Math.round(ax.tip[0]), ty = Math.round(ax.tip[1]); for (let dy = -3; dy <= 3 && !hidden; dy++) for (let dx = -3; dx <= 3; dx++) { const x = tx + dx, y = ty + dy; if (x >= 0 && y >= 0 && x < w && y < h && this.dartMask[y * w + x]) { hidden = true; break; } } }
+    // Diesen Dart in die Maske bekannter Darts aufnehmen (etwas verbreitert)
+    this.dartMask ??= new Uint8Array(w * h);
+    for (const q of blob) { const x = q % w, y = (q / w) | 0; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < h) this.dartMask[yy * w + xx] = 1; } }
     this.ref = g; this.darts++;
-    return { state: 'ready', event: 'dart', tip: ax.tip, axis: ax, boardX: bx, boardY: by, score,
-      confidence: confidence(ax, score, comps.filter((c) => c.length > comps[0].length * 0.5).length), mask: m };
+    let conf = confidence(ax, score, comps.filter((c) => c.length > comps[0].length * 0.5).length);
+    if (byNormal && nrm.margin > 0.8) conf = Math.min(1, conf + 0.05);
+    if (hidden) conf = Math.min(conf, 0.75);
+    return { state: 'ready', event: 'dart', tip: ax.tip, tail: ax.tail, axis: ax, boardX: bx, boardY: by, score, hidden, byNormal, confidence: conf, mask: m };
   }
+}
+
+/* ---------- Feinstufe: Spitze in voller Auflösung auf Subpixel genau ---------- */
+const bil = (a, W, Hh, x, y) => {
+  const x0 = Math.floor(x), y0 = Math.floor(y); if (x0 < 0 || y0 < 0 || x0 >= W - 1 || y0 >= Hh - 1) return 0;
+  const fx = x - x0, fy = y - y0, i = y0 * W + x0;
+  return a[i] * (1 - fx) * (1 - fy) + a[i + 1] * fx * (1 - fy) + a[i + W] * (1 - fx) * fy + a[i + W + 1] * fx * fy;
+};
+/**
+ * cur/ref: Graustufen-Ausschnitt (W×Hh, volle Auflösung, möglichst über mehrere Bilder gemittelt), c0: grobe Spitze im Ausschnitt,
+ * dir: Einheitsvektor von der Spitze zur Flight. Achse per RANSAC nur aus Spitze + Barrel (Flight/Reflexe fallen raus), dann
+ * Differenzprofil entlang der Achse (0,25 px, quer über 3 px gemittelt): Spitze = Übergang vom Dart ins Board (halbe Barrel-Stärke,
+ * linear interpoliert). → { tip: [x, y], dir, ok, inliers } oder { ok: false }
+ */
+export function refineTip(cur, ref, W, Hh, c0, dir, rnd = Math.random) {
+  const d = new Float32Array(W * Hh);
+  for (let i = 0; i < d.length; i++) d[i] = Math.abs(cur[i] - ref[i]);
+  const sample = []; for (let i = 0; i < d.length; i += 7) sample.push(d[i]); sample.sort((a, b) => a - b);
+  const thr = Math.max(14, sample[Math.floor(sample.length / 2)] * 3 + 8);
+  const pts = [];
+  for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) {
+    if (d[y * W + x] <= thr) continue;
+    const ox = x - c0[0], oy = y - c0[1], t = ox * dir[0] + oy * dir[1], s = -ox * dir[1] + oy * dir[0];
+    if (t > -30 && t < 70 && Math.abs(s) < 16) pts.push([x, y]);
+  }
+  if (pts.length < 8) return { ok: false };
+  // RANSAC-Linie, Richtung höchstens ~25° von der groben Achse
+  let best = null;
+  for (let k = 0; k < 160; k++) {
+    const p = pts[(rnd() * pts.length) | 0], q = pts[(rnd() * pts.length) | 0];
+    const lx = q[0] - p[0], ly = q[1] - p[1], L = Math.hypot(lx, ly); if (L < 6) continue;
+    const ux = lx / L, uy = ly / L; if (Math.abs(ux * dir[0] + uy * dir[1]) < 0.9) continue;
+    let n = 0; for (const r of pts) if (Math.abs(-(r[0] - p[0]) * uy + (r[1] - p[1]) * ux) < 1.5) n++;
+    if (!best || n > best.n) best = { n, p, ux, uy };
+  }
+  if (!best || best.n < 6) return { ok: false };
+  // Achse aus den Inliern neu (PCA), Richtung zur Flight hin ausrichten
+  let inl = pts.filter((r) => Math.abs(-(r[0] - best.p[0]) * best.uy + (r[1] - best.p[1]) * best.ux) < 1.5);
+  // Nur der vordere Teil (Spitze + Barrel) bestimmt die Achse – das hintere Stück (Richtung Flight) fällt raus
+  { const ts = inl.map((r) => (r[0] - best.p[0]) * best.ux + (r[1] - best.p[1]) * best.uy), sg = best.ux * dir[0] + best.uy * dir[1] >= 0 ? 1 : -1;
+    const lo = Math.min(...ts.map((t) => t * sg)), hi = Math.max(...ts.map((t) => t * sg)), cutT = lo + (hi - lo) * 0.6;
+    const front = inl.filter((_, i) => ts[i] * sg <= cutT); if (front.length >= 6) inl = front; }
+  let mx = 0, my = 0; for (const [x, y] of inl) { mx += x; my += y; } mx /= inl.length; my /= inl.length;
+  let sxx = 0, syy = 0, sxy = 0; for (const [x, y] of inl) { sxx += (x - mx) ** 2; syy += (y - my) ** 2; sxy += (x - mx) * (y - my); }
+  const th = 0.5 * Math.atan2(2 * sxy, sxx - syy); let ux = Math.cos(th), uy = Math.sin(th);
+  if (ux * dir[0] + uy * dir[1] < 0) { ux = -ux; uy = -uy; }
+  let tMin = Infinity, tMax = -Infinity; for (const [x, y] of inl) { const t = (x - mx) * ux + (y - my) * uy; tMin = Math.min(tMin, t); tMax = Math.max(tMax, t); }
+  // Profil entlang der Achse: Maximum quer über 3 px (so bleibt auch die dünne Stahlspitze sichtbar)
+  const prof = (t) => { let v = 0; for (let o = -2; o <= 2; o += 0.5) v = Math.max(v, bil(d, W, Hh, mx + t * ux - o * uy, my + t * uy + o * ux)); return v; };
+  const mid = []; for (let t = tMin + (tMax - tMin) * 0.3; t <= tMax - (tMax - tMin) * 0.2; t += 0.5) mid.push(prof(t)); mid.sort((a, b) => a - b);
+  const level = mid[Math.floor(mid.length / 2)] || thr * 2, cut = Math.max(thr * 0.6, level * 0.25);
+  // Vom Barrel Richtung Spitze laufen, bis das Profil unter die Schwelle fällt (Ende der dünnen Spitze), Subpixel linear
+  let tPrev = tMin + (tMax - tMin) * 0.3, prev = prof(tPrev), tip = null;
+  for (let t = tPrev - 0.25; t > tMin - 25; t -= 0.25) {
+    const v = prof(t);
+    if (v < cut && prev >= cut) { const f = (prev - cut) / (prev - v || 1); tip = tPrev - f * 0.25; break; }
+    prev = v; tPrev = t;
+  }
+  if (tip === null) return { ok: false };
+  // Quer zur Achse nachzentrieren: Schwerpunkt der Differenz knapp hinter der Spitze (die Achse liegt evtl. 1–2 px daneben)
+  let sw = 0, so = 0;
+  for (let t = tip + 0.5; t <= tip + 5; t += 0.5) for (let o = -3; o <= 3; o += 0.25) {
+    const v = Math.max(0, bil(d, W, Hh, mx + t * ux - o * uy, my + t * uy + o * ux) - thr * 0.5); sw += v; so += v * o;
+  }
+  const off = sw ? so / sw : 0;
+  return { ok: true, tip: [mx + tip * ux - off * uy, my + tip * uy + off * ux], dir: [ux, uy], inliers: inl.length };
 }

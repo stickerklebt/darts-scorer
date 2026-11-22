@@ -17,7 +17,7 @@ const save = () => { try { if (link.role) localStorage.setItem(KEY, JSON.stringi
 
 function summarize() {
   const list = [...conns.values()];
-  link.cams = list.map((c) => ({ code: c.code, n: c.n, status: c.status, calibrated: c.calibrated, moved: c.moved, text: c.text || '', paused: !!c.paused, lenses: c.lenses || [], lens: c.lens || null, device: c.device || '', pts: c.pts || null }));
+  link.cams = list.map((c) => ({ code: c.code, n: c.n, status: c.status, calibrated: c.calibrated, moved: c.moved, text: c.text || '', paused: !!c.paused, lenses: c.lenses || [], lens: c.lens || null, device: c.device || '', pts: c.pts || null, extra: c.extra || [] }));
   link.code = link.role === 'cam' ? list[0]?.code ?? null : null;
   link.status = !list.length ? 'off' : list.some((c) => c.status === 'connected') ? 'connected' : list.some((c) => c.status === 'connecting') ? 'connecting' : 'lost';
   link.calibrated = list.some((c) => c.status === 'connected' && c.calibrated);
@@ -94,7 +94,7 @@ function add(code) {
         for (const m of r.msgs || []) {
           c.after = Math.max(c.after, m.seq);
           if (m.type === 'ping') { send({ type: 'pong' }, code); continue; }
-          if (m.type === 'calibrationStatus') { c.calibrated = !!m.ok; c.pts = m.ok ? m.pts || c.pts : null; if (m.ok) c.moved = false; changed(); }
+          if (m.type === 'calibrationStatus') { c.calibrated = !!m.ok; c.pts = m.ok ? m.pts || c.pts : null; c.extra = m.ok ? m.extra || [] : []; if (m.ok) c.moved = false; changed(); }
           if (m.type === 'cameraMoved') { c.moved = true; changed(); }
           if (m.type === 'camStatus') { c.text = m.text; c.paused = !!m.paused; if (m.device) c.device = m.device; changed(); }
           if (m.type === 'cams') { c.lenses = m.list || []; c.lens = m.current; changed(); }

@@ -70,13 +70,13 @@ export function stationMessage(m) {
   if (m.type === 'turnChanged') { st.player = m.bot ? `${m.name} (Bot)` : m.name || ''; if (m.bot) st.status = 'Bot wirft – Kamera wartet'; paint(); }
   else if (m.type === 'takeout') { st.det?.takeout(); setStatus('Bereit'); }
   else if (m.type === 'throwCorrected') setStatus(`Korrigiert: ${m.label}`);
-  else if (m.type === 'hello') { send({ type: 'calibrationStatus', ok: !!st.calib, pts: st.calib?.pts || null }); send({ type: 'camStatus', text: st.status, paused: !!st.paused, alarm: !!st.alarm, device: deviceName() }); sendCams(); }
+  else if (m.type === 'hello') { send({ type: 'calibrationStatus', ok: !!st.calib, pts: st.calib?.pts || null, extra: st.calib?.extra || [] }); send({ type: 'camStatus', text: st.status, paused: !!st.paused, alarm: !!st.alarm, device: deviceName() }); sendCams(); }
   // Einrichtung vom anderen Gerät
   else if (m.type === 'previewOn') { st.previewUntil = Date.now() + 3 * 60e3; previewLoop(); }
   else if (m.type === 'previewOff') st.previewUntil = 0;
   else if (m.type === 'still') sendFrame(1280, 0.72, true);
   else if (m.type === 'calibrate' && Array.isArray(m.pts) && m.pts.length === 4) {
-    const cal = { pts: m.pts, vw: st.video.videoWidth, vh: st.video.videoHeight, thumb: thumb(st.video), at: Date.now() };
+    const cal = { pts: m.pts, extra: Array.isArray(m.extra) ? m.extra.slice(0, 600) : [], vw: st.video.videoWidth, vh: st.video.videoHeight, thumb: thumb(st.video), at: Date.now() };
     try { localStorage.setItem('darts.calib', JSON.stringify(cal)); } catch { /* */ }
     st.det?.destroy(); st.det = null; useCalib(cal);
   }
@@ -133,12 +133,12 @@ async function calibrateNow() {
 function useCalib(cal) {
   st.calib = cal;
   try {
-    st.det = new CamDetector(st.video, cal.pts, onEvent);
+    st.det = new CamDetector(st.video, cal.pts, onEvent, cal.extra || []);
     st.det.setDebug(st.debug);
     st.det.start();
   } catch { st.hooks.toast?.('Erkennung konnte nicht starten – bitte manuell eingeben'); }
   setStatus('Bereit');
-  if (st.mode === 'cam') send({ type: 'calibrationStatus', ok: true, pts: st.calib?.pts || null });
+  if (st.mode === 'cam') send({ type: 'calibrationStatus', ok: true, pts: st.calib?.pts || null, extra: st.calib?.extra || [] });
   st.hooks.onCalibrated?.(true);
 }
 

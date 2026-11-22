@@ -81,3 +81,28 @@ test('Erkennung: Dart in Stücken (Flight getrennt vom Barrel) → zusammengefas
   const ax = dartAxis(mergeDart(comps, W), W);
   assert.ok(Math.hypot(ax.tip[0] - 100, ax.tip[1] - 48) < 3, `Spitze bei ${ax.tip}`);
 });
+
+test('Feinstufe: Spitze im Vollbild-Ausschnitt auf Subpixel genau (Rauschen, Unschärfe, Flight im Bild)', async () => {
+  const { refineTip } = await import('../js/detect-core.js');
+  const W2 = 160, H2 = 160;
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const bg = new Float32Array(W2 * H2).map((_, i) => 110 + ((i * 37) % 23));
+  const errs = [];
+  for (let trial = 0; trial < 12; trial++) {
+    const tx = 50 + rnd() * 20, ty = 90 + rnd() * 20, a = -0.5 - rnd() * 0.4, ux = Math.cos(a), uy = Math.sin(a);
+    const cur = new Float32Array(bg), ref = new Float32Array(bg);
+    // Spitze (dünn) 10 px, Barrel (5 px breit) 40 px, Flight (breit) danach – weich gezeichnet (Abdeckung je Pixel)
+    for (let y = 0; y < H2; y++) for (let x = 0; x < W2; x++) {
+      const ox = x - tx, oy = y - ty, t = ox * ux + oy * uy, s = Math.abs(-ox * uy + oy * ux);
+      const half = t < 10 ? 0.5 + t * 0.08 : t < 50 ? 2.5 : t < 80 ? 9 : -1;
+      const cov = Math.max(0, Math.min(1, half + 0.5 - s)) * Math.max(0, Math.min(1, t + 0.5));
+      cur[y * W2 + x] = cur[y * W2 + x] * (1 - cov) + 30 * cov;
+    }
+    for (let i = 0; i < cur.length; i++) { cur[i] += (rnd() - 0.5) * 8; ref[i] += (rnd() - 0.5) * 8; }
+    const r = refineTip(cur, ref, W2, H2, [tx + 4 * ux + 2, ty + 4 * uy - 2], [ux, uy], rnd);
+    assert.ok(r.ok, 'Feinstufe ohne Ergebnis');
+    errs.push(Math.hypot(r.tip[0] - tx, r.tip[1] - ty));
+  }
+  const mean = errs.reduce((a, b) => a + b, 0) / errs.length, max = Math.max(...errs);
+  assert.ok(mean < 1.0 && max < 2.0, `Fehler Spitze: mittel ${mean.toFixed(2)} px, max ${max.toFixed(2)} px`);
+});

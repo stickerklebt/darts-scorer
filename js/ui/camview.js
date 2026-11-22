@@ -2,7 +2,7 @@
    die Darts der laufenden Aufnahme erkannt hat (Board-mm → Bild über die Kalibrierpunkte der Kamera). */
 import { ui } from '../store.js';
 import { link, send } from '../camera-link.js';
-import { calibrate, project } from '../homography.js';
+import { project, homographyN, homographyRobust, inv3, CALIB_TARGETS } from '../homography.js';
 
 /** Welche Kamera wird gezeigt? Die erste eingerichtete. */
 export const viewCam = () => link.cams.find((c) => c.status === 'connected' && c.calibrated) || link.cams[0] || null;
@@ -38,17 +38,22 @@ function paint(box) {
   const r = im.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
   cv.width = r.width * dpr; cv.height = r.height * dpr;
   const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, r.width, r.height);
-  const cal = c?.pts?.length === 4 ? calibrate(c.pts.map(([x, y]) => [x * 1000, y * 1000])) : null;
-  if (!cal) return;
+  if (c?.pts?.length !== 4) return;
+  const src = [...c.pts.map(([x, y]) => [x * 1000, y * 1000]), ...(c.extra || []).map((e) => [e.img[0] * 1000, e.img[1] * 1000])], dst = [...CALIB_TARGETS, ...(c.extra || []).map((e) => e.board)];
+  const toBoard = (c.extra?.length > 8 ? homographyRobust(src, dst, 1.5) : homographyN(src, dst)), toImage = toBoard && inv3(toBoard);
+  if (!toImage) return;
+  const cal = { toImage };
   const ir = im.naturalWidth / im.naturalHeight, er = r.width / r.height;
   const f = ir > er ? { x: 0, y: (r.height - r.width / ir) / 2, w: r.width, h: r.width / ir } : { x: (r.width - r.height * ir) / 2, y: 0, w: r.height * ir, h: r.height };
   (ui.ct?.darts || []).forEach((d, i) => {
     if (!Number.isFinite(d.x)) return;
     const [px, py] = project(cal.toImage, d.x, d.y), x = f.x + (px / 1000) * f.w, y = f.y + (py / 1000) * f.h;
-    g.strokeStyle = d.conf < 0.7 ? '#ffd23f' : '#ff3b2b'; g.lineWidth = box.classList.contains('big') ? 3.5 : 2;
-    const R = box.classList.contains('big') ? 16 : 7;
-    g.beginPath(); g.arc(x, y, R, 0, Math.PI * 2); g.stroke();
-    if (box.classList.contains('big')) { g.fillStyle = '#fff'; g.font = 'bold 14px sans-serif'; g.textAlign = 'center'; g.fillText(['I', 'II', 'III'][i] || String(i + 1), x, y - R - 6); }
+    // Feines Fadenkreuz + Punkt genau auf der Spitze, Farbe nach Sicherheit, Beschriftung „I · T12“
+    const big = box.classList.contains('big'), col = d.conf >= 0.85 ? '#4fd16a' : d.conf >= 0.6 ? '#ffd23f' : '#ff4d3a', L = big ? 14 : 7, gap = big ? 3 : 2;
+    g.strokeStyle = col; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(x - L, y); g.lineTo(x - gap, y); g.moveTo(x + gap, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y - gap); g.moveTo(x, y + gap); g.lineTo(x, y + L); g.stroke();
+    g.fillStyle = col; g.beginPath(); g.arc(x, y, big ? 2 : 1.5, 0, Math.PI * 2); g.fill();
+    if (big) { g.fillStyle = '#fff6dc'; g.font = '13px sans-serif'; g.textAlign = 'left'; g.fillText(`${['I', 'II', 'III'][i] || i + 1} · ${d.n === 0 ? '0' : d.label}`, x + 10, y - 10); }
   });
 }
 

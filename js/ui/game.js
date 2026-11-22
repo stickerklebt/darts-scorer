@@ -99,7 +99,7 @@ function camPad(m, thrower) {
   const unsure = d.some((x) => x.conf < 0.7);
   const hint = d.length === 3 && unsure && sel === null ? 'Die Kamera ist sich nicht sicher – gelbe Kästen prüfen, dann OK' : sel !== null ? 'Tippe auf das Feld, das wirklich getroffen wurde' : d.length < 3 ? `${esc(nameOf(thrower))} wirft – die Kamera trägt jeden Dart ein` : 'Alles richtig? Sonst Kasten antippen';
   return `<div class="campad"><div class="cp-head"><span>${hint}</span><b>Rest ${X.curRem(m) - X.pendingSum(m) - d.reduce((a, x) => a + x.n * x.m, 0)}</b></div>
-    <div class="cp-board"><div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>${camThumb()}</div>
+    <div class="cp-board"><div class="aimbox" id="dartBoard">${aimBoard(hits)}</div></div>
     <div class="cp-slots">${slot(0)}${slot(1)}${slot(2)}</div>
     <div class="cp-acts"><button class="btn line" data-act="camMiss">${sel !== null ? 'War daneben' : 'Miss / 0'}</button>${end}<button class="btn line" data-act="camPulled">Darts gezogen</button><button class="btn line" data-act="camKeys">Tastatur</button></div></div>`;
 }
@@ -208,7 +208,7 @@ export function gameView() {
       <div class="gbar-r"><button class="sq cam-btn ${ui.camLive ? 'on' : ''}" data-act="cam" aria-label="Kamera">${icon('cam', 1.9)}</button>
       <button class="sq" data-act="gear" aria-label="Einstellungen">${icon('gear', 1.8)}</button></div>
     </header>
-    <div class="gmain"><div class="gleft">${board}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${ui.camPadOn ? '' : camBar(m, thrower)}${pad}</div></div>
+    <div class="gmain"><div class="gleft">${board}${ui.camPadOn ? `<div class="cam-under">${camThumb()}</div>` : ''}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${ui.camPadOn ? '' : camBar(m, thrower)}${pad}</div></div>
   </div>`;
 }
 
