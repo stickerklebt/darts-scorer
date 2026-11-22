@@ -223,7 +223,7 @@ let botTimer = null;
 function scheduleBot() {
   const m = S.current;
   let who = null;
-  if (S.screen === 'game' && m && !m.done && !ui.modal && !ui.moment && !fxRunning()) {
+  if (S.screen === 'game' && m && !m.done && !ui.modal && !ui.moment && !ui.vs && !fxRunning()) {
     if (inBulloff()) { const s = bullNext(m.bull); if (!ui.boResult && s !== null && isBot(m.sides[s][0]) && !ui.boPending) who = 'bull'; }
     else if (isBot(curThrowerOf(m))) who = 'turn';
   }
@@ -416,12 +416,10 @@ function addBanners(m) {
   m.banners = b;
 }
 
-/** VS-Intro mit den Bannern aller Seiten (sobald es einen Gegner gibt), tippen oder nach 4 s weiter */
-let vsTimer = null;
+/** VS-Intro mit den Bannern aller Seiten (sobald es einen Gegner gibt). Weiter nur durch Antippen – kein Zeitlimit. */
 function showVs(m) {
   if (!m?.banners || m.sides.length < 2) return;
-  ui.vs = m.id; clearTimeout(vsTimer);
-  vsTimer = setTimeout(() => { if (ui.vs === m.id) { ui.vs = null; render(); } }, 4200);
+  ui.vs = m.id;
 }
 
 function addToLineup(id) {
@@ -782,7 +780,7 @@ const actions = {
     catch (e) { toast(errMsg(e)); }
     render();
   },
-  vsClose() { ui.vs = null; render(); },
+  vsClose() { ui.vs = null; render(); }, // Bot wirft erst danach (scheduleBot wartet auf ui.vs)
   addNew() {
     // Gast: kein Profil, keine Statistik – nur für dieses Spiel (danach wieder aus der Aufstellung)
     const n = field('newPlayer');

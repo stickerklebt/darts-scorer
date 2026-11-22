@@ -12,7 +12,7 @@ const bannerOf = (m, pid, mine) => {
   return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white', pic: b?.bot || null });
 };
 
-/** Vollbild: Banner oben, großes VS, Banner unten (bei mehr Spielern alle untereinander). Antippen schließt. */
+/** Vollbild: Banner oben, großes VS, Banner unten (bei mehr Spielern alle untereinander). Weiter nur durch Antippen. */
 export function vsView(m) {
   const parts = m.sides.map((side, i) => `<div class="vs-b" style="--i:${i}">${bannerOf(m, side[0], side.includes(S.mainId))}</div>`);
   return `<div class="vs-intro" data-act="vsClose">
