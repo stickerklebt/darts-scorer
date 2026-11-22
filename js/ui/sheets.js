@@ -103,6 +103,9 @@ export function sheetView() {
   } else if (md.type === 'friendRemove') {
     inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;
+  } else if (md.type === 'bruchCancel') {
+    inner = `<h3>Challenge abbrechen?</h3><p>Die drei Herausforderungen verschwinden und nichts wird in der Historie gespeichert.</p>
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Weiterspielen</button><button class="btn red" data-act="bruchCancelForce">Abbrechen</button></div>`;
   } else if (md.type === 'bruchResult') {
     inner = bruchResult(md);
   } else if (md.type === 'invite') {

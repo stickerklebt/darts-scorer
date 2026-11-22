@@ -1764,5 +1764,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .br-c.ok { border-color: #3f9a4c; background: linear-gradient(180deg, #17221a, #111a13); }
 .br-c.ok p { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(111,209,127,.6); }
 .br-c.ok .br-tick { background: #4fb85f; border: 2px solid #4fb85f; }
-.br-quit { margin-top: 16px; width: 100%; }
+.br-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.br-quit { width: 100%; }
 .br-hist { list-style: none; padding: 0; margin: 6px 0 0; } .br-hist li { padding: 6px 0; color: var(--muted); } .br-hist li.ok { color: var(--cream); }

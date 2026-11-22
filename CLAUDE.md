@@ -213,7 +213,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Shanghai/Halbieren behalten ihre Vielfachen.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
-  Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
+  „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
   Laufende Challenge in `S.bruch` (nur lokal).
 - **Partyspiele:** wählbar sind nur noch **Cricket** und die Bruchchallenge. Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
   (nicht mehr im Menü, Engines bleiben für alte Spiele in Historie/Statistik).

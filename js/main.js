@@ -739,6 +739,8 @@ const actions = {
   },
   bruchQuit() { if (S.bruch) bruchEnd('quit'); },
   bruchAgain() { ui.modal = null; S.screen = 'bruch'; render(); },
+  bruchCancel() { ui.modal = { type: 'bruchCancel' }; render(); },
+  bruchCancelForce() { S.bruch = null; ui.modal = null; releaseWakeLock(); toast('Challenge abgebrochen'); render(); }, // nichts gespeichert
   more() { ui.moreOpen = !ui.moreOpen; render(); },
   anwurf(el) { S.anwurf = el.dataset.v; render(); },
   resume() { S.screen = 'game'; requestWakeLock(); render(); },

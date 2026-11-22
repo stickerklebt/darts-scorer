@@ -24,7 +24,8 @@ export function bruchView() {
     <div class="br-list">${b.ids.map((id, i) => `<div class="br-c ${b.done[i] ? 'ok' : ''}" style="--i:${i}">
       <span class="br-n">${i + 1}</span><p>${esc(challenge(id)?.text || '')}</p>
       <button class="br-tick" data-act="bruchTick" data-v="${i}" aria-label="${b.done[i] ? 'Doch nicht geschafft' : 'Geschafft'}">${b.done[i] ? '✓' : ''}</button></div>`).join('')}</div>
-    <button class="btn line br-quit" data-act="bruchQuit">Aufgeben</button>
+    <div class="br-btns"><button class="btn line" data-act="bruchCancel">Abbrechen</button><button class="btn line br-quit" data-act="bruchQuit">Aufgeben</button></div>
+    <p class="foot">Abbrechen: die Challenge verschwindet, ohne in der Historie zu landen. Aufgeben: sie wird mit deinem Stand gespeichert.</p>
   </main>`;
 }
 
