@@ -17,7 +17,7 @@ export const pct = (x) => (x === null || x === undefined ? '–' : `${fmt(x * 10
 export const dateStr = (t) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const oppStr = (ids) => ids.map(nameOf).join(' · ');
 
-export const statsPid = () => (profile(S.statsPid) ? S.statsPid : S.mainId);
+export const statsPid = () => S.mainId; // Statistik immer vom Hauptspieler
 
 const block = (title, body) => `<section class="sblock">${title ? `<h2 class="label">${title}</h2>` : ''}${body}</section>`;
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
@@ -32,8 +32,8 @@ export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
   return `<div class="st-head">
-    <button class="st-who glint" data-act="statsWho" style="--gd:-6s">
-      <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span>${icon('chevR', 2.4, 18)}</button>
+    <div class="st-who glint" style="--gd:-6s">
+      <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span></div>
     <button class="sq st-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen">${icon('clock', 2, 22)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
