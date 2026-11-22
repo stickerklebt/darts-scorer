@@ -79,13 +79,15 @@ function dblInfo(st, key) {
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
   const sd = doubleSides(st.doubles, key);
+  if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
   if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
+  // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
   return `<div class="dbl-info"><span class="di-arrow"></span>${head}
     <h4>Wenn du nicht triffst, wirfst du</h4>
     <div class="io-line">
-      <span class="io-side in" style="flex:${Math.max(ip, 1)}"><b>${ip} %</b><small>Inside</small></span>
-      <span class="io-side out" style="flex:${Math.max(op, 1)}"><b>${op} %</b><small>Outside</small></span>
+      ${ip > 0 ? `<span class="io-side in ${op === 0 ? 'full' : ''}" style="flex:${ip}"><b>${ip} %</b><small>Inside</small></span>` : ''}
+      ${op > 0 ? `<span class="io-side out ${ip === 0 ? 'full' : ''}" style="flex:${op}"><b>${op} %</b><small>Outside</small></span>` : ''}
     </div>
     <div class="io-key"><span>← ins Board (alles außer ${key})</span><span>daneben (0) →</span></div>
     <p class="di-n">${sd.misses} Fehlwürfe · ${sd.inside}× inside · ${sd.outside}× outside</p></div>`;

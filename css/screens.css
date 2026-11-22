@@ -1967,3 +1967,5 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .io-side.out { background: #2a0f0b; color: #ff8a7a; align-items: flex-end; text-align: right; }
 .io-key { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 13px; color: var(--muted); }
 .di-n { margin: 8px 0 0; color: var(--dim); font-size: 13px; }
+.io-side.full { border-right: 0; }
+.io-side.out.full { align-items: flex-end; }
