@@ -152,7 +152,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   eigene Scheibe im App-Stil (warm-dunkle Felder, leicht getönte Grün-/Rot-Ringe, Golddrähte, breitere Ringe für Finger).
   Finger drauf → Feld unter dem Finger leuchtet gold; nach 140 ms halten (oder beim Ziehen) erscheint die Lupe über dem Finger
   mit Fadenkreuz und Feldname; loslassen setzt den Dart (außerhalb des Double-Rings = daneben, dazu Knopf „Daneben“).
-  Über der Scheibe drei Treffer-Kacheln (1 · T20 60 …, nächster Dart „Jetzt“), getroffene Felder der laufenden Aufnahme
+  Getroffene Felder leuchten (inneres und äußeres Single getrennt, auch bei Kamera-Darts aus der Position); ein Feld 2×/3× getroffen bekommt 2/3 helle Linien. Über der Scheibe drei Treffer-Kacheln (1 · T20 60 …, nächster Dart „Jetzt“), getroffene Felder der laufenden Aufnahme
   leuchten, an der Wurfstelle steckt ein kleiner Dartpfeil, die Nummer (römisch I · II · III) steht auf der Flight (`ui.aimPos`, nur flüchtig). Mauszeiger = Dartpfeil
   (Spitze = Treffpunkt). Lupe: runder „Glas“-Ausschnitt mit feinem Goldring, Dartpfeil statt Fadenkreuz, Feldname als Pille darunter. Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
 - **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):

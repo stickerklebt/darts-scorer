@@ -86,7 +86,7 @@ function camBar(m, thrower) {
 /** Kamera-Spiel: große Scheibe mit Punkten, wo die Darts stecken; darunter 3 Kästen. Kasten antippen → aufs richtige Feld tippen. */
 function camPad(m, thrower) {
   const d = ui.ct?.darts || [], sel = Number.isInteger(ui.camSel) ? ui.camSel : null;
-  const hits = d.map((x) => ({ n: x.n, m: x.m, z: x.z, x: x.ax, y: x.ay }));
+  const hits = d.map((x) => ({ n: x.n, m: x.m, z: x.z || (Number.isFinite(x.ax) && x.n && x.n !== 25 && x.m === 1 ? fieldAt(x.ax, x.ay).z : undefined), x: x.ax, y: x.ay }));
   const slot = (i) => {
     const x = d[i];
     if (!x) return `<span class="cp-slot empty">${ROMAN[i]}. Dart</span>`;

@@ -68,11 +68,25 @@ const F = {
 /**
  * hits: [{ n, m, z, x?, y? }] – Darts der laufenden Aufnahme (leuchten, mit Nummer an der Wurfstelle)
  */
+/** Kreis als Pfad (für Bull/25) */
+const circ = (r) => `M${r} 0A${r} ${r} 0 1 1 ${-r} 0A${r} ${r} 0 1 1 ${r} 0Z`;
+/** Mehrfach getroffen: je weiterem Treffer eine zusätzliche helle Linie um das Feld (2 Treffer → 2 Linien, 3 → 3) */
+function outlines(d, c) {
+  let out = '';
+  for (let i = c - 1; i >= 1; i--) { const w = 1.4 + i * 3.4; out += `<path class="aline" d="${d}" stroke-width="${w}"/><path class="agap" d="${d}" stroke-width="${w - 1.7}"/>`; }
+  return out;
+}
+
 export function aimBoard(hits = []) {
+  // Getroffene Felder: Anzahl je Feld (inneres/äußeres Single getrennt – aus der Position, falls bekannt)
   const lit = new Map();
-  hits.forEach((h, i) => { if (h.n) lit.set(fieldKey(h), i + 1); });
+  hits.forEach((h) => {
+    if (!h.n) return;
+    const z = h.z || (h.m === 1 && h.n !== 25 && h.x !== undefined ? fieldAt(h.x, h.y).z : undefined);
+    const k = fieldKey({ ...h, z }); lit.set(k, (lit.get(k) || 0) + 1);
+  });
   const cls = (k) => `af${lit.has(k) ? ' hit' : ''}`;
-  let segs = '', glow = '', nums = '';
+  let segs = '', glow = '', nums = '', lines = '';
   ORDER.forEach((n, i) => {
     const a0 = -99 + i * 18, a1 = -81 + i * 18, even = i % 2 === 0;
     const parts = [
@@ -84,14 +98,14 @@ export function aimBoard(hits = []) {
     for (const [r0, r1, fill, k] of parts) {
       const d = ring(r0, r1, a0, a1);
       segs += `<path class="${cls(k)}" data-k="${k}" d="${d}" fill="${fill}"/>`;
-      if (lit.has(k)) glow += `<path class="aglow" d="${d}"/>`;
+      if (lit.has(k)) { glow += `<path class="aglow" d="${d}"/>`; lines += outlines(d, lit.get(k)); }
     }
     const [x, y] = pt((AR.dblOut + AR.edge) / 2, (a0 + a1) / 2).split(',');
     nums += `<text x="${x}" y="${y}" class="anum" text-anchor="middle" dominant-baseline="central">${n}</text>`;
   });
   segs += `<circle class="${cls('b1')}" data-k="b1" r="${AR.outer}" fill="${F.b25}"/><circle class="${cls('b2')}" data-k="b2" r="${AR.bull}" fill="${F.b50}"/>`;
-  if (lit.has('b1')) glow += `<circle class="aglow" r="${AR.outer}"/>`;
-  if (lit.has('b2')) glow += `<circle class="aglow" r="${AR.bull}"/>`;
+  if (lit.has('b1')) { glow += `<circle class="aglow" r="${AR.outer}"/>`; lines += outlines(circ(AR.outer), lit.get('b1')); }
+  if (lit.has('b2')) { glow += `<circle class="aglow" r="${AR.bull}"/>`; lines += outlines(circ(AR.bull), lit.get('b2')); }
   const wires = `<g class="awire">${[AR.bull, AR.outer, AR.triIn, AR.triOut, AR.dblIn, AR.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(AR.outer, -99 + i * 18)}L${pt(AR.dblOut, -99 + i * 18)}"/>`).join('')}</g>`;
   // Steckende Darts an der Wurfstelle (mit kleiner Nummer)
@@ -99,7 +113,7 @@ export function aimBoard(hits = []) {
   return `<svg class="aimboard" viewBox="-${AR.edge} -${AR.edge} ${AR.edge * 2} ${AR.edge * 2}" role="img" aria-label="Dartscheibe – Finger auf die Stelle, wo der Dart steckt">
     <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
     <circle r="${AR.edge}" class="arim"/><circle r="${AR.dblOut + 1}" fill="${F.rim}"/>
-    ${segs}${wires}<g class="aglows" filter="url(#aGlow)">${glow}</g><g class="aedges">${glow.replace(/aglow/g, 'aedge')}</g>${nums}${marks}
+    ${segs}${wires}<g class="aglows" filter="url(#aGlow)">${glow}</g><g class="alines">${lines}</g><g class="aedges">${glow.replace(/aglow/g, 'aedge')}</g>${nums}${marks}
   </svg>`;
 }
 

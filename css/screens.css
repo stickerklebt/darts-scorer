@@ -1969,3 +1969,8 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .di-n { margin: 8px 0 0; color: var(--dim); font-size: 13px; }
 .io-side.full { border-right: 0; }
 .io-side.out.full { align-items: flex-end; }
+
+/* Feld mehrfach getroffen: zusätzliche helle Linien um das Feld */
+.aimboard .alines { pointer-events: none; }
+.aimboard .aline { fill: none; stroke: #fff6dc; stroke-linejoin: round; }
+.aimboard .agap { fill: none; stroke: #0b0a08; stroke-linejoin: round; }
