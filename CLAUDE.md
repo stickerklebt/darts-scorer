@@ -211,6 +211,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
   sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
   Shanghai/Halbieren behalten ihre Vielfachen.
+- **Partyspiele:** wählbar ist nur noch **Cricket**. Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
+  (nicht mehr im Menü, Engines bleiben für alte Spiele in Historie/Statistik).
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
 - **Animationen** (`js/fx.js`):  26, 60 (4 s) · 100–120 Topf (4 s) · 121–179 Topf (5 s) · 180 Pokal (7 s) ·
@@ -252,8 +254,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 
 - **Cricket** (`js/cricket.js`): 20, 19, 18, 17, 16, 15, Bull; 3 Treffer schließen (Double 2, Triple 3, 25 = 1, Bull = 2).
   „Mit Punkten“: Treffer auf eigene, beim Gegner offene Felder zählen Feldwert; Sieg = alles zu und nicht hinten.
-  „Nur Schließen“: wer zuerst alles zu hat. Rundenlimit (15/20/25) → meiste Punkte, dann meiste Treffer. Eingabe Dart für Dart
-  (Tastatur 20–15/25/Bull/Daneben oder Dartscheibe), Treffer-Tafel unter den Karten. Keine Animationen, nicht in der Statistik.
+  „Nur Schließen“: wer zuerst alles zu hat. Rundenlimit (15/20/25) → meiste Punkte, dann meiste Treffer.
+  **Die Tafel ist die Eingabe** (`ckBoard` in `ui/game.js`): Mitte die Zahlen 20–15 als Knöpfe Single · Double · Triple
+  (Punkte darunter), Bull als 25 · Bull; links/rechts die Treffer der Spieler (gerade Seiten links, ungerade rechts):
+  1 = Schrägstrich, 2 = X, 3 = X im Kreis. Haben alle ein Feld zu, wird die Zeile durchgestrichen und gesperrt.
+  Leiste darüber: 3 Dart-Felder, Rückgängig, Daneben, Weiter (Rest der Aufnahme = daneben). Keine Dartscheiben-Eingabe mehr. Keine Animationen, nicht in der Statistik.
   Bots zielen auf die höchste offene Zahl bzw. punkten, wenn sie hinten liegen.
 
 ## Stand

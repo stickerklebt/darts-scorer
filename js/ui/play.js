@@ -22,7 +22,7 @@ export function tabsBar() {
 export function playView() {
   const ov = overview(S.matches, S.mainId), m = S.current, name = nameOf(S.mainId), o = S.opts.x01;
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
-  const others = Object.keys(GAMES).filter((id) => id !== 'x01');
+  const others = Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired);
   return `<main class="page">
     <button class="me" data-act="rename">
       <span class="me-name"><span class="nm">${esc(name)}</span><svg class="nm-trace" aria-hidden="true"><text x="0" y="0.84em">${esc(name)}</text><text class="t2" x="0" y="0.84em">${esc(name)}</text></svg></span>
@@ -42,8 +42,8 @@ export function playView() {
         <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
       </div>
     </section>
-    <h2 class="label">Partyspiele</h2>
-    <div class="modes">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
+    <h2 class="label">Partyspiel</h2>
+    <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
   </main>`;
 }

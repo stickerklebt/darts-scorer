@@ -37,7 +37,7 @@ export function sheetView() {
       : [['Spiel', GAMES[m.game].title], ...(m.game === 'atc' ? [] : [['Runden', G.rounds(m)]])];
     inner = `<h3>Einstellungen</h3><p>${matchSummary(m)}</p>
       <div class="slist">
-        ${m.game === 'x01' || m.game === 'cricket' ? `<div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>` : ''}
+        ${m.game === 'x01' ? `<div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>` : ''}
         ${tog('voice', 'Ansage')}${m.game === 'x01' ? tog('hints', 'Checkout-Hilfe') : ''}${tog('showAvg', 'Average anzeigen')}${m.game === 'x01' ? tog('showDarts', 'Darts im Leg anzeigen') : ''}${tog('anim', 'Animationen')}
       </div>
       <div class="slist">${info.map(([a, b]) => `<div class="srow"><span class="lbl">${a}</span><span class="val">${b}</span></div>`).join('')}</div>

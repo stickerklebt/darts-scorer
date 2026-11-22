@@ -71,7 +71,7 @@ function render() {
   if (!auth.user) html = authView();
   else if (S.screen === 'game' && m && !m.done) html = m.online && m.online.status !== 'active' ? onlineWaitView(m) : inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
-  else if (S.screen === 'setup' && GAMES[S.game]) html = setupView();
+  else if (S.screen === 'setup' && GAMES[S.game] && !GAMES[S.game].retired) html = setupView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
   else if (S.screen === 'friend' && ui.friend) html = friendView();
   else if (S.screen === 'history') html = historyView();
@@ -844,6 +844,15 @@ const actions = {
     handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
   },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
+  ckHit(el) { handle(C.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
+  ckMiss() { handle(C.throwDart(S.current, 0, 1)); },
+  ckNext() {
+    const m = S.current, k = 3 - m.pending.length;
+    let res = null;
+    for (let i = 0; i < k; i++) { res = C.throwDart(m, 0, 1); if (res.type !== 'dart') break; }
+    if (res) handle(res);
+  },
   boOk() { if (ui.boPending) bullPlace(ui.boPending.x, ui.boPending.y); },
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
   boDone() { finishBulloff(); },
@@ -868,7 +877,7 @@ const actions = {
   },
 };
 
-const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board']);
+const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext']);
 /** Online: nur wer dran ist, darf eingeben */
 const notMyTurn = () => { const m = S.current; return !!(m?.online && !m.done && S.screen === 'game' && curThrowerOf(m) !== S.mainId); };
 document.addEventListener('click', (e) => {
