@@ -13,6 +13,8 @@ import { auth, sync } from '../sync.js';
 import { dateStr } from './stats-view.js';
 import { legSheet } from './legdetail.js';
 import { bruchResult } from './bruch.js';
+import { link } from '../camera-link.js';
+import { stationMode } from './camstation.js';
 
 /** Sync-Stand in Worten */
 function syncText() {
@@ -52,7 +54,7 @@ export function sheetView() {
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
-      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('anim', 'Animationen')}
+      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
       <div class="sbtns"><button class="btn line" data-act="wipe" style="color:var(--red);border-color:var(--red)">Alle Daten löschen</button><button class="btn red" data-act="closeModal">Fertig</button></div>
@@ -103,6 +105,36 @@ export function sheetView() {
   } else if (md.type === 'friendRemove') {
     inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;
+  } else if (md.type === 'camMenu') {
+    const on = link.role || stationMode();
+    inner = `<h3>Kamera</h3><p>Würfe automatisch erkennen lassen – du siehst jeden Wurf und kannst ihn korrigieren.</p>
+      <div class="slist">
+        <button class="srow" data-act="camAsDevice"><span class="lbl">Als Kamera-Gerät nutzen<small>Dieses Handy filmt das Board und schickt die Würfe an das Scoreboard (z. B. iPad)</small></span>${icon('chevR', 2.4, 16)}</button>
+        <button class="srow" data-act="camConnect"><span class="lbl">Kamera-Gerät verbinden<small>Dieses Gerät ist das Scoreboard – Code vom Kamera-Gerät eingeben</small></span>${icon('chevR', 2.4, 16)}</button>
+        <button class="srow" data-act="camSingle"><span class="lbl">Nur dieses Gerät<small>Kamera und Scoreboard auf demselben Gerät</small></span>${icon('chevR', 2.4, 16)}</button>
+      </div>
+      <div class="sbtns">${on ? '<button class="btn line" data-act="camOff">Kamera trennen</button>' : ''}<button class="btn red" data-act="closeModal">Schließen</button></div>`;
+  } else if (md.type === 'camConnect') {
+    inner = `<h3>Kamera-Gerät verbinden</h3><p>Am Kamera-Gerät: Kamera › „Als Kamera-Gerät nutzen“. Dort steht ein 6-stelliger Code.</p>
+      <input id="camCode" class="field cam-code" inputmode="numeric" maxlength="7" placeholder="000 000" autocomplete="off" value="${esc(link.role === 'ctl' ? link.code || '' : '')}">
+      ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="camJoin" ${md.busy ? 'disabled' : ''}>Verbinden</button></div>`;
+  } else if (md.type === 'camResume') {
+    inner = `<h3>Kamera-Gerät fortsetzen?</h3><p>Dieses Gerät war als Kamera-Gerät verbunden (Code ${esc(link.code || '')}). Kamera wieder starten?</p>
+      <div class="sbtns"><button class="btn line" data-act="camResumeNo">Nein, trennen</button><button class="btn red" data-act="camResumeYes">Kamera starten</button></div>`;
+  } else if (md.type === 'camFix') {
+    const d = ui.ct?.darts?.[md.i];
+    if (!d) inner = '<h3>Wurf nicht mehr da</h3><div class="sbtns"><button class="btn red" data-act="closeModal">Schließen</button></div>';
+    else {
+      const fm = ui.fixMult || 1, nums = Array.from({ length: 20 }, (_, i) => i + 1);
+      inner = `<h3>Dart ${md.i + 1} korrigieren</h3><p>Erkannt: <b>${esc(d.label)}</b>${d.conf < 1 ? ` · ${Math.round(d.conf * 100)} % sicher` : ''}</p>
+        ${d.snapshot ? `<img class="cf-snap" src="${d.snapshot}" alt="Bild vom Wurf">` : ''}
+        ${seg('camFixMult', 'v', [[1, 'Single'], [2, 'Double'], [3, 'Triple']], fm, 'seg')}
+        <div class="cf-grid">${nums.map((n) => `<button data-act="camFixSet" data-n="${n}">${n}</button>`).join('')}
+          <button data-act="camFixSet" data-n="25" data-m="1">25</button><button data-act="camFixSet" data-n="25" data-m="2">Bull</button>
+          <button class="miss" data-act="camFixSet" data-n="0">Miss</button></div>
+        <div class="sbtns"><button class="btn line" data-act="closeModal">So lassen</button></div>`;
+    }
   } else if (md.type === 'bruchCancel') {
     inner = `<h3>Challenge abbrechen?</h3><p>Die drei Herausforderungen verschwinden und nichts wird in der Historie gespeichert.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Weiterspielen</button><button class="btn red" data-act="bruchCancelForce">Abbrechen</button></div>`;

@@ -351,3 +351,23 @@ test('Gegen Freunde: Online-Spiel einladen, annehmen, abwechselnd schreiben, Kon
     assert.equal((await b('GET', '/api/confirms')).body.confirms.length, 0);
   } finally { await s.stop(); }
 });
+
+test('Kamera-Kopplung: Raum öffnen, beitreten, Nachrichten in beide Richtungen, falscher Code', async () => {
+  const s = await boot();
+  try {
+    const cam = client(s.base), ctl = client(s.base);
+    await register(cam, 'cam@k.de', 'KameraA'); await register(ctl, 'ctl@k.de', 'SteuerB');
+    const { code } = (await cam('POST', '/api/camlink', {})).body;
+    assert.match(code, /^\d{6}$/);
+    assert.equal((await ctl('POST', '/api/camlink/000000/join', {})).status, 404);
+    assert.equal((await ctl('POST', `/api/camlink/${code}/join`, {})).body.ok, true);
+    await cam('POST', `/api/camlink/${code}/send`, { from: 'cam', msgs: [{ type: 'throw', label: 'T20' }, { type: 'calibrationStatus', ok: true }] });
+    const r1 = (await ctl('GET', `/api/camlink/${code}/recv?side=ctl&after=0`)).body;
+    assert.deepEqual(r1.msgs.map((m) => m.type), ['throw', 'calibrationStatus']);
+    const r2 = (await ctl('GET', `/api/camlink/${code}/recv?side=ctl&after=${r1.msgs[1].seq}`)).body;
+    assert.equal(r2.msgs.length, 0);
+    await ctl('POST', `/api/camlink/${code}/send`, { from: 'ctl', msgs: [{ type: 'turnChanged', name: 'Lasse' }] });
+    assert.equal((await cam('GET', `/api/camlink/${code}/recv?side=cam&after=0`)).body.msgs[0].name, 'Lasse');
+    assert.equal((await cam('POST', '/api/camlink', { code })).body.code, code); // derselbe Code nach Neustart
+  } finally { await s.stop(); }
+});

@@ -8,6 +8,7 @@ import { BOTS, isBot } from '../bots.js';
 import { esc, pcVars, seg, optRow } from './common.js';
 import { badge, divider, icon, fuse } from './svg.js';
 import { avatar } from './avatar.js';
+import { camReady } from './camstation.js';
 
 const TEAM_LETTERS = 'ABCDEF';
 
@@ -52,6 +53,14 @@ function moreOptions(id) {
   </div>`;
 }
 
+/** „Mit Kamera-Erkennung spielen“: nur wenn ein Kamera-Gerät verbunden ist (bzw. Ein-Geräte-Modus) und der Modus einzelne Darts zählt */
+function camRow(id) {
+  const c = camReady();
+  if (!c.connected || !['x01', 'cricket'].includes(id)) return '';
+  if (!c.calibrated) return '<div class="cam-opt off"><span>Kamera verbunden – bitte am Kamera-Gerät kalibrieren</span></div>';
+  return `<button class="cam-opt" data-act="pref" data-k="camPlay"><span><b>Mit Kamera-Erkennung spielen</b><small>Würfe kommen von der Kamera, du kannst sie korrigieren</small></span><span class="tog ${S.prefs.camPlay !== false ? 'on' : ''}"></span></button>`;
+}
+
 export function setupView() {
   const id = S.game, g = GAMES[id], L = S.lineup, full = L.length >= MAX_PLAYERS;
   const rows = L.map((e, i) => {
@@ -81,6 +90,7 @@ export function setupView() {
     ${nSides >= 2 && !remote ? `<h2 class="label"><i class="stepn">3</i>Anwurf</h2>
     ${seg('anwurf', 'v', [['bull', 'Ausbullen'], ['list', 'Wer oben steht']], S.anwurf)}
     <p class="foot">${S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>` : ''}
+    ${camRow(id)}
     ${moreOptions(id)}
   </main>
   <div class="dock"><div><button class="btn red big start" data-act="start">${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</button>${fuse(-3, 7, 2)}</div></div>`;

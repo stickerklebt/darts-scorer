@@ -6,7 +6,9 @@ import { overview } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
-import { camToggle, camOn, camStop, camResetTurn } from './camera.js';
+import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, send as camSend } from './camera-link.js';
+import { labelOf } from './board-geometry.js';
+import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
@@ -81,8 +83,9 @@ function render() {
   else if (S.screen === 'bruch') html = bruchView();
   else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
+  ui.camLive = camLiveFor(m);
   if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
-  html += sheetView();
+  html += sheetView() + camPill();
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
   morph(app, html);
@@ -105,7 +108,7 @@ function render() {
   }
   scheduleBot();
   syncIfChanged();
-  if (camOn() && S.screen !== 'game') { ui.camDarts = null; camStop(true); } // Kamera nur im Spiel
+  camTurnSync();
 }
 
 let toastTimer = null, autoTimer = null;
@@ -389,6 +392,7 @@ function startGame() {
     m.friends = fr.map((e) => ({ pid: e.id, uid: e.friend.uid, name: e.name, mode: e.friend.mode }));
     m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null, badges: e.banner?.badges || [null, null, null] }])) };
   }
+  if (CAM_GAMES.has(S.game) && S.prefs.camPlay === false) S.current.camera = false;
   addBanners(S.current);
   if (remote.length) {
     const m = S.current, f = remote[0];
@@ -801,15 +805,34 @@ const actions = {
   },
   vsClose() { ui.vs = null; render(); },
   /* Kamera (Beta): an/aus, Vorschlag übernehmen (Einzeldart/Cricket) oder verwerfen */
-  cam() { camToggle(camHooks); },
-  camApply() {
-    const m = S.current, darts = ui.camDarts || [];
-    ui.camDarts = null; camResetTurn();
-    let res = null;
-    for (const d of darts) { res = throwOne(m, d.n, d.n === 0 ? 1 : d.m); if (res.type !== 'dart') break; }
-    if (res) handle(res); else render();
+  /* Kamera: Menü (Kamera-Gerät · Nur dieses Gerät · Kamera-Gerät verbinden), Korrektur, Aufnahme beenden, Darts gezogen */
+  cam() { ui.modal = { type: 'camMenu' }; render(); },
+  camAsDevice() { ui.modal = null; render(); openStation('cam', stationHooks); },
+  camSingle() { ui.modal = null; render(); openStation('single', stationHooks); },
+  camConnect() { ui.modal = { type: 'camConnect' }; render(); setTimeout(() => $('#camCode')?.focus(), 60); },
+  async camJoin() {
+    const code = $('#camCode')?.value || '';
+    ui.modal = { type: 'camConnect', busy: true }; render();
+    try { await joinAsController(code); ui.modal = null; toast('Kamera-Gerät verbunden'); }
+    catch (e) { ui.modal = { type: 'camConnect', error: errMsg(e) }; }
+    render();
   },
-  camDismiss() { ui.camDarts = null; camResetTurn(); render(); }, // Bot wirft erst danach (scheduleBot wartet auf ui.vs)
+  camResumeYes() { ui.modal = null; render(); openStation('cam', stationHooks); },
+  camResumeNo() { ui.modal = null; camUnlink(); render(); },
+  camOff() { ui.modal = null; if (stationMode()) closeStation(); if (link.role) camUnlink(); ui.ct = null; render(); },
+  camSlot(el) { ui.modal = { type: 'camFix', i: Number(el.dataset.v) }; ui.fixMult = 1; render(); },
+  camFixMult(el) { ui.fixMult = Number(el.dataset.v); render(); },
+  camFixSet(el) {
+    const i = ui.modal?.i, d = ui.ct?.darts?.[i]; if (!d) return;
+    const n = Number(el.dataset.n), mult = n === 0 ? 1 : n === 25 ? Number(el.dataset.m || 1) : ui.fixMult;
+    Object.assign(d, { n, m: mult, label: labelOf({ n, m: mult }), conf: 1, fixed: true });
+    if (link.role === 'ctl') camSend({ type: 'throwCorrected', id: d.id, label: d.label });
+    ui.modal = null; render();
+  },
+  camMiss() { camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 }); },
+  camEnd() { commitCam(true); },
+  camOk() { commitCam(true); },
+  camPulled() { if (link.role === 'ctl') camSend({ type: 'takeout' }); stationTakeout(); if (ui.ct && !ui.ct.darts.length) ui.ct = null; toast('Darts gezogen'); render(); },
   addNew() {
     // Gast: kein Profil, keine Statistik – nur für dieses Spiel (danach wieder aus der Aufstellung)
     const n = field('newPlayer');
@@ -851,7 +874,7 @@ const actions = {
       else render();
     }, 420);
   },
-  submit(v) { ui.entry = ''; if (ui.camDarts) { ui.camDarts = null; camResetTurn(); } const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
+  submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
   dart(el) {
@@ -887,7 +910,7 @@ const actions = {
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },
   undo() { undo(); },
   gear() { ui.modal = { type: 'gear' }; render(); },
-  pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
+  pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'camDebug') { stationHooks.debug = S.prefs.camDebug; stationDebug(S.prefs.camDebug); } if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
   abort() { ui.modal = { type: 'abort' }; render(); },
   abortForce() { if (S.current?.online) abortOnline(); S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
   closeModal() { ui.modal = null; render(); },
@@ -904,7 +927,7 @@ const actions = {
   },
 };
 
-const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext', 'camApply']);
+const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext', 'camMiss', 'camEnd', 'camOk', 'camFixSet']);
 /** Online: nur wer dran ist, darf eingeben */
 const notMyTurn = () => { const m = S.current; return !!(m?.online && !m.done && S.screen === 'game' && curThrowerOf(m) !== S.mainId); };
 document.addEventListener('click', (e) => {
@@ -925,6 +948,7 @@ document.addEventListener('keydown', (e) => {
     else if (e.target.id === 'authPw2') actions.authRegister();
     else if (e.target.id === 'pwNew') actions.pwSave();
     else if (e.target.id === 'delPw') actions.delAcctForce();
+    else if (e.target.id === 'camCode') actions.camJoin();
     return;
   }
   const m = S.current;
@@ -938,18 +962,88 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ---------------- Kamera (Beta): erkannte Darts als Vorschlag ---------------- */
-const camHooks = {
-  render: () => render(), toast,
-  onDarts(darts) {
-    const m = S.current;
-    if (S.screen !== 'game' || !m || m.done || inBulloff() || isBot(curThrowerOf(m)) || notMyTurn()) return;
-    ui.camDarts = darts;
-    // Summen-Eingabe: Summe nur ins Feld schreiben – abgeschickt wird erst mit OK
-    if (m.game === 'x01' && X.inputMode(m) === 'sum') ui.entry = String(darts.reduce((a, d) => a + d.n * d.m, 0));
-    render();
-  },
-  onClear() { if (ui.camDarts) { ui.camDarts = null; render(); } },
+/* Kamera-Erkennung im Spiel: Würfe vom Kamera-Gerät (oder vom eigenen Gerät) landen in ui.ct.darts (3 Slots),
+   nach 3 Darts bzw. „Aufnahme beenden“ 2 s Zeit zum Korrigieren, dann gewertet (Dart für Dart über die Engine).
+   Bots, fremder Zug online, Ausbullen und VS-Intro: Kamera-Würfe werden ignoriert. Manuelle Eingabe geht immer. */
+const CAM_GAMES = new Set(['x01', 'cricket']);
+function camLiveFor(m) {
+  if (!m || m.done || !CAM_GAMES.has(m.game) || m.camera === false) return false;
+  return camReady().ready;
+}
+function camAdd(d) {
+  const m = S.current;
+  if (S.screen !== 'game' || !camLiveFor(m) || inBulloff() || ui.vs || isBot(curThrowerOf(m)) || notMyTurn()) return;
+  ui.ct ??= { darts: [] };
+  if (ui.ct.darts.length >= 3) return;
+  ui.ct.darts.push(d);
+  if (ui.ct.darts.length === 3 && S.prefs.camAuto !== false) armCommit();
+  render();
+}
+let commitTimer = null, tickTimer = null;
+function armCommit() {
+  clearTimeout(commitTimer); clearInterval(tickTimer);
+  ui.ct.deadline = Date.now() + 2000;
+  commitTimer = setTimeout(() => commitCam(true), 2000);
+  tickTimer = setInterval(() => { const el = document.querySelector('.cb-count b'); if (el && ui.ct?.deadline) el.textContent = Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000)); }, 200);
+}
+/** Aufnahme werten: erkannte (ggf. korrigierte) Darts in die Engine, fehlende als daneben, wenn die Aufnahme noch offen ist */
+function commitCam(fill) {
+  clearTimeout(commitTimer); clearInterval(tickTimer);
+  const m = S.current, ct = ui.ct; ui.ct = null;
+  if (!m || m.done || !ct) return render();
+  if (ui.modal?.type === 'camFix') ui.modal = null;
+  const one = (n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult) : X.throwDart(m, n, mult, { any: true }));
+  let res = null, k = 0;
+  for (const d of ct.darts) { res = one(d.n, d.n === 0 ? 1 : d.m); k++; if (res.type !== 'dart') break; }
+  while (fill && res?.type === 'dart' && k < 3) { res = one(0, 1); k++; }
+  if (!res && fill) { for (let i = 0; i < 3; i++) { res = one(0, 1); if (res.type !== 'dart') break; } }
+  if (res) handle(res); else render();
+}
+/** Kamera-Wurf annehmen (Nachricht `throw`) */
+function camThrow(msg) {
+  camAdd({ id: msg.id, n: msg.segment, m: msg.multiplier || 1, label: msg.label, conf: msg.confidence ?? 1, snapshot: msg.snapshot || null, x: msg.boardX, y: msg.boardY });
+}
+const stationHooks = {
+  toast, debug: !!S.prefs.camDebug,
+  onThrow: camThrow,
+  onTakeout() { if (ui.ct && !ui.ct.darts.length) ui.ct = null; render(); },
+  onMoved() { link.moved = true; toast('Kamera verrutscht – bitte neu kalibrieren'); render(); },
+  onCalibrated() { link.moved = false; render(); },
+  onClose() { ui.ct = null; render(); },
 };
+onLink({
+  change() { stationLinkChanged(); render(); },
+  message(m) {
+    if (link.role === 'cam') { stationMessage(m); return; }
+    if (m.type === 'throw') camThrow(m);
+    else if (m.type === 'calibrationStatus') { link.calibrated = !!m.ok; if (m.ok) link.moved = false; lastTurnKey = ''; render(); }
+    else if (m.type === 'takeout') { if (ui.ct && !ui.ct.darts.length) ui.ct = null; render(); }
+    else if (m.type === 'cameraMoved') { link.moved = true; toast('Kamera verrutscht – bitte am Kamera-Gerät neu kalibrieren'); render(); }
+    else if (m.type === 'hello') { lastTurnKey = ''; camTurnSync(); }
+  },
+});
+/** Wer ist dran? → an das Kamera-Gerät (Anzeige dort, Bot = Kamera wartet) */
+let lastTurnKey = '';
+function camTurnSync() {
+  if (!(link.role === 'ctl' && link.status === 'connected') && stationMode() !== 'single') return;
+  const m = S.current, live = S.screen === 'game' && m && !m.done;
+  const who = live && !inBulloff() ? curThrowerOf(m) : null;
+  const key = `${m?.id}:${who}:${live}`;
+  if (key === lastTurnKey) return;
+  lastTurnKey = key;
+  const msg = { type: 'turnChanged', name: who ? nameOf(who) : '', bot: who ? isBot(who) : false };
+  if (link.role === 'ctl') camSend(msg); else stationMessage(msg);
+}
+/** Kleine Statusanzeige oben (Steuer-Gerät bzw. Ein-Geräte-Modus) */
+function camPill() {
+  if (link.role === 'ctl') {
+    const [cls, txt] = link.moved ? ['bad', 'Kamera verrutscht'] : link.status === 'connected' ? (link.calibrated ? ['ok', 'Kamera verbunden'] : ['wait', 'Kamera: nicht kalibriert']) : link.status === 'lost' ? ['bad', 'Getrennt'] : ['wait', 'Verbinde …'];
+    return `<button class="campill ${cls}" data-act="cam">● ${txt}</button>`;
+  }
+  if (stationMode() === 'single') return `<button class="campill ${link.moved ? 'bad' : 'ok'}" data-act="cam">● ${link.moved ? 'Kamera verrutscht' : 'Kamera (dieses Gerät)'}</button>`;
+  return '';
+}
+
 
 /* ---------------- Bruchchallenge: Ende und Countdown ---------------- */
 function bruchEnd(reason) {
@@ -1068,7 +1162,17 @@ initOnline({
   },
 });
 startOnlineLoops();
-bootAuth().then(() => { if (auth.user) { loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox(); } });
+bootAuth().then(async () => {
+  if (!auth.user) return;
+  loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox();
+  // QR/Link vom Kamera-Gerät: ?join=CODE → als Steuer-Gerät verbinden
+  const join = new URLSearchParams(location.search).get('join');
+  if (join) {
+    history.replaceState(null, '', location.pathname);
+    try { await joinAsController(join); toast('Kamera-Gerät verbunden'); } catch (e) { toast(errMsg(e)); }
+  } else if (resumeLink() === 'cam') { ui.modal = { type: 'camResume' }; }
+  render();
+});
 
 /* Average auf der Spielerkarte: beim App-Start einmal wie an einem Spielautomaten von 0 hochrattern, dann einrasten */
 function rollAvg(tries = 0) {

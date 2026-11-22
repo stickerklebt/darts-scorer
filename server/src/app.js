@@ -15,6 +15,7 @@ import { friendRoutes } from './routes/friends.js';
 import { callerRoutes } from './routes/caller.js';
 import { clientLogRoutes } from './routes/client-log.js';
 import { gameRoutes } from './routes/games.js';
+import { camlinkRoutes } from './routes/camlink.js';
 
 const CSP = [
   "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'",
@@ -29,6 +30,7 @@ export function createApp({ config, db, log }) {
     sync: createLimiter({ limit: 240, windowMs: 60e3 }),
     search: createLimiter({ limit: 90, windowMs: 60e3 }),
     clientLog: createLimiter({ limit: 20, windowMs: 60e3 }),       // Fehlermeldungen aus der App je IP
+    camlink: createLimiter({ limit: 900, windowMs: 60e3 }),        // Kamera-Kopplung: beide Geräte fragen oft nach
   };
   const router = createRouter();
   const deps = { db, sessions, config, limits, log };
@@ -39,6 +41,7 @@ export function createApp({ config, db, log }) {
   callerRoutes(router, deps);
   clientLogRoutes(router, deps);
   gameRoutes(router, deps);
+  camlinkRoutes(router, deps);
   router.get('/healthz', () => { db.prepare('SELECT 1').get(); return { ok: true }; }, { public: true });
   const serveStatic = createStatic(config.appDir);
 

@@ -1768,28 +1768,77 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .br-quit { width: 100%; }
 .br-hist { list-style: none; padding: 0; margin: 6px 0 0; } .br-hist li { padding: 6px 0; color: var(--muted); } .br-hist li.ok { color: var(--cream); }
 
-/* ================= Kamera (Beta) ================= */
+
+/* ================= Kamera-Erkennung (Kamera-Gerät, Steuer-Gerät, Ein-Geräte-Modus) ================= */
+/* Flach, dunkel, Scoreboard-Stil: keine Verläufe, kleine Rundungen, Gold als Akzent. */
 .gbar-r { display: flex; gap: 8px; }
 .cam-btn.on { color: var(--ink); background: var(--gold); border-color: var(--gold); }
-.campanel { position: fixed; z-index: 60; right: 10px; top: calc(var(--sat, 0px) + 64px); width: 150px; padding: 6px; border-radius: 10px;
-  background: rgba(11,10,8,.92); border: 1px solid rgba(212,166,58,.55); box-shadow: 0 6px 18px rgba(0,0,0,.6); color: var(--cream); }
-.cam-v video { display: block; width: 100%; border-radius: 6px; background: #000; }
-.cam-st { margin: 5px 0 4px; font-family: var(--f-num); font-size: 14px; letter-spacing: .04em; line-height: 1.15; }
-.cam-b { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.cam-b button { height: 30px; border-radius: 6px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream2); font-family: var(--f-num); font-size: 13px; letter-spacing: .05em; }
-.cam-beta { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); text-align: center; }
-.camcalib { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: #050403; color: var(--cream); padding: calc(var(--sat, 0px) + 10px) 10px 10px; gap: 8px; }
-.cc-head b { display: block; font-family: var(--f-display); font-size: 22px; }
-.cc-t { display: block; color: var(--gold-l); font-family: var(--f-num); font-size: 20px; letter-spacing: .04em; margin-top: 2px; }
-.cc-head small { display: block; color: var(--muted); font-size: 14px; margin-top: 4px; }
-.cc-v { position: relative; flex: 1; min-height: 0; }
-.cc-v video { width: 100%; height: 100%; object-fit: contain; display: block; }
-.cc-v i { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 2px solid var(--gold); background: rgba(212,166,58,.25);
-  font-style: normal; font-family: var(--f-num); font-size: 13px; display: grid; place-items: center; color: var(--cream); pointer-events: none; }
-.cc-b { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.cc-b button { height: 48px; border-radius: var(--r-btn); border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 17px; }
-.camsug { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 6px; border-radius: var(--r-btn); background: rgba(212,166,58,.12);
-  border: 1px solid rgba(212,166,58,.5); color: var(--gold-l); }
-.camsug span { flex: 1; color: var(--cream); font-size: 15px; } .camsug b { font-family: var(--f-num); font-weight: 400; font-size: 19px; }
-.camsug .btn { height: 38px; padding: 0 14px; font-size: 15px; }
-.cs-x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); color: var(--cream2); font-size: 20px; line-height: 1; }
+.campill { position: fixed; z-index: 70; right: 10px; top: calc(var(--sat, 0px) + 6px); height: 26px; padding: 0 10px; border-radius: 4px;
+  background: #0b0a08; border: 1px solid var(--line2); font-family: var(--f-num); font-size: 13px; letter-spacing: .06em; color: var(--cream2); }
+.campill.ok { color: #6fd17f; border-color: #2f6b38; } .campill.wait { color: #ffd23f; border-color: #6b5a1c; } .campill.bad { color: #ff6b5a; border-color: #7a2a1b; }
+.cam-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin: 12px 0 4px; }
+.cam-row .btn { height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; }
+.cam-opt { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px; margin: 14px 0 4px; border-radius: 6px; text-align: left;
+  background: #14110d; border: 2px solid var(--gold); color: var(--cream); }
+.cam-opt span:first-child { flex: 1; } .cam-opt b { display: block; font-family: var(--f-num); font-weight: 400; font-size: 19px; letter-spacing: .04em; }
+.cam-opt small { color: var(--muted); font-size: 13px; }
+.cam-opt.off { border-color: var(--line2); color: var(--muted); font-size: 15px; }
+/* Im Spiel: 3 Slots, Mini-Board, Knöpfe */
+.cambar { display: grid; grid-template-columns: 1fr 74px; grid-template-rows: auto auto; gap: 6px; padding: 6px; margin-bottom: 6px; border-radius: 6px; background: #0f0d0a; border: 1px solid var(--line2); }
+.cambar.idle { display: block; padding: 8px 10px; }
+.cb-wait { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+.cb-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.cb-slot { height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; background: #1a1612; border: 1px solid var(--line2); color: var(--cream); }
+.cb-slot b { font-family: var(--f-num); font-weight: 400; font-size: 26px; line-height: 1; }
+.cb-slot small { font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+.cb-slot.empty { color: var(--dim); font-family: var(--f-num); font-size: 20px; border-style: dashed; }
+.cb-slot.check { border-color: #ffd23f; background: #2a2208; } .cb-slot.check small { color: #ffd23f; }
+.cb-mini { grid-row: span 2; display: flex; align-items: center; } .cb-mini .realboard { width: 74px; height: 74px; filter: none; }
+.cb-acts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.cb-acts .btn { height: 40px; font-size: 14px; padding: 0 6px; border-radius: 4px; }
+.cb-count { display: grid; place-items: center; font-family: var(--f-num); color: var(--gold-l); font-size: 15px; } .cb-count b { font-size: 22px; margin: 0 4px; }
+/* Korrektur */
+.cf-snap { display: block; width: 100%; max-width: 360px; margin: 6px auto 10px; border-radius: 4px; border: 1px solid var(--line2); }
+.cf-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 10px; }
+.cf-grid button { height: 44px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line2); color: var(--cream); font-family: var(--f-num); font-size: 19px; }
+.cf-grid button.miss { grid-column: span 3; color: #ff9a8a; }
+.cam-code { text-align: center; font-family: var(--f-num); font-size: 34px; letter-spacing: .2em; }
+/* Kamera-Gerät: ganzer Bildschirm */
+.camstation { position: fixed; inset: 0; z-index: 85; display: flex; flex-direction: column; gap: 8px; padding: calc(var(--sat, 0px) + 8px) 10px 10px; background: #050403; color: var(--cream); }
+.cs-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cs-link { font-family: var(--f-num); font-size: 15px; letter-spacing: .06em; } .cs-link.ok { color: #6fd17f; } .cs-link.wait { color: #ffd23f; } .cs-link.bad { color: #ff6b5a; }
+.cs-code { text-align: right; } .cs-code small { display: block; color: var(--muted); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; }
+.cs-code b { font-family: var(--f-num); font-weight: 400; font-size: 44px; line-height: 1; letter-spacing: .08em; color: var(--gold-l); }
+.cs-vid { position: relative; flex: 1; min-height: 0; background: #000; border: 1px solid var(--line2); }
+.cs-vid video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cs-ov, .cs-dbg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cs-dbg { object-fit: contain; opacity: .8; }
+.cs-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.cs-st { font-family: var(--f-num); font-weight: 400; font-size: 30px; letter-spacing: .03em; color: var(--cream); }
+.cs-st.alarm { color: #ff6b5a; }
+.cs-pl { color: var(--gold-l); font-size: 17px; }
+.cs-b { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.cs-b button, .cs-cam { height: 44px; border-radius: 4px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 14px; letter-spacing: .04em; }
+.cs-cam { width: 100%; padding: 0 10px; }
+.cs-hint { margin: 0; color: var(--muted); font-size: 13px; text-align: center; }
+/* Ein-Geräte-Modus: kleines Fenster */
+.campanel { position: fixed; z-index: 60; right: 10px; top: calc(var(--sat, 0px) + 38px); width: 160px; padding: 6px; border-radius: 6px; background: #0b0a08; border: 1px solid var(--gold); color: var(--cream); }
+.campanel .cs-vid { height: 110px; flex: none; } .campanel .cs-st { display: block; font-size: 15px; margin: 4px 0; }
+.campanel .cs-b { grid-template-columns: repeat(3, 1fr); gap: 4px; } .campanel .cs-b button { height: 30px; font-size: 12px; }
+.campanel .cs-cam { height: 30px; margin-top: 4px; font-size: 12px; } .cs-beta { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); text-align: center; }
+/* Einrichtungs-Assistent */
+.calib { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; gap: 10px; padding: calc(var(--sat, 0px) + 10px) 10px 10px; background: #050403; color: var(--cream); }
+.cal-h small { display: block; color: var(--gold); font-family: var(--f-num); letter-spacing: .2em; text-transform: uppercase; font-size: 13px; }
+.cal-h b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 24px; margin-top: 2px; }
+.cal-h span { display: block; color: var(--muted); font-size: 15px; margin-top: 4px; }
+.cal-body { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.cal-big { font-size: 20px; line-height: 1.4; margin: 0; max-width: 640px; }
+.cal-sketch { width: 100%; max-width: 420px; }
+.cal-v { position: relative; flex: 1; min-height: 0; background: #000; border: 1px solid var(--line2); touch-action: none; }
+.cal-v video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cal-ov { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cal-lupe { position: absolute; display: none; width: 130px; height: 130px; border-radius: 50%; border: 2px solid var(--gold); pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,.7); }
+.cal-top { position: absolute; right: 8px; bottom: 8px; width: 140px; height: 140px; border: 1px solid var(--gold); background: #000; }
+.cal-test { flex: 1; display: grid; place-items: center; } .cal-res { font-family: var(--f-num); font-weight: 400; font-size: 34px; color: var(--gold-l); text-align: center; }
+.cal-btns { display: flex; gap: 8px; } .cal-btns button { flex: 1; height: 52px; border-radius: 4px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 18px; letter-spacing: .05em; }
+.cal-btns button.go { background: var(--red); border-color: var(--red); } .cal-btns button:disabled { opacity: .35; }

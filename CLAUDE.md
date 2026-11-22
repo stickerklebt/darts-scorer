@@ -103,7 +103,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -211,11 +211,18 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
   sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
   Shanghai/Halbieren behalten ihre Vielfachen.
-- **Kamera (Beta)** (`js/camera.js` DOM/Video, `js/camdetect.js` reine Logik): Kamera-Knopf im Spiel-Kopf. Kamera an → Scheibe kalibrieren
-  (4 Punkte am äußeren Doppelring: 20, 6, 3, 11 → Homographie, je Gerät in `localStorage['darts.cam']`). Handy steht UNTER der Scheibe.
-  Erkennung: Graustufen 200 px breit, alle 220 ms; ruhiges Bild ↔ Referenz → größte Änderung = Dart, Spitze = oberster Teil → Feld.
-  Große Änderung = Darts gezogen → neuer Zug. **Nur Vorschlag:** bei Summen-Eingabe steht die Summe im Feld (OK drücken), bei
-  Einzeldart/Cricket „Übernehmen“. Video/Vorschau/Kalibrierung liegen außerhalb von `#app`. Permissions-Policy `camera=(self)`.
+- **Kamera-Erkennung** (Anleitung für Nutzer: `KAMERA-ANLEITUNG.md`). Rollen: **Kamera-Gerät** (filmt, erkennt, schickt Würfe) und
+  **Steuer-Gerät** (Scoreboard, Spiellogik, Korrektur); dazu **Ein-Geräte-Modus**. Dateien: `camera.js` (Start, Kamerawahl, Wake Lock),
+  `calibration.js` (Assistent: Platzierung · 4 Punkte mit Lupe/verschiebbar · Overlay + Draufsicht · Testdart; `localStorage['darts.calib']`
+  mit 32×18-Referenzbild), `homography.js` (eigene 4-Punkt-DLT), `board-geometry.js` (`scoreFromBoardMM`, Drahtabstand),
+  `detect-core.js` (reine Bildverarbeitung: Blur, Differenz, Morphologie, Konturen, PCA-Achse, Spitze = schmales Ende, Takeout,
+  Verrutscht, Konfidenz) im Worker `detector-worker.js`, `detector.js` (Ausschnitt ≤ 800 px, 12 fps, Snapshot-JPEG 320 px),
+  `camera-link.js` + Server `routes/camlink.js` (**statt PeerJS**: 6-stelliger Code, Nachrichten über den eigenen Server, Abfrage
+  ~0,5 s, Neuverbinden alle 3 s; `?join=CODE` verbindet direkt), `ui/camstation.js` (Kamera-Station/Ein-Geräte-Fenster).
+  Keine CDN-Bibliotheken (CSP `script-src 'self'`): kein OpenCV.js, kein PeerJS, kein QR-Code – stattdessen Code + „Link teilen“.
+  Im Spiel (`camBar` in `ui/game.js`, Logik `camAdd/commitCam` in `main.js`): 3 Slots, Mini-Board, Konfidenz < 0,7 gelb,
+  Korrektur-Fenster (`camFix`), Miss / 0, Aufnahme beenden, Darts gezogen; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für
+  Dart in die Engine. Setup-Schalter „Mit Kamera-Erkennung spielen“ (`prefs.camPlay`, nur X01/Cricket). Bots/fremder Zug: ignoriert.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).

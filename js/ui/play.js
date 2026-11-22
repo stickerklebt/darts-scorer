@@ -42,6 +42,7 @@ export function playView() {
         <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
       </div>
     </section>
+    <div class="cam-row"><button class="btn line" data-act="cam">${icon('cam', 1.9, 18)} Kamera</button><button class="btn line" data-act="camConnect">Kamera-Gerät verbinden</button></div>
     <h2 class="label">Partyspiel</h2>
     <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
