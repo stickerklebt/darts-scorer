@@ -1687,8 +1687,12 @@ button.pb-slot:active .tb { transform: scale(.94); }
 .ckc { flex: 1; display: grid; place-items: center; height: 100%; }
 .ckc.cur { background: rgba(255,255,255,.04); }
 .ckm { width: 28px; height: 28px; display: block; }
-svg.ckm { fill: none; stroke: var(--cream); stroke-width: 2.6; stroke-linecap: round; }
-svg.ckm.k3 { stroke: var(--gold-l); }
+/* Pinselstriche (gefüllte Formen mit spitzen Enden), leicht gewackelt wie mit der Feder (#rough); Ring doppelt in Gold */
+svg.ckm { overflow: visible; filter: url(#rough) drop-shadow(1px 1px 0 rgba(0,0,0,.7)); }
+svg.ckm .x { fill: var(--cream); }
+svg.ckm.k3 .x { fill: #fff6d8; }
+svg.ckm .ring { fill: none; stroke: #e7b73c; stroke-width: 1.9; stroke-linecap: round; }
+svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: round; opacity: .55; }
 .ckmid { display: grid; grid-template-columns: repeat(3, 54px); gap: 4px; justify-content: center; padding: 4px 0;
   border-left: 1px solid rgba(255,255,255,.06); border-right: 1px solid rgba(255,255,255,.06); height: 100%; align-items: center; }
 .ckmid.bull { grid-template-columns: repeat(2, 83px); }

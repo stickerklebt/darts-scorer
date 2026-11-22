@@ -242,8 +242,18 @@ function botPad(m, thrower, darts, s) {
 /* ---------- Cricket: Tafel = Eingabe ----------
    Mitte: die Zahlen als Knöpfe (Single · Double · Triple, Punkte darunter), links/rechts die Treffer der Spieler:
    1 = Schrägstrich, 2 = X, 3 = X im Kreis. Haben alle ein Feld zu, wird die ganze Zeile durchgestrichen. */
-const ckMark = (k) => (k <= 0 ? '<i class="ckm"></i>' : `<svg class="ckm k${Math.min(k, 3)}" viewBox="0 0 24 24" aria-hidden="true">
-  <path d="M5 19 L19 5"/>${k >= 2 ? '<path d="M5 5 L19 19"/>' : ''}${k >= 3 ? '<circle cx="12" cy="12" r="10"/>' : ''}</svg>`);
+/* Treffer-Zeichen von Hand: Pinselstriche mit spitzen Enden (nicht ganz gerade), beim dritten Treffer ein goldener,
+   doppelter Ring wie mit der Feder gezogen (Anfang und Ende überlappen leicht), das Kreuz sitzt kleiner darin. */
+const CK_S1 = 'M5.4 19.1 C8.6 15.6 12.9 10.3 18.3 5.1 C18.9 4.7 19.4 5.2 19 5.8 C14.4 11.1 10.3 16.1 6.7 19.8 C6.1 20.3 5.1 19.7 5.4 19.1Z';
+const CK_S2 = 'M5.9 5.3 C6.3 4.8 7 4.9 7.4 5.4 C10.9 9.4 14.8 13.9 18.9 18.4 C19.3 19 18.6 19.6 18 19.2 C13.7 15.3 9.6 10.6 5.9 5.3Z';
+const CK_RING = 'M12.6 2.5 C18 2.6 21.7 6.9 21.4 12.3 C21.1 17.7 16.9 21.6 11.6 21.4 C6.2 21.2 2.5 17 2.7 11.6 C2.9 6.8 6.4 3.1 11 2.7 C12.4 2.6 13.9 2.9 15.2 3.5';
+const ckMark = (k) => {
+  if (k <= 0) return '<i class="ckm"></i>';
+  const cross = `<path d="${CK_S1}"/>${k >= 2 ? `<path d="${CK_S2}"/>` : ''}`;
+  return `<svg class="ckm k${Math.min(k, 3)}" viewBox="0 0 24 24" aria-hidden="true">${k >= 3
+    ? `<path class="ring" d="${CK_RING}"/><path class="ring2" d="M12 4.3 C16.6 4.2 19.8 7.7 19.6 12.2 C19.4 16.7 15.9 19.8 11.7 19.6 C7.3 19.4 4.4 16 4.5 11.7 C4.6 7.6 7.6 4.5 11.4 4.3"/><g class="x" transform="translate(12 12) scale(.6) translate(-12 -12)">${cross}</g>`
+    : `<g class="x">${cross}</g>`}</svg>`;
+};
 /** Zahl mit kleinen Ringen drum herum: 1 Ring = Single, 2 = Double, 3 = Triple (Bull: 1 = 25, 2 = Bull) */
 const ringed = (txt, k) => `<span class="ckring">${Array.from({ length: k }, (_, i) => `<i style="--r:${i}"></i>`).join('')}<b>${txt}</b></span>`;
 function ckBoard(m, st, cur, locked = false) {
