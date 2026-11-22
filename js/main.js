@@ -6,7 +6,8 @@ import { overview } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
-import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, send as camSend } from './camera-link.js';
+import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, send as camSend, readyCams } from './camera-link.js';
+import { fuseThrows } from './camfuse.js';
 import { labelOf } from './board-geometry.js';
 import { openRemoteSetup, setupMessage, setupOpen } from './ui/camsetup.js';
 import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
@@ -819,13 +820,21 @@ const actions = {
     render();
   },
   /* Kamera einrichten vom anderen Gerät (gleiches Konto): verbinden und Assistent öffnen */
-  async camRemote() {
+  async camRemote(el) {
     try {
-      if (link.role !== 'ctl') { const code = ui.camMine; if (!code) { toast('Keine Kamera gefunden – am Handy in Backstage › Kamera starten'); return; } await joinAsController(code); }
-      openRemoteSetup({ toast, onDone: () => render() });
+      const codes = ui.camMine || [];
+      if (link.role !== 'ctl') { if (!codes.length) { toast('Keine Kamera gefunden – am Handy in Backstage › Kamera starten'); return; } for (const c of codes) await joinAsController(c); }
+      const code = el?.dataset?.v || link.cams.find((c) => !c.calibrated)?.code || link.cams[0]?.code;
+      if (code) openRemoteSetup({ code, n: link.cams.find((c) => c.code === code)?.n || 1, toast, onDone: () => render() });
     } catch (e) { toast(errMsg(e)); }
     render();
   },
+  /* Dieses Gerät wird die Regie: mit allen Kameras im Konto verbinden */
+  async camBeMain() {
+    try { for (const c of ui.camMine || []) await joinAsController(c); toast('Regie – Kameras verbunden'); } catch (e) { toast(errMsg(e)); }
+    render();
+  },
+  camDrop(el) { camUnlink(el.dataset.v); render(); },
   camResumeYes() { ui.modal = null; render(); openStation('cam', stationHooks); },
   camResumeNo() { ui.modal = null; camUnlink(); render(); },
   camOff() { ui.modal = null; if (stationMode()) closeStation(); if (link.role) camUnlink(); ui.ct = null; render(); },
@@ -835,7 +844,7 @@ const actions = {
     const i = ui.modal?.i, d = ui.ct?.darts?.[i]; if (!d) return;
     const n = Number(el.dataset.n), mult = n === 0 ? 1 : n === 25 ? Number(el.dataset.m || 1) : ui.fixMult;
     Object.assign(d, { n, m: mult, label: labelOf({ n, m: mult }), conf: 1, fixed: true });
-    if (link.role === 'ctl') camSend({ type: 'throwCorrected', id: d.id, label: d.label });
+    if (link.role === 'ctl') camSend({ type: 'throwCorrected', id: d.id, label: d.label }, d.code || null);
     ui.modal = null; render();
   },
   camMiss() { camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 }); },
@@ -1008,9 +1017,17 @@ function commitCam(fill) {
   if (!res && fill) { for (let i = 0; i < 3; i++) { res = one(0, 1); if (res.type !== 'dart') break; } }
   if (res) handle(res); else render();
 }
-/** Kamera-Wurf annehmen (Nachricht `throw`) */
-function camThrow(msg) {
-  camAdd({ id: msg.id, n: msg.segment, m: msg.multiplier || 1, label: msg.label, conf: msg.confidence ?? 1, snapshot: msg.snapshot || null, x: msg.boardX, y: msg.boardY });
+/** Kamera-Wurf annehmen (Nachricht `throw`). Mehrere Kameras: kurz (1,2 s) auf die anderen warten und zusammenführen. */
+let fuse = null;
+function camThrow(msg, code = null) {
+  if (readyCams() < 2) return addThrow(msg, code);
+  if (fuse && !fuse.list.some((x) => x.code === code)) { fuse.list.push({ ...msg, code }); if (fuse.list.length >= readyCams()) flushFuse(); return; }
+  if (fuse) flushFuse();
+  fuse = { list: [{ ...msg, code }], timer: setTimeout(flushFuse, 1200) };
+}
+function flushFuse() { if (!fuse) return; clearTimeout(fuse.timer); const list = fuse.list; fuse = null; const f = fuseThrows(list); addThrow(f, f.code); }
+function addThrow(msg, code) {
+  camAdd({ id: msg.id, code, n: msg.segment, m: msg.multiplier || 1, label: msg.label, conf: msg.confidence ?? 1, snapshot: msg.snapshot || null, x: msg.boardX, y: msg.boardY });
 }
 const stationHooks = {
   toast, debug: !!S.prefs.camDebug,
@@ -1022,11 +1039,11 @@ const stationHooks = {
 };
 onLink({
   change() { stationLinkChanged(); render(); },
-  message(m) {
+  message(m, code) {
     if (link.role === 'cam') { stationMessage(m); return; }
-    if (setupMessage(m)) return;
-    if (m.type === 'throw') camThrow(m);
-    else if (m.type === 'calibrationStatus') { link.calibrated = !!m.ok; if (m.ok) link.moved = false; lastTurnKey = ''; render(); }
+    if (setupMessage(m, code)) return;
+    if (m.type === 'throw') camThrow(m, code);
+    else if (m.type === 'calibrationStatus') { lastTurnKey = ''; render(); }
     else if (m.type === 'takeout') { if (ui.ct && !ui.ct.darts.length) ui.ct = null; render(); }
     else if (m.type === 'cameraMoved') { link.moved = true; toast('Kamera verrutscht – bitte am Kamera-Gerät neu kalibrieren'); render(); }
     else if (m.type === 'hello') { lastTurnKey = ''; camTurnSync(); }
@@ -1047,7 +1064,8 @@ function camTurnSync() {
 /** Kleine Statusanzeige oben (Steuer-Gerät bzw. Ein-Geräte-Modus) */
 function camPill() {
   if (link.role === 'ctl') {
-    const [cls, txt] = link.moved ? ['bad', 'Kamera verrutscht'] : link.status === 'connected' ? (link.calibrated ? ['ok', 'Kamera verbunden'] : ['wait', 'Kamera: nicht kalibriert']) : link.status === 'lost' ? ['bad', 'Getrennt'] : ['wait', 'Verbinde …'];
+    const n = link.cams.length, ready = readyCams();
+    const [cls, txt] = link.moved ? ['bad', 'Kamera verrutscht'] : link.status === 'connected' ? (link.calibrated ? ['ok', n > 1 ? `${ready}/${n} Kameras bereit` : 'Kamera verbunden'] : ['wait', 'Kamera: nicht eingerichtet']) : link.status === 'lost' ? ['bad', 'Getrennt'] : ['wait', 'Verbinde …'];
     return `<button class="campill ${cls}" data-act="cam">● ${txt}</button>`;
   }
   if (stationMode() === 'single') return `<button class="campill ${link.moved ? 'bad' : 'ok'}" data-act="cam">● ${link.moved ? 'Kamera verrutscht' : 'Kamera (dieses Gerät)'}</button>`;
@@ -1057,10 +1075,12 @@ function camPill() {
 
 /* Läuft im selben Konto ein Kamera-Gerät? Dann zeigt der Startbildschirm die Kamera zum Einrichten (alle 5 s nachsehen). */
 setInterval(async () => {
-  if (!auth.user || link.role === 'cam' || document.hidden || S.screen !== 'home' || S.tab !== 'play') return;
+  if (!auth.user || link.role === 'cam' || document.hidden || S.screen !== 'home') return;
   try {
-    const r = await api('GET', 'api/camlink/mine');
-    if (r.code !== ui.camMine) { ui.camMine = r.code; render(); }
+    const r = await api('GET', 'api/camlink/mine'), codes = r.codes || [];
+    // Regie: neue Kamera im Konto gleich mitverbinden
+    if (link.role === 'ctl') for (const c of codes) if (!link.cams.some((x) => x.code === c)) { await joinAsController(c).catch(() => {}); toast('Weitere Kamera verbunden – bitte einrichten'); }
+    if (codes.join() !== (ui.camMine || []).join()) { ui.camMine = codes; render(); }
   } catch { /* offline */ }
 }, 5000);
 

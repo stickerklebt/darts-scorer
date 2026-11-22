@@ -20,15 +20,24 @@ export function tabsBar() {
   </div></nav>`;
 }
 
-/** Kamera auf dem Startbildschirm: läuft am Handy (gleiches Konto) eine Kamera, groß zum Einrichten anbieten */
+/** Kamera auf dem Startbildschirm. Regie: alle Kameras mit Stand und „Einrichten“. Läuft im Konto schon eine Kamera und dieses
+    Gerät ist noch nichts: wählen – Regie (hier wird gespielt) oder weitere Kamera (filmt mit). */
 function camBlock() {
   if (link.role === 'ctl') {
-    const ok = link.status === 'connected';
-    return `<div class="cam-card ${ok && link.calibrated ? 'ok' : ''}">${icon('cam', 1.9, 30)}<span><b>${!ok ? 'Kamera: verbinde …' : link.calibrated ? 'Kamera bereit' : 'Kamera verbunden – noch nicht eingerichtet'}</b>
-      <small>${link.calibrated ? 'Würfe werden erkannt. Im Spiel kannst du jeden Wurf korrigieren.' : 'Hilfe zum Aufstellen, Livebild und Einrichten hier am Gerät.'}</small></span>
-      <button class="btn ${link.calibrated ? 'line' : 'red'}" data-act="camRemote">${link.calibrated ? 'Neu einrichten' : 'Jetzt einrichten'}</button></div>`;
+    const rows = link.cams.map((c) => {
+      const st = c.status !== 'connected' ? (c.status === 'lost' ? 'getrennt' : 'verbinde …') : c.moved ? 'verrutscht' : c.calibrated ? 'bereit' : 'nicht eingerichtet';
+      const ok = c.status === 'connected' && c.calibrated && !c.moved;
+      return `<div class="cam-li ${ok ? 'ok' : ''}"><span>${icon('cam', 1.9, 20)} Kamera ${c.n}<small>${st}</small></span>
+        <button class="btn ${ok ? 'line' : 'red'}" data-act="camRemote" data-v="${c.code}">${ok ? 'Neu einrichten' : 'Einrichten'}</button>
+        <button class="cam-x" data-act="camDrop" data-v="${c.code}" aria-label="Kamera trennen">×</button></div>`;
+    }).join('');
+    return `<div class="cam-card main">${icon('board', 1.9, 30)}<span><b>Regie</b><small>Hier wird gespielt. Weitere Kamera: an einem anderen Gerät anmelden › Kamera wählen.</small></span></div>
+      <div class="cam-list">${rows}</div>`;
   }
-  if (ui.camMine) return `<button class="cam-card big" data-act="camRemote">${icon('cam', 1.9, 34)}<span><b>Kamera am Handy läuft</b><small>Hier einrichten – mit Livebild und allen Hilfen</small></span>${icon('chevR', 2.4, 20)}</button>`;
+  if (ui.camMine?.length) return `<div class="cam-card big pick">${icon('cam', 1.9, 34)}<span><b>${ui.camMine.length > 1 ? `${ui.camMine.length} Kameras laufen` : 'Eine Kamera läuft'} in deinem Konto</b>
+      <small>Wie soll dieses Gerät mitmachen?</small></span></div>
+    <div class="cam-pick"><button class="btn red" data-act="camBeMain"><b>Regie</b><small>Hier wird gespielt</small></button>
+      <button class="btn line" data-act="camAsDevice"><b>Kamera</b><small>Dieses Gerät filmt mit</small></button></div>`;
   return `<div class="cam-row"><button class="btn line" data-act="cam">${icon('cam', 1.9, 18)} Kamera</button></div>`;
 }
 

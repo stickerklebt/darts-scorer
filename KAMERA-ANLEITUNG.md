@@ -24,6 +24,10 @@ Sobald das Handy steht, fasst man es nicht mehr an – eingerichtet wird deshalb
    Bricht die Verbindung ab, versucht die App es alle 3 Sekunden neu – das Spiel läuft solange mit Eingabe von Hand weiter.
 
 Steht das Handy noch genauso wie beim letzten Mal, nimmt es die alte Einrichtung automatisch.
+**Zwei Kameras (z. B. Handy + altes iPad):** Am zweiten Gerät mit demselben Konto anmelden. Der Startbildschirm fragt
+**„Regie“** (hier wird gespielt) oder **„Kamera“** (filmt mit). Als Kamera wählen, aufstellen – die Regie verbindet sie selbst und
+zeigt sie in der Liste („Kamera 2 · nicht eingerichtet“ › *Einrichten*). Sehen beide Kameras denselben Dart, werden die Ergebnisse
+zusammengeführt: sind sie sich einig, ist der Wurf sicherer; sind sie uneinig, wird er gelb zum Prüfen markiert.
 **Anderes Konto auf dem iPad?** Dann am iPad *Kamera* › „Kamera-Gerät verbinden“ und den Code vom Handy eingeben.
 **Nur ein Gerät?** *Kamera* › **„Nur dieses Gerät“**: Kamera und Scoreboard auf demselben Gerät, eingerichtet direkt dort.
 

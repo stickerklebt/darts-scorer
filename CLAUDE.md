@@ -223,6 +223,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   ANDEREN Gerät mit demselben Konto: Startbildschirm zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
   Assistent `ui/camsetup.js` mit Livebild (`previewOn` → `frame` ~1/s, 640 px), Standbild (`still` → 1280 px), 4 Punkte mit Lupe,
   Overlay-Kontrolle, `calibrate { pts }` ans Handy, Testdart. Gleiches Bild wie zuletzt → Handy nimmt die alte Kalibrierung selbst.
+  **Mehrere Kameras + Regie:** Läuft im Konto schon eine Kamera, fragt jedes weitere angemeldete Gerät auf dem Startbildschirm
+  „Regie“ (Hauptgerät, hier wird gespielt) oder „Kamera“ (filmt mit). Die Regie verbindet sich mit ALLEN Kameras des Kontos
+  (`/api/camlink/mine` → `codes`, neue Kameras werden automatisch dazugenommen), jede wird einzeln eingerichtet (`camRemote` mit Code).
+  Sehen 2+ Kameras denselben Dart, wartet die Regie bis 1,2 s und führt zusammen (`camfuse.js`: gleich → sicherer, uneinig → gelb).
   Keine CDN-Bibliotheken (CSP `script-src 'self'`): kein OpenCV.js, kein PeerJS, kein QR-Code – stattdessen Code + „Link teilen“.
   Im Spiel (`camBar` in `ui/game.js`, Logik `camAdd/commitCam` in `main.js`): 3 Slots, Mini-Board, Konfidenz < 0,7 gelb,
   Korrektur-Fenster (`camFix`), Miss / 0, Aufnahme beenden, Darts gezogen; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für

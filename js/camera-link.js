@@ -1,76 +1,109 @@
-/* Kopplung Kamera-Gerät ↔ Steuer-Gerät über den eigenen Server (routes/camlink.js) statt PeerJS.
+/* Kopplung Kamera-Geräte ↔ Regie (Hauptgerät) über den eigenen Server (routes/camlink.js) statt PeerJS.
+   Ein Kamera-Gerät hat genau einen Raum (Code). Die Regie kann mit MEHREREN Kameras verbunden sein (z. B. Handy + iPad als Kameras).
    Nachrichten sind JSON mit `type`:
-     Kamera → Steuer:  hello · calibrationStatus { ok } · throw { id, dartIndex, label, segment, multiplier, points, boardX, boardY, confidence, snapshot }
-                       takeout · cameraMoved · pong
-     Steuer → Kamera:  hello · turnChanged { name, bot } · throwCorrected { id, label } · takeout (Knopf „Darts gezogen“) · ping
-   Verbunden = das andere Gerät hat sich in den letzten 6 s gemeldet. Bei Fehlern alle 3 s neu versuchen (gleicher Code). */
+     Kamera → Regie:  hello · calibrationStatus { ok } · throw {…} · takeout · cameraMoved · frame { img, still } · pong
+     Regie → Kamera:  hello · turnChanged · throwCorrected · takeout · previewOn/Off · still · calibrate { pts } · recalibrate · ping
+   Verbunden = das andere Gerät hat sich in den letzten 6 s gemeldet. Bei Fehlern alle 3 s neu (gleicher Code). */
 import { api } from './api.js';
 
 const KEY = 'darts.camlink';
-export const link = { role: null, code: null, status: 'off', calibrated: false, moved: false, error: null };
-let after = 0, timer = null, outbox = [], sending = false, onMsg = () => {}, onChange = () => {}, lastPing = 0;
+/** Gesamtstand (für Anzeige/Logik): bei der Regie zusammengefasst über alle Kameras */
+export const link = { role: null, code: null, status: 'off', calibrated: false, moved: false, cams: [] };
+const conns = new Map(); // code → { code, n, after, status, calibrated, moved, timer, outbox, sending, lastPing }
+let onMsg = () => {}, onChange = () => {};
 
-export function onLink(handlers) { onMsg = handlers.message || onMsg; onChange = handlers.change || onChange; }
-const save = () => { try { if (link.role) localStorage.setItem(KEY, JSON.stringify({ role: link.role, code: link.code })); else localStorage.removeItem(KEY); } catch { /* */ } };
-const set = (st) => { if (link.status !== st) { link.status = st; onChange(); } };
+export function onLink(h) { onMsg = h.message || onMsg; onChange = h.change || onChange; }
+const save = () => { try { if (link.role) localStorage.setItem(KEY, JSON.stringify({ role: link.role, codes: [...conns.keys()] })); else localStorage.removeItem(KEY); } catch { /* */ } };
+
+function summarize() {
+  const list = [...conns.values()];
+  link.cams = list.map((c) => ({ code: c.code, n: c.n, status: c.status, calibrated: c.calibrated, moved: c.moved }));
+  link.code = link.role === 'cam' ? list[0]?.code ?? null : null;
+  link.status = !list.length ? 'off' : list.some((c) => c.status === 'connected') ? 'connected' : list.some((c) => c.status === 'connecting') ? 'connecting' : 'lost';
+  link.calibrated = list.some((c) => c.status === 'connected' && c.calibrated);
+  link.moved = list.some((c) => c.status === 'connected' && c.moved);
+}
+const changed = () => { summarize(); onChange(); };
+export const camCount = () => conns.size;
+export const readyCams = () => [...conns.values()].filter((c) => c.status === 'connected' && c.calibrated && !c.moved).length;
 
 /** Kamera-Gerät: Raum öffnen (Code bleibt nach Neustart gleich, wenn möglich) */
 export async function openAsCamera() {
   let prev = null; try { prev = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { /* */ }
-  const r = await api('POST', 'api/camlink', { code: prev?.role === 'cam' ? prev.code : undefined });
-  Object.assign(link, { role: 'cam', code: r.code, error: null }); after = 0; save(); start();
+  const r = await api('POST', 'api/camlink', { code: prev?.role === 'cam' ? prev.codes?.[0] : undefined });
+  stopAll(); link.role = 'cam';
+  add(r.code); save();
   send({ type: 'hello', role: 'cam' });
   return r.code;
 }
-/** Steuer-Gerät: mit Code verbinden */
+/** Regie: mit einer (weiteren) Kamera verbinden */
 export async function joinAsController(code) {
   code = String(code || '').replace(/\D/g, '');
   if (code.length !== 6) throw new Error('Der Code hat 6 Ziffern.');
+  if (link.role === 'cam') stopAll();
+  if (conns.has(code)) return;
   await api('POST', `api/camlink/${code}/join`, {});
-  Object.assign(link, { role: 'ctl', code, error: null, calibrated: false, moved: false }); after = 0; save(); start();
-  send({ type: 'hello', role: 'ctl' });
+  link.role = 'ctl'; add(code); save();
+  send({ type: 'hello', role: 'ctl' }, code);
 }
-export function disconnect() {
-  clearTimeout(timer); timer = null;
-  if (link.role === 'cam' && link.code) api('DELETE', `api/camlink/${link.code}`).catch(() => {});
-  Object.assign(link, { role: null, code: null, calibrated: false, moved: false }); outbox = []; save(); set('off');
+/** Eine Kamera (code) oder alles trennen */
+export function disconnect(code = null) {
+  if (code) { const c = conns.get(code); if (c) { clearTimeout(c.timer); conns.delete(code); } if (!conns.size) link.role = null; }
+  else { if (link.role === 'cam' && link.code) api('DELETE', `api/camlink/${link.code}`).catch(() => {}); stopAll(); link.role = null; }
+  save(); changed();
 }
-/** Nach App-Neustart: letzte Verbindung wieder aufnehmen */
+function stopAll() { for (const c of conns.values()) clearTimeout(c.timer); conns.clear(); }
+
+/** Nach App-Neustart: letzte Verbindungen wieder aufnehmen → Rolle */
 export function resumeLink() {
   let prev = null; try { prev = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { /* */ }
-  if (!prev?.code || link.role) return null;
-  Object.assign(link, { role: prev.role, code: prev.code }); after = 0; start();
+  const codes = prev?.codes || (prev?.code ? [prev.code] : []);
+  if (!codes.length || link.role) return null;
+  link.role = prev.role;
+  codes.forEach((c) => add(c));
   return prev.role;
 }
 
-export function send(msg) { if (!link.code) return; outbox.push(msg); flush(); }
-async function flush() {
-  if (sending || !outbox.length || !link.code) return;
-  sending = true;
-  const msgs = outbox.splice(0, 20);
-  try { await api('POST', `api/camlink/${link.code}/send`, { from: link.role, msgs }); }
-  catch { outbox.unshift(...msgs); outbox = outbox.slice(-40); }
-  finally { sending = false; if (outbox.length) setTimeout(flush, 500); }
+/** Senden: Kamera → an ihre Regie; Regie → an eine Kamera (code) oder an alle */
+export function send(msg, code = null) {
+  for (const c of conns.values()) if (!code || c.code === code) { c.outbox.push(msg); flush(c); }
+}
+async function flush(c) {
+  if (c.sending || !c.outbox.length || !conns.has(c.code)) return;
+  c.sending = true;
+  const msgs = c.outbox.splice(0, 20);
+  try { await api('POST', `api/camlink/${c.code}/send`, { from: link.role, msgs }); }
+  catch { c.outbox.unshift(...msgs); c.outbox = c.outbox.slice(-40); }
+  finally { c.sending = false; if (c.outbox.length) setTimeout(() => flush(c), 500); }
 }
 
-function start() {
-  clearTimeout(timer);
-  set('connecting');
+function add(code) {
+  const c = { code, n: conns.size + 1, after: 0, status: 'connecting', calibrated: false, moved: false, timer: null, outbox: [], sending: false, lastPing: 0 };
+  conns.set(code, c); changed();
   const tick = async () => {
-    if (!link.code) return;
+    if (conns.get(code) !== c) return;
     let delay = link.role === 'ctl' ? 450 : 700;
     if (!document.hidden || link.role === 'cam') {
       try {
-        const r = await api('GET', `api/camlink/${link.code}/recv?side=${link.role}&after=${after}`);
-        for (const m of r.msgs || []) { after = Math.max(after, m.seq); if (m.type === 'ping') send({ type: 'pong' }); else onMsg(m); }
-        set(r.peerAge !== null && r.peerAge < 6000 ? 'connected' : 'connecting');
-        if (Date.now() - lastPing > 2000) { lastPing = Date.now(); if (link.role === 'ctl') send({ type: 'ping' }); }
+        const r = await api('GET', `api/camlink/${code}/recv?side=${link.role}&after=${c.after}`);
+        for (const m of r.msgs || []) {
+          c.after = Math.max(c.after, m.seq);
+          if (m.type === 'ping') { send({ type: 'pong' }, code); continue; }
+          if (m.type === 'calibrationStatus') { c.calibrated = !!m.ok; if (m.ok) c.moved = false; changed(); }
+          if (m.type === 'cameraMoved') { c.moved = true; changed(); }
+          onMsg(m, code);
+        }
+        const st = r.peerAge !== null && r.peerAge < 6000 ? 'connected' : 'connecting';
+        if (st !== c.status) { c.status = st; changed(); }
+        if (link.role === 'ctl' && Date.now() - c.lastPing > 2000) { c.lastPing = Date.now(); send({ type: 'ping' }, code); }
       } catch (e) {
-        set('lost'); delay = 3000;
-        if (e?.status === 404 && link.role === 'cam') { try { await openAsCamera(); } catch { /* weiter versuchen */ } }
+        if (c.status !== 'lost') { c.status = 'lost'; changed(); }
+        delay = 3000;
+        if (e?.status === 404 && link.role === 'cam') { try { await openAsCamera(); return; } catch { /* weiter versuchen */ } }
+        if (e?.status === 404 && link.role === 'ctl') { disconnect(code); return; } // Kamera wurde beendet
       }
     }
-    timer = setTimeout(tick, delay);
+    c.timer = setTimeout(tick, delay);
   };
   tick();
 }

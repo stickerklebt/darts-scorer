@@ -30,7 +30,7 @@ export function camlinkRoutes(r, { limits }) {
     if (rooms.size >= MAX_ROOMS) sweep();
     if (rooms.size >= MAX_ROOMS) throw new HttpError(503, 'busy', 'Gerade zu viele Kamera-Verbindungen. Bitte gleich nochmal.');
     let code; do code = String(randomInt(0, 1e6)).padStart(6, '0'); while (rooms.has(code));
-    rooms.set(code, { owner: c.user.id, touched: Date.now(), seq: 0, q: { cam: [], ctl: [] }, seen: { cam: Date.now(), ctl: 0 } });
+    rooms.set(code, { owner: c.user.id, created: Date.now(), touched: Date.now(), seq: 0, q: { cam: [], ctl: [] }, seen: { cam: Date.now(), ctl: 0 } });
     c.log.info('camlink_open');
     return { status: 201, body: { code } };
   });
@@ -38,9 +38,10 @@ export function camlinkRoutes(r, { limits }) {
   /** Steuer-Gerät: läuft gerade ein Kamera-Gerät im selben Konto? (Startbildschirm zeigt dann die Kamera) */
   r.get('/api/camlink/mine', (c) => {
     c.res.locals.quiet = true;
-    let best = null;
-    for (const [code, x] of rooms) if (x.owner === c.user.id && Date.now() - x.seen.cam < 20e3 && (!best || x.seen.cam > best.seen)) best = { code, seen: x.seen.cam };
-    return { code: best?.code ?? null };
+    const now = Date.now(), list = [];
+    for (const [code, x] of rooms) if (x.owner === c.user.id && now - x.seen.cam < 20e3) list.push({ code, since: x.created || 0 });
+    list.sort((a, b) => a.since - b.since);
+    return { code: list[0]?.code ?? null, codes: list.map((x) => x.code) };
   });
 
   /** Steuer-Gerät: mit Code beitreten */

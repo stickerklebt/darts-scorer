@@ -9,26 +9,26 @@ let S = null; // { step, el, img, still, pts, drag, test, onDone, toast }
 
 export const setupOpen = () => !!S;
 
-export function openRemoteSetup({ toast, onDone }) {
+export function openRemoteSetup({ code, n = 1, toast, onDone }) {
   closeRemoteSetup(true);
-  S = { step: 1, el: document.createElement('div'), img: null, still: null, pts: [], drag: -1, test: [], onDone, toast, frameAt: 0 };
+  S = { code, n, step: 1, el: document.createElement('div'), img: null, still: null, pts: [], drag: -1, test: [], onDone, toast, frameAt: 0 };
   S.el.className = 'calib remote';
   document.body.appendChild(S.el);
   S.el.addEventListener('click', onClick);
-  send({ type: 'recalibrate' });
-  send({ type: 'previewOn' });
+  send({ type: 'recalibrate' }, code);
+  send({ type: 'previewOn' }, code);
   render();
 }
 export function closeRemoteSetup(silent = false) {
   if (!S) return;
-  send({ type: 'previewOff' });
+  send({ type: 'previewOff' }, S.code);
   S.el.remove(); const cb = S.onDone; S = null;
   if (!silent) cb?.();
 }
 
 /** Nachrichten vom Kamera-Gerät, solange der Assistent offen ist */
-export function setupMessage(m) {
-  if (!S) return false;
+export function setupMessage(m, code) {
+  if (!S || code !== S.code) return false;
   if (m.type === 'frame') {
     if (m.still) { S.still = m; if (S.step === 2) render(); }
     else { S.img = m; S.frameAt = Date.now(); updateLive(); }
@@ -49,24 +49,24 @@ function render() {
   if (!S) return;
   const live = '<div class="rs-live"><img class="rs-img" alt=""><canvas class="cal-ov"></canvas><span class="rs-wait">Warte auf Bild vom Handy …</span></div>';
   if (S.step === 1) {
-    S.el.innerHTML = `<div class="cal-h"><small>Kamera einrichten · 1 von 4</small><b>Handy aufstellen</b></div>
+    S.el.innerHTML = `<div class="cal-h"><small>Kamera ${S.n} einrichten · 1 von 4</small><b>Handy aufstellen</b></div>
       <div class="rs-two">${live}<div class="rs-help"><p class="cal-big">Stell dein Handy seitlich neben das Board (Stuhl, Regal oder Klemmhalter), ca. 40–80 cm entfernt,
         etwa auf Boardhöhe oder leicht darunter, schräg auf das Board gerichtet. Mindestens 30 cm außerhalb des Boardrands, damit keine Darts
         das Handy treffen.</p><p class="cal-big"><b>Das ganze Board muss im Bild sein</b> – links siehst du live, was das Handy sieht.</p>${SKETCH}</div></div>
       <div class="cal-btns"><button data-r="cancel">Abbrechen</button><button class="go" data-r="next">Steht – weiter</button></div>`;
   } else if (S.step === 2) {
     const done = S.pts.length === 4;
-    S.el.innerHTML = `<div class="cal-h"><small>Kamera einrichten · 2 von 4</small><b>${done ? 'Alle 4 Punkte gesetzt' : `Tippe auf Punkt ${S.pts.length + 1}: ${CALIB_NAMES[S.pts.length]}`}</b>
+    S.el.innerHTML = `<div class="cal-h"><small>Kamera ${S.n} einrichten · 2 von 4</small><b>${done ? 'Alle 4 Punkte gesetzt' : `Tippe auf Punkt ${S.pts.length + 1}: ${CALIB_NAMES[S.pts.length]}`}</b>
         <span>Äußerer Rand des Doppelrings, jeweils in der Mitte des Feldes. Beim Tippen erscheint eine Lupe, Punkte lassen sich verschieben.</span></div>
       <div class="rs-live rs-still">${S.still ? `<img class="rs-img" src="${S.still.img}" alt="Standbild">` : '<span class="rs-wait">Hole ein scharfes Bild vom Handy …</span>'}<canvas class="cal-ov"></canvas><canvas class="cal-lupe"></canvas></div>
       <div class="cal-btns"><button data-r="reset">Zurücksetzen</button><button data-r="still">Neues Bild</button><button data-r="cancel">Abbrechen</button><button class="go" data-r="next" ${done ? '' : 'disabled'}>Weiter</button></div>`;
-    if (!S.still) send({ type: 'still' });
+    if (!S.still) send({ type: 'still' }, S.code);
     else requestAnimationFrame(() => { drawPts(); bindPts(); });
   } else if (S.step === 3) {
-    S.el.innerHTML = `<div class="cal-h"><small>Kamera einrichten · 3 von 4</small><b>Passt das Gitter?</b><span>Ringe und Linien sollten im Livebild genau auf den Drähten liegen.</span></div>
+    S.el.innerHTML = `<div class="cal-h"><small>Kamera ${S.n} einrichten · 3 von 4</small><b>Passt das Gitter?</b><span>Ringe und Linien sollten im Livebild genau auf den Drähten liegen.</span></div>
       ${live}<div class="cal-btns"><button data-r="redo">Neu setzen</button><button class="go" data-r="next">Passt</button></div>`;
   } else {
-    S.el.innerHTML = `<div class="cal-h"><small>Kamera einrichten · 4 von 4</small><b>Wirf einen Testdart</b><span>Optional – zeigt, was die Kamera erkennt. Danach Darts ziehen und weiter testen oder fertig.</span></div>
+    S.el.innerHTML = `<div class="cal-h"><small>Kamera ${S.n} einrichten · 4 von 4</small><b>Wirf einen Testdart</b><span>Optional – zeigt, was die Kamera erkennt. Danach Darts ziehen und weiter testen oder fertig.</span></div>
       <div class="cal-test"><b class="cal-res">${S.test.length ? `Erkannt: ${S.test[0]}` : 'Warte auf Wurf …'}</b>${S.test.length > 1 ? `<small>${S.test.slice(1, 5).join(' · ')}</small>` : ''}</div>
       <div class="cal-btns"><button data-r="back">Zurück zum Gitter</button><button class="go" data-r="finish">Fertig</button></div>`;
   }
@@ -148,7 +148,7 @@ function onClick(e) {
   if (c === 'redo') { S.step = 2; return render(); }
   if (c === 'back') { S.step = 3; return render(); }
   if (c === 'next') {
-    if (S.step === 3) { send({ type: 'calibrate', pts: S.pts }); S.test = []; }
+    if (S.step === 3) { send({ type: 'calibrate', pts: S.pts }, S.code); S.test = []; }
     S.step++; return render();
   }
   if (c === 'finish') { S.toast?.('Kamera eingerichtet'); return closeRemoteSetup(); }

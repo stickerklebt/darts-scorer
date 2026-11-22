@@ -370,6 +370,8 @@ test('Kamera-Kopplung: Raum öffnen, beitreten, Nachrichten in beide Richtungen,
     assert.equal((await cam('GET', `/api/camlink/${code}/recv?side=cam&after=0`)).body.msgs[0].name, 'Lasse');
     assert.equal((await cam('POST', '/api/camlink', { code })).body.code, code); // derselbe Code nach Neustart
     assert.equal((await cam('GET', '/api/camlink/mine')).body.code, code);        // gleiches Konto findet die Kamera
+    const cam2 = (await cam('POST', '/api/camlink', {})).body.code;               // zweite Kamera im selben Konto
+    assert.deepEqual((await cam('GET', '/api/camlink/mine')).body.codes, [code, cam2]);
     assert.equal((await ctl('GET', '/api/camlink/mine')).body.code, null);        // fremdes Konto nicht
   } finally { await s.stop(); }
 });
