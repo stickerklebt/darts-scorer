@@ -211,6 +211,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
   sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
   Shanghai/Halbieren behalten ihre Vielfachen.
+- **Kamera (Beta)** (`js/camera.js` DOM/Video, `js/camdetect.js` reine Logik): Kamera-Knopf im Spiel-Kopf. Kamera an → Scheibe kalibrieren
+  (4 Punkte am äußeren Doppelring: 20, 6, 3, 11 → Homographie, je Gerät in `localStorage['darts.cam']`). Handy steht UNTER der Scheibe.
+  Erkennung: Graustufen 200 px breit, alle 220 ms; ruhiges Bild ↔ Referenz → größte Änderung = Dart, Spitze = oberster Teil → Feld.
+  Große Änderung = Darts gezogen → neuer Zug. **Nur Vorschlag:** bei Summen-Eingabe steht die Summe im Feld (OK drücken), bei
+  Einzeldart/Cricket „Übernehmen“. Video/Vorschau/Kalibrierung liegen außerhalb von `#app`. Permissions-Policy `camera=(self)`.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).

@@ -1767,3 +1767,29 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .br-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
 .br-quit { width: 100%; }
 .br-hist { list-style: none; padding: 0; margin: 6px 0 0; } .br-hist li { padding: 6px 0; color: var(--muted); } .br-hist li.ok { color: var(--cream); }
+
+/* ================= Kamera (Beta) ================= */
+.gbar-r { display: flex; gap: 8px; }
+.cam-btn.on { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+.campanel { position: fixed; z-index: 60; right: 10px; top: calc(var(--sat, 0px) + 64px); width: 150px; padding: 6px; border-radius: 10px;
+  background: rgba(11,10,8,.92); border: 1px solid rgba(212,166,58,.55); box-shadow: 0 6px 18px rgba(0,0,0,.6); color: var(--cream); }
+.cam-v video { display: block; width: 100%; border-radius: 6px; background: #000; }
+.cam-st { margin: 5px 0 4px; font-family: var(--f-num); font-size: 14px; letter-spacing: .04em; line-height: 1.15; }
+.cam-b { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.cam-b button { height: 30px; border-radius: 6px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream2); font-family: var(--f-num); font-size: 13px; letter-spacing: .05em; }
+.cam-beta { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); text-align: center; }
+.camcalib { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: #050403; color: var(--cream); padding: calc(var(--sat, 0px) + 10px) 10px 10px; gap: 8px; }
+.cc-head b { display: block; font-family: var(--f-display); font-size: 22px; }
+.cc-t { display: block; color: var(--gold-l); font-family: var(--f-num); font-size: 20px; letter-spacing: .04em; margin-top: 2px; }
+.cc-head small { display: block; color: var(--muted); font-size: 14px; margin-top: 4px; }
+.cc-v { position: relative; flex: 1; min-height: 0; }
+.cc-v video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cc-v i { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 2px solid var(--gold); background: rgba(212,166,58,.25);
+  font-style: normal; font-family: var(--f-num); font-size: 13px; display: grid; place-items: center; color: var(--cream); pointer-events: none; }
+.cc-b { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cc-b button { height: 48px; border-radius: var(--r-btn); border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 17px; }
+.camsug { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 6px; border-radius: var(--r-btn); background: rgba(212,166,58,.12);
+  border: 1px solid rgba(212,166,58,.5); color: var(--gold-l); }
+.camsug span { flex: 1; color: var(--cream); font-size: 15px; } .camsug b { font-family: var(--f-num); font-weight: 400; font-size: 19px; }
+.camsug .btn { height: 38px; padding: 0 14px; font-size: 15px; }
+.cs-x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); color: var(--cream2); font-size: 20px; line-height: 1; }

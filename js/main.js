@@ -6,6 +6,7 @@ import { overview } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
+import { camToggle, camOn, camStop, camResetTurn } from './camera.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
@@ -104,6 +105,7 @@ function render() {
   }
   scheduleBot();
   syncIfChanged();
+  if (camOn() && S.screen !== 'game') { ui.camDarts = null; camStop(true); } // Kamera nur im Spiel
 }
 
 let toastTimer = null, autoTimer = null;
@@ -797,7 +799,17 @@ const actions = {
     catch (e) { toast(errMsg(e)); }
     render();
   },
-  vsClose() { ui.vs = null; render(); }, // Bot wirft erst danach (scheduleBot wartet auf ui.vs)
+  vsClose() { ui.vs = null; render(); },
+  /* Kamera (Beta): an/aus, Vorschlag übernehmen (Einzeldart/Cricket) oder verwerfen */
+  cam() { camToggle(camHooks); },
+  camApply() {
+    const m = S.current, darts = ui.camDarts || [];
+    ui.camDarts = null; camResetTurn();
+    let res = null;
+    for (const d of darts) { res = throwOne(m, d.n, d.n === 0 ? 1 : d.m); if (res.type !== 'dart') break; }
+    if (res) handle(res); else render();
+  },
+  camDismiss() { ui.camDarts = null; camResetTurn(); render(); }, // Bot wirft erst danach (scheduleBot wartet auf ui.vs)
   addNew() {
     // Gast: kein Profil, keine Statistik – nur für dieses Spiel (danach wieder aus der Aufstellung)
     const n = field('newPlayer');
@@ -839,7 +851,7 @@ const actions = {
       else render();
     }, 420);
   },
-  submit(v) { ui.entry = ''; const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
+  submit(v) { ui.entry = ''; if (ui.camDarts) { ui.camDarts = null; camResetTurn(); } const m = S.current; handle(m.game === 'x01' ? X.submitSum(m, v) : G.submit(m, v)); },
   hits(el) { handle(G.submit(S.current, Number(el.dataset.v))); },
   mult(el) { ui.mult = Number(el.dataset.v); render(); },
   dart(el) {
@@ -892,7 +904,7 @@ const actions = {
   },
 };
 
-const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext']);
+const INPUT_ACTS = new Set(['key', 'back', 'ok', 'quick', 'hits', 'mult', 'dart', 'bull', 'board', 'ckHit', 'ckMiss', 'ckNext', 'camApply']);
 /** Online: nur wer dran ist, darf eingeben */
 const notMyTurn = () => { const m = S.current; return !!(m?.online && !m.done && S.screen === 'game' && curThrowerOf(m) !== S.mainId); };
 document.addEventListener('click', (e) => {
@@ -924,6 +936,20 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();
 });
+
+/* ---------------- Kamera (Beta): erkannte Darts als Vorschlag ---------------- */
+const camHooks = {
+  render: () => render(), toast,
+  onDarts(darts) {
+    const m = S.current;
+    if (S.screen !== 'game' || !m || m.done || inBulloff() || isBot(curThrowerOf(m)) || notMyTurn()) return;
+    ui.camDarts = darts;
+    // Summen-Eingabe: Summe nur ins Feld schreiben – abgeschickt wird erst mit OK
+    if (m.game === 'x01' && X.inputMode(m) === 'sum') ui.entry = String(darts.reduce((a, d) => a + d.n * d.m, 0));
+    render();
+  },
+  onClear() { if (ui.camDarts) { ui.camDarts = null; render(); } },
+};
 
 /* ---------------- Bruchchallenge: Ende und Countdown ---------------- */
 function bruchEnd(reason) {

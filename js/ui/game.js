@@ -14,6 +14,7 @@ import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
 import { avatar } from './avatar.js';
 import { PLAYER_COLORS } from './svg.js';
+import { camOn } from '../camera.js';
 
 const whoText = (m, s, thrower) => (isBot(thrower) ? `${nameOf(thrower)} wirft` : isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
 const chipCls = (d) => (d.n === 25 && d.m === 2 ? 'b' : d.m === 2 ? 'd' : '');
@@ -58,6 +59,16 @@ function botBox(m, s, next) {
 const teamLine = (side, next) => `<span class="tt">TEAM</span>${side.map((id) => (id === next ? `<b>${esc(nameOf(id))}</b>` : esc(nameOf(id)))).join(' · ')}`;
 
 const pips = (won, total) => (total > 7 ? `<span class="setlbl">${won}</span>` : `<span class="pips">${Array.from({ length: total }, (_, i) => `<i class="${i < won ? 'w' : ''}"></i>`).join('')}</span>`);
+
+/** Kamera-Vorschlag (Beta): bei Summen-Eingabe steht die Summe schon im Feld; sonst hier die Darts zum Übernehmen */
+function camSuggest(m, thrower) {
+  const d = ui.camDarts;
+  if (!d?.length || isBot(thrower)) return '';
+  const sum = m.game === 'x01' && X.inputMode(m) === 'sum';
+  const lbl = (x) => (x.n === 0 ? '–' : label(x));
+  return `<div class="camsug">${icon('cam', 1.9, 18)}<span>Kamera: <b>${d.map(lbl).join(' · ')}</b>${sum ? ` = ${d.reduce((a, x) => a + x.n * x.m, 0)}` : ''}</span>
+    ${sum ? '' : '<button class="btn red" data-act="camApply">Übernehmen</button>'}<button class="cs-x" data-act="camDismiss" aria-label="Verwerfen">×</button></div>`;
+}
 
 /** Wer hat die letzte fertige Aufnahme geworfen? */
 function lastTurnPid(m) {
@@ -157,9 +168,10 @@ export function gameView() {
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
       <div class="gtitle"><b>${title}</b><span>${sub}</span></div>
-      <button class="sq" data-act="gear" aria-label="Einstellungen">${icon('gear', 1.8)}</button>
+      <div class="gbar-r"><button class="sq cam-btn ${camOn() ? 'on' : ''}" data-act="cam" aria-label="Kamera">${icon('cam', 1.9)}</button>
+      <button class="sq" data-act="gear" aria-label="Einstellungen">${icon('gear', 1.8)}</button></div>
     </header>
-    <div class="gmain"><div class="gleft">${board}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${pad}</div></div>
+    <div class="gmain"><div class="gleft">${board}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${camSuggest(m, thrower)}${pad}</div></div>
   </div>`;
 }
 

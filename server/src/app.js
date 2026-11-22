@@ -49,7 +49,7 @@ export function createApp({ config, db, log }) {
     res.setHeader('Referrer-Policy', 'same-origin');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
-    res.setHeader('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=()');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=(), payment=()');
     if (isHttps(req, config.trustProxy)) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   }
 
