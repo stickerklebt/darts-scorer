@@ -249,6 +249,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Wurfmodell (über 170 als Summe, darunter Einzeldarts), verschiedene Lieblingsdoppel. Einmalig beim Start (`S.demoSeeded`,
   bleibt auch nach „Alle Daten löschen“ gesetzt). „Testdaten entfernen“ in den Einstellungen löscht nur `demo: true`.
 
+- **Nur noch der Hauptspieler als Profil** (`dropExtraProfiles` in `sync.js`, bei jedem `ensureMainProfile`): alte Zweitspieler/Gäste
+  früherer Versionen werden entfernt (auch wenn ein altes Gerät sie per Sync zurückbringt), ihr Name bleibt in `m.names` der Matches.
+  Statistik/Vergleich gibt es damit nur für den Hauptspieler.
 - **Einmaliger Daten-Neustart** (`S.cleanV`): beim ersten Start nach Update 4 wurden alle Matches und alle Spieler außer dem
   Hauptspieler gelöscht; keine Testdaten mehr. `demo.js` bleibt für spätere Tests erhalten.
 

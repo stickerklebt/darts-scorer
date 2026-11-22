@@ -50,7 +50,24 @@ export function ensureMainProfile() {
   let p = profile(S.mainId);
   if (!p) { p = { id: uid('p'), name: u.username, createdAt: Date.now() }; S.profiles.push(p); S.mainId = p.id; }
   if (p.name !== u.username) p.name = u.username;
+  dropExtraProfiles();
   if (!S.lineup.length) S.lineup = [{ id: S.mainId, team: 'A' }];
+}
+
+/** Außer dem Hauptspieler gibt es keine gespeicherten Spieler mehr (Gäste nur pro Spiel, Freunde haben ein eigenes Konto).
+    Alte Zweitspieler aus früheren Versionen werden entfernt – immer wieder, auch wenn ein altes Gerät sie zurückbringt.
+    Ihr Name bleibt in den betroffenen Matches (m.names), damit Historie und Gegnernamen stimmen; Statistik gibt es für sie nicht. */
+function dropExtraProfiles() {
+  const extra = S.profiles.filter((x) => x.id !== S.mainId);
+  if (!extra.length) return;
+  const names = new Map(extra.map((x) => [x.id, x.name]));
+  for (const m of [...S.matches, S.current].filter(Boolean)) {
+    const hit = (m.playerIds || []).filter((id) => names.has(id) && !m.names?.[id]);
+    if (hit.length) m.names = { ...(m.names || {}), ...Object.fromEntries(hit.map((id) => [id, names.get(id)])) };
+  }
+  S.profiles = S.profiles.filter((x) => x.id === S.mainId);
+  S.lineup = S.lineup.filter((e) => !names.has(e.id));
+  for (const k of ['statsPid', 'cmpA', 'cmpB']) if (names.has(S[k])) S[k] = S.mainId;
 }
 
 /* ---------------- Antwort einspielen ---------------- */
