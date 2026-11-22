@@ -153,7 +153,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Finger drauf → Feld unter dem Finger leuchtet gold; nach 140 ms halten (oder beim Ziehen) erscheint die Lupe über dem Finger
   mit Fadenkreuz und Feldname; loslassen setzt den Dart (außerhalb des Double-Rings = daneben, dazu Knopf „Daneben“).
   Über der Scheibe drei Treffer-Kacheln (1 · T20 60 …, nächster Dart „Jetzt“), getroffene Felder der laufenden Aufnahme
-  leuchten, an der Wurfstelle steckt ein kleiner Dartpfeil mit Nummer (`ui.aimPos`, nur flüchtig). Mauszeiger = Dartpfeil
+  leuchten, an der Wurfstelle steckt ein kleiner Dartpfeil, die Nummer (römisch I · II · III) steht auf der Flight (`ui.aimPos`, nur flüchtig). Mauszeiger = Dartpfeil
   (Spitze = Treffpunkt). Lupe: runder „Glas“-Ausschnitt mit feinem Goldring, Dartpfeil statt Fadenkreuz, Feldname als Pille darunter. Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
 - **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):
   alle fertigen Spiele aller Modi, neueste zuerst, nach Monat gruppiert, Filter Alle · X01 · Cricket · Party. Zeile: S/N/=

@@ -48,7 +48,7 @@ function paint(box) {
     g.strokeStyle = d.conf < 0.7 ? '#ffd23f' : '#ff3b2b'; g.lineWidth = box.classList.contains('big') ? 3.5 : 2;
     const R = box.classList.contains('big') ? 16 : 7;
     g.beginPath(); g.arc(x, y, R, 0, Math.PI * 2); g.stroke();
-    if (box.classList.contains('big')) { g.fillStyle = '#fff'; g.font = 'bold 14px sans-serif'; g.textAlign = 'center'; g.fillText(String(i + 1), x, y - R - 6); }
+    if (box.classList.contains('big')) { g.fillStyle = '#fff'; g.font = 'bold 14px sans-serif'; g.textAlign = 'center'; g.fillText(['I', 'II', 'III'][i] || String(i + 1), x, y - R - 6); }
   });
 }
 

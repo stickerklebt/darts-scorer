@@ -9,7 +9,7 @@ import { esc, fmt, pcVars, seg } from './common.js';
 import { throwerOf } from '../match.js';
 import { quickScores } from '../stats.js';
 import { icon } from './svg.js';
-import { fieldAt, fieldName, aimBoard } from './aimboard.js';
+import { fieldAt, fieldName, aimBoard, ROMAN } from './aimboard.js';
 import { labelOf } from '../board-geometry.js';
 import { camThumb } from './camview.js';
 import { realBoard } from './board.js';
@@ -69,7 +69,7 @@ function camBar(m, thrower) {
   const d = ui.ct?.darts || [];
   const slot = (i) => {
     const x = d[i];
-    if (!x) return `<span class="cb-slot empty">${i + 1}</span>`;
+    if (!x) return `<span class="cb-slot empty">${ROMAN[i]}</span>`;
     return `<button class="cb-slot ${x.conf < 0.7 ? 'check' : ''}" data-act="camSlot" data-v="${i}"><b>${x.n === 0 ? '0' : esc(x.label)}</b><small>${x.conf < 0.7 ? 'Bitte prüfen' : x.fixed ? 'korrigiert' : `${x.n * x.m}`}</small></button>`;
   };
   const marks = d.filter((x) => Number.isFinite(x.x)).map((x, i) => ({ x: x.x, y: x.y, color: x.conf < 0.7 ? '#ffd23f' : '#f3e9d2', fly: false, n: i }));
@@ -88,7 +88,7 @@ function camPad(m, thrower) {
   const hits = d.map((x) => ({ n: x.n, m: x.m, z: x.z, x: x.ax, y: x.ay }));
   const slot = (i) => {
     const x = d[i];
-    if (!x) return `<span class="cp-slot empty">${i + 1}. Dart</span>`;
+    if (!x) return `<span class="cp-slot empty">${ROMAN[i]}. Dart</span>`;
     return `<button class="cp-slot ${x.conf < 0.7 ? 'check' : ''} ${sel === i ? 'sel' : ''}" data-act="camSel" data-v="${i}"><b>${x.n === 0 ? '0' : esc(labelOf(x).replace('BULL', 'Bull'))}</b>
       <small>${sel === i ? 'jetzt aufs Feld tippen' : x.conf < 0.7 ? 'bitte prüfen' : x.fixed ? 'korrigiert' : 'antippen zum Ändern'}</small></button>`;
   };
@@ -258,8 +258,8 @@ function boardPad(m, thrower) {
   });
   const chip = (i) => {
     const d = hits[i], now = i === hits.length;
-    if (!d) return `<div class="ahit ${now ? 'now' : ''}"><i>${i + 1}</i><b>${now ? 'Jetzt' : '–'}</b></div>`;
-    return `<div class="ahit done m${d.n === 0 ? 0 : d.m}"><i>${i + 1}</i><b>${fieldName(d)}</b>${m.game === 'cricket' || d.n === 0 ? '' : `<small>${d.n * d.m}</small>`}</div>`;
+    if (!d) return `<div class="ahit ${now ? 'now' : ''}"><i>${ROMAN[i]}</i><b>${now ? 'Jetzt' : '–'}</b></div>`;
+    return `<div class="ahit done m${d.n === 0 ? 0 : d.m}"><i>${ROMAN[i]}</i><b>${fieldName(d)}</b>${m.game === 'cricket' || d.n === 0 ? '' : `<small>${d.n * d.m}</small>`}</div>`;
   };
   return `${restEntry(m, thrower)}
     <div class="ahits">${[0, 1, 2].map(chip).join('')}</div>

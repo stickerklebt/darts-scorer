@@ -1940,3 +1940,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .cam-live i { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: 11px; color: var(--muted); }
 .cam-live.thumb { position: absolute; right: 0; top: 0; width: 26%; max-width: 150px; aspect-ratio: 3 / 4; z-index: 3; }
 .cam-live.big { width: 100%; height: min(68vh, 760px); margin: 8px 0 12px; }
+
+/* Dart-Nummer (römisch) direkt auf der Flight – nicht mehr als Kreis neben der Spitze */
+.aimboard .amark text.anr { fill: #fff6dc; font-family: var(--f-display); font-size: 6.5px; paint-order: stroke; stroke: #0b0a08; stroke-width: 1.6px; }

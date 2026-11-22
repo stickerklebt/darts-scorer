@@ -40,6 +40,8 @@ export const fieldName = (d) => (d.n === 0 ? 'Daneben' : label(d));
 const r2 = (v) => Math.round(v * 100) / 100;
 
 /** Kleiner Dartpfeil, Spitze bei (0,0), Flights schräg nach oben rechts – für Treffer und Lupe */
+/** Dart-Nummern in der ganzen App römisch */
+export const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 export const dartGlyph = (k = 1) => `<g class="adart" transform="scale(${k}) rotate(-45)">
   <path d="M0 0H5" stroke="#f3e9d2" stroke-width=".9" stroke-linecap="round"/>
   <rect x="5" y="-1.35" width="7.5" height="2.7" rx="1.1" fill="#f3e9d2"/><path d="M7 -1.35V1.35M9 -1.35V1.35" stroke="#0b0a08" stroke-width=".45" opacity=".55"/>
@@ -84,7 +86,7 @@ export function aimBoard(hits = []) {
   const wires = `<g class="awire">${[AR.bull, AR.outer, AR.triIn, AR.triOut, AR.dblIn, AR.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(AR.outer, -99 + i * 18)}L${pt(AR.dblOut, -99 + i * 18)}"/>`).join('')}</g>`;
   // Steckende Darts an der Wurfstelle (mit kleiner Nummer)
-  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<g transform="translate(-7 6)"><circle r="4.2"/><text text-anchor="middle" dominant-baseline="central">${i + 1}</text></g></g>`)).join('');
+  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<text class="anr" x="13.2" y="-12.6" text-anchor="middle" dominant-baseline="central">${ROMAN[i] || i + 1}</text></g>`)).join(''); // Nummer (römisch) steht auf der Flight
   return `<svg class="aimboard" viewBox="-${AR.edge} -${AR.edge} ${AR.edge * 2} ${AR.edge * 2}" role="img" aria-label="Dartscheibe – Finger auf die Stelle, wo der Dart steckt">
     <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
     <circle r="${AR.edge}" class="arim"/><circle r="${AR.dblOut + 1}" fill="${F.rim}"/>
