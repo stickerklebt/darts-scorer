@@ -5,7 +5,7 @@ import { randomInt } from 'node:crypto';
 import { HttpError, bad } from '../http.js';
 import { isPlainObject } from '../validate.js';
 
-const ROOM_TTL = 12 * 3600e3, MSG_TTL = 120e3, MAX_QUEUE = 60, MAX_MSG = 400 * 1024, MAX_ROOMS = 2000; // Standbild zum Kalibrieren ≈ 150 KB
+const ROOM_TTL = 12 * 3600e3, MSG_TTL = 120e3, MAX_QUEUE = 60, MAX_MSG = 600 * 1024, MAX_ROOMS = 2000; // Standbild zum Kalibrieren ≤ 280 KB (das Handy verkleinert selbst)
 const SIDES = ['cam', 'ctl'];
 const other = (s) => (s === 'cam' ? 'ctl' : 'cam');
 
@@ -63,6 +63,8 @@ export function camlinkRoutes(r, { limits }) {
     for (const m of msgs) {
       if (!isPlainObject(m) || typeof m.type !== 'string') throw bad('bad_msg', 'Ungültige Nachricht.');
       if (JSON.stringify(m).length > MAX_MSG) throw bad('too_large', 'Nachricht zu groß.');
+      // Bilder: nur das neueste je Art aufheben (Livebild bzw. Standbild), sonst läuft die Warteschlange voll
+      if (m.type === 'frame') for (let i = q.length - 1; i >= 0; i--) if (q[i].msg.type === 'frame' && !!q[i].msg.still === !!m.still) q.splice(i, 1);
       q.push({ seq: ++x.seq, at: now, msg: m });
     }
     while (q.length > MAX_QUEUE || (q.length && now - q[0].at > MSG_TTL)) q.shift();

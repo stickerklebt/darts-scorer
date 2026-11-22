@@ -80,12 +80,20 @@ function previewLoop() {
   sendFrame(640, 0.55, false);
   pvTimer = setTimeout(previewLoop, 900);
 }
+/** Bild als JPEG schicken – so lange kleiner machen (erst Qualität, dann Auflösung), bis es sicher durch den Server passt */
+const FRAME_MAX = 280 * 1024;
 function sendFrame(maxW, q, still) {
   const v = st?.video; if (!v?.videoWidth) return;
-  const w = Math.min(maxW, v.videoWidth), h = Math.round((w * v.videoHeight) / v.videoWidth);
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  c.getContext('2d').drawImage(v, 0, 0, w, h);
-  let img = null; try { img = c.toDataURL('image/jpeg', q); } catch { return; }
+  let w = Math.min(maxW, v.videoWidth), img = null, h = 0;
+  for (let tries = 0; tries < 8; tries++) {
+    h = Math.round((w * v.videoHeight) / v.videoWidth);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(v, 0, 0, w, h);
+    try { img = c.toDataURL('image/jpeg', q); } catch { return; }
+    if (img.length <= FRAME_MAX) break;
+    if (q > 0.45) q -= 0.12; else w = Math.round(w * 0.8);
+  }
+  if (!img || img.length > FRAME_MAX) return;
   send({ type: 'frame', still, img, w, h, calibrated: !!st.calib });
 }
 export function stationTakeout() { st?.det?.takeout(); setStatus('Bereit'); }

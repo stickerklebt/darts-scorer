@@ -73,7 +73,12 @@ async function flush(c) {
   c.sending = true;
   const msgs = c.outbox.splice(0, 20);
   try { await api('POST', `api/camlink/${c.code}/send`, { from: link.role, msgs }); }
-  catch { c.outbox.unshift(...msgs); c.outbox = c.outbox.slice(-40); }
+  catch (e) {
+    // Vom Server abgelehnt (z. B. zu groß): einzeln nochmal, Kaputtes verwerfen – nie die ganze Warteschlange blockieren
+    if (e?.status >= 400 && e.status < 500 && e.status !== 404 && e.status !== 429) {
+      if (msgs.length > 1) for (const m of msgs) await api('POST', `api/camlink/${c.code}/send`, { from: link.role, msgs: [m] }).catch(() => {});
+    } else { c.outbox.unshift(...msgs.filter((m) => m.type !== 'frame')); c.outbox = c.outbox.slice(-40); } // alte Bilder nicht nachschicken
+  }
   finally { c.sending = false; if (c.outbox.length) setTimeout(() => flush(c), 500); }
 }
 
