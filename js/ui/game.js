@@ -11,6 +11,7 @@ import { quickScores } from '../stats.js';
 import { icon } from './svg.js';
 import { fieldAt, fieldName, aimBoard } from './aimboard.js';
 import { labelOf } from '../board-geometry.js';
+import { camThumb } from './camview.js';
 import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
 import { avatar } from './avatar.js';
@@ -95,9 +96,10 @@ function camPad(m, thrower) {
   const end = d.length === 3
     ? (auto && ui.ct?.deadline ? `<span class="cb-count">Wertung in <b>${Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000))}</b> s</span>` : '<button class="btn red" data-act="camOk">OK</button>')
     : `<button class="btn line" data-act="camEnd" ${d.length ? '' : 'disabled'}>Aufnahme beenden</button>`;
-  const hint = sel !== null ? 'Tippe auf das Feld, das wirklich getroffen wurde' : d.length < 3 ? `${esc(nameOf(thrower))} wirft – die Kamera trägt jeden Dart ein` : 'Alles richtig? Sonst Kasten antippen';
+  const unsure = d.some((x) => x.conf < 0.7);
+  const hint = d.length === 3 && unsure && sel === null ? 'Die Kamera ist sich nicht sicher – gelbe Kästen prüfen, dann OK' : sel !== null ? 'Tippe auf das Feld, das wirklich getroffen wurde' : d.length < 3 ? `${esc(nameOf(thrower))} wirft – die Kamera trägt jeden Dart ein` : 'Alles richtig? Sonst Kasten antippen';
   return `<div class="campad"><div class="cp-head"><span>${hint}</span><b>Rest ${X.curRem(m) - X.pendingSum(m) - d.reduce((a, x) => a + x.n * x.m, 0)}</b></div>
-    <div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>
+    <div class="cp-board"><div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>${camThumb()}</div>
     <div class="cp-slots">${slot(0)}${slot(1)}${slot(2)}</div>
     <div class="cp-acts"><button class="btn line" data-act="camMiss">${sel !== null ? 'War daneben' : 'Miss / 0'}</button>${end}<button class="btn line" data-act="camPulled">Darts gezogen</button><button class="btn line" data-act="camKeys">Tastatur</button></div></div>`;
 }

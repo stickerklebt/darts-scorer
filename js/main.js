@@ -10,6 +10,7 @@ import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, se
 import { fuseThrows } from './camfuse.js';
 import { labelOf } from './board-geometry.js';
 import { openRemoteSetup, setupMessage, setupOpen } from './ui/camsetup.js';
+import { camFrame, paintCamViews, keepPreview, camBigView } from './ui/camview.js';
 import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
@@ -111,6 +112,8 @@ function render() {
   scheduleBot();
   syncIfChanged();
   camTurnSync();
+  keepPreview(link.role === 'ctl' && S.screen === 'game' && !!ui.camLive);
+  requestAnimationFrame(paintCamViews);
 }
 
 let toastTimer = null, autoTimer = null;
@@ -825,7 +828,8 @@ const actions = {
       const codes = ui.camMine || [];
       if (link.role !== 'ctl') { if (!codes.length) { toast('Keine Kamera gefunden – am Handy in Backstage › Kamera starten'); return; } for (const c of codes) await joinAsController(c); }
       const code = el?.dataset?.v || link.cams.find((c) => !c.calibrated)?.code || link.cams[0]?.code;
-      if (code) openRemoteSetup({ code, n: link.cams.find((c) => c.code === code)?.n || 1, toast, onDone: () => render() });
+      const cam = link.cams.find((c) => c.code === code);
+      if (code) openRemoteSetup({ code, n: `${cam?.n || 1}${cam?.device ? ` · ${cam.device}` : ''}`, toast, onDone: () => render() });
     } catch (e) { toast(errMsg(e)); }
     render();
   },
@@ -859,6 +863,7 @@ const actions = {
     camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 });
   },
   camSel(el) { const i = Number(el.dataset.v); ui.camSel = ui.camSel === i ? null : i; if (ui.ct) { clearTimeout(commitTimer); clearInterval(tickTimer); ui.ct.deadline = null; } render(); },
+  camBig() { ui.modal = { type: 'camBig' }; render(); },
   camKeys() { ui.camManual = !ui.camManual; ui.camSel = null; render(); },
   camEnd() { commitCam(true); },
   camOk() { commitCam(true); },
@@ -1017,14 +1022,15 @@ function camAdd(d) {
   ui.ct ??= { darts: [] };
   if (ui.ct.darts.length >= 3) return;
   ui.ct.darts.push(d);
-  if (ui.ct.darts.length === 3 && S.prefs.camAuto !== false) armCommit();
+  // Erst nach 3 s werten – und nur, wenn die Kamera sich sicher ist; sonst wartet sie auf OK
+  if (ui.ct.darts.length === 3 && S.prefs.camAuto !== false && ui.ct.darts.every((x) => x.conf >= 0.7)) armCommit();
   render();
 }
 let commitTimer = null, tickTimer = null;
 function armCommit() {
   clearTimeout(commitTimer); clearInterval(tickTimer);
-  ui.ct.deadline = Date.now() + 2000;
-  commitTimer = setTimeout(() => commitCam(true), 2000);
+  ui.ct.deadline = Date.now() + 3000;
+  commitTimer = setTimeout(() => commitCam(true), 3000);
   tickTimer = setInterval(() => { const el = document.querySelector('.cb-count b'); if (el && ui.ct?.deadline) el.textContent = Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000)); }, 200);
 }
 /** Aufnahme werten: erkannte (ggf. korrigierte) Darts in die Engine, fehlende als daneben, wenn die Aufnahme noch offen ist */
@@ -1066,6 +1072,7 @@ onLink({
   message(m, code) {
     if (link.role === 'cam') { stationMessage(m); return; }
     if (setupMessage(m, code)) return;
+    if (m.type === 'frame' && !m.still) { camFrame(m, code); return; }
     if (m.type === 'throw') camThrow(m, code);
     else if (m.type === 'calibrationStatus') { lastTurnKey = ''; render(); }
     else if (m.type === 'takeout') { if (ui.ct && !ui.ct.darts.length) ui.ct = null; render(); }

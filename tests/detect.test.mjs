@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Detector, dartAxis, components, bestShift } from '../js/detect-core.js';
+import { Detector, dartAxis, components, bestShift, mergeDart } from '../js/detect-core.js';
 import { homography, CALIB_TARGETS } from '../js/homography.js';
 
 const W = 200, Hh = 200;
@@ -68,4 +68,16 @@ test('Erkennung: liegt das breite Ende auf dem Board und das schmale daneben, z�
   for (let k = 0; k <= 80; k++) { const x = 100 + k, half = k < 20 ? 3 : 0; for (let dy = -half; dy <= half; dy++) img[(100 + dy) * W + x] = 30; }
   const ev = []; for (let i = 0; i < 12; i++) { const r = d.feed(img, (t += 120)); if (r.event) ev.push(r); }
   assert.equal(ev.length, 1); assert.notEqual(ev[0].score.label, 'MISS');
+});
+
+test('Erkennung: Dart in Stücken (Flight getrennt vom Barrel) → zusammengefasst, Spitze gegenüber der Flight', () => {
+  const img = blank();
+  // Barrel: dünn, von (100,48) nach rechts unten; Lücke (Schaft fehlt); Flight: breit weiter hinten
+  for (let k = 0; k <= 14; k++) img[Math.round(48 + k * 0.6) * W + Math.round(100 + k * 0.8)] = 30;
+  for (let k = 22; k <= 34; k++) for (let d = -5; d <= 5; d++) img[Math.round(48 + k * 0.6 + d * 0.8) * W + Math.round(100 + k * 0.8 - d * 0.6)] = 30;
+  const m = img.map((v) => (v < 60 ? 1 : 0));
+  const comps = components(m, W, Hh);
+  assert.ok(comps.length >= 2);
+  const ax = dartAxis(mergeDart(comps, W), W);
+  assert.ok(Math.hypot(ax.tip[0] - 100, ax.tip[1] - 48) < 3, `Spitze bei ${ax.tip}`);
 });

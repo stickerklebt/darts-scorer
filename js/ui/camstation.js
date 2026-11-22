@@ -8,7 +8,17 @@ import { runCalibration, loadCalib, thumb, thumbDiff, drawOverlay } from '../cal
 import { CamDetector } from '../detector.js';
 import { link, openAsCamera, send, disconnect } from '../camera-link.js';
 
-let st = null; // { mode, video, det, el, calib, paused, status, player, overlay, debug, hooks }
+let st = null;
+/** Welches Gerät filmt? (damit die Regie „Kamera 1 · iPhone“ zeigen kann) */
+export function deviceName() {
+  const ua = navigator.userAgent || '';
+  if (/iPhone/.test(ua)) return 'iPhone';
+  if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'iPad';
+  if (/Android/.test(ua)) return /Mobile/.test(ua) ? 'Android-Handy' : 'Android-Tablet';
+  if (/Macintosh/.test(ua)) return 'Mac';
+  if (/Windows/.test(ua)) return 'PC';
+  return 'Gerät';
+} // { mode, video, det, el, calib, paused, status, player, overlay, debug, hooks }
 
 export const stationActive = () => !!st;
 /** Kann gerade per Kamera gespielt werden? Steuer-Gerät: verbunden + kalibriert. Ein-Gerät: kalibriert. */
@@ -60,7 +70,7 @@ export function stationMessage(m) {
   if (m.type === 'turnChanged') { st.player = m.bot ? `${m.name} (Bot)` : m.name || ''; if (m.bot) st.status = 'Bot wirft – Kamera wartet'; paint(); }
   else if (m.type === 'takeout') { st.det?.takeout(); setStatus('Bereit'); }
   else if (m.type === 'throwCorrected') setStatus(`Korrigiert: ${m.label}`);
-  else if (m.type === 'hello') { send({ type: 'calibrationStatus', ok: !!st.calib }); send({ type: 'camStatus', text: st.status, paused: !!st.paused, alarm: !!st.alarm }); sendCams(); }
+  else if (m.type === 'hello') { send({ type: 'calibrationStatus', ok: !!st.calib, pts: st.calib?.pts || null }); send({ type: 'camStatus', text: st.status, paused: !!st.paused, alarm: !!st.alarm, device: deviceName() }); sendCams(); }
   // Einrichtung vom anderen Gerät
   else if (m.type === 'previewOn') { st.previewUntil = Date.now() + 3 * 60e3; previewLoop(); }
   else if (m.type === 'previewOff') st.previewUntil = 0;
@@ -128,7 +138,7 @@ function useCalib(cal) {
     st.det.start();
   } catch { st.hooks.toast?.('Erkennung konnte nicht starten – bitte manuell eingeben'); }
   setStatus('Bereit');
-  if (st.mode === 'cam') send({ type: 'calibrationStatus', ok: true });
+  if (st.mode === 'cam') send({ type: 'calibrationStatus', ok: true, pts: st.calib?.pts || null });
   st.hooks.onCalibrated?.(true);
 }
 
@@ -154,7 +164,7 @@ function setStatus(t, alarm = false) {
   if (!st) return;
   const changedText = st.status !== t;
   st.status = t; st.alarm = alarm;
-  if (st.mode === 'cam' && changedText) send({ type: 'camStatus', text: t, paused: !!st.paused, alarm });
+  if (st.mode === 'cam' && changedText) send({ type: 'camStatus', text: t, paused: !!st.paused, alarm, device: deviceName() });
   const s = st.el?.querySelector('.cs-st'); if (s) { s.textContent = t; s.classList.toggle('alarm', alarm); }
 }
 

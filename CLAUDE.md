@@ -226,6 +226,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Kamera-Handy im **Stromsparmodus**: schwarzer Bildschirm, roter Punkt „Kamera läuft“, Antippen zeigt 15 s die Knöpfe; Erkennung
   640 px, 10 Bilder/s, nach 20 s Ruhe 4 Bilder/s. Erkennung prüft auch ohne Bewegung alle 0,9 s, gleicht Helligkeit aus, nimmt
   bei dauerhaft anderem Licht eine neue Referenz; ein Dart-Ende AUF dem Board schlägt eines daneben (sonst Bull = 0).
+  Spitze: Bruchstücke eines Darts werden zusammengefasst (`mergeDart`), Breitenprofil entlang der Achse – Spitze am Ende GEGENÜBER
+  der breitesten Stelle (Flight). Wertung erst 3 s nach dem 3. Dart und nur, wenn alle sicher (≥ 0,7) sind – sonst wartet sie auf OK.
+  Regie zeigt im Spiel oben rechts über der Scheibe das Livebild (`ui/camview.js`, antippen → groß, rote Kreise = erkannte Darts);
+  jede Kamera meldet ihren Gerätenamen („Kamera 1 · iPhone“). Einrichten Schritt 2: „Tippe auf die genaue Mitte der D20/D6/D3/D11“,
+  Schritt 3: Punkte ziehen oder rechts „D20 neu setzen“ usw.
   **Am Handy nur starten + aufstellen**, alles andere an der Regie: Zahnrad je Kamera (`camCtl`) → Objektiv (`listCams`/`cams`/`useCam`),
   Pause/Weiter (`pause`/`resume`), Debug (`debug`), Beenden (`stop`); Handy meldet `camStatus { text, paused }`.
   **Mehrere Kameras + Regie:** Läuft im Konto schon eine Kamera, fragt jedes weitere angemeldete Gerät auf dem Startbildschirm

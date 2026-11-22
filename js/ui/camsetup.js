@@ -7,7 +7,7 @@ import { OVERLAY, RADII } from '../board-geometry.js';
 import { send } from '../camera-link.js';
 
 let S = null;
-const FIELDS = ['DOPPEL 20', 'DOPPEL 6', 'DOPPEL 3', 'DOPPEL 11'];
+const FIELDS = ['D20', 'D6', 'D3', 'D11'];
 
 export const setupOpen = () => !!S;
 
@@ -72,14 +72,16 @@ function render() {
       <div class="cal-btns"><button data-r="cancel">Abbrechen</button><button class="go" data-r="next">Steht – weiter</button></div>`;
   } else if (S.step === 2) {
     const k = S.pts.length;
-    const title = k < 4 ? `Setze den Punkt genau auf die Mitte der Außenkante von ${FIELDS[k]}` : 'Ziehe die Punkte, bis die goldenen Ringe genau auf den Drähten liegen';
-    S.el.innerHTML = `${h(2, title, k < 4 ? 'Gedrückt halten zum Zielen – die Lupe zeigt dir die Stelle. Danach lässt sich jeder Punkt verschieben.' : 'Punkt antippen und ziehen – das Gitter bewegt sich mit.')}
+    const title = k < 4 ? `Tippe auf die genaue Mitte der ${FIELDS[k]}` : 'Ziehe die Punkte, bis die goldenen Ringe genau auf den Drähten liegen';
+    S.el.innerHTML = `${h(2, title, k < 4 ? 'Gedrückt halten zum Zielen – die Lupe zeigt dir die Stelle.' : 'Punkt antippen und ziehen – das Gitter bewegt sich mit.')}
       ${stage('still', S.still?.img)}
       <div class="cal-btns"><button data-r="reset">Alle Punkte löschen</button><button data-r="still">Neues Bild</button><button data-r="cancel">Abbrechen</button><button class="go" data-r="next" ${k === 4 ? '' : 'disabled'}>Weiter</button></div>`;
     if (!S.still) send({ type: 'still' }, S.code);
   } else if (S.step === 3) {
-    S.el.innerHTML = `${h(3, 'Liegt das Gitter genau auf den Drähten?', 'Wenn nicht: einen Punkt antippen und ziehen, bis es passt. Das Bild ist live.')}
-      ${stage('live', S.img?.img)}
+    const re = Number.isInteger(S.replace) ? S.replace : null;
+    S.el.innerHTML = `${h(3, re !== null ? `Tippe auf die genaue Mitte der ${FIELDS[re]}` : 'Liegt das Gitter genau auf den Drähten?', re !== null ? 'Der Punkt wird neu gesetzt.' : 'Wenn nicht: einen Punkt ziehen – oder rechts einen Punkt neu setzen. Das Bild ist live.')}
+      <div class="rs-two side">${stage('live', S.img?.img)}<div class="rs-side"><b>Neuen Punkt setzen</b>
+        ${FIELDS.map((f, i) => `<button class="${re === i ? 'on' : ''}" data-r="repoint" data-i="${i}">${f} neu setzen</button>`).join('')}</div></div>
       <div class="cal-btns"><button data-r="redo">Punkte neu setzen</button><button class="go" data-r="next">Passt</button></div>`;
   } else {
     S.el.innerHTML = `${h(4, 'Wirf einen Testdart', 'Die Kamera zeigt rechts, was sie erkennt. Darts ziehen und so oft testen, wie du willst.')}
@@ -130,7 +132,7 @@ function draw(box) {
     g.strokeStyle = '#ffd23f'; g.fillStyle = 'rgba(255,210,63,.3)'; g.lineWidth = 2.5;
     g.beginPath(); g.arc(sx, sy, 13, 0, Math.PI * 2); g.fill(); g.stroke();
     g.beginPath(); g.moveTo(sx - 6, sy); g.lineTo(sx + 6, sy); g.moveTo(sx, sy - 6); g.lineTo(sx, sy + 6); g.stroke();
-    g.fillStyle = '#f3e9d2'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(FIELDS[i].replace('DOPPEL ', 'D'), sx, sy - 19);
+    g.fillStyle = '#f3e9d2'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(FIELDS[i], sx, sy - 19);
   });
 }
 
@@ -152,8 +154,9 @@ function bind(box) {
     e.preventDefault();
     const p = norm(e); if (p[0] < 0 || p[1] < 0 || p[0] > 1 || p[1] > 1) return;
     const f = fit(im);
-    S.drag = S.pts.findIndex(([x, y]) => Math.hypot((x - p[0]) * f.w, (y - p[1]) * f.h) < 30);
+    S.drag = Number.isInteger(S.replace) ? -1 : S.pts.findIndex(([x, y]) => Math.hypot((x - p[0]) * f.w, (y - p[1]) * f.h) < 30);
     if (S.drag < 0 && S.pts.length < 4 && S.step === 2) { S.pts.push(p); S.drag = S.pts.length - 1; }
+    if (Number.isInteger(S.replace)) { S.pts[S.replace] = p; S.drag = S.replace; S.replace = null; }
     if (S.drag < 0) return;
     try { box.setPointerCapture(e.pointerId); } catch { /* */ }
     showLupe(e, S.pts[S.drag]); draw(box);
@@ -163,7 +166,7 @@ function bind(box) {
     const p = norm(e); S.pts[S.drag] = [Math.min(1, Math.max(0, p[0])), Math.min(1, Math.max(0, p[1]))];
     showLupe(e, S.pts[S.drag]); draw(box);
   });
-  const end = () => { if (!S || S.drag < 0) return; S.drag = -1; lupe.style.display = 'none'; if (S.step === 2) render(); else draw(box); };
+  const end = () => { if (!S || S.drag < 0) return; S.drag = -1; lupe.style.display = 'none'; render(); };
   box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
 }
 
@@ -176,6 +179,7 @@ function onClick(e) {
   if (c === 'still') { S.still = null; return render(); }
   if (c === 'redo') { S.step = 2; S.pts = []; return render(); }
   if (c === 'back') { S.step = 3; return render(); }
+  if (c === 'repoint') { const i = Number(b.dataset.i); S.replace = S.replace === i ? null : i; return render(); }
   if (c === 'next') {
     if (S.step === 3) { send({ type: 'calibrate', pts: S.pts }, S.code); S.test = []; }
     S.step++; return render();

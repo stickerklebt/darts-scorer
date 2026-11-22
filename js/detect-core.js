@@ -93,7 +93,15 @@ export function dartAxis(px, w) {
   const len = Math.max(1, tMax - tMin), band = len * 0.2;
   const spread = (fromMin) => { let lo = Infinity, hi = -Infinity, n = 0; for (const [t, s] of proj) if (fromMin ? t <= tMin + band : t >= tMax - band) { lo = Math.min(lo, s); hi = Math.max(hi, s); n++; } return n ? hi - lo + 1 : 0; };
   const wMin = spread(true), wMax = spread(false);
-  const tipAtMin = wMin <= wMax;
+  // Breitenprofil entlang der Achse: die breiteste Stelle ist die Flight – die Spitze ist das Ende auf der ANDEREN Seite.
+  const BINS = 10, prof = Array.from({ length: BINS }, () => [Infinity, -Infinity]);
+  for (const [t, s] of proj) { const b = Math.min(BINS - 1, Math.floor(((t - tMin) / len) * BINS)); prof[b][0] = Math.min(prof[b][0], s); prof[b][1] = Math.max(prof[b][1], s); }
+  const widths = prof.map(([lo, hi]) => (hi >= lo ? hi - lo + 1 : 0));
+  const fb = widths.indexOf(Math.max(...widths));
+  const sorted = widths.filter((x) => x > 0).sort((a, b) => a - b), median = sorted[Math.floor(sorted.length / 2)] || 1;
+  const flightClear = widths[fb] >= median * 1.4 && fb !== (BINS - 1) / 2;
+  // Flight klar zu sehen → Spitze am Ende gegenüber; sonst: schmaleres Ende
+  const tipAtMin = flightClear ? fb >= BINS / 2 : wMin <= wMax;
   // Endpunkte: Mittel der Pixel ganz am jeweiligen Ende (letzte 4 % der Länge)
   const endPt = (atMin) => {
     const edge = atMin ? tMin : tMax; let sx = 0, sy = 0, n = 0;
@@ -102,8 +110,27 @@ export function dartAxis(px, w) {
   };
   const tip = endPt(tipAtMin), tail = endPt(!tipAtMin);
   let sMax = 0; for (const [, s] of proj) sMax = Math.max(sMax, Math.abs(s));
-  return { tip, tail, axis: [ux, uy], center: [mx, my], length: len, width: 2 * sMax + 1, elong: len / (2 * sMax + 1),
-    endRatio: Math.min(wMin, wMax) / Math.max(1, Math.max(wMin, wMax)) };
+  return { tip, tail, axis: [ux, uy], center: [mx, my], length: len, width: 2 * sMax + 1, elong: len / (2 * sMax + 1), flightClear,
+    endRatio: flightClear ? 0.3 : Math.min(wMin, wMax) / Math.max(1, Math.max(wMin, wMax)) };
+}
+
+/**
+ * Ein Dart zerfällt im Differenzbild oft in Stücke (Flight, Schaft, Barrel). Stücke, die auf der Achse des größten Teils liegen
+ * und nah genug sind, werden zu einem Dart zusammengefasst – damit Spitze UND Flight in einer Kontur stecken.
+ */
+export function mergeDart(comps, w) {
+  if (comps.length < 2) return comps[0];
+  let base = comps[0].slice();
+  for (let round = 0; round < 2; round++) {
+    const ax = dartAxis(base, w), [cx, cy] = ax.center, [ux, uy] = ax.axis;
+    for (const c of comps.slice(1)) {
+      if (c.__used) continue;
+      let mx = 0, my = 0; for (const p of c) { mx += p % w; my += (p / w) | 0; } mx /= c.length; my /= c.length;
+      const dx = mx - cx, dy = my - cy, along = dx * ux + dy * uy, across = Math.abs(-dx * uy + dy * ux);
+      if (across <= ax.width * 0.9 + 4 && Math.abs(along) <= ax.length * 1.6 + 12) { c.__used = true; base = base.concat(c); }
+    }
+  }
+  return base;
 }
 
 /** Wie stark passt b verschoben auf a? Beste Verschiebung (±r Pixel) und Gewinn gegenüber keiner Verschiebung */
@@ -162,7 +189,7 @@ export class Detector {
     const m = close(open(vsRef.m, w, h), w, h);
     const comps = components(m, w, h, Math.max(4, Math.round(area * p.minArea))).filter((c) => c.length <= area * p.maxArea);
     if (!comps.length) return { state: 'ready' };
-    const ax = dartAxis(comps[0], w);
+    const ax = dartAxis(mergeDart(comps, w), w);
     // Von der Seite gesehen ragt die Flight übers Board hinaus – ihr Ende landet in Board-Koordinaten oft außerhalb.
     // Darum: ein Ende AUF dem Board schlägt ein Ende daneben (sonst würde ein Dart in der Mitte als 0 gewertet).
     const at = (p) => { const [x, y] = project(this.H, p[0], p[1]); return { p, x, y, on: Math.hypot(x, y) <= 172 }; };
