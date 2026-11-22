@@ -191,6 +191,7 @@ const SYMBOLS = {
   shanghai: '<path d="M3 20h5v-5h5v-5h5V5h3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="miter"/><path d="M3 20h18" stroke="currentColor" stroke-width="2.2"/>',
   halveit: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3.5a8.5 8.5 0 010 17z" fill="currentColor"/>',
   cricket: '<path d="M5 4l14 16M19 4L5 20" stroke="currentColor" stroke-width="2.6" fill="none"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
+  bruch: '<path d="M13.5 2.5 6 13.2h5l-1.5 8.3L18 10.6h-5.2z" fill="currentColor"/>',
   atc: '<path d="M20 12a8 8 0 11-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19.5 2.5v4.5H15" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
 };
 /* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
@@ -202,6 +203,7 @@ const MODE_STYLE = {
   halveit: ['#0b0a08', '#f07a24', '#f07a24'],
   cricket: ['#f07a24', '#0b0a08', '#0b0a08'],
   atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
+  bruch: ['#0b0a08', '#ffd86b', '#e7b73c'],
 };
 export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
 export const badge = (game, size = 44) => {

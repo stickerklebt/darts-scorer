@@ -4,6 +4,8 @@ import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineIn
 import { myBannerData } from './ui/friends.js';
 import { overview } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
+import { bruchView, bruchResult, clock } from './ui/bruch.js';
+import * as BR from './bruch.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
 import * as G from './party.js';
@@ -75,6 +77,7 @@ function render() {
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
   else if (S.screen === 'friend' && ui.friend) html = friendView();
   else if (S.screen === 'history') html = historyView();
+  else if (S.screen === 'bruch') html = bruchView();
   else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
@@ -723,7 +726,19 @@ const actions = {
     if (S.current && S.current.done) S.current = null;
     S.screen = 'home'; S.tab = 'play'; releaseWakeLock(); render();
   },
-  pick(el) { S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false; render(); window.scrollTo(0, 0); },
+  pick(el) {
+    if (el.dataset.v === 'bruch') { S.screen = 'bruch'; render(); window.scrollTo(0, 0); return; }
+    S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false; render(); window.scrollTo(0, 0);
+  },
+  /* Bruchchallenge */
+  bruchStart(el) { S.bruch = BR.start(Number(el.dataset.v)); requestWakeLock(); render(); window.scrollTo(0, 0); },
+  bruchTick(el) {
+    const b = S.bruch; if (!b) return;
+    const i = Number(el.dataset.v); b.done[i] = !b.done[i];
+    if (BR.allDone(b)) bruchEnd('won'); else render();
+  },
+  bruchQuit() { if (S.bruch) bruchEnd('quit'); },
+  bruchAgain() { ui.modal = null; S.screen = 'bruch'; render(); },
   more() { ui.moreOpen = !ui.moreOpen; render(); },
   anwurf(el) { S.anwurf = el.dataset.v; render(); },
   resume() { S.screen = 'game'; requestWakeLock(); render(); },
@@ -907,6 +922,21 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();
 });
+
+/* ---------------- Bruchchallenge: Ende und Countdown ---------------- */
+function bruchEnd(reason) {
+  const b = S.bruch; if (!b || !S.mainId) return;
+  const m = BR.toMatch(b, S.mainId);
+  S.matches.push(m); S.bruch = null; releaseWakeLock();
+  ui.modal = { type: 'bruchResult', won: reason === 'won', reason, done: b.done.filter(Boolean).length, took: m.endedAt - m.startedAt };
+  render();
+}
+setInterval(() => {
+  const b = S.bruch; if (!b) return;
+  if (BR.left(b) <= 0) { bruchEnd(BR.allDone(b) ? 'won' : 'time'); return; }
+  const el = document.getElementById('brClock');
+  if (el) el.textContent = clock(BR.left(b));
+}, 1000);
 
 /* ---------------- Ausbullen: Finger halten, Lupe, loslassen setzt ---------------- */
 let drag = null;

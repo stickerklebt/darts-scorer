@@ -211,7 +211,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
   sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
   Shanghai/Halbieren behalten ihre Vielfachen.
-- **Partyspiele:** wählbar ist nur noch **Cricket**. Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
+- **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
+  von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
+  Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
+  Laufende Challenge in `S.bruch` (nur lokal).
+- **Partyspiele:** wählbar sind nur noch **Cricket** und die Bruchchallenge. Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
   (nicht mehr im Menü, Engines bleiben für alte Spiele in Historie/Statistik).
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.

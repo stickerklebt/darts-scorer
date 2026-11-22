@@ -12,6 +12,7 @@ import { comparePicker } from './compare.js';
 import { auth, sync } from '../sync.js';
 import { dateStr } from './stats-view.js';
 import { legSheet } from './legdetail.js';
+import { bruchResult } from './bruch.js';
 
 /** Sync-Stand in Worten */
 function syncText() {
@@ -102,6 +103,8 @@ export function sheetView() {
   } else if (md.type === 'friendRemove') {
     inner = `<h3>Freund entfernen?</h3><p>${esc(md.name)} verschwindet aus deiner Freundesliste, und ihr seht gegenseitig keine Statistik mehr.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="friendRemoveForce">Entfernen</button></div>`;
+  } else if (md.type === 'bruchResult') {
+    inner = bruchResult(md);
   } else if (md.type === 'invite') {
     const v = md.inv, o = v.opts || {};
     const what = v.game === 'x01' ? `${o.start} ${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}` : (GAMES[v.game]?.title || 'Spiel');

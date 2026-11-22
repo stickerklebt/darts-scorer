@@ -27,7 +27,7 @@ function row(r) {
       <span class="ml-mid"><b>${who}</b><small>${r.game === 'x01' && r.start ? r.start : title} · ${dateStr(r.date)} ${time(r.date)} · ${esc(r.result)}${r.demo ? ' · Test' : ''}</small></span>
       ${r.game === 'x01' && r.avg !== null ? `<span class="ml-avg"><small>Ø</small><b>${fmt(r.avg)}</b></span>` : ''}
     </button>
-    ${m ? `<div class="ml-detail">${m.game === 'x01' ? x01Table(m) : `<h2 class="label">Platzierung</h2>${partyRanks(m)}`}
+    ${m ? `<div class="ml-detail">${m.game === 'x01' ? x01Table(m) : m.game === 'bruch' ? `<h2 class="label">Herausforderungen</h2><ul class="br-hist">${(m.bruch?.items || []).map((x) => `<li class="${x.done ? 'ok' : ''}">${x.done ? '✓' : '✕'} ${esc(x.text)}</li>`).join('')}</ul>` : `<h2 class="label">Platzierung</h2>${partyRanks(m)}`}
       <button class="btn line hist-del" data-act="histDel" data-v="${esc(r.id)}">${icon('minus', 2.6, 16)} Spiel löschen</button></div>` : ''}
   </div>`;
 }

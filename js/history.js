@@ -27,6 +27,7 @@ function sideValue(m, s) {
 /** Ergebnis als kurzer Text, z. B. „2 : 1 Legs“, „345 : 280“, „Solo · 21 Darts“ */
 export function resultText(m) {
   try {
+    if (m.game === 'bruch') return `${(m.bruch?.items || []).filter((x) => x.done).length} / 3 geschafft`;
     if (m.game === 'x01') {
       if (m.sides.length === 1) { const st = X.matchStats(m, { s: 0 }); return `${st.darts} Darts`; }
       return X.isSets(m) ? `${m.sides.map((_, s) => X.setsWon(m, s)).join(' : ')} Sets` : `${m.sides.map((_, s) => X.legsWon(m, s)).join(' : ')} Legs`;
