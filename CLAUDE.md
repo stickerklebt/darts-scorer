@@ -231,7 +231,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   2 Sprüche und 2 eigene Aufnahmen (2.–8., nie die erste) aus; gesagt wird nach genau diesen Aufnahmen, unabhängig von Ereignissen.
   Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
   Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
-- **Statistik**: drei Unter-Reiter Überblick · Doppel · Verlauf & mehr (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
+- **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Verlauf & mehr (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
   treten zurück (kleiner, blasser), roter Strich gleitet mit. „Verlauf & mehr“: zuerst die Verlaufsdiagramme, darunter
   eingeklappt (mit Kurzinfo im Kopf) Scoring · Checkout · Legs · Matches (`ui.statsOpen`). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer

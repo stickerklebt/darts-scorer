@@ -43,9 +43,13 @@ export function statsHeader(pid) {
 /* ---------------- Unter-Reiter ---------------- */
 function overviewTab(st, pid) {
   const c = st.counts;
+  // Lieblingsdoppel = Doppel mit der besten Trefferquote (erst ab MIN_ATTEMPTS Versuchen, mindestens ein Treffer)
+  const rating = doubleRating(st.doubles);
+  const favK = Object.keys(rating).find((k) => rating[k].top === 1);
+  const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
   return `<div class="hero-stat">${goldSmoke('gsS')}${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
-      ['Bester Average', fmt(st.bestMatchAvg, 2), '', st.bestAvgRef], ['First 9', fmt(st.f9, 2)],
+      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? `${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}` : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–', '', st.top5[0]], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
       ['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
