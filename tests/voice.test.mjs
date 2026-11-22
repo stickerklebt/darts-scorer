@@ -3,6 +3,9 @@ import { parseScores, wordNumber } from '../js/voice.js';
 
 test('Mikrofon: Zahlen als Ziffern und Wörter, Bust/nichts/null = 0, alles andere ignoriert', () => {
   assert.deepEqual(parseScores('37'), [37]);
+  assert.deepEqual(parseScores('1'), [1]);
+  assert.deepEqual(parseScores('Eins'), [1]);
+  assert.deepEqual(parseScores('eins, eins, eins'), [1, 1, 1]);
   assert.deepEqual(parseScores('Ich hab 52 geworfen, dann 100'), [52, 100]);
   assert.deepEqual(parseScores('Bust'), [0]);
   assert.deepEqual(parseScores('nichts'), [0]);

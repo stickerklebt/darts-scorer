@@ -45,8 +45,20 @@ export function startVoice({ text, state }) {
   onText = text; onState = state || onState; want = true;
   if (rec) return true;
   rec = new SR();
-  rec.lang = 'de-DE'; rec.continuous = true; rec.interimResults = false; rec.maxAlternatives = 1;
-  rec.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) onText(e.results[i][0].transcript); };
+  rec.lang = 'de-DE'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+  // Sofort eintragen: eine Zahl zählt, sobald sie 0,7 s unverändert erkannt wird (nicht erst nach einer langen Pause).
+  // Jedes Ergebnis wird nur einmal verarbeitet – auch wenn das Endergebnis später noch einmal kommt.
+  const done = new Set(), timers = new Map();
+  const take = (i, t) => { if (done.has(i)) return; done.add(i); clearTimeout(timers.get(i)); onText(t); };
+  rec.onresult = (e) => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const r = e.results[i], t = r[0].transcript;
+      if (r.isFinal) { take(i, t); continue; }
+      if (!parseScores(t).length) continue;
+      clearTimeout(timers.get(i));
+      timers.set(i, setTimeout(() => take(i, t), 700));
+    }
+  };
   rec.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { want = false; onState('denied'); } };
   rec.onend = () => { rec = null; if (want) setTimeout(() => want && startVoice({ text: onText, state: onState }), 300); else onState('off'); }; // Safari hört nach einer Weile auf → neu starten
   try { rec.start(); onState('on'); } catch { rec = null; return false; }

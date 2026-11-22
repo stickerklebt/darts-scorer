@@ -130,9 +130,8 @@ function moment(mo, autoClose = 0) {
 /* ---------------- Ansage & Display an ---------------- */
 let sayAfter = 0; // nach einer eigenen Ansage spricht die Computerstimme erst, wenn diese fertig ist
 function say(txt) {
-  if (!S.prefs.voice || !('speechSynthesis' in window)) return;
+  if (!S.prefs.voice || !('speechSynthesis' in window) || voiceOn()) return; // Mikrofon an → App sagt nichts (sonst hört sie sich selbst)
   if (Date.now() < sayAfter) { setTimeout(() => say(txt), sayAfter - Date.now()); return; }
-  ui.selfTalkUntil = Date.now() + 2500; // Mikrofon hört die eigene Ansage nicht mit
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) { /* */ }
 }
 let wakeLock = null;
@@ -175,7 +174,7 @@ function handle(res) {
   }
   // Eigener Caller: wirft der Hauptspieler eine eingesprochene Zahl, kommt seine Aufnahme statt der Computerstimme
   let own = 0;
-  if (t && !t.bust && t.pid === S.mainId && !isBot(t.pid) && S.prefs.ownCalls !== false && (m.game === 'x01' || m.game === 'highscore')) {
+  if (t && !t.bust && t.pid === S.mainId && !isBot(t.pid) && S.prefs.ownCalls !== false && !voiceOn() && (m.game === 'x01' || m.game === 'highscore')) {
     own = playCall(m.game === 'x01' ? t.score : t.v);
     if (own) sayAfter = Date.now() + own * 1000 + 250;
   }
@@ -1128,8 +1127,7 @@ setInterval(async () => {
 
 /* ---------------- Mikrofon: angesagte Punktzahlen eintragen ---------------- */
 function onVoice(text) {
-  // Was die App gerade selbst sagt (Computerstimme, eigener Caller), nicht als Ansage zählen
-  if (Date.now() < (ui.selfTalkUntil || 0) || Date.now() < sayAfter || (window.speechSynthesis?.speaking)) return;
+  if (window.speechSynthesis?.speaking) return; // nur falls doch gerade etwas gesprochen wird
   const scores = parseScores(text), m = S.current;
   ui.micHeard = scores.length ? `Gehört: ${scores.map((v) => (v === 0 ? '0' : v)).join(' · ')}` : `„${String(text).trim().slice(0, 30)}“`;
   if (!scores.length || S.screen !== 'game' || !m || m.done || m.game !== 'x01' || ui.modal || ui.vs || inBulloff()) return render();
