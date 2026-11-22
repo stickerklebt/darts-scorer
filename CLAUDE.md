@@ -219,6 +219,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Verrutscht, Konfidenz) im Worker `detector-worker.js`, `detector.js` (Ausschnitt ≤ 800 px, 12 fps, Snapshot-JPEG 320 px),
   `camera-link.js` + Server `routes/camlink.js` (**statt PeerJS**: 6-stelliger Code, Nachrichten über den eigenen Server, Abfrage
   ~0,5 s, Neuverbinden alle 3 s; `?join=CODE` verbindet direkt), `ui/camstation.js` (Kamera-Station/Ein-Geräte-Fenster).
+  **Ablauf:** Handy (angemeldet) › Backstage › Kachel „Kamera“ startet das Kamera-Gerät (Raum gehört dem Konto). Eingerichtet wird am
+  ANDEREN Gerät mit demselben Konto: Startbildschirm zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
+  Assistent `ui/camsetup.js` mit Livebild (`previewOn` → `frame` ~1/s, 640 px), Standbild (`still` → 1280 px), 4 Punkte mit Lupe,
+  Overlay-Kontrolle, `calibrate { pts }` ans Handy, Testdart. Gleiches Bild wie zuletzt → Handy nimmt die alte Kalibrierung selbst.
   Keine CDN-Bibliotheken (CSP `script-src 'self'`): kein OpenCV.js, kein PeerJS, kein QR-Code – stattdessen Code + „Link teilen“.
   Im Spiel (`camBar` in `ui/game.js`, Logik `camAdd/commitCam` in `main.js`): 3 Slots, Mini-Board, Konfidenz < 0,7 gelb,
   Korrektur-Fenster (`camFix`), Miss / 0, Aufnahme beenden, Darts gezogen; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für

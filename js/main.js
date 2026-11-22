@@ -8,6 +8,7 @@ import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
 import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, send as camSend } from './camera-link.js';
 import { labelOf } from './board-geometry.js';
+import { openRemoteSetup, setupMessage, setupOpen } from './ui/camsetup.js';
 import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
@@ -817,6 +818,14 @@ const actions = {
     catch (e) { ui.modal = { type: 'camConnect', error: errMsg(e) }; }
     render();
   },
+  /* Kamera einrichten vom anderen Gerät (gleiches Konto): verbinden und Assistent öffnen */
+  async camRemote() {
+    try {
+      if (link.role !== 'ctl') { const code = ui.camMine; if (!code) { toast('Keine Kamera gefunden – am Handy in Backstage › Kamera starten'); return; } await joinAsController(code); }
+      openRemoteSetup({ toast, onDone: () => render() });
+    } catch (e) { toast(errMsg(e)); }
+    render();
+  },
   camResumeYes() { ui.modal = null; render(); openStation('cam', stationHooks); },
   camResumeNo() { ui.modal = null; camUnlink(); render(); },
   camOff() { ui.modal = null; if (stationMode()) closeStation(); if (link.role) camUnlink(); ui.ct = null; render(); },
@@ -1015,6 +1024,7 @@ onLink({
   change() { stationLinkChanged(); render(); },
   message(m) {
     if (link.role === 'cam') { stationMessage(m); return; }
+    if (setupMessage(m)) return;
     if (m.type === 'throw') camThrow(m);
     else if (m.type === 'calibrationStatus') { link.calibrated = !!m.ok; if (m.ok) link.moved = false; lastTurnKey = ''; render(); }
     else if (m.type === 'takeout') { if (ui.ct && !ui.ct.darts.length) ui.ct = null; render(); }
@@ -1044,6 +1054,15 @@ function camPill() {
   return '';
 }
 
+
+/* Läuft im selben Konto ein Kamera-Gerät? Dann zeigt der Startbildschirm die Kamera zum Einrichten (alle 5 s nachsehen). */
+setInterval(async () => {
+  if (!auth.user || link.role === 'cam' || document.hidden || S.screen !== 'home' || S.tab !== 'play') return;
+  try {
+    const r = await api('GET', 'api/camlink/mine');
+    if (r.code !== ui.camMine) { ui.camMine = r.code; render(); }
+  } catch { /* offline */ }
+}, 5000);
 
 /* ---------------- Bruchchallenge: Ende und Countdown ---------------- */
 function bruchEnd(reason) {

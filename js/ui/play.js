@@ -4,6 +4,7 @@ import { overview } from '../stats.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
 import { incomingCount } from './friends.js';
+import { link } from '../camera-link.js';
 import { cornerOrnament, badge, stars, icon, heroArt, fuse, sparkles, MODE_COLORS } from './svg.js';
 
 export const TABS = ['play', 'stats', 'friends'];
@@ -17,6 +18,18 @@ export function tabsBar() {
     <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('ticket', 2)}<span>Backstage</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
+}
+
+/** Kamera auf dem Startbildschirm: läuft am Handy (gleiches Konto) eine Kamera, groß zum Einrichten anbieten */
+function camBlock() {
+  if (link.role === 'ctl') {
+    const ok = link.status === 'connected';
+    return `<div class="cam-card ${ok && link.calibrated ? 'ok' : ''}">${icon('cam', 1.9, 30)}<span><b>${!ok ? 'Kamera: verbinde …' : link.calibrated ? 'Kamera bereit' : 'Kamera verbunden – noch nicht eingerichtet'}</b>
+      <small>${link.calibrated ? 'Würfe werden erkannt. Im Spiel kannst du jeden Wurf korrigieren.' : 'Hilfe zum Aufstellen, Livebild und Einrichten hier am Gerät.'}</small></span>
+      <button class="btn ${link.calibrated ? 'line' : 'red'}" data-act="camRemote">${link.calibrated ? 'Neu einrichten' : 'Jetzt einrichten'}</button></div>`;
+  }
+  if (ui.camMine) return `<button class="cam-card big" data-act="camRemote">${icon('cam', 1.9, 34)}<span><b>Kamera am Handy läuft</b><small>Hier einrichten – mit Livebild und allen Hilfen</small></span>${icon('chevR', 2.4, 20)}</button>`;
+  return `<div class="cam-row"><button class="btn line" data-act="cam">${icon('cam', 1.9, 18)} Kamera</button></div>`;
 }
 
 export function playView() {
@@ -42,7 +55,7 @@ export function playView() {
         <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
       </div>
     </section>
-    <div class="cam-row"><button class="btn line" data-act="cam">${icon('cam', 1.9, 18)} Kamera</button><button class="btn line" data-act="camConnect">Kamera-Gerät verbinden</button></div>
+    ${camBlock()}
     <h2 class="label">Partyspiel</h2>
     <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>

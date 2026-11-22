@@ -369,5 +369,7 @@ test('Kamera-Kopplung: Raum öffnen, beitreten, Nachrichten in beide Richtungen,
     await ctl('POST', `/api/camlink/${code}/send`, { from: 'ctl', msgs: [{ type: 'turnChanged', name: 'Lasse' }] });
     assert.equal((await cam('GET', `/api/camlink/${code}/recv?side=cam&after=0`)).body.msgs[0].name, 'Lasse');
     assert.equal((await cam('POST', '/api/camlink', { code })).body.code, code); // derselbe Code nach Neustart
+    assert.equal((await cam('GET', '/api/camlink/mine')).body.code, code);        // gleiches Konto findet die Kamera
+    assert.equal((await ctl('GET', '/api/camlink/mine')).body.code, null);        // fremdes Konto nicht
   } finally { await s.stop(); }
 });

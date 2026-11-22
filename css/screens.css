@@ -1842,3 +1842,23 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .cal-test { flex: 1; display: grid; place-items: center; } .cal-res { font-family: var(--f-num); font-weight: 400; font-size: 34px; color: var(--gold-l); text-align: center; }
 .cal-btns { display: flex; gap: 8px; } .cal-btns button { flex: 1; height: 52px; border-radius: 4px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 18px; letter-spacing: .05em; }
 .cal-btns button.go { background: var(--red); border-color: var(--red); } .cal-btns button:disabled { opacity: .35; }
+
+/* Kamera auf dem Startbildschirm und Einrichten vom anderen Gerät */
+.cam-row { grid-template-columns: auto; justify-content: start; }
+.cam-card { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px; margin: 12px 0 4px; border-radius: 6px; text-align: left;
+  background: #14110d; border: 1px solid var(--line2); color: var(--gold-l); }
+.cam-card span { flex: 1; } .cam-card b { display: block; font-family: var(--f-num); font-weight: 400; font-size: 20px; letter-spacing: .04em; color: var(--cream); }
+.cam-card small { color: var(--muted); font-size: 14px; } .cam-card .btn { height: 42px; padding: 0 14px; font-size: 15px; }
+.cam-card.big { border: 2px solid var(--gold); animation: cam-call 2s ease-in-out infinite; }
+@keyframes cam-call { 50% { border-color: #f07a24; } }
+.cam-card.ok { border-color: #2f6b38; }
+.calib.remote .rs-two { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }
+@media (orientation: portrait) { .calib.remote .rs-two { grid-template-columns: 1fr; grid-template-rows: 1fr auto; } }
+.rs-help { overflow: auto; } .rs-help .cal-big { font-size: 18px; margin: 0 0 10px; }
+.rs-live { position: relative; flex: 1; min-height: 0; background: #000; border: 1px solid var(--line2); touch-action: none; }
+.rs-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.rs-wait { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-family: var(--f-num); font-size: 18px; }
+.cal-test small { display: block; text-align: center; color: var(--muted); margin-top: 8px; }
+/* Backstage: vier Kacheln (Historie · Caller · Einstellungen · Kamera) */
+.bs-tiles { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 700px) { .bs-tiles { grid-template-columns: repeat(4, 1fr); } }

@@ -30,8 +30,15 @@ export async function openStation(mode, hooks) {
   st.cams = (await listCameras()).filter((c) => !/front|vorder|user/i.test(c.label));
   if (mode === 'cam') { try { await openAsCamera(); } catch (e) { hooks.toast?.(e.message || 'Server nicht erreichbar – erneuter Versuch läuft'); } }
   paint();
-  // Letzte Kalibrierung nur anbieten, wenn das Bild noch ähnlich aussieht
   const prev = loadCalib();
+  // Kamera-Gerät: eingerichtet wird am anderen Gerät (dieses Handy steht dann schon und wird nicht mehr angefasst).
+  // Gleiches Bild wie beim letzten Mal → alte Kalibrierung gleich nutzen.
+  if (mode === 'cam') {
+    if (prev?.pts?.length === 4 && thumbDiff(prev.thumb, thumb(video)) < 22) useCalib(prev);
+    else setStatus('Kamera läuft – jetzt am anderen Gerät einrichten');
+    return true;
+  }
+  // Letzte Kalibrierung nur anbieten, wenn das Bild noch ähnlich aussieht
   if (prev?.pts?.length === 4 && thumbDiff(prev.thumb, thumb(video)) < 22) {
     if (window.confirm('Letzte Kalibrierung verwenden? Das Bild sieht noch gleich aus.')) { useCalib(prev); return true; }
   }
@@ -54,6 +61,32 @@ export function stationMessage(m) {
   else if (m.type === 'takeout') { st.det?.takeout(); setStatus('Bereit'); }
   else if (m.type === 'throwCorrected') setStatus(`Korrigiert: ${m.label}`);
   else if (m.type === 'hello') send({ type: 'calibrationStatus', ok: !!st.calib });
+  // Einrichtung vom anderen Gerät
+  else if (m.type === 'previewOn') { st.previewUntil = Date.now() + 3 * 60e3; previewLoop(); }
+  else if (m.type === 'previewOff') st.previewUntil = 0;
+  else if (m.type === 'still') sendFrame(1280, 0.72, true);
+  else if (m.type === 'calibrate' && Array.isArray(m.pts) && m.pts.length === 4) {
+    const cal = { pts: m.pts, vw: st.video.videoWidth, vh: st.video.videoHeight, thumb: thumb(st.video), at: Date.now() };
+    try { localStorage.setItem('darts.calib', JSON.stringify(cal)); } catch { /* */ }
+    st.det?.destroy(); st.det = null; useCalib(cal);
+  } else if (m.type === 'recalibrate') { st.det?.destroy(); st.det = null; st.calib = null; send({ type: 'calibrationStatus', ok: false }); setStatus('Wird am anderen Gerät eingerichtet …'); }
+}
+
+/** Livebild ans andere Gerät (kleines JPEG, ~1 pro Sekunde, solange es angefordert ist) */
+let pvTimer = null;
+function previewLoop() {
+  clearTimeout(pvTimer);
+  if (!st || !st.previewUntil || Date.now() > st.previewUntil) return;
+  sendFrame(640, 0.55, false);
+  pvTimer = setTimeout(previewLoop, 900);
+}
+function sendFrame(maxW, q, still) {
+  const v = st?.video; if (!v?.videoWidth) return;
+  const w = Math.min(maxW, v.videoWidth), h = Math.round((w * v.videoHeight) / v.videoWidth);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(v, 0, 0, w, h);
+  let img = null; try { img = c.toDataURL('image/jpeg', q); } catch { return; }
+  send({ type: 'frame', still, img, w, h, calibrated: !!st.calib });
 }
 export function stationTakeout() { st?.det?.takeout(); setStatus('Bereit'); }
 export function stationDebug(on) { if (st) { st.debug = on; st.det?.setDebug(on); paint(); } }
@@ -137,7 +170,8 @@ function paint() {
         <button data-cs="calib">Neu kalibrieren</button><button data-cs="pause">${st.paused ? 'Weiter' : 'Pause'}</button>
         <button data-cs="overlay">Overlay ${st.overlay ? 'aus' : 'an'}</button><button data-cs="share">Link teilen</button><button data-cs="off">Beenden</button></div>
       ${camSel}
-      <p class="cs-hint">Am iPad/Steuer-Gerät: Spielen › „Kamera-Gerät verbinden“ › Code eingeben.</p>`;
+      <p class="cs-hint">Jetzt am anderen Gerät mit demselben Konto anmelden – auf dem Startbildschirm erscheint die Kamera mit allen Hilfen.
+        Anderes Konto: dort „Kamera-Gerät verbinden“ und diesen Code eingeben.</p>`;
   }
   st.el.querySelector('.cs-vid').prepend(st.video);
   const ov = st.el.querySelector('.cs-ov');

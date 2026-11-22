@@ -5,7 +5,7 @@ import { randomInt } from 'node:crypto';
 import { HttpError, bad } from '../http.js';
 import { isPlainObject } from '../validate.js';
 
-const ROOM_TTL = 12 * 3600e3, MSG_TTL = 120e3, MAX_QUEUE = 60, MAX_MSG = 96 * 1024, MAX_ROOMS = 2000;
+const ROOM_TTL = 12 * 3600e3, MSG_TTL = 120e3, MAX_QUEUE = 60, MAX_MSG = 400 * 1024, MAX_ROOMS = 2000; // Standbild zum Kalibrieren ≈ 150 KB
 const SIDES = ['cam', 'ctl'];
 const other = (s) => (s === 'cam' ? 'ctl' : 'cam');
 
@@ -26,13 +26,21 @@ export function camlinkRoutes(r, { limits }) {
   r.post('/api/camlink', async (c) => {
     limits.camlink.hit(c.user.id);
     const b = await c.json();
-    if (/^\d{6}$/.test(String(b.code || '')) && rooms.has(b.code)) { const x = rooms.get(b.code); x.touched = Date.now(); return { code: b.code }; }
+    if (/^\d{6}$/.test(String(b.code || '')) && rooms.has(b.code)) { const x = rooms.get(b.code); x.touched = Date.now(); x.owner = c.user.id; return { code: b.code }; }
     if (rooms.size >= MAX_ROOMS) sweep();
     if (rooms.size >= MAX_ROOMS) throw new HttpError(503, 'busy', 'Gerade zu viele Kamera-Verbindungen. Bitte gleich nochmal.');
     let code; do code = String(randomInt(0, 1e6)).padStart(6, '0'); while (rooms.has(code));
-    rooms.set(code, { touched: Date.now(), seq: 0, q: { cam: [], ctl: [] }, seen: { cam: Date.now(), ctl: 0 } });
+    rooms.set(code, { owner: c.user.id, touched: Date.now(), seq: 0, q: { cam: [], ctl: [] }, seen: { cam: Date.now(), ctl: 0 } });
     c.log.info('camlink_open');
     return { status: 201, body: { code } };
+  });
+
+  /** Steuer-Gerät: läuft gerade ein Kamera-Gerät im selben Konto? (Startbildschirm zeigt dann die Kamera) */
+  r.get('/api/camlink/mine', (c) => {
+    c.res.locals.quiet = true;
+    let best = null;
+    for (const [code, x] of rooms) if (x.owner === c.user.id && Date.now() - x.seen.cam < 20e3 && (!best || x.seen.cam > best.seen)) best = { code, seen: x.seen.cam };
+    return { code: best?.code ?? null };
   });
 
   /** Steuer-Gerät: mit Code beitreten */
