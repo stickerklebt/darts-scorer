@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, doubleMisses, TIERS, MIN_ATTEMPTS } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
@@ -71,18 +71,24 @@ function checkoutTab(st, pid) {
     + rankList('Top 5 Checkouts', st.topCo, pid);
 }
 
-/** Fenster unter der Scheibe für das angetippte Doppel: Quote und die 5 häufigsten Fehlwürfe (auch Busts) */
-const missName = (k) => (k === 'Miss' ? '0' : k);
+/** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
   const head = `<div class="di-head"><b>${key}</b>${f ? `<span><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${f.hits} / ${f.attempts}</em></span>` : ''}
     <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
-  const miss = doubleMisses(st.doubles, key, 5);
-  const rows = miss.map((x, i) => `<div class="di-row" style="--i:${i}"><span class="di-f ${x.field === 'Miss' ? 'zero' : ''}">${missName(x.field)}${x.field === 'Miss' ? '<small>daneben</small>' : ''}</span>
-    <span class="di-bar"><i style="width:${Math.max(4, Math.round(x.rate * 100))}%"></i></span><span class="di-p">${pct(x.rate)}<small>${x.count}×</small></span></div>`).join('');
+  // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
+  const sd = doubleSides(st.doubles, key);
+  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
+  const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
   return `<div class="dbl-info"><span class="di-arrow"></span>${head}
-    ${miss.length ? `<h4>Statt ${key} getroffen</h4>${rows}` : `<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p>`}</div>`;
+    <h4>Wenn du nicht triffst, wirfst du</h4>
+    <div class="io-line">
+      <span class="io-side in" style="flex:${Math.max(ip, 1)}"><b>${ip} %</b><small>Inside</small></span>
+      <span class="io-side out" style="flex:${Math.max(op, 1)}"><b>${op} %</b><small>Outside</small></span>
+    </div>
+    <div class="io-key"><span>← ins Board (alles außer ${key})</span><span>daneben (0) →</span></div>
+    <p class="di-n">${sd.misses} Fehlwürfe · ${sd.inside}× inside · ${sd.outside}× outside</p></div>`;
 }
 
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.

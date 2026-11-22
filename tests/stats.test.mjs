@@ -186,3 +186,9 @@ test('Doppel antippen: häufigste Fehlwürfe, auch Busts (S1/D20 auf D1)', () =>
   assert.deepEqual(doubleMisses(d, 'D1').map((x) => [x.field, x.count]), [['Miss', 2], ['D20', 1], ['S1', 1]]);
   assert.equal(doubleMisses(d, 'D1')[0].rate, 0.4);
 });
+
+test('Doppel: Fehlwürfe inside (ins Board) gegen outside (daneben)', async () => {
+  const { doubleSides } = await import('../js/stats.js');
+  const d = { fields: { D16: { attempts: 10, hits: 2 } }, outcomes: { D16: { D16: 2, S16: 4, S8: 1, Miss: 3 } } };
+  assert.deepEqual(doubleSides(d, 'D16'), { misses: 8, inside: 5, outside: 3, insideRate: 5 / 8, outsideRate: 3 / 8 });
+});

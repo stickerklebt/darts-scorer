@@ -289,7 +289,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   als Medaillen-Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
-  Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und den 5 häufigsten Fehlwürfen auf dieses Doppel
+  Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie
   in % aller Versuche, „0“ = daneben, Busts zählen mit (`doubleAttempts().outcomes`, `doubleMisses` in `stats.js`).
   Punkte im Verlaufsdiagramm antippen → Match-Detail (wie Rekord-Karten). Unter-Reiter ohne Unschärfe/Skalierung (nur Schriftgröße).
 

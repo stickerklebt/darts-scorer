@@ -1958,3 +1958,12 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .mic-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mic-btn.on { border-color: #c8241a; color: var(--cream); box-shadow: 0 0 0 2px rgba(200,36,26,.25); }
 .mic-btn.on .ic { color: #ff4d3a; animation: cs-rec 1.6s ease-in-out infinite; }
+
+/* Doppel antippen: Fehlwürfe als geteilte Linie – links inside (ins Board), rechts outside (daneben) */
+.io-line { display: flex; height: 54px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line2); }
+.io-side { display: flex; flex-direction: column; justify-content: center; padding: 0 12px; min-width: 64px; }
+.io-side b { font-family: var(--f-num); font-weight: 400; font-size: 24px; line-height: 1; } .io-side small { font-family: var(--f-num); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.io-side.in { background: #2a2208; color: var(--gold-l); align-items: flex-start; border-right: 2px solid var(--ink); }
+.io-side.out { background: #2a0f0b; color: #ff8a7a; align-items: flex-end; text-align: right; }
+.io-key { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.di-n { margin: 8px 0 0; color: var(--dim); font-size: 13px; }

@@ -167,6 +167,14 @@ export function doubleTier(hits, attempts, overall) {
   return TIERS.find((t) => ratio >= t.min).k;
 }
 /** Für jedes Feld: { tier, top } – top = Platz 1–3 der besten Doppel (nur mit genug Versuchen und mind. einem Treffer). */
+/** Fehlwürfe auf ein Doppel: „inside“ = irgendwo ins Board (nur nicht das Doppel), „outside“ = daneben (0). Anteile an den Fehlwürfen. */
+export function doubleSides(doubles, key) {
+  const f = doubles.fields[key], o = doubles.outcomes?.[key] || {};
+  if (!f) return null;
+  const misses = f.attempts - f.hits, outside = o.Miss || 0, inside = Math.max(0, misses - outside);
+  return { misses, inside, outside, insideRate: misses ? inside / misses : null, outsideRate: misses ? outside / misses : null };
+}
+
 /** Die häufigsten Fehlwürfe auf ein Doppel: [{ field, count, rate }] (rate = Anteil an allen Versuchen), höchstens n. */
 export function doubleMisses(doubles, key, n = 3) {
   const f = doubles.fields[key], o = doubles.outcomes?.[key];
