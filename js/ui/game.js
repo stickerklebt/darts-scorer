@@ -12,6 +12,7 @@ import { icon } from './svg.js';
 import { fieldAt, fieldName, aimBoard, ROMAN } from './aimboard.js';
 import { labelOf } from '../board-geometry.js';
 import { camThumb } from './camview.js';
+import { voiceOn } from '../voice.js';
 import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
 import { avatar } from './avatar.js';
@@ -202,6 +203,7 @@ export function gameView() {
   const botTurn = isBot(thrower);
   return `<div class="game ${isBoard ? 'boardmode' : ''} ${m.game === 'cricket' ? 'cricket' : ''} ${botTurn ? 'botturn' : ''}" style="${pcVars(cur)}">
     <div class="turnbar ${swap ? 'swap' : ''}"></div>
+    ${m.game === 'x01' ? `<button class="mic-btn ${voiceOn() ? 'on' : ''}" data-act="mic" aria-label="Mikrofon: Punkte ansagen">${icon('mic', 2, 22)}<span>${voiceOn() ? (ui.micHeard ? esc(ui.micHeard) : 'Ich höre zu …') : 'Ansagen'}</span></button>` : ''}
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
       <div class="gtitle"><b>${title}</b><span>${sub}</span></div>

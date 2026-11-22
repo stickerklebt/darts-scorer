@@ -1951,3 +1951,10 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .rs-side small { color: var(--muted); font-size: 13px; line-height: 1.3; }
 .rs-side button.yes { background: var(--red); border-color: var(--red); height: 60px; font-size: 20px; }
 .calib.remote .rs-two.one { flex: 1; min-height: 0; display: flex; }
+
+/* Mikrofon unten links im Spiel */
+.mic-btn { position: fixed; z-index: 40; left: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); display: flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 14px 0 12px; border-radius: 22px; background: #14110d; border: 1px solid var(--line2); color: var(--muted); font-family: var(--f-num); font-size: 15px; max-width: 60vw; }
+.mic-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mic-btn.on { border-color: #c8241a; color: var(--cream); box-shadow: 0 0 0 2px rgba(200,36,26,.25); }
+.mic-btn.on .ic { color: #ff4d3a; animation: cs-rec 1.6s ease-in-out infinite; }

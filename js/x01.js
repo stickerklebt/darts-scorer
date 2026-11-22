@@ -1,5 +1,5 @@
 /* X01-Engine: Legs/Sets, Summen- und Einzeldart-Eingabe, Teams, Undo. Reine Logik ohne DOM. */
-import { POSS, val, label, targetFor } from './checkout.js';
+import { POSS, val, label, targetFor, route } from './checkout.js';
 import { throwerOf } from './match.js';
 
 export const LEGS_PER_SET = 3;
@@ -44,14 +44,18 @@ function recordTurn(m, t) {
 }
 
 /** Summe einer ganzen Aufnahme (nur wenn der Rest über 170 liegt). */
-export function submitSum(m, score) {
+/** Summe einer Aufnahme. opts.voice: per Mikrofon angesagt – dann auch unter 170 Rest erlaubt (ohne Einzeldarts, Finish über die
+    Checkout-Tabelle mit deren Dartzahl; Doppelquote zählt nur echte Einzeldarts). */
+export function submitSum(m, score, opts = {}) {
   if (m.done) return { type: 'error', msg: 'Match ist beendet' };
-  if (inputMode(m) !== 'sum') return { type: 'error', msg: 'Bitte jeden Dart einzeln eingeben' };
+  if (!opts.voice && inputMode(m) !== 'sum') return { type: 'error', msg: 'Bitte jeden Dart einzeln eingeben' };
+  if (opts.voice && m.pending.length) return { type: 'error', msg: 'Erst die angefangene Aufnahme fertig eingeben' };
   if (!Number.isInteger(score) || score < 0 || score > 180 || !POSS.has(score)) return { type: 'error', msg: `${score} ist nicht möglich` };
   const r = curRem(m), nr = r - score;
-  const base = { startRem: r, input: 'sum' };
+  const base = { startRem: r, input: opts.voice ? 'voice' : 'sum' };
   if (nr < 0 || (dbl(m) && nr === 1)) return recordTurn(m, { ...base, score: 0, darts: 3, bust: true });
   if (nr === 0) {
+    if (opts.voice && dbl(m)) { const rt = route(r, 3); if (!rt) return { type: 'error', msg: `${r} ist kein mögliches Finish` }; return recordTurn(m, { ...base, score, darts: rt.length, out: true }); }
     if (dbl(m)) return { type: 'error', msg: `${r} ist kein mögliches Finish` };
     return recordTurn(m, { ...base, score, darts: 3, out: true });
   }

@@ -11,6 +11,7 @@ import { fuseThrows } from './camfuse.js';
 import { labelOf } from './board-geometry.js';
 import { openRemoteSetup, setupMessage, setupOpen } from './ui/camsetup.js';
 import { camFrame, paintCamViews, keepPreview, camBigView } from './ui/camview.js';
+import { parseScores, startVoice, stopVoice, voiceOn, voiceSupported } from './voice.js';
 import { openStation, closeStation, stationMessage, stationMode, stationTakeout, stationLinkChanged, stationDebug, camReady } from './ui/camstation.js';
 import { createMatch } from './match.js';
 import * as X from './x01.js';
@@ -112,6 +113,7 @@ function render() {
   scheduleBot();
   syncIfChanged();
   camTurnSync();
+  if (voiceOn() && !(S.screen === 'game' && S.current && !S.current.done)) stopVoice(); // Mikrofon nur im laufenden Spiel
   keepPreview(link.role === 'ctl' && S.screen === 'game' && !!ui.camLive);
   requestAnimationFrame(paintCamViews);
 }
@@ -130,6 +132,7 @@ let sayAfter = 0; // nach einer eigenen Ansage spricht die Computerstimme erst, 
 function say(txt) {
   if (!S.prefs.voice || !('speechSynthesis' in window)) return;
   if (Date.now() < sayAfter) { setTimeout(() => say(txt), sayAfter - Date.now()); return; }
+  ui.selfTalkUntil = Date.now() + 2500; // Mikrofon hört die eigene Ansage nicht mit
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) { /* */ }
 }
 let wakeLock = null;
@@ -863,6 +866,14 @@ const actions = {
     camAdd({ id: `m${Date.now()}`, n: 0, m: 1, label: 'MISS', conf: 1 });
   },
   camSel(el) { const i = Number(el.dataset.v); ui.camSel = ui.camSel === i ? null : i; if (ui.ct) { clearTimeout(commitTimer); clearInterval(tickTimer); ui.ct.deadline = null; } render(); },
+  /* Mikrofon: Punkte ansagen („37“, „Bust“, „nichts“, „null“) */
+  mic() {
+    if (voiceOn()) { stopVoice(); ui.micHeard = ''; return render(); }
+    if (!voiceSupported()) { toast('Spracheingabe geht in diesem Browser nicht'); return; }
+    ui.micHeard = '';
+    startVoice({ text: onVoice, state: (st) => { if (st === 'denied') toast('Mikrofon nicht erlaubt – in den Einstellungen des Browsers freigeben'); render(); } });
+    render();
+  },
   camBig() { ui.modal = { type: 'camBig' }; render(); },
   camKeys() { ui.camManual = !ui.camManual; ui.camSel = null; render(); },
   camEnd() { commitCam(true); },
@@ -1114,6 +1125,24 @@ setInterval(async () => {
     if (codes.join() !== (ui.camMine || []).join()) { ui.camMine = codes; render(); }
   } catch { /* offline */ }
 }, 5000);
+
+/* ---------------- Mikrofon: angesagte Punktzahlen eintragen ---------------- */
+function onVoice(text) {
+  // Was die App gerade selbst sagt (Computerstimme, eigener Caller), nicht als Ansage zählen
+  if (Date.now() < (ui.selfTalkUntil || 0) || Date.now() < sayAfter || (window.speechSynthesis?.speaking)) return;
+  const scores = parseScores(text), m = S.current;
+  ui.micHeard = scores.length ? `Gehört: ${scores.map((v) => (v === 0 ? '0' : v)).join(' · ')}` : `„${String(text).trim().slice(0, 30)}“`;
+  if (!scores.length || S.screen !== 'game' || !m || m.done || m.game !== 'x01' || ui.modal || ui.vs || inBulloff()) return render();
+  for (const v of scores) {
+    const who = curThrowerOf(m);
+    if (isBot(who) || notMyTurn() || m.done) break;
+    ui.entry = '';
+    const res = X.submitSum(m, v, { voice: true });
+    handle(res);
+    if (res.type === 'error' || res.type === 'match' || res.type === 'leg' || res.type === 'set') break;
+  }
+  render();
+}
 
 /* ---------------- Bruchchallenge: Ende und Countdown ---------------- */
 function bruchEnd(reason) {

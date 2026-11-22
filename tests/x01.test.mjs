@@ -88,3 +88,12 @@ test('Undo über Leg-Grenze hinweg', () => {
   assert.equal(X.leg(m).winner, undefined);
   assert.equal(X.curRem(m), 40);
 });
+
+test('Mikrofon: Summe auch unter 170 Rest, Finish über die Checkout-Tabelle, „0“ = keine Punkte', () => {
+  const m = createMatch('x01', [['a'], ['b']], { start: 101, out: 'double', mode: 'legs', target: 1 }, 0);
+  assert.equal(X.submitSum(m, 41).type, 'error');            // ohne Mikrofon: unter 170 nur Einzeldarts
+  assert.equal(X.submitSum(m, 41, { voice: true }).type, 'turn');
+  assert.equal(X.submitSum(m, 0, { voice: true }).type, 'turn');
+  const r = X.submitSum(m, 60, { voice: true });              // a hat 60 Rest → Finish
+  assert.equal(r.type, 'match'); assert.equal(r.turn.out, true); assert.equal(r.turn.input, 'voice');
+});

@@ -250,6 +250,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Kasten antippen → aufs richtige Feld tippen (oder „War daneben“); ohne Auswahl trägt ein Tipp aufs Board selbst einen Dart ein;
   „Tastatur“ nur als Notfall. Cricket: `camBar` (3 Slots, Mini-Board) über der Tafel. Logik `camAdd/commitCam` in `main.js`; nach 3 Darts 2 s Countdown (`prefs.camAuto`), dann Dart für
   Dart in die Engine. Setup-Schalter „Mit Kamera-Erkennung spielen“ (`prefs.camPlay`, nur X01/Cricket). Bots/fremder Zug: ignoriert.
+- **Mikrofon** (`js/voice.js`, Knopf unten links im X01-Spiel): Browser-Spracherkennung (Deutsch). Gezählt werden nur Zahlen 0–180
+  (Ziffern oder Wörter wie „siebenunddreißig“, „hundertvierzig“) und „Bust/nichts/null/überworfen“ = 0, alles andere ignoriert.
+  Mehrere Zahlen nacheinander = mehrere Aufnahmen. Angesagt geht auch unter 170 Rest (`submitSum(m, v, { voice: true })`, Turn-input
+  'voice', Finish mit Dartzahl aus der Checkout-Tabelle, keine Einzeldarts → zählt nicht in die Doppelquote). Eigene Ansagen der App
+  werden ignoriert. Mikrofon aus, sobald man das Spiel verlässt.
 - **Bruchchallenge** (`js/bruch.js`, `ui/bruch.js`, Screen `bruch`): Level wählen (Leicht · Mittel · Schwer · Extrem) → 3 zufällige
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
