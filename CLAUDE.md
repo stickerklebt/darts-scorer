@@ -362,3 +362,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   (Doppelquote erster Doppel-Dart der Aufnahme vs. nach Fehlwurf), Tageszeit (bester Abschnitt bzw. „Nach 22 Uhr …“), Wochentag (bester/schwächster).
   Je Karte Zahl + ein Satz; Mindestmengen (10 Aufnahmen / 6 Doppelversuche), sonst „Noch zu wenig Daten“.
 - „Spiel fortsetzen“ (Reiter Play) hat rechts einen Mülleimer (`discardCurrent`): löscht das laufende Spiel nach einer Nachfrage (online: beendet es für beide).
+- Kacheln unter „Partyspiel“ nur mit Symbol (kein Name); der Name steht nach dem Antippen oben im Setup (bei der großen Karte „501“).
