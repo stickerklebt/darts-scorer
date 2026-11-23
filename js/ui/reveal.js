@@ -20,3 +20,10 @@ document.addEventListener('click', (e) => {
   clearTimeout(timers.get(box));
   if (box.classList.toggle('rv-on')) timers.set(box, setTimeout(() => box.classList.remove('rv-on'), 5000));
 });
+
+/* Doppel-Liste: unten ausblenden nur, solange noch etwas darunter kommt (ganz unten gescrollt → `.end`, kein Leerraum nötig) */
+document.addEventListener('scroll', (e) => {
+  const el = e.target;
+  if (!el.classList?.contains('dbl-scroll')) return;
+  el.classList.toggle('end', el.scrollTop + el.clientHeight >= el.scrollHeight - 2);
+}, true);
