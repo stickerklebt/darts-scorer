@@ -221,7 +221,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   `camera-link.js` + Server `routes/camlink.js` (**statt PeerJS**: 6-stelliger Code, Nachrichten über den eigenen Server, Abfrage
   ~0,5 s, Neuverbinden alle 3 s; `?join=CODE` verbindet direkt), `ui/camstation.js` (Kamera-Station/Ein-Geräte-Fenster).
   **Ablauf:** Handy (angemeldet) › Backstage › Kachel „Kamera“ startet das Kamera-Gerät (Raum gehört dem Konto). Eingerichtet wird am
-  ANDEREN Gerät mit demselben Konto: Startbildschirm zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
+  ANDEREN Gerät mit demselben Konto: Backstage (Abschnitt „Mehr“, nicht mehr im Reiter Play) zeigt „Kamera am Handy läuft“ (`GET /api/camlink/mine`, alle 5 s) → verbinden +
   Assistent `ui/camsetup.js` mit Livebild (`previewOn` → `frame` ~1/s, 640 px), Standbild (`still` → 1280 px), 4 Punkte mit Lupe,
   Overlay-Kontrolle, `calibrate { pts }` ans Handy, Testdart. Gleiches Bild wie zuletzt → Handy nimmt die alte Kalibrierung selbst.
   Kamera-Handy im **Stromsparmodus**: schwarzer Bildschirm, roter Punkt „Kamera läuft“, Antippen zeigt 15 s die Knöpfe; Erkennung

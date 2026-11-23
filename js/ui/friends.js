@@ -5,6 +5,7 @@ import { rv } from './reveal.js';
 import { auth } from '../sync.js';
 import { movingAvg, overview } from '../stats.js';
 import { playerBanner } from './banner.js';
+import { camBlock } from './play.js';
 import { trophies, badgeSlots } from '../trophies.js';
 import { resultText } from '../history.js';
 import { GAMES } from '../games.js';
@@ -109,6 +110,7 @@ export function friendsView() {
         <button class="btn line sm-btn" data-act="friendCancel" data-v="${esc(x.id)}">Zurückziehen</button></div>`).join('')}</div>` : ''}
     ${confirmBlock()}
     <h2 class="label">Mehr</h2>
+    ${camBlock()}
     <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b></button>`).join('')}</div>
   </main>`;
 }

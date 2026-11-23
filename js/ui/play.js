@@ -21,7 +21,7 @@ export function tabsBar() {
 
 /** Kamera auf dem Startbildschirm. Regie: alle Kameras mit Stand und „Einrichten“. Läuft im Konto schon eine Kamera und dieses
     Gerät ist noch nichts: wählen – Regie (hier wird gespielt) oder weitere Kamera (filmt mit). */
-function camBlock() {
+export function camBlock() {
   if (link.role === 'ctl') {
     const rows = link.cams.map((c) => {
       const st = c.status !== 'connected' ? (c.status === 'lost' ? 'getrennt' : 'verbinde …') : c.moved ? 'verrutscht' : c.calibrated ? 'bereit' : 'nicht eingerichtet';
@@ -60,7 +60,6 @@ export function playView() {
         <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
       </div>
     </section>
-    ${camBlock()}
     <h2 class="label">Partyspiel</h2>
     <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
