@@ -84,8 +84,9 @@ export function setupView() {
   }).join('');
   const nSides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length;
   const remote = L.find((e) => e.friend?.mode === 'remote');
-  return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">${id === 'x01' && ui.x01Var !== 'other' ? '501' : g.title}</span><span class="sq ghost"></span></header>
+  return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
+    <div class="su-title">${badge(id, 44)}<h1>${id === 'x01' && ui.x01Var !== 'other' ? '501' : g.title}</h1></div>
     <h2 class="label"><i class="stepn">1</i>Spieler &amp; Bots</h2>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>

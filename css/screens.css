@@ -2342,3 +2342,8 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* Backstage: nichts blinkt oder wandert (kein Lichtpunkt am Rand, kein Funkeln, keine Lichtlinien) */
 .page.backstage *, .page.backstage *::before, .page.backstage *::after { animation: none !important; }
 .page.backstage .glint::before, .page.backstage .glint::after { opacity: 0 !important; }
+
+/* Setup: Spielname unter der Leiste, Logo links daneben */
+.su-title { display: flex; align-items: center; gap: 14px; margin: 6px 0 4px; }
+.su-title h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 7vw, 40px); letter-spacing: .06em; color: var(--cream); }
+.su-title .badge-mode { flex: none; }
