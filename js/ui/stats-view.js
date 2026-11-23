@@ -125,10 +125,10 @@ export function doublesBlock(st, sel, withList = true) {
 
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
-  // Average-Verlauf, Verteilung der Aufnahmen, Doppelquote-Verlauf, dann „Wann du gut wirfst“. Checkout steht im Reiter Doppel.
+  // Average-Verlauf, Aufnahmen im Leg, Doppelquote-Verlauf, Verteilung der Aufnahmen, dann „Wann du gut wirfst“. Checkout steht im Reiter Doppel.
   const lc = legCurve(matchesOf(S.matches, pid, S.statsPeriod), pid);
   const lcBox = chartBox('Aufnahmen im Leg', `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points));
-  return block('', historyCharts(st, pid, distChart(st) + lcBox) + doubleChart(st, pid))
+  return block('', historyCharts(st, pid, lcBox) + doubleChart(st, pid) + distChart(st))
     + situationsBlock(situations(matchesOf(S.matches, pid, S.statsPeriod), pid));
 }
 
