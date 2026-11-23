@@ -166,6 +166,9 @@ export function sheetView() {
     inner = `<div class="inv-head">${icon('signal', 2, 34)}<h3>${esc(v.host)} möchte gegen dich spielen</h3></div>
       <p>${esc(what)} · jeder an seinem Gerät</p>
       <div class="sbtns"><button class="btn line" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red" data-act="inviteYes" data-v="${esc(v.id)}">Annehmen</button></div>`;
+  } else if (md.type === 'discard') {
+    inner = `<h3>Spiel löschen?</h3><p>${m ? esc(matchSummary(m)) : ''}<br>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
+      <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="discardForce">Löschen</button></div>`;
   } else if (md.type === 'abort') {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;
