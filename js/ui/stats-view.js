@@ -56,14 +56,6 @@ function overviewTab(st, pid) {
     ], '', pid)}`;
 }
 
-function scoringTab(st, pid) {
-  const c = st.counts;
-  return block('', rankList('Top 5 Aufnahmen', st.top5, pid))
-    + block('Anzahl', cards([['60+ / 100+ / 140+', `${c.t60} / ${c.t100} / ${c.t140}`], ['180er', c.t180]], 'pair'))
-    + block('Pro Aufnahme', cards([['Ø Aufnahme', fmt(st.perTurn)], ['Bust-Quote', pct(st.bustRate)]]))
-    + block('', distChart(st));
-}
-
 function checkoutTab(st, pid) {
   return record('Höchstes Checkout', st.highestCo ?? '–', '')
     + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`]), 'three'))
@@ -133,8 +125,8 @@ function fold(key, title, summary, body) {
 /** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
   const c = st.counts;
-  return block('', historyCharts(st, pid))
-    + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st, pid))
+  // Zwischen Average- und Doppelquote-Verlauf: die Verteilung der Aufnahmen (immer offen). Danach eingeklappt nur noch Checkout.
+  return block('', historyCharts(st, pid, distChart(st)))
     + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid));
 }
 

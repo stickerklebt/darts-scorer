@@ -34,11 +34,12 @@ function legsDetail(m) {
 const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {});
 
 /** Verlauf: Average und Doppelquote pro Match */
-export function historyCharts(st, pid = '') {
+export function historyCharts(st, pid = '', middle = '') {
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
   const avgs = st.series.map((s) => s.avg);
   const dbl = st.series.map((s) => (s.dbl === null ? null : s.dbl * 100));
   return `<h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), { ...ends(st), taps })}
+    ${middle}
     <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
 }
 /** Scoring: Verteilung der Aufnahmen */
