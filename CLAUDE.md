@@ -366,3 +366,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Backstage ohne Bewegung: keine Lichtpunkte (`.glint`), kein Funkeln, keine Animationen (Block am Ende von `screens.css`).
 - „First to … Legs/Sets“ im Setup ist ein **Drehrad** (`js/ui/wheel.js`, `wheelHTML`/`initWheels`): einrastende Walze, Mitte gilt, Legs 1–20, Sets 1–10; antippen dreht hin, mit der Maus ziehen (mit Schwung).
 - Setup-Spielerliste: kein „Du“-Schild; Hoch/Entfernen erscheinen erst nach Antippen des Spielers (`ui.prowSel`).
+- Setup-Startknopf (`.start-pill`): dunkle Pille im Stil der Reiter-Leiste (Goldrand, Innenlinie, warmer Schein, Leuchtstrich unter dem Wort), Dock ohne Goldlinie.
