@@ -2378,3 +2378,8 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .hero-line .hl-orn:first-child::before { right: calc(100% + 6px); background: linear-gradient(90deg, transparent, rgba(236,201,106,.8)); }
 .hero-line .hl-orn:last-child::before { left: calc(100% + 6px); background: linear-gradient(90deg, rgba(236,201,106,.8), transparent); }
 .hero-line .hl-orn svg { width: 14px; height: 14px; }
+
+/* „First to X Legs“ schlicht: League Gothic wie die übrigen Beschriftungen, ganz in Gold, ab und zu gleitet ein Glanz darüber */
+.hero-line { display: block; font-family: var(--f-num); font-weight: 400; font-size: clamp(20px, 4.6vw, 30px); letter-spacing: .2em; }
+.hero-line .hl-txt { display: inline-block; background: none; -webkit-text-stroke: 0; filter: none; color: var(--gold-l); padding: 0; }
+.hero-line .hl-txt.shimmer::after { animation-duration: 7s; --sd: 2.5s; }
