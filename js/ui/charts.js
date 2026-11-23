@@ -48,8 +48,10 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
   }).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
     ${g}
-    <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".55" stroke-width="1.5"/>
-    ${mv.length > 1 ? `<path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="${COLORS.red}" stroke-width="3.5" stroke-linejoin="miter"/>` : ''}
+    <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".5" stroke-width="1"/>
+    ${mv.length > 1 ? `<path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="${COLORS.red}" stroke-width="2.4" stroke-linejoin="miter"/>
+      <path class="ln-cut" pathLength="100" d="M${mv.join('L')}" fill="none" stroke="${COLORS.ink}" stroke-width="3.4" stroke-dasharray=".5 4.3"/>
+      <path class="ln-cut" pathLength="100" d="M${mv.join('L')}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".75" stroke-width=".6" stroke-dasharray="1.1 7.5" stroke-dashoffset="-2.2"/>` : ''}
     ${dots}
     <text x="${PAD.l}" y="${H - 6}" class="ax">${labelL}</text><text x="${W - PAD.r}" y="${H - 6}" class="ax" text-anchor="end">${labelR}</text>
   </svg>

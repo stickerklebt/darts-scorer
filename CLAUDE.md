@@ -338,4 +338,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
 - Statistik-Kopf: kein Name mehr, nur der Uhr-Knopf rechts. Unter-Reiter Überblick · Doppel · Scoring stehen fest am unteren Rand
   (`.subtabs.bottom`), Wechsel auch per Wischen links/rechts (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste).
-- **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Diagramme und „Wann du gut wirfst“-Gruppen im selben Stil (Goldrahmen 2 px + Innenlinie per inset box-shadow).
+- **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme, Top-5-Listen und „Wann du gut wirfst“ leichter (1 px gedämpft). Gleitender Schnitt im Diagramm dünn, mit Holzschnitt-Kerben (`.ln-cut`).
