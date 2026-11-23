@@ -44,7 +44,8 @@ export function camBlock() {
 export function playView() {
   const m = S.current, o = S.opts.x01;
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
-  const others = Object.keys(GAMES).filter((id) => !GAMES[id].retired); // X01 steht auch unten als Modus (die große 501-Karte startet direkt)
+  // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
+  const others = [...Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired), 'x01'];
   return `<main class="page">
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">

@@ -354,4 +354,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Statistik-Unter-Reiter in der Pille: Überblick = „123“ (Zahlen), Doppel = Doppelfeld-Symbol, Scoring = Kurve. Überblick: Average, 6 Karten, darunter große Doppelquote-Karte
   und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (breit: Liste genau so hoch wie die Scheibe, `fitDblList` in main.js); nur das beste Doppel leuchtet weiß umrandet.
 - Reiter Play: große 501-Karte ohne X01-Abzeichen/Titel – spielt **immer 501** (Startpunkte nicht umstellbar, `ui.x01Var = '501'`).
-  X01 steht zusätzlich als erste Kachel unter „Partyspiel“ – dort nur die anderen Startwerte 101 · 301 · 701 · 1001 (`ui.x01Var = 'other'`, `X01_OTHER`).
+  X01 steht zusätzlich als letzte Kachel unter „Partyspiel“ – dort nur die anderen Startwerte 101 · 301 · 701 · 1001 (`ui.x01Var = 'other'`, `X01_OTHER`).
