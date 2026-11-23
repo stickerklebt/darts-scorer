@@ -3,6 +3,7 @@ import { S, ui, nameOf, isTeam, possessive } from '../store.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
 import * as C from '../cricket.js';
+import * as F from '../football.js';
 import { route, setupFor, label } from '../checkout.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, seg } from './common.js';
@@ -165,6 +166,24 @@ export function gameView() {
     board = scoreboard(items, cur, swap);
     hint = `<div class="ticker"><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
     pad = ckBoard(m, st, cur, isBot(thrower)); // auch wenn der Bot wirft: Tafel bleibt (gesperrt), kein großes Dartboard
+  } else if (m.game === 'football') {
+    cur = F.curSide(m); thrower = F.curThrower(m);
+    const st = F.state(m);
+    title = 'Fußball';
+    sub = `Tore bis ${F.target(m)}`;
+    const items = m.sides.map((side, s) => {
+      const turns = m.turns.filter((t) => t.s === s);
+      return {
+        name: nameOf(side[0]), team: '', starter: s === m.first, right: '', extra: botBox(m, s, side[0]),
+        rowInfo: `Tor <b>D${F.goalOf(m, s)}</b>${st.ball === s ? ' · <b class="fb-has">Ball</b>' : ''}`,
+        big: `${st.goals[s]}${st.ball === s ? '<i class="fb-ball" aria-label="hat den Ball"></i>' : ''}`,
+        stats: [['Tor', `D${F.goalOf(m, s)}`], ['Ball', st.ball === s ? 'Ja' : '–'], ['Aufnahmen', turns.length]],
+      };
+    });
+    board = scoreboard(items, cur, swap);
+    const tgt = st.ball === cur ? `D${F.targetOf(m, cur)}` : 'Bull';
+    hint = `<div class="ticker"><span class="tk-l">${st.ball === cur ? 'Aufs Tor' : st.ball === null ? 'Ball frei' : 'Ball holen'}</span><span class="tk-target"><b>${tgt}</b></span><span class="tk-w">·</span><span class="tk-w">${esc(whoText(m, cur, thrower))}</span></div>`;
+    pad = isBot(thrower) ? botPad(m, thrower, m.pending, cur) : fbPad(m, st, cur);
   } else {
     cur = G.curSide(m); thrower = G.curThrower(m);
     const round = G.round(m);
@@ -307,6 +326,20 @@ const ckMark = (k) => {
 };
 /** Zahl mit kleinen Ringen drum herum: 1 Ring = Single, 2 = Double, 3 = Triple (Bull: 1 = 25, 2 = Bull) */
 const ringed = (txt, k) => `<span class="ckring">${Array.from({ length: k }, (_, i) => `<i style="--r:${i}"></i>`).join('')}<b>${txt}</b></span>`;
+/** Fußball-Eingabe: nur was zählt – Single Bull, Bullseye, das gegnerische Doppel (Tor) und daneben/anderes. */
+function fbPad(m, st, cur) {
+  const has = st.ball === cur, goal = F.targetOf(m, cur), p = m.pending;
+  const slotsHtml = [0, 1, 2].map((i) => `<span class="ckd ${p[i] ? 'on' : ''}">${p[i] ? (p[i].n === 0 ? '–' : label(p[i])) : ''}</span>`).join('');
+  const b = (n, mult, txt, sm, hot) => `<button class="fb-btn ${hot ? 'hot' : ''}" data-act="fbHit" data-n="${n}" data-m="${mult}"><b>${txt}</b><small>${sm}</small></button>`;
+  return `<div class="fbp">
+    <div class="ckb-bar">${slotsHtml}<button class="ckb-btn" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 20)}</button></div>
+    <div class="fbp-grid">
+      ${b(25, 1, '25', 'Single Bull · Ball', !has)}${b(25, 2, 'Bull', 'Bullseye · Ball', !has)}
+      ${b(goal, 2, `D${goal}`, has ? 'Tor!' : 'zählt nur mit Ball', has)}${b(0, 1, 'Daneben', 'oder anderes Feld', false)}
+    </div>
+  </div>`;
+}
+
 function ckBoard(m, st, cur, locked = false) {
   const left = m.sides.map((_, s) => s).filter((s) => s % 2 === 0), right = m.sides.map((_, s) => s).filter((s) => s % 2 === 1);
   const markCells = (list, t) => list.map((s) => `<span class="ckc ${s === cur ? 'cur' : ''}" style="${pcVars(s)}">${ckMark(st.marks[s][t])}</span>`).join('');

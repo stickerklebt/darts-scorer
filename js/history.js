@@ -4,6 +4,7 @@
 import * as X from './x01.js';
 import * as G from './party.js';
 import * as C from './cricket.js';
+import * as F from './football.js';
 
 const when = (m) => m.endedAt ?? m.startedAt ?? 0;
 
@@ -21,6 +22,7 @@ function sideValue(m, s) {
     const ck = C.state(m, false);
     return m.opts.mode === 'close' ? C.TARGETS.filter((t) => ck.marks[s][t] >= 3).length : ck.pts[s];
   }
+  if (m.game === 'football') return F.score(m, s);
   return G.score(m, s);
 }
 
@@ -33,7 +35,7 @@ export function resultText(m) {
       return X.isSets(m) ? `${m.sides.map((_, s) => X.setsWon(m, s)).join(' : ')} Sets` : `${m.sides.map((_, s) => X.legsWon(m, s)).join(' : ')} Legs`;
     }
     const v = m.sides.map((_, s) => sideValue(m, s));
-    const unit = m.game === 'atc' ? ` / ${G.atcTotal(m)}` : m.game === 'cricket' && m.opts.mode === 'close' ? ' / 7' : ' Pkt';
+    const unit = m.game === 'atc' ? ` / ${G.atcTotal(m)}` : m.game === 'cricket' && m.opts.mode === 'close' ? ' / 7' : m.game === 'football' ? ' Tore' : ' Pkt';
     return `${v.join(' : ')}${unit}`;
   } catch (e) { return ''; }
 }

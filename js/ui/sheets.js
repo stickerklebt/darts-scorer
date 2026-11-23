@@ -5,6 +5,7 @@ import { avatar } from './avatar.js';
 import { icon, divider } from './svg.js';
 import { pcVars } from './common.js';
 import * as G from '../party.js';
+import * as F from '../football.js';
 import { GAMES } from '../games.js';
 import { esc, seg, matchSummary } from './common.js';
 import { profilePicker } from './stats-view.js';
@@ -39,6 +40,7 @@ export function sheetView() {
     const info = m.game === 'x01'
       ? [['Startpunkte', o.start], ['Check-Out', o.out === 'double' ? 'Double Out' : 'Single Out'], ['Modus', `First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}`]]
       : m.game === 'cricket' ? [['Spiel', 'Cricket'], ['Variante', o.mode === 'close' ? 'Nur Schließen' : 'Mit Punkten'], ['Runden (max.)', o.rounds]]
+      : m.game === 'football' ? [['Spiel', 'Fußball'], ['Tore', `D${o.goal || 16} gegen D${F.opposite(o.goal || 16)}`], ['Sieg bei', `${o.target || 3} Toren`]]
       : [['Spiel', GAMES[m.game].title], ...(m.game === 'atc' ? [] : [['Runden', G.rounds(m)]])];
     inner = `<h3>Einstellungen</h3><p>${matchSummary(m)}</p>
       <div class="slist">

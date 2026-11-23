@@ -89,6 +89,7 @@ js/
   x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
   party.js              Highscore, Shanghai, Halbieren, Around the Clock
   cricket.js            Cricket: 20–15 + Bull, Treffer/Punkte, Sieg, Rundenlimit, Undo pro Dart, Bot-Ziel
+  football.js           Fußball: Tore (Doppel ↔ gegenüberliegendes Doppel), Ballbesitz per Bull, Sieg bei N Toren, Bot-Ziel
   bulloff.js            Echte Scheibengeometrie (mm), Feld an Position, Ausbullen-Logik
   fx.js                 Welche Animation zu welchem Wurf (Töpfe, Zufall ohne Wiederholung)
   bots.js               Bots: Name, Farbe, Ziel-Average, Streuung (sigma, dsigma), Sprüche  ← zum Selbst-Ändern
@@ -103,7 +104,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + situations · board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · football · board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -264,7 +265,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
   Laufende Challenge in `S.bruch` (nur lokal).
-- **Partyspiele:** wählbar sind nur noch **Cricket** und die Bruchchallenge. Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
+- **Partyspiele:** wählbar sind **Cricket**, **Fußball** und die Challenge (Bruchchallenge). Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
   (nicht mehr im Menü, Engines bleiben für alte Spiele in Historie/Statistik).
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
@@ -352,3 +353,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
 - Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
 - X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, Anheben beim Darüberfahren, `.hero-go`).
+- **Fußball** (`js/football.js`, Partyspiel, immer 1 gegen 1): Seite 1 hat das Tor `opts.goal` (D16/D20/D6/D19), Seite 2 das
+  gegenüberliegende Doppel (16 ↔ 4, 20 ↔ 3, 6 ↔ 11, 19 ↔ 1). Ball frei zu Beginn und nach jedem Tor; 25 oder Bull = Ball (auch Ballgewinn),
+  Ball bleibt über die Aufnahme hinaus; mit Ball auf das gegnerische Doppel = Tor. Sieg bei `opts.target` Toren (3/5/7). Eingabe `fbPad`:
+  25 · Bull · D(Gegner-Tor) · Daneben, was gerade zählt leuchtet; Bot zielt ohne Ball aufs Bull, mit Ball aufs Tor. Nicht in der Statistik.

@@ -21,6 +21,7 @@ const DEF = () => ({
     halveit: {},
     atc: { bull: 1 },
     cricket: { mode: 'points', rounds: 20 },
+    football: { goal: 16, target: 3 },
   },
   prefs: { voice: false, hints: true, dartInput: 'board', anim: true, ownCalls: true, showAvg: true, showDarts: true, camAuto: true, camPlay: true, camDebug: false },
   screen: 'home',

@@ -3,6 +3,7 @@
 import { S, ui, nameOf } from '../store.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
+import * as F from '../football.js';
 import { GAMES, MAX_PLAYERS } from '../games.js';
 import { BOTS, isBot } from '../bots.js';
 import { esc, pcVars, seg, optRow } from './common.js';
@@ -24,6 +25,9 @@ function mainOptions(id) {
   if (id === 'atc') return optRow('Ende', seg('opt', 'bull', [[1, 'Mit Bull'], [0, 'Bis 20']], o.bull));
   if (id === 'cricket') return optRow('Variante', seg('opt', 'mode', [['points', 'Mit Punkten'], ['close', 'Nur Schließen']], o.mode))
     + optRow('Runden (max.)', seg('opt', 'rounds', [[15, '15'], [20, '20'], [25, '25']], o.rounds));
+  if (id === 'football') return optRow('Tore bis zum Sieg', seg('opt', 'target', [[3, '3'], [5, '5'], [7, '7']], o.target))
+    + optRow('Tore (Seite 1 · Seite 2)', seg('opt', 'goal', [16, 20, 6, 19].map((g) => [g, `D${g} · D${F.opposite(g)}`]), o.goal))
+    + '<p class="foot">Fußball spielt man immer einer gegen einen – genau zwei Spieler in der Liste.</p>';
   return optRow('Ziele', `<div class="optfix">${G.HALF.map(G.halfLabel).join(' · ')}</div>`);
 }
 
