@@ -45,6 +45,6 @@ function setChart(box, on) {
 /* Doppel-Liste: unten ausblenden nur, solange noch etwas darunter kommt (ganz unten gescrollt → `.end`, kein Leerraum nötig) */
 document.addEventListener('scroll', (e) => {
   const el = e.target;
-  if (!el.classList?.contains('dbl-scroll')) return;
+  if (!el.classList?.contains('dbl-scroll') && !el.classList?.contains('fl-scroll')) return;
   el.classList.toggle('end', el.scrollTop + el.clientHeight >= el.scrollHeight - 2);
 }, true);

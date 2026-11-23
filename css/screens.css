@@ -2218,3 +2218,9 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   background: linear-gradient(90deg, rgba(229,64,44,0), #f25a36 30%, #ff9a5c 50%, #f25a36 70%, rgba(229,64,44,0)); }
 .tabs .tab.on::before { width: min(100%, 230px); height: 22px; bottom: -1px;
   background: radial-gradient(ellipse 50% 60% at 50% 72%, rgba(255,110,60,.26), rgba(229,64,44,.11) 50%, transparent 100%); }
+
+/* Freundesliste: ab 4 Freunden sieht man 3, der 4. läuft unten aus – Rest durch Scrollen in der Liste */
+.flist.fl-scroll { max-height: 232px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 46px), transparent); mask-image: linear-gradient(#000 calc(100% - 46px), transparent); }
+.flist.fl-scroll .srow { min-height: 64px; height: 64px; }
+.flist.fl-scroll.end { -webkit-mask-image: none; mask-image: none; }
