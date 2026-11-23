@@ -2419,3 +2419,5 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .start-pill::before { content: ""; position: absolute; left: 50%; bottom: 2px; width: 60%; height: 26px; transform: translateX(-50%); pointer-events: none;
   background: radial-gradient(ellipse at 50% 80%, rgba(255,110,60,.22), transparent 70%); }
 .start-pill:active { transform: scale(.985); box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 0 3px rgba(11,10,8,.9), inset 0 0 0 4px rgba(212,166,58,.25), 0 0 46px rgba(229,64,44,.35); }
+/* Setup: Spielname mit Logo mittig */
+.su-title { justify-content: center; }
