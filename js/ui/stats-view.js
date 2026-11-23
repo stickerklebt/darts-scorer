@@ -8,7 +8,7 @@ import { heatBoard, tierColor } from './board.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
-import { situations, legCurve, MIN_N, GOOD, BAD } from '../situations.js';
+import { legCurve } from '../situations.js';
 import { legCurveChart, chartBox } from './charts.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
@@ -116,11 +116,10 @@ export function doublesBlock(st, sel, withList = true) {
 
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
-  // Average-Verlauf, Aufnahmen im Leg, Doppelquote-Verlauf, Verteilung der Aufnahmen, dann „Wann du gut wirfst“. Checkout steht im Reiter Doppel.
+  // Average-Verlauf, Aufnahmen im Leg, Doppelquote-Verlauf, Verteilung der Aufnahmen. Checkout steht im Reiter Doppel.
   const lc = legCurve(matchesOf(S.matches, pid, S.statsPeriod), pid);
   const lcBox = chartBox('Aufnahmen im Leg', `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points));
-  return block('', historyCharts(st, pid, lcBox) + doubleChart(st, pid) + distChart(st))
-    + situationsBlock(situations(matchesOf(S.matches, pid, S.statsPeriod), pid));
+  return block('', historyCharts(st, pid, lcBox) + doubleChart(st, pid) + distChart(st));
 }
 
 export function emptyState(pid, any) {
@@ -155,35 +154,4 @@ export function profilePicker() {
       <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}${p.id === S.mainId ? ' <span class="tag">Du</span>' : ''}</span>
       ${p.id === cur ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
-}
-
-/* „Wann du gut wirfst“: Scoring-Aufnahmen nach Umständen (js/situations.js). Oben Kurzfassung, darunter je Gruppe
-   eine Zeile pro Umstand: Balken = Abweichung vom eigenen Scoring-Ø, Ø, Chance auf gut/schlecht. Aufnahmen erst auf Tippen. */
-const sign = (d) => `${d >= 0 ? '+' : '−'}${fmt(Math.abs(d), 1)}`;
-function situationsBlock(r) {
-  if (!r.base.n) return block('Wann du gut wirfst', '<p class="chart-empty">Noch keine Scoring-Aufnahmen in diesem Zeitraum.</p>');
-  const h = r.highlights, b = r.base;
-  const hl = [
-    ['Comeback', h.comeback ? pct(h.comeback.rate) : '–', h.comeback ? `nach unter ${BAD} gleich ${GOOD}+ (sonst ${pct(b.good)})` : `ab ${MIN_N} Fällen`],
-    ['Clutch', h.clutch ? sign(h.clutch.delta) : '–', h.clutch ? `Ø ${fmt(h.clutch.avg, 1)}, wenn der Gegner im Finish steht` : 'noch zu wenig Fälle'],
-    ['Heiße Hand', h.hot ? sign(h.hot.delta) : '–', h.hot ? `Ø ${fmt(h.hot.avg, 1)} nach einer ${GOOD}+` : 'noch zu wenig Fälle'],
-    ['Am stärksten', h.best ? fmt(h.best.avg, 1) : '–', h.best ? h.best.label : ''],
-    ['Am schwächsten', h.worst ? fmt(h.worst.avg, 1) : '–', h.worst ? h.worst.label : ''],
-    ['Start ins Leg', h.start ? sign(h.start.delta) : '–', h.start ? `Ø ${fmt(h.start.avg, 1)} mit der 1. Aufnahme` : 'noch zu wenig Fälle'],
-  ];
-  // Balken-Maßstab: größte Abweichung füllt die halbe Breite (mind. ±5)
-  const ds = Object.values(r.rows).filter((x) => x.n >= MIN_N).map((x) => Math.abs(x.avg - b.avg));
-  const scale = Math.max(5, ...ds);
-  const row = (k, label) => {
-    const x = r.rows[k];
-    if (!x || x.n < MIN_N) return `<div class="sit-r off"><span class="sit-l">${label}</span><span class="sit-bar"><span class="sit-few">zu wenig</span></span></div>`;
-    const d = x.avg - b.avg, w = Math.min(34, (Math.abs(d) / scale) * 34), up = d >= 0; // max 34 %, damit die Zahl daneben noch Platz hat
-    // Nur der Balken; Antippen blendet Ø und Abweichung (grün/rot) an seinem Ende ein
-    return `<div class="sit-r has-rv"><span class="sit-l">${label}</span>
-      <span class="sit-bar"><i class="${up ? 'up' : 'dn'}" style="${up ? 'left:50%' : `left:${50 - w}%`};width:${w}%"></i>
-      <span class="sit-num rv ${up ? 'up' : 'dn'}" style="${up ? `left:calc(${50 + w}% + 8px)` : `right:calc(${50 + w}% + 8px)`}">${sign(d)} <small>Ø ${fmt(x.avg, 1)}</small></span></span></div>`;
-  };
-  return block('Wann du gut wirfst', `<p class="foot sit-note">Nur Scoring (Rest über 170). Dein Scoring-Ø: <b>${fmt(b.avg, 1)}</b>. Grün = besser als sonst, rot = schlechter – Zeile antippen zeigt die Zahl.</p>
-    ${cards(hl, 'three sit-hl')}
-    ${r.groups.map(([title, rows]) => `<div class="sit-g"><h3>${title}</h3>${rows.map(([k, l]) => row(k, l)).join('')}</div>`).join('')}`);
 }
