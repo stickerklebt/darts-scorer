@@ -2190,3 +2190,17 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Symbol-Pille: Leuchtstrich über dem Spitzchen (wurde in der Mitte verdeckt) */
 .subpop .subtabs.three .sub-line { bottom: 8px; z-index: 2; }
+
+/* Haupt-Reiter: Leuchtstrich direkt unter Symbol + Wort des aktiven Reiters (mittig darunter, gleiche Breite), Verlauf etwas sanfter */
+.tabs .tabline { display: none; }
+.tabs .tab.on::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: min(78%, 150px); height: 3px; border-radius: 2px; transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(229,64,44,0), #f25a36 20%, #ff9a5c 50%, #f25a36 80%, rgba(229,64,44,0));
+  box-shadow: 0 0 8px rgba(255,106,61,.7), 0 0 18px rgba(229,64,44,.45);
+  animation: tabline-in .4s cubic-bezier(.2,.9,.3,1.1), tabline-soft 3.6s ease-in-out .4s infinite; }
+.tabs .tab.on::before { content: ""; position: absolute; left: 50%; bottom: -2px; width: min(90%, 180px); height: 24px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(ellipse at 50% 70%, rgba(255,110,60,.28), rgba(229,64,44,.1) 45%, transparent 72%); }
+@keyframes tabline-in { from { transform: translateX(-50%) scaleX(.2); opacity: 0; } }
+@keyframes tabline-soft { 50% { box-shadow: 0 0 5px rgba(255,106,61,.55), 0 0 12px rgba(229,64,44,.3); } }
+.subpop .subtabs.three .sub-line::before { box-shadow: 0 0 8px rgba(255,106,61,.7), 0 0 18px rgba(229,64,44,.45); animation: tabline-soft 3.6s ease-in-out infinite; }
+.subpop .subtabs.three .sub-line::after { background: radial-gradient(ellipse at 50% 60%, rgba(255,110,60,.28), rgba(229,64,44,.1) 45%, transparent 72%); }
+@media (prefers-reduced-motion: reduce) { .tabs .tab.on::after, .subpop .subtabs.three .sub-line::before { animation: none; } }
