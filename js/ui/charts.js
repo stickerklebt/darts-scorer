@@ -25,6 +25,9 @@ const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.l
  * values: Zahlen oder null (Lücke), avg: gleitender Schnitt (gleiche Länge)
  * fmt: Beschriftung der y-Achse, maxHint: feste Obergrenze (z. B. 1 für Quoten)
  */
+let gid = 0;
+const AVG_INK = [[0, '#e5402c'], [.18, '#cf3a24'], [.33, '#ea5a35'], [.5, '#d4371f'], [.64, '#e84a2c'], [.8, '#c9361f'], [1, '#e35a33']]
+  .map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('');
 export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '', taps = null } = {}) {
   const pts = values.map((v, i) => ({ v, a: avg[i], i })).filter((p) => p.v !== null);
   if (!pts.length) return '<p class="chart-empty">Noch keine Daten in diesem Zeitraum.</p>';
@@ -49,9 +52,9 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
     ${g}
     <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".5" stroke-width="1"/>
-    ${mv.length > 1 ? `<path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="${COLORS.red}" stroke-width="2.4" stroke-linejoin="miter"/>
-      <path class="ln-cut" pathLength="100" d="M${mv.join('L')}" fill="none" stroke="${COLORS.ink}" stroke-width="3.4" stroke-dasharray=".5 4.3"/>
-      <path class="ln-cut" pathLength="100" d="M${mv.join('L')}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".75" stroke-width=".6" stroke-dasharray="1.1 7.5" stroke-dashoffset="-2.2"/>` : ''}
+    ${mv.length > 1 ? `<defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
+      <path class="ln avg-under" pathLength="1" d="M${mv.join('L')}" transform="translate(.8 1)" fill="none" stroke="#7d2215" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
+      <path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="url(#avgInk${gid})" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
     ${dots}
     <text x="${PAD.l}" y="${H - 6}" class="ax">${labelL}</text><text x="${W - PAD.r}" y="${H - 6}" class="ax" text-anchor="end">${labelR}</text>
   </svg>
