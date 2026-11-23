@@ -677,7 +677,7 @@ const actions = {
   },
   backFriends() { S.screen = 'home'; S.tab = 'friends'; ui.friend = null; render(); window.scrollTo(0, 0); loadFriends(); },
   tab(el) {
-    if (el.dataset.v === 'stats' && S.tab !== 'stats') S.statsPeriod = 'all'; // Statistik startet immer mit „Gesamt“
+    if (el.dataset.v === 'stats' && S.tab !== 'stats') { S.statsPeriod = 'all'; S.statsSub = 'doubles'; } // Statistik startet immer mit „Gesamt“ und im Reiter Doppel
     S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
     render(); window.scrollTo(0, 0);
     if (S.tab === 'friends') { loadFriends(); loadConfirms(); }
@@ -1003,8 +1003,8 @@ document.addEventListener('touchend', (e) => {
   const t = e.changedTouches[0], dx = t.clientX - swipe0.x, dy = t.clientY - swipe0.y;
   const ok = Math.abs(dx) > 70 && Math.abs(dy) < Math.abs(dx) * 0.5 && Date.now() - swipe0.t < 700;
   swipe0 = null;
-  if (!ok || !document.querySelector('.subtop .subtabs')) return;
-  const keys = SUBTABS.map(([k]) => k), i = keys.indexOf(document.querySelector('.subtop .subtabs .on')?.dataset.v);
+  if (!ok || !document.querySelector('.subpop .subtabs')) return;
+  const keys = SUBTABS.map(([k]) => k), i = keys.indexOf(document.querySelector('.subpop .subtabs .on')?.dataset.v);
   const next = keys[i + (dx < 0 ? 1 : -1)];
   if (i >= 0 && next) actions.statsSub({ dataset: { v: next } });
 }, { passive: true });
@@ -1272,6 +1272,7 @@ seedDemo(S);   // Testdaten einmalig (Kennzeichen demo: true, in den Einstellung
 setOnChange(() => render());
 if (S.screen === 'friend') S.screen = 'home';
 S.statsPeriod = 'all';
+S.statsSub = 'doubles'; // beim Start immer der mittlere Reiter (Doppel)
 render();
 initOnline({
   render, toast, loggedIn: () => !!auth.user,

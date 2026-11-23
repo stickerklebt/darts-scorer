@@ -2086,15 +2086,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .tabs .tabline::before { left: 26%; right: 26%; margin: 0; top: 0; width: auto; height: 3px; border: 0; border-radius: 2px; background: var(--red); box-shadow: 0 0 12px rgba(229,64,44,.7); }
 .tabs ~ .page { padding-bottom: calc(var(--sab) + 96px); }
 
-/* Statistik: Unter-Reiter oben, zurückhaltend – kurzer Goldstrich, darunter drei Symbole; nicht über die ganze Breite */
-.subtop { position: sticky; top: 0; z-index: 20; padding: calc(var(--sat) + 10px) 0 0; background: linear-gradient(var(--ink) 75%, rgba(11,10,8,0)); }
-.subtop::before { content: ""; display: block; width: 180px; height: 1px; margin: 0 auto; background: linear-gradient(90deg, transparent, rgba(212,166,58,.7), transparent); }
-.subtop .subtabs.three { width: 180px; margin: 2px auto 0; }
-.subtop .subtabs.three::before, .subtop .subtabs.three::after { display: none; }
-.subtop .subtabs.three button { height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--cream2); opacity: .45; }
-.subtop .subtabs.three button.on { opacity: 1; color: var(--gold-l); text-shadow: none; }
-.subtop .subtabs.three button.on .ic { filter: drop-shadow(0 0 6px rgba(236,201,106,.45)); }
-.subtop .subtabs.three .sub-line { bottom: 2px; height: 2px; }
 .st-head { justify-content: flex-end; }
 
 /* Gleitender Schnitt: durchgezogen, aber nicht perfekt – Tinte leicht ungleich rot, leicht versetzter dunkler Druck, Feder-Wackeln */
@@ -2115,10 +2106,22 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* Ohne obere Leiste: Abstand zur Statusleiste (iPhone) */
 .tabs + .page { padding-top: calc(var(--sat) + 16px); }
 
-/* Zeitraum-Knopf (Uhr) rechts neben den drei Symbolen, durch einen feinen Goldstrich getrennt */
-.subtop { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
-.subtop::before { flex: 0 0 100%; }
-.sub-clock { position: relative; width: 44px; height: 44px; margin: 2px 0 0 10px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--cream2); opacity: .45; background: none; }
-.sub-clock::before { content: ""; position: absolute; left: -6px; top: 12px; bottom: 12px; width: 1px; background: rgba(212,166,58,.4); }
+/* Statistik: kleine Symbol-Pille über dem Haupt-Reiter „Statistik“ (taucht beim Öffnen auf): Krone · Scheibe · Kurve | Uhr */
+.subpop { position: fixed; left: 50%; bottom: calc(var(--sab) + 82px); z-index: 26; display: flex; align-items: center; gap: 2px; padding: 0 6px;
+  border-radius: 999px; background: rgba(17,15,12,.95); border: 1px solid rgba(212,166,58,.45); box-shadow: 0 8px 22px rgba(0,0,0,.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transform: translateX(-50%); animation: subpop-in .45s cubic-bezier(.2,.9,.3,1.25) .05s both; }
+@keyframes subpop-in { from { opacity: 0; transform: translate(-50%, 24px) scale(.85); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+.subpop::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 10px; height: 10px; margin-left: -5px; transform: rotate(45deg);
+  background: rgba(17,15,12,.95); border-right: 1px solid rgba(212,166,58,.45); border-bottom: 1px solid rgba(212,166,58,.45); }
+.subpop .subtabs.three { width: 150px; margin: 0; }
+.subpop .subtabs.three::before, .subpop .subtabs.three::after { display: none; }
+.subpop .subtabs.three button { height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--cream2); opacity: .45; }
+.subpop .subtabs.three button.on { opacity: 1; color: var(--gold-l); text-shadow: none; }
+.subpop .subtabs.three button .ic { width: 22px; height: 22px; }
+.subpop .subtabs.three .sub-line { bottom: 4px; height: 2px; }
+.subpop .subtabs.three .sub-line::before { left: 30%; right: 30%; }
+.sub-clock { position: relative; width: 40px; height: 44px; margin-left: 8px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--cream2); opacity: .45; background: none; }
+.sub-clock::before { content: ""; position: absolute; left: -5px; top: 12px; bottom: 12px; width: 1px; background: rgba(212,166,58,.4); }
 .sub-clock.on { opacity: 1; color: var(--gold-l); }
-.subtop .subtabs.three { margin: 2px 0 0 54px; } /* gleicht die Uhr rechts aus → Symbole bleiben mittig */
+.page.stats { padding-bottom: calc(var(--sab) + 150px) !important; }
