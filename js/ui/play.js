@@ -38,7 +38,7 @@ export function camBlock() {
       <small>Wie soll dieses Gerät mitmachen?</small></span></div>
     <div class="cam-pick"><button class="btn red" data-act="camBeMain"><b>Regie</b><small>Hier wird gespielt</small></button>
       <button class="btn line" data-act="camAsDevice"><b>Kamera</b><small>Dieses Gerät filmt mit</small></button></div>`;
-  return `<div class="cam-row"><button class="btn line" data-act="cam">${icon('cam', 1.9, 18)} Kamera</button></div>`;
+  return ''; // kein extra Kamera-Knopf – dafür gibt es die Kachel „Kamera“
 }
 
 export function playView() {
