@@ -63,7 +63,7 @@ function confirmBlock() {
 }
 
 function myBanner(name) {
-  return playerBanner({ name, avg: S.mainId ? overview(S.matches, S.mainId).avg : null });
+  return playerBanner({ name, noAvg: true }); // Backstage: nur der Name (Ø steht in der Statistik)
 }
 
 export function friendsView() {

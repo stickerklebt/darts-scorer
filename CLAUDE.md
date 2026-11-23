@@ -164,7 +164,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben das eigene Banner, in der Mitte die Freunde, ganz unten unter „Mehr“ vier Kacheln (nur Symbol + Titel) Spielhistorie ·
   Eigener Caller · Einstellungen · Kamera, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
 - **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
-  von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben (keine Abzeichen mehr). Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
+  von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben (keine Abzeichen mehr; im Backstage nur der Name, ohne Ø; ohne dunkle Kante rechts). Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
 - **Trophäen/Pokale gibt es nicht mehr** (auf Wunsch komplett entfernt: kein `trophies.js`, keine Abzeichen im Banner, keine `prefs.badges`, Server ohne `badges`).
 - **Freunde** (im Backstage): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –

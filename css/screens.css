@@ -2314,3 +2314,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* X01-Karte nach Wegfall von Band und Optionszeile wieder groß: mehr Höhe, 501 mittig und größer */
 .hero.hero-go { min-height: clamp(300px, 56vw, 460px); display: flex; flex-direction: column; justify-content: center; padding-top: 26px; padding-bottom: 30px; }
 .hero.hero-go .hero-num { font-size: clamp(150px, 46vw, 260px) !important; }
+
+/* Banner ohne dunkle Kante rechts/unten (versetzter Schatten-Streifen) */
+.pb-band::after { display: none !important; }

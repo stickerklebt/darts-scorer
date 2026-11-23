@@ -62,13 +62,13 @@ function bouquetRight() {
 }
 
 /** Banner mit Namen und Average (pic = Bot-Bild auf dem Band). */
-export function playerBanner({ name, avg = null, variant = '', pic = null }) {
+export function playerBanner({ name, avg = null, variant = '', pic = null, noAvg = false }) {
   return `<section class="pbanner ${variant ? `pb-${variant}` : ''}" aria-label="Banner von ${esc(name)}">
     <div class="pb-band">
       <div class="pb-ribbon"><div class="pb-in">
         ${pic ? `<span class="pb-pic">${avatar(pic, 64)}</span>` : ''}
         <span class="pb-name"><b data-t="${esc(name)}">${esc(name)}</b>${sparkles(16, 3)}</span>
-        <span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b>${sparkles(5, 11)}</span>
+        ${noAvg ? '' : `<span class="pb-avg"><b>${avg === null || avg === undefined ? '–' : fmt(avg)}</b>${sparkles(5, 11)}</span>`}
       </div></div>
       ${bouquetLeft()}${bouquetRight()}
     </div>
