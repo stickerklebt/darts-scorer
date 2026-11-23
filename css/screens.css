@@ -2212,3 +2212,9 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Verteilung: Bereich (0+ · 20+ …) unter den Balken immer sichtbar */
 .has-tg .chart .ax.keep { opacity: 1 !important; }
+
+/* Haupt-Reiter: Strich kürzer, der Schein läuft dafür weiter zu den Seiten aus */
+.tabs .tab.on::after { width: min(52%, 100px);
+  background: linear-gradient(90deg, rgba(229,64,44,0), #f25a36 30%, #ff9a5c 50%, #f25a36 70%, rgba(229,64,44,0)); }
+.tabs .tab.on::before { width: min(100%, 230px); height: 22px; bottom: -1px;
+  background: radial-gradient(ellipse 50% 60% at 50% 72%, rgba(255,110,60,.26), rgba(229,64,44,.11) 50%, transparent 100%); }
