@@ -4,7 +4,7 @@ import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
-import { heatBoard, TIER_COLORS, tierColor } from './board.js';
+import { heatBoard, tierColor } from './board.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
@@ -93,7 +93,7 @@ function dblInfo(st, key) {
 }
 
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
-    Liste: immer beste Quote zuerst; Erklärung der Farben aufklappbar direkt unter der Scheibe. */
+    Liste: immer beste Quote zuerst; keine Farb-Erklärung. */
 export function doublesBlock(st, sel, withList = true) {
   const fields = st.doubles.fields, rating = doubleRating(st.doubles);
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
@@ -101,19 +101,9 @@ export function doublesBlock(st, sel, withList = true) {
   rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   const medal = (k) => (rating[k]?.top ? `<span class="medal m${rating[k].top}" title="Platz ${rating[k].top}"></span>` : '');
-  // Erklärung der Farben: direkt unter der Scheibe, eingeklappt nur ein Knopf „Erklärung“
-  const legOpen = ui.statsOpen?.has('legend');
-  const legend = `<div class="heat-leg ${legOpen ? 'open' : ''}"><button class="heat-leg-h" data-act="statsFold" data-v="legend">Erklärung der Farben${icon('chevR', 2.4, 14)}</button>
-    ${legOpen ? `<div class="heat-key">
-      <span class="hk-scale"><small>schwächer</small>${['bad', 'weak', 'avg', 'good', 'great'].map((t) => `<i style="background:${TIER_COLORS[t]}"></i>`).join('')}<small>besser</small></span>
-      <span class="hk-med"><span class="medal m1"></span><small>deine 3 besten</small></span>
-      <span class="hk-none"><i></i><small>unter ${MIN_ATTEMPTS} Versuchen</small></span>
-    </div>
-    <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>` : ''}</div>`;
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board">${heatBoard(fields, sel || null, rating)}</div>
       ${withList && sel ? dblInfo(st, sel) : ''}
-      ${withList ? legend : ''}
     </div>
     ${withList ? `<div class="dbl-right">
       <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>` : ''}
