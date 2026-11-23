@@ -49,6 +49,9 @@ document.addEventListener('scroll', (e) => {
   const el = e.target;
   if (!el.classList?.contains('dbl-scroll') && !el.classList?.contains('fl-scroll')) return;
   el.classList.toggle('end', el.scrollTop + el.clientHeight >= el.scrollHeight - 2);
+  // Scroll-Regler nur zeigen, solange gewischt wird
+  el.classList.add('scrolling'); clearTimeout(timers.get(el));
+  timers.set(el, setTimeout(() => el.classList.remove('scrolling'), 900));
 }, true);
 
 /* Maus: beim Darüberfahren einblenden, beim Verlassen wieder ausblenden (Karten und Diagramme) */
