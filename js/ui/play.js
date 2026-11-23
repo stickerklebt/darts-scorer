@@ -53,7 +53,7 @@ export function playView() {
       <div class="hero-art">${heroArt()}</div>
       ${corners}${fuse(6, 11)}
       <div class="hero-main">
-        <div class="hero-num">${o.start}${sparkles(5, 11)}</div>
+        <div class="hero-num">501${sparkles(5, 11)}</div>
         <span class="hero-tap" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 24 24"><path d="M9 6.5v11l9-5.5z" fill="currentColor"/></svg></span>
       </div>
     </section>
