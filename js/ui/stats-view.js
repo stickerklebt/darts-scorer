@@ -14,7 +14,8 @@ export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr
 /** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Krone · Scheibe · Kurve */
 const SUB_ICONS = {
   overview: '<path d="M4 19h16"/><path d="M4.5 16L3 7.5l5 4L12 5l4 6.5 5-4L19.5 16z"/><circle cx="12" cy="5" r=".6" fill="currentColor"/>',
-  doubles: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>',
+  // Doppel: ein Ausschnitt der Scheibe (ein Segment), das Doppelfeld oben orange betont
+  doubles: '<path d="M5.16 4.21A20 20 0 0 1 18.84 4.21L17.47 7.96A16 16 0 0 0 6.53 7.96Z" fill="#ea6a2e" stroke="#ea6a2e" stroke-width=".8"/><path d="M12 23L5.16 4.21A20 20 0 0 1 18.84 4.21Z"/><path d="M8.24 12.66A11 11 0 0 1 15.76 12.66" stroke-width="1.3"/><path d="M9.6 16.1A7 7 0 0 1 14.4 16.1" stroke-width="1.1" opacity=".7"/>',
   more: '<path d="M3 21h18"/><path d="M4 16l5-5 4 3 7-7"/><path d="M15 7h5v5"/>',
 };
 const subIcon = (k) => `<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SUB_ICONS[k]}</svg>`;
