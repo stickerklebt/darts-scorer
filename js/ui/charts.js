@@ -104,7 +104,7 @@ export function legCurveChart(points) {
     const top = p === best;
     return `<rect class="dt" style="--k:${i}" x="${r1(x(i) - 2.5)}" y="${r1(y(p.avg) - 2.5)}" width="5" height="5" fill="${top ? COLORS.gold : COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>
       ${top ? `<circle cx="${x(i)}" cy="${y(p.avg)}" r="7" fill="none" stroke="${COLORS.gold}" stroke-width="1.4"/>` : ''}
-      <text x="${x(i)}" y="${r1(y(p.avg) - (top ? 11 : 8))}" class="bv${top ? ' top' : ''}" text-anchor="middle">${Math.round(p.avg)}</text>
+      <text x="${x(i)}" y="${r1(y(p.avg) - (top ? 11 : 8))}" class="bv pc${top ? ' top' : ''}" text-anchor="middle">${Math.round(p.avg)}</text>
       <text x="${x(i)}" y="${H2 - pad.b + 14}" class="ax" text-anchor="middle">${p.n}.</text>`;
   }).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H2}" role="img">
