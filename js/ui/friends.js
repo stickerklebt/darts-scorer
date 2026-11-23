@@ -136,7 +136,7 @@ export function friendView() {
       ])}
       <div class="minirow"><span><small>Matches</small><b>${x.matches}</b></span><span><small>Längste Serie</small><b>${x.bestStreak}</b></span><span><small>Lieblingsdoppel</small><b>${x.favourite ? esc(x.favourite.field) : '–'}</b></span></div>
       <h2 class="label">Form · letzte ${x.form.length} Matches</h2>
-      ${lineChart(avgs, movingAvg(avgs), { labelL: x.form[0] ? dateStr(x.form[0].date) : '', labelR: x.form.length ? dateStr(x.form[x.form.length - 1].date) : '' })}
+      <div class="has-tg">${lineChart(avgs, movingAvg(avgs), { labelL: x.form[0] ? dateStr(x.form[0].date) : '', labelR: x.form.length ? dateStr(x.form[x.form.length - 1].date) : '' })}</div>
       <div class="form-row">${x.form.map((s) => `<span class="${s.solo ? 't' : s.won ? 'w' : 'l'}" title="${dateStr(s.date)}">${s.solo ? 'T' : s.won ? 'S' : 'N'}</span>`).join('')}</div>`;
   } else {
     body = `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch kein 501</h2>
