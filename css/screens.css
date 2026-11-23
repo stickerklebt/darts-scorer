@@ -2160,3 +2160,10 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   .has-rv.rv-on .kv-row b { font-size: 22px !important; }
   .has-rv .kv-row em { font-size: 13px; }
 }
+
+/* Diagramme schlicht: Achsen-Zahlen, Werte, Legende und Erklärung erst nach Antippen (weich ein/aus). Verteilung zeigt nur die Prozente. */
+.has-tg { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.has-tg .chart .ax, .has-tg .chart .bv:not(.pc), .has-tg .chart-key, .has-tg .ch-h small { opacity: 0; transition: opacity .35s ease; }
+.has-tg.rv-on .chart .ax, .has-tg.rv-on .chart .bv:not(.pc), .has-tg.rv-on .chart-key, .has-tg.rv-on .ch-h small { opacity: 1; }
+.has-tg .chart .ax.dim { opacity: 0; }
+.has-tg.rv-on .chart .ax.dim { opacity: .75; }

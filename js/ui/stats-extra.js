@@ -2,7 +2,7 @@
 import { S, ui, nameOf } from '../store.js';
 import { movingAvg, BUCKETS } from '../stats.js';
 import { label } from '../checkout.js';
-import { lineChart, barChart } from './charts.js';
+import { lineChart, barChart, chartBox } from './charts.js';
 import { x01Table } from './result.js';
 import { esc, fmt, pcVars } from './common.js';
 import { dateStr } from './stats-view.js';
@@ -37,17 +37,16 @@ const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), l
 export function historyCharts(st, pid = '', middle = '') {
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
   const avgs = st.series.map((s) => s.avg);
-  return `<h3 class="ch-h">Average pro Match</h3>${lineChart(avgs, movingAvg(avgs), { ...ends(st), taps })}
-    ${middle}`;
+  return chartBox('Average pro Match', '', lineChart(avgs, movingAvg(avgs), { ...ends(st), taps })) + middle;
 }
 /** Verlauf der Doppelquote pro Match (steht im Reiter Doppel ganz unten) */
 export function doubleChart(st, pid = '') {
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
   const dbl = st.series.map((s) => (s.dbl === null ? null : s.dbl * 100));
-  return `<h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
+  return chartBox('Doppelquote pro Match', '', lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` }));
 }
 /** Scoring: Verteilung der Aufnahmen */
-export const distChart = (st) => `<h3 class="ch-h">Verteilung der Aufnahmen <small>nur Scoring – Rest über 170</small></h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`;
+export const distChart = (st) => chartBox('Verteilung der Aufnahmen', 'nur Scoring – Rest über 170', barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]])));
 
 /** Aufklappbare Matchliste */
 export function matchList(st) {

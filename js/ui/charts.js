@@ -1,6 +1,9 @@
 /* Diagramme als eigene SVGs: Linie (mit gleitendem Schnitt) und Balken. Flach, harte Kanten. */
 import { COLORS } from './svg.js';
 
+/** Diagramm mit Titel: Zahlen, Achsen, Legende und Erklärung erst nach Antippen (5 s, nochmal tippen blendet aus – reveal.js) */
+export const chartBox = (title, sub, chart) => `<div class="chartbox has-tg"><h3 class="ch-h">${title}${sub ? ` <small>${sub}</small>` : ''}</h3>${chart}</div>`;
+
 const W = 340, H = 170, PAD = { l: 34, r: 10, t: 12, b: 24 };
 const r1 = (x) => Math.round(x * 10) / 10;
 /** Schöne Schrittweite (1, 2, 2,5, 5 × 10^n) */
@@ -72,9 +75,9 @@ export function barChart(items) {
     const h = max ? (c / max) * (ih - 14) : 0, x0 = r1(6 + i * bw + 4), w = r1(bw - 8), y0 = r1(PAD.t + ih - h);
     const col = i === n - 1 ? COLORS.red : i >= n - 3 ? COLORS.gold : COLORS.cream;
     s += `<rect class="bar" style="--k:${i}" x="${x0}" y="${y0}" width="${w}" height="${r1(h)}" fill="${col}" stroke="${COLORS.ink}" stroke-width="1"/>`;
-    s += `<text x="${r1(x0 + w / 2)}" y="${y0 - 4}" class="bv" text-anchor="middle">${c}</text>`;
+    s += `<text x="${r1(x0 + w / 2)}" y="${y0 - 4}" class="bv pc" text-anchor="middle">${Math.round((c / total) * 100)}%</text>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 14}" class="ax" text-anchor="middle">${lbl}</text>`;
-    s += `<text x="${r1(x0 + w / 2)}" y="${H - 2}" class="ax dim" text-anchor="middle">${Math.round((c / total) * 100)}%</text>`;
+    s += `<text x="${r1(x0 + w / 2)}" y="${H - 2}" class="ax dim" text-anchor="middle">${c}×</text>`;
   });
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${s}</svg>`;
 }

@@ -9,7 +9,7 @@ import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
 import { situations, legCurve, MIN_N, GOOD, BAD } from '../situations.js';
-import { legCurveChart } from './charts.js';
+import { legCurveChart, chartBox } from './charts.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
 /** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Krone · Scheibe · Kurve */
@@ -127,8 +127,8 @@ export function doublesBlock(st, sel, withList = true) {
 function moreTab(st, pid) {
   // Average-Verlauf, Verteilung der Aufnahmen, Doppelquote-Verlauf, dann „Wann du gut wirfst“. Checkout steht im Reiter Doppel.
   const lc = legCurve(matchesOf(S.matches, pid, S.statsPeriod), pid);
-  const lcHead = `<h3 class="ch-h">Aufnahmen im Leg <small>Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}</small></h3>`;
-  return block('', historyCharts(st, pid, distChart(st) + lcHead + legCurveChart(lc.points)) + doubleChart(st, pid))
+  const lcBox = chartBox('Aufnahmen im Leg', `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points));
+  return block('', historyCharts(st, pid, distChart(st) + lcBox) + doubleChart(st, pid))
     + situationsBlock(situations(matchesOf(S.matches, pid, S.statsPeriod), pid));
 }
 

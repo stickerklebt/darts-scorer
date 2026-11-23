@@ -288,6 +288,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Spielende): Fehlt ein bekanntes Match nur lokal (z. B. alter Stand aus einem zweiten Tab), wird es NICHT gelöscht, sondern per
   `since = 0` neu geholt. (Vorher hat das am 23.11. zwei Matches im Konto gelöscht.)
 - Überblick ohne die Zeile Matches · Siege · Längste Serie.
+- **Diagramme schlicht** (`chartBox` in `charts.js`, `.has-tg`): nur Titel, Linien/Balken; Achsen-Zahlen, Werte, Legende und Erklärung
+  erscheinen erst nach Antippen (5 s, nochmal tippen = aus, `reveal.js`). Verteilung zeigt über den Balken gerundete Prozente, Bereich + Anzahl erst nach Antippen.
 - **Versuche erst auf Tippen** (`js/ui/reveal.js`, `rv()` + `.has-rv`): Statistik-Karten mit Quote zeigen nur die Prozente;
   Antippen blendet „Treffer / Versuche“ weich ein, nach 6 s wieder aus, rechts neben der Zahl (Doppelquote, Lieblingsdoppel, Quote nach Bereich, Gesamt-Doppelquote, Doppel-Fenster, Freundesprofil).
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
