@@ -2007,3 +2007,9 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .has-rv { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .rv { opacity: 0; transition: opacity .35s ease; }
 .has-rv.rv-on .rv { opacity: 1; }
+
+/* Doppel-Reiter, Checkout: breit zweispaltig (links Höchstes + Quote nach Bereich, rechts Top 5) */
+@media (min-width: 900px) {
+  .co-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; margin-top: 18px; }
+  .co-layout .rlist, .co-layout .record { margin-top: 0; }
+}

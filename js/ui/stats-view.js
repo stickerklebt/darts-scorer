@@ -58,9 +58,10 @@ function overviewTab(st, pid) {
 }
 
 function checkoutTab(st, pid) {
-  return record('Höchstes Checkout', st.highestCo ?? '–', '')
-    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))
-    + rankList('Top 5 Checkouts', st.topCo, pid);
+  // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
+  return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '')
+    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))}</div>
+    <div class="co-right">${rankList('Top 5 Checkouts', st.topCo, pid)}</div></div>`;
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
