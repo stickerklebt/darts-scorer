@@ -2257,3 +2257,15 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .splash svg, .auth-crest svg { filter: drop-shadow(0 0 1px rgba(236,201,106,.5)) drop-shadow(0 10px 28px rgba(229,64,44,.32)) !important; }
 .splash::after { content: ""; position: absolute; left: 50%; top: 50%; width: min(70vw, 340px); height: min(70vw, 340px); transform: translate(-50%, -42%);
   background: radial-gradient(circle, rgba(255,110,60,.12), rgba(229,64,44,.05) 45%, transparent 70%); pointer-events: none; z-index: -1; }
+
+/* X01-Karte (Spielen) im Kontur-Stil der Reiter: dunkle Flächen, Verlauf Gold → Orange → Rot, warmes Leuchten */
+.hero .hero-title .badge-mode { --badge-bg: #120f0c; --badge-ink: #ff8a4c; --badge-line: #ecc96a;
+  box-shadow: inset 0 0 0 1.5px #ff8a4c, 0 0 14px rgba(229,64,44,.35) !important; }
+.hero .hero-num { animation: none; text-shadow: none !important; color: transparent;
+  background: linear-gradient(180deg, #f6dc8a 0%, #ecc96a 38%, #ff8a4c 74%, #e5402c 100%); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: 1px rgba(255,214,140,.35);
+  filter: url(#ink) drop-shadow(0 0 1px rgba(236,201,106,.6)) drop-shadow(0 8px 26px rgba(229,64,44,.35)); }
+.hero .hero-btns .btn.red { background: linear-gradient(#120f0c, #120f0c) padding-box, linear-gradient(90deg, #ecc96a, #ff8a4c 55%, #e5402c) border-box !important;
+  border: 1.5px solid transparent !important; color: #ffb067 !important; box-shadow: 0 0 18px rgba(229,64,44,.28), inset 0 0 22px rgba(229,64,44,.12) !important; text-shadow: 0 0 10px rgba(255,138,76,.45); }
+.hero .hero-btns .btn.red::before, .hero .hero-btns .btn.red::after { opacity: .35; }
+.hero .hero-btns .btn.red:hover { box-shadow: 0 0 26px rgba(229,64,44,.45), inset 0 0 26px rgba(229,64,44,.18) !important; }
