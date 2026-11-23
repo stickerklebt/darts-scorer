@@ -5,7 +5,7 @@ import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } 
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
-import { historyCharts, distChart } from './stats-extra.js';
+import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
@@ -122,8 +122,7 @@ function fold(key, title, summary, body) {
 
 /** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
-  const c = st.counts;
-  // Zwischen Average- und Doppelquote-Verlauf: die Verteilung der Aufnahmen (immer offen). Danach eingeklappt nur noch Checkout.
+  // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen), dann eingeklappt Checkout. Doppelquote-Verlauf steht im Reiter Doppel.
   return block('', historyCharts(st, pid, distChart(st)))
     + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid));
 }
@@ -145,7 +144,7 @@ export function statsView() {
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
-  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${head}
     <nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
     <div class="subbody sub-${sub}">${body}</div>
