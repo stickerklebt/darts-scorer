@@ -135,7 +135,7 @@ export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } 
       <path d="M44 203 Q100 192 156 203 M44 221 Q100 210 156 221" fill="none" stroke="${C.ink}" stroke-width=".5" stroke-opacity=".35" stroke-dasharray="1.6 2.4"/>
       <path d="M40 200 L40 228 M160 200 L160 228" stroke="${C.ink}" stroke-width=".8" stroke-opacity=".5"/>
       <path d="M24 210 L36 206 M26 222 L36 219 M176 210 L164 206 M174 222 L164 219" stroke="${C.ink}" stroke-width=".6" stroke-opacity=".45"/>
-      <text x="100" y="218" text-anchor="middle" font-family="'Fell Digits', 'Cinzel', 'Times New Roman', serif" font-size="20" letter-spacing="5" fill="${C.ink}">${banner}</text>
+      <text x="100" y="218" text-anchor="middle" font-family="'Fell Digits', 'Cinzel', 'Times New Roman', serif" font-size="${banner.length > 6 ? 14.5 : 20}" letter-spacing="${banner.length > 6 ? 2.2 : 5}" fill="${C.ink}">${banner}</text>
     </g>` : '';
   return `<svg viewBox="0 0 200 240" width="${size}" height="${size * 1.2}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     ${bg ? `<rect x="-20" y="-20" width="240" height="280" fill="${bg}"/>` : ''}
@@ -161,15 +161,16 @@ export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } 
 let lineN = 0;
 export function crestLine(opts = {}) {
   const C = COLORS, g = `crl${++lineN}`, dark = '#120f0c';
-  let s = crest({ lite: true, ...opts }); // schlichter: ohne Strahlen, Lorbeerkranz und Schraffur im Schild
+  let s = crest({ lite: true, banner: 'DARTVADER', ...opts }); // schlichter: ohne Strahlen, Lorbeerkranz und Schraffur im Schild
   s = s.split(`fill="${C.gold}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1.3"`)
     .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
     .split(`fill="${C.cream2}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1"`)
     .split(`fill="${C.cream}" stroke="${C.ink}"`).join(`fill="${dark}" stroke="url(#${g})"`)
     .split(`fill="${C.cream}"`).join(`fill="rgba(236,201,106,.14)" stroke="url(#${g})" stroke-width=".5"`)
     .split(`fill="${C.ink}">`).join(`fill="url(#${g})">`);
+  // DartVader: dunkler – Stahl oben, Glut-Rot unten (nur Farben, keine Film-Motive)
   const defs = `<defs><linearGradient id="${g}" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="160" y2="240">
-    <stop offset="0" stop-color="#f3d27a"/><stop offset=".45" stop-color="#ecc96a"/><stop offset=".75" stop-color="#ff8a4c"/><stop offset="1" stop-color="#e5402c"/></linearGradient></defs>`;
+    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#e5402c"/><stop offset="1" stop-color="#9a1022"/></linearGradient></defs>`;
   return s.replace('aria-hidden="true">', `aria-hidden="true">${defs}`);
 }
 

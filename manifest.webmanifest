@@ -1,6 +1,6 @@
 {
-  "name": "Darts Scorer",
-  "short_name": "Darts",
+  "name": "DartVader",
+  "short_name": "DartVader",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

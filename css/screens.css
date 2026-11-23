@@ -2421,3 +2421,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .start-pill:active { transform: scale(.985); box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 0 3px rgba(11,10,8,.9), inset 0 0 0 4px rgba(212,166,58,.25), 0 0 46px rgba(229,64,44,.35); }
 /* Setup: Spielname mit Logo mittig */
 .su-title { justify-content: center; }
+
+/* DartVader-Wappen: kühler Stahl-Schimmer + tiefrotes Glühen */
+.splash svg, .auth-crest svg { filter: drop-shadow(0 0 1px rgba(233,236,239,.45)) drop-shadow(0 10px 30px rgba(170,16,34,.45)) !important; }
+.splash::after { background: radial-gradient(circle, rgba(190,24,40,.16), rgba(120,10,20,.06) 45%, transparent 70%) !important; }

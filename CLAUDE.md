@@ -367,3 +367,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - „First to … Legs/Sets“ im Setup ist ein **Drehrad** (`js/ui/wheel.js`, `wheelHTML`/`initWheels`): einrastende Walze, Mitte gilt, Legs 1–20, Sets 1–10; antippen dreht hin, mit der Maus ziehen (mit Schwung).
 - Setup-Spielerliste: kein „Du“-Schild; Hoch/Entfernen erscheinen erst nach Antippen des Spielers (`ui.prowSel`).
 - Setup-Startknopf (`.start-pill`): dunkle Pille im Stil der Reiter-Leiste (Goldrand, Innenlinie, warmer Schein, Leuchtstrich unter dem Wort), Dock ohne Goldlinie.
+- **App-Name: DartVader** (Titel, Manifest, Home-Bildschirm, Wappen-Band „DARTVADER“). Wappen (`crestLine`) in Stahl → Glut-Rot mit tiefrotem Leuchten.
+  Rechtlich: **keine** Star-Wars-Motive verwenden (kein Helm/Maske, kein Laserschwert, kein Imperiums-/Sith-Zeichen, kein Todesstern, keine
+  Film-Schrift, keine Atem-Geräusche, keine Zitate). Nur eigene Darts-Heraldik + dunkle Farben. Der Name ist ein Wortspiel nah an einer
+  geschützten Marke – vor kommerzieller Veröffentlichung juristisch prüfen lassen.
