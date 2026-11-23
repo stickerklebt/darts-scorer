@@ -169,7 +169,7 @@ function situationsBlock(r) {
     ['Heiße Hand', h.hot ? sign(h.hot.delta) : '–', h.hot ? `Ø ${fmt(h.hot.avg, 1)} nach einer ${GOOD}+` : 'noch zu wenig Fälle'],
     ['Am stärksten', h.best ? fmt(h.best.avg, 1) : '–', h.best ? h.best.label : ''],
     ['Am schwächsten', h.worst ? fmt(h.worst.avg, 1) : '–', h.worst ? h.worst.label : ''],
-    ['Beste Tageszeit', h.daytime ? h.daytime.k : '–', h.daytime ? `Ø ${fmt(h.daytime.avg, 1)}` : 'noch zu wenig Fälle'],
+    ['Start ins Leg', h.start ? sign(h.start.delta) : '–', h.start ? `Ø ${fmt(h.start.avg, 1)} mit der 1. Aufnahme` : 'noch zu wenig Fälle'],
   ];
   // Balken-Maßstab: größte Abweichung füllt die halbe Breite (mind. ±5)
   const ds = Object.values(r.rows).filter((x) => x.n >= MIN_N).map((x) => Math.abs(x.avg - b.avg));
