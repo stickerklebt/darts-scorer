@@ -1000,6 +1000,8 @@ const actions = {
   gear() { ui.modal = { type: 'gear' }; render(); },
   pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'camDebug') { stationHooks.debug = S.prefs.camDebug; stationDebug(S.prefs.camDebug); } if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
   abort() { ui.modal = { type: 'abort' }; render(); },
+  // Laufendes Spiel direkt vom Startbildschirm löschen (Mülleimer auf „Spiel fortsetzen“) – wie „Spiel beenden“, ohne Nachfrage
+  discardCurrent() { if (!S.current || S.current.done) return; if (S.current.online) abortOnline(); S.current = null; ui.moment = null; toast('Spiel gelöscht'); render(); },
   abortForce() { if (S.current?.online) abortOnline(); S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
   closeModal() { ui.modal = null; render(); },
   scrim() { ui.modal = null; render(); },

@@ -361,3 +361,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Entscheidungsleg (Ø im letzten möglichen Leg vs. Schnitt), Bust-Schock (Ø der Aufnahme direkt nach einem Bust), Erster Versuch oder Nachwerfen
   (Doppelquote erster Doppel-Dart der Aufnahme vs. nach Fehlwurf), Tageszeit (bester Abschnitt bzw. „Nach 22 Uhr …“), Wochentag (bester/schwächster).
   Je Karte Zahl + ein Satz; Mindestmengen (10 Aufnahmen / 6 Doppelversuche), sonst „Noch zu wenig Daten“.
+- „Spiel fortsetzen“ (Reiter Play) hat rechts einen Mülleimer (`discardCurrent`): löscht das laufende Spiel sofort ohne Nachfrage (online: beendet es für beide).

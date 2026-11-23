@@ -47,7 +47,8 @@ export function playView() {
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
   const others = [...Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired), 'x01'];
   return `<main class="page">
-    ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
+    ${m && !m.done ? `<div class="resume-wrap"><button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>
+      <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
     <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">
       <div class="hero-art">${heroArt()}</div>
       ${corners}${fuse(6, 11)}
