@@ -337,3 +337,4 @@ Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem G
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
 - Statistik-Kopf: nur der Name in der Mitte (Cinzel, ohne Kasten, ohne „Statistik von“), daneben der Uhr-Knopf.
+- **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen.

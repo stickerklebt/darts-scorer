@@ -2055,3 +2055,19 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* Name in der Mitte der Kopfzeile (Uhr-Knopf bleibt rechts) */
 .st-head { position: relative; justify-content: flex-end; }
 .st-head .st-plain { position: absolute; left: 64px; right: 64px; top: 50%; transform: translateY(-50%); text-align: center; pointer-events: none; }
+
+/* KEIN knallweißer Hintergrund mehr: Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln, Setup-Kopf dunkel
+   wie „Doppelquote gesamt“ (schwarz, Goldrahmen mit Innenlinie, Creme-Schrift). */
+.record, .rlist, .empty-card, .rules, .su-head { background: var(--ink) !important; background-image: none !important; color: var(--cream) !important; border: 2px solid var(--gold); }
+.record > div, .empty-card > div, .rules-in, .su-head > div { background: transparent !important; background-image: none !important; border: 1px solid rgba(212,166,58,.6) !important; outline: 0 !important; }
+.rlist { outline: 1px solid rgba(212,166,58,.45) !important; outline-offset: -6px; }
+.record small, .rlist h3, .rules h2 { color: var(--gold-l); }
+.record b { color: var(--cream); text-shadow: 3px 3px 0 var(--red) !important; }
+.record em, .rl-s, .rl-empty, .empty-card p, .rules p, .rules p.small { color: var(--muted) !important; }
+.empty-card h2 { color: var(--cream) !important; }
+.rl { border-top-color: rgba(212,166,58,.22); }
+.rl-i { background: var(--gold); color: var(--ink); }
+.rl-v { color: var(--cream); }
+.rl.tap::after { color: var(--gold); }
+.rl.tap:active { background: rgba(212,166,58,.08); }
+.record > div::before, .record > div::after { color: var(--red); }
