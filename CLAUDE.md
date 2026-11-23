@@ -357,5 +357,5 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   gegenüberliegende Doppel (16 ↔ 4, 20 ↔ 3, 6 ↔ 11, 19 ↔ 1). Ball frei zu Beginn und nach jedem Tor; 25 oder Bull = Ball (auch Ballgewinn),
   Ball bleibt über die Aufnahme hinaus; mit Ball auf das gegnerische Doppel = Tor. Sieg bei `opts.target` Toren (3/5/7). Eingabe `fbPad`:
   25 · Bull · D(Gegner-Tor) · Daneben, was gerade zählt leuchtet; Bot zielt ohne Ball aufs Bull, mit Ball aufs Tor. Nicht in der Statistik.
-- Statistik-Unter-Reiter in der Pille: Überblick = Siegertreppchen mit 1 · 2 · 3, Doppel = Doppelfeld-Symbol, Scoring = Kurve. Überblick: Average, 6 Karten, darunter große Doppelquote-Karte
+- Statistik-Unter-Reiter in der Pille: Überblick = „123“ (Zahlen), Doppel = Doppelfeld-Symbol, Scoring = Kurve. Überblick: Average, 6 Karten, darunter große Doppelquote-Karte
   und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (Liste nutzt breit die Höhe der Scheibe).

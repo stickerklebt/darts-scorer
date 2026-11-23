@@ -12,10 +12,10 @@ import { situations, legCurve, MIN_N, GOOD, BAD } from '../situations.js';
 import { legCurveChart, chartBox } from './charts.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
-/** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Treppchen 1·2·3 · Doppelfeld · Kurve */
+/** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Zahlen 123 · Doppelfeld · Kurve */
 const SUB_ICONS = {
-  // Überblick: Siegertreppchen aus 1 · 2 · 3
-  overview: '<path d="M2.5 21.5V13h6.5v8.5M9 21.5V8h6.5v13.5M15.5 21.5V15.5H22v6M1.5 21.5h21.5"/><text x="5.75" y="19.2" text-anchor="middle" font-size="6.2" fill="currentColor" stroke="none" font-family="League Gothic, Arial Narrow, sans-serif">2</text><text x="12.25" y="15.6" text-anchor="middle" font-size="7" fill="currentColor" stroke="none" font-family="League Gothic, Arial Narrow, sans-serif">1</text><text x="18.75" y="20.6" text-anchor="middle" font-size="5.6" fill="currentColor" stroke="none" font-family="League Gothic, Arial Narrow, sans-serif">3</text><path d="M12.25 3.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.35 5.3l2-.3z" fill="currentColor" stroke="none"/>',
+  // Überblick: es geht um Zahlen – „123“ als Symbol, darunter ein Strich
+  overview: '<text x="12" y="16.2" text-anchor="middle" font-size="14.5" letter-spacing=".6" fill="currentColor" stroke="none" font-family="League Gothic, Arial Narrow, sans-serif">123</text><path d="M4.5 20h15"/>',
   // Doppel (nach Skizze): zwei Bögen des Doppelrings über die ganze Breite, zwei Segmentlinien, dazwischen das Doppelfeld orange
   doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#ea6a2e" stroke="none"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/>',
   more: '<path d="M3 21h18"/><path d="M4 16l5-5 4 3 7-7"/><path d="M15 7h5v5"/>',
