@@ -46,7 +46,7 @@ export function doubleChart(st, pid = '') {
   return chartBox('Doppelquote pro Match', '', lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` }));
 }
 /** Scoring: Verteilung der Aufnahmen */
-export const distChart = (st) => chartBox('Verteilung der Aufnahmen', 'nur Scoring – Rest über 170', barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]])));
+export const distChart = (st) => chartBox('Verteilung der Aufnahmen', 'nur Scoring – Rest über 170', barChart(BUCKETS.map(([, lo, hi], i) => [lo === hi ? String(lo) : `${lo}+`, st.buckets[i]])));
 
 /** Aufklappbare Matchliste */
 export function matchList(st) {

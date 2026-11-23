@@ -2209,3 +2209,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .kv-row { gap: 0; align-items: baseline; }
 .kv-row b { margin-right: calc((var(--num-w, 1.16) - 1) * 4.4em + 10px); flex: none; }
 .kv-row em { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: clip; }
+
+/* Verteilung: Bereich (0+ · 20+ …) unter den Balken immer sichtbar */
+.has-tg .chart .ax.keep { opacity: 1 !important; }

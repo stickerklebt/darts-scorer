@@ -78,10 +78,10 @@ export function barChart(items) {
     const col = i === n - 1 ? COLORS.red : i >= n - 3 ? COLORS.gold : COLORS.cream;
     s += `<rect class="bar" style="--k:${i}" x="${x0}" y="${y0}" width="${w}" height="${r1(h)}" fill="${col}" stroke="${COLORS.ink}" stroke-width="1"/>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${y0 - 4}" class="bv pc" text-anchor="middle">${Math.round((c / total) * 100)}%</text>`;
-    s += `<text x="${r1(x0 + w / 2)}" y="${H - 14}" class="ax" text-anchor="middle">${lbl}</text>`;
+    s += `<text x="${r1(x0 + w / 2)}" y="${H - 14}" class="ax keep" text-anchor="middle">${lbl}</text>`; // Bereich immer sichtbar
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 2}" class="ax dim" text-anchor="middle">${c}×</text>`;
   });
-  const crop = `0 ${PAD.t - 2} ${W} ${ih + 4}`; // ohne Bereich/Anzahl unten: nur Balken + Prozente
+  const crop = `0 ${PAD.t - 2} ${W} ${H - 9 - (PAD.t - 2)}`; // Balken, Prozente und Bereich; die Anzahl erst beim Herauszoomen
   return `<svg class="chart" viewBox="${crop}" data-crop="${crop}" data-full="0 0 ${W} ${H}" role="img">${s}</svg>`;
 }
 

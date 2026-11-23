@@ -290,7 +290,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - Überblick ohne die Zeile Matches · Siege · Längste Serie.
 - **Diagramme schlicht** (`chartBox` in `charts.js`, `.has-tg`): nur Titel, Linien/Balken; Achsen-Zahlen, Werte, Legende und Erklärung
   erscheinen erst nach Antippen (5 s, nochmal tippen = aus, `reveal.js`). Ohne Zahlen ist das SVG auf die Linien/Balken gezoomt (`data-crop`),
-  Antippen zoomt die viewBox weich auf `data-full` heraus, dann blenden Achsen/Legende ein (kein Leerraum im Ruhezustand). Verteilung zeigt über den Balken gerundete Prozente, Bereich + Anzahl erst nach Antippen; „Aufnahmen im Leg“ zeigt die Ø-Werte über der Linie immer (`.bv.pc`).
+  Antippen zoomt die viewBox weich auf `data-full` heraus, dann blenden Achsen/Legende ein (kein Leerraum im Ruhezustand). Verteilung zeigt immer gerundete Prozente über und den Bereich (0+ · 20+ · … · 180) unter den Balken, die Anzahl erst nach Antippen; „Aufnahmen im Leg“ zeigt die Ø-Werte über der Linie immer (`.bv.pc`).
 - **Versuche erst auf Tippen** (`js/ui/reveal.js`, `rv()` + `.has-rv`): Statistik-Karten mit Quote zeigen nur die Prozente;
   Antippen blendet „Treffer / Versuche“ weich ein, nach 6 s (oder nochmal tippen) wieder aus, rechts neben der Zahl (Doppelquote, Lieblingsdoppel, Quote nach Bereich, Gesamt-Doppelquote, Doppel-Fenster, Freundesprofil).
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
