@@ -91,7 +91,6 @@ export function setupView() {
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     ${remote ? `<p class="foot"><b class="solo-hint">Online gegen ${esc(remote.name)}:</b> jeder an seinem Gerät, der Anwurf wird ausgelost.</p>` : ''}
-    <p class="foot">${!S.teamMode && L.length === 1 && !isBot(L[0].id) ? '<b class="solo-hint">Solo: Du spielst allein, ganz ohne Gegner.</b> ' : ''}Bis zu ${MAX_PLAYERS} Spieler.</p>
     <h2 class="label"><i class="stepn">2</i>Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>
     ${nSides >= 2 && !remote ? `<h2 class="label"><i class="stepn">3</i>Anwurf</h2>
