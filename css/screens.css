@@ -2338,3 +2338,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* 501-Karte: beim Darüberfahren keine Veränderung (kein Anheben, kein Vergrößern, kein stärkeres Leuchten) */
 .hero.hero-go:hover { transform: none; filter: none; box-shadow: 0 0 0 1px rgba(236,201,106,.25), 0 14px 40px rgba(0,0,0,.5), 0 0 36px rgba(229,64,44,.16); }
 .hero.hero-go:hover .hero-num { transform: scaleX(var(--num-w, 1.16)); }
+
+/* Backstage: nichts blinkt oder wandert (kein Lichtpunkt am Rand, kein Funkeln, keine Lichtlinien) */
+.page.backstage *, .page.backstage *::before, .page.backstage *::after { animation: none !important; }
+.page.backstage .glint::before, .page.backstage .glint::after { opacity: 0 !important; }
