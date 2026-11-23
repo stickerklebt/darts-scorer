@@ -2317,3 +2317,8 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Banner ohne dunkle Kante rechts/unten (versetzter Schatten-Streifen) */
 .pb-band::after { display: none !important; }
+
+/* Backstage: oben nur der eigene Name (Cinzel, mittig, Gold-Verlauf wie die Reiter) */
+.bs-name { margin: 10px 0 6px; text-align: center; font-family: var(--f-display); font-weight: 700; font-size: clamp(34px, 9vw, 56px); letter-spacing: .06em;
+  background: linear-gradient(180deg, #fff3c4, #ecc96a 55%, #c9971f); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(229,64,44,.25)); }

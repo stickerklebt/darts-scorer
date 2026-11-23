@@ -161,7 +161,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Fenster in der Mitte mit Details (X01-Tabelle bzw. Platzierung, `histSheet`)
   und „Spiel löschen“ (mit Bestätigung). Gelöscht wird aus `S.matches` → fehlt in jeder Statistik, Sync löscht es auf dem
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
-- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben das eigene Banner, in der Mitte die Freunde, ganz unten unter „Mehr“ vier Kacheln (nur Symbol + Titel) Spielhistorie ·
+- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben nur der eigene Name (`.bs-name`, kein Banner), in der Mitte die Freunde, ganz unten unter „Mehr“ vier Kacheln (nur Symbol + Titel) Spielhistorie ·
   Eigener Caller · Einstellungen · Kamera, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
 - **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
   von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben (keine Abzeichen mehr; im Backstage nur der Name, ohne Ø; ohne dunkle Kante rechts). Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.

@@ -63,7 +63,7 @@ function confirmBlock() {
 }
 
 function myBanner(name) {
-  return playerBanner({ name, noAvg: true }); // Backstage: nur der Name (Ø steht in der Statistik)
+  return `<h1 class="bs-name">${esc(name)}</h1>`; // Backstage: oben nur der Name, kein Banner
 }
 
 export function friendsView() {
