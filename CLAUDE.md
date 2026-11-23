@@ -346,7 +346,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Versteckte Statistik-Zahlen erscheinen auf allen Geräten nur per Klick/Tippen (kein Einblenden beim Darüberfahren mit der Maus).
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
 - Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js, schlicht: ohne Strahlen, Lorbeer, Schraffur) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
-- X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, beim Darüberfahren keine Veränderung, `.hero-go`).
+- X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, runder Play-Knopf mit Wellen unter der 501 als Antipp-Hinweis `.hero-tap`, beim Darüberfahren keine Veränderung, `.hero-go`).
 - **Fußball** (`js/football.js`, Partyspiel, immer 1 gegen 1): Seite 1 hat das Tor `opts.goal` (D16/D20/D6/D19), Seite 2 das
   gegenüberliegende Doppel (16 ↔ 4, 20 ↔ 3, 6 ↔ 11, 19 ↔ 1). Ball frei zu Beginn und nach jedem Tor; 25 oder Bull = Ball (auch Ballgewinn),
   Ball bleibt über die Aufnahme hinaus; mit Ball auf das gegnerische Doppel = Tor. Sieg bei `opts.target` Toren (3/5/7). Eingabe `fbPad`:

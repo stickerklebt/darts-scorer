@@ -2347,3 +2347,14 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .su-title { display: flex; align-items: center; gap: 14px; margin: 6px 0 4px; }
 .su-title h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 7vw, 40px); letter-spacing: .06em; color: var(--cream); }
 .su-title .badge-mode { flex: none; }
+
+/* 501-Karte: Antipp-Hinweis ohne Text – runder Play-Knopf unter der Zahl, von dem Wellen nach außen laufen */
+.hero-tap { position: relative; display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin: 14px auto 0; border-radius: 50%;
+  color: #ffb067; background: radial-gradient(circle, rgba(229,64,44,.28), rgba(17,15,12,.9) 70%); border: 1.5px solid rgba(236,201,106,.75);
+  box-shadow: 0 0 18px rgba(255,110,60,.35); z-index: 3; }
+.hero-tap svg { width: 24px; height: 24px; margin-left: 3px; filter: drop-shadow(0 0 6px rgba(255,138,76,.6)); }
+.hero-tap i { position: absolute; inset: -2px; border-radius: 50%; border: 1.5px solid rgba(255,138,76,.65); animation: tap-ripple 2.6s ease-out infinite; pointer-events: none; }
+.hero-tap i + i { animation-delay: 1.3s; }
+@keyframes tap-ripple { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.3); opacity: 0; } }
+.hero.hero-go:active .hero-tap { transform: scale(.92); }
+@media (prefers-reduced-motion: reduce) { .hero-tap i { animation: none; opacity: 0; } }
