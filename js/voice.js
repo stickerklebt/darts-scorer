@@ -1,5 +1,6 @@
 /* Mikrofon: Punktzahlen ansagen („37“, „hundertvierzig“, „Bust“, „nichts“, „null“). Spracherkennung des Browsers (Web Speech API,
    Deutsch, keine Bibliothek). Es zählen nur Zahlen 0–180 und die Wörter für „keine Punkte“ – alles andere wird ignoriert. */
+import { POSS } from './checkout.js';
 
 const ZERO = new Set(['bust', 'büst', 'bast', 'nichts', 'null', 'überworfen', 'ueberworfen', 'zero']);
 const UNITS = { ein: 1, eins: 1, eine: 1, zwei: 2, drei: 3, vier: 4, fünf: 5, fuenf: 5, sechs: 6, sieben: 7, acht: 8, neun: 9 };
@@ -26,8 +27,9 @@ export function parseScores(text) {
   const t = String(text || '').toLowerCase().replace(/[.,!?;:]/g, ' ');
   for (const tok of t.split(/\s+/).filter(Boolean)) {
     if (ZERO.has(tok)) { out.push(0); continue; }
-    if (/^\d{1,3}$/.test(tok)) { const n = Number(tok); if (n <= 180) out.push(n); continue; }
-    const n = wordNumber(tok); if (n !== null && n <= 180) out.push(n);
+    // Nur Zahlen, die man mit 3 Darts werfen kann (163, 166, 169, 172, 173, 175, 176, 178, 179 gibt es nicht)
+    if (/^\d{1,3}$/.test(tok)) { const n = Number(tok); if (POSS.has(n)) out.push(n); continue; }
+    const n = wordNumber(tok); if (n !== null && POSS.has(n)) out.push(n);
   }
   // „kein score“ besteht aus zwei Wörtern
   if (!out.length && /kein(e)? (score|punkte)/.test(t)) out.push(0);

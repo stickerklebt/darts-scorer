@@ -30,3 +30,8 @@ test('Mikrofon im Checkout: Dart für Dart mit Single/Double/Doppel/Triple, Bull
   assert.deepEqual(parseDarts('daneben, 19, Doppel 1'), [{ n: 0, m: 1 }, { n: 19, m: 1 }, { n: 1, m: 2 }]);
   assert.deepEqual(parseDarts('ähm was'), []);
 });
+
+test('Mikrofon: unmögliche Aufnahmen (169, 179 …) werden ignoriert, 159/162 gehen', async () => {
+  const { parseScores } = await import('../js/voice.js');
+  assert.deepEqual(parseScores('169 159 162 163 179 hundertneunundsechzig 180'), [159, 162, 180]);
+});
