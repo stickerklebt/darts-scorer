@@ -171,17 +171,19 @@ function situationsBlock(r) {
     ['Am schwächsten', h.worst ? fmt(h.worst.avg, 1) : '–', h.worst ? h.worst.label : ''],
     ['Beste Tageszeit', h.daytime ? h.daytime.k : '–', h.daytime ? `Ø ${fmt(h.daytime.avg, 1)}` : 'noch zu wenig Fälle'],
   ];
+  // Balken-Maßstab: größte Abweichung füllt die halbe Breite (mind. ±5)
+  const ds = Object.values(r.rows).filter((x) => x.n >= MIN_N).map((x) => Math.abs(x.avg - b.avg));
+  const scale = Math.max(5, ...ds);
   const row = (k, label) => {
     const x = r.rows[k];
-    if (!x || x.n < MIN_N) return `<div class="sit-r off"><span class="sit-l">${label}</span><span class="sit-bar"></span><span class="sit-v">–</span><span class="sit-p">zu wenig</span></div>`;
-    const d = x.avg - b.avg, w = Math.min(50, (Math.abs(d) / 20) * 50);
-    return `<div class="sit-r has-rv"><span class="sit-l">${label}${rv(` · ${x.n} Aufn.`)}</span>
-      <span class="sit-bar"><i class="${d >= 0 ? 'up' : 'dn'}" style="${d >= 0 ? 'left:50%' : `left:${50 - w}%`};width:${w}%"></i></span>
-      <span class="sit-v">${fmt(x.avg, 1)}<small>${sign(d)}</small></span>
-      <span class="sit-p"><b class="g">${pct(x.good)}</b> · <b class="b">${pct(x.bad)}</b></span></div>`;
+    if (!x || x.n < MIN_N) return `<div class="sit-r off"><span class="sit-l">${label}</span><span class="sit-bar"><span class="sit-few">zu wenig</span></span></div>`;
+    const d = x.avg - b.avg, w = Math.min(34, (Math.abs(d) / scale) * 34), up = d >= 0; // max 34 %, damit die Zahl daneben noch Platz hat
+    // Nur der Balken; Antippen blendet Ø und Abweichung (grün/rot) an seinem Ende ein
+    return `<div class="sit-r has-rv"><span class="sit-l">${label}</span>
+      <span class="sit-bar"><i class="${up ? 'up' : 'dn'}" style="${up ? 'left:50%' : `left:${50 - w}%`};width:${w}%"></i>
+      <span class="sit-num rv ${up ? 'up' : 'dn'}" style="${up ? `left:calc(${50 + w}% + 8px)` : `right:calc(${50 + w}% + 8px)`}">${sign(d)} <small>Ø ${fmt(x.avg, 1)}</small></span></span></div>`;
   };
-  return block('Wann du gut wirfst', `<p class="foot sit-note">Nur Scoring (Rest über 170). Dein Scoring-Ø: <b>${fmt(b.avg, 1)}</b> · gut = ${GOOD}+, schlecht = unter ${BAD}</p>
+  return block('Wann du gut wirfst', `<p class="foot sit-note">Nur Scoring (Rest über 170). Dein Scoring-Ø: <b>${fmt(b.avg, 1)}</b>. Grün = besser als sonst, rot = schlechter – Zeile antippen zeigt die Zahl.</p>
     ${cards(hl, 'three sit-hl')}
-    <div class="sit-head"><span></span><span></span><span>Ø</span><span><b class="g">gut</b> · <b class="b">schlecht</b></span></div>
     ${r.groups.map(([title, rows]) => `<div class="sit-g"><h3>${title}</h3>${rows.map(([k, l]) => row(k, l)).join('')}</div>`).join('')}`);
 }
