@@ -1994,3 +1994,11 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .heat-leg-h svg { transition: transform .2s; }
 .heat-leg.open .heat-leg-h svg { transform: rotate(90deg); }
 .heat-leg .heat-key { margin-top: 8px; }
+
+/* Doppel-Reiter: oben rechts die Gesamt-Doppelquote (füllt den freien Platz), die Tabelle unten */
+.dbl-hero b { font-size: clamp(56px, 16vw, 92px) !important; }
+.dbl-hero { margin-bottom: 0; }
+@media (min-width: 900px) {
+  .dbl-layout .dbl-right { align-self: stretch; display: flex; flex-direction: column; }
+  .dbl-layout .dbl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 200px; }
+}
