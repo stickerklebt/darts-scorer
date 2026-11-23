@@ -992,6 +992,18 @@ document.addEventListener('click', (e) => {
   if (el.dataset.act === 'scrim' && e.target !== el) return;
   actions[el.dataset.act]?.(el);
 });
+/* Lange auf den Reiter „Statistik“ drücken (0,5 s) → Zeitraum wählen; der Klick danach wird verschluckt */
+let lpTimer = null, lpFired = false;
+document.addEventListener('pointerdown', (e) => {
+  const t = e.target.closest('.tab[data-v="stats"]');
+  if (!t) return;
+  lpFired = false; clearTimeout(lpTimer);
+  lpTimer = setTimeout(() => { lpFired = true; navigator.vibrate?.(12); actions.tab(t); actions.periodPick(); }, 500);
+});
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEventListener(ev, () => clearTimeout(lpTimer));
+document.addEventListener('click', (e) => { if (lpFired && e.target.closest('.tab[data-v="stats"]')) { lpFired = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+document.addEventListener('contextmenu', (e) => { if (e.target.closest('.tab[data-v="stats"]')) e.preventDefault(); });
+
 /* Statistik: zwischen Überblick · Doppel · Scoring wischen (waagerecht, deutlich mehr als senkrecht) */
 let swipe0 = null;
 document.addEventListener('touchstart', (e) => {

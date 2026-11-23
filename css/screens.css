@@ -2125,3 +2125,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .sub-clock::before { content: ""; position: absolute; left: -5px; top: 12px; bottom: 12px; width: 1px; background: rgba(212,166,58,.4); }
 .sub-clock.on { opacity: 1; color: var(--gold-l); }
 .page.stats { padding-bottom: calc(var(--sab) + 150px) !important; }
+
+/* Langes Drücken auf „Statistik“ ohne Text-Auswahl / iOS-Menü */
+.tab[data-v="stats"] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
