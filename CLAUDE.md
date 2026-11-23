@@ -290,12 +290,12 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
-- **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Verlauf & mehr (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
-  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Verlauf & mehr“: Average-Verlauf, Verteilung der Aufnahmen (immer offen,
+- **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average-Verlauf, Verteilung der Aufnahmen (immer offen,
   sonst nichts vom Scoring), darunter eingeklappt Checkout (`ui.statsOpen`). Der Doppelquote-Verlauf steht im Reiter Doppel ganz unten. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
   (Bestes Leg steht im Überblick; 9-Darter gibt es als Trophäe). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
-  Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Verlauf & mehr“. Doppelfarben relativ zur eigenen
+  Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel einheitlich mit Silber-Rand (glimmend), in der Liste
   als silberner Ring. Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus, Rest per Scrollen in der Box. Farblegende klein am Ende.

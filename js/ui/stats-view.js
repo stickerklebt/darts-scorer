@@ -9,8 +9,8 @@ import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
-export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Verlauf & mehr']];
-/** Frühere Unter-Reiter landen in „Verlauf & mehr“ */
+export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
+/** Frühere Unter-Reiter landen in „Scoring“ */
 const subOf = (k) => (k === 'scoring' || k === 'checkout' || k === 'history' ? 'more' : SUBTABS.some(([x]) => x === k) ? k : 'overview');
 export const PERIOD_LONG = { '7d': 'Letzte 7 Tage', '30d': 'Letzte 30 Tage', '1y': 'Letztes Jahr', all: 'Gesamt' };
 export const pct = (x) => (x === null || x === undefined ? '–' : `${fmt(x * 100)} %`);
@@ -123,7 +123,7 @@ function fold(key, title, summary, body) {
   </section>`;
 }
 
-/** „Verlauf & mehr“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
+/** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
   // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen), dann eingeklappt Checkout. Doppelquote-Verlauf steht im Reiter Doppel.
   return block('', historyCharts(st, pid, distChart(st)))
