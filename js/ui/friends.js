@@ -6,7 +6,6 @@ import { auth } from '../sync.js';
 import { movingAvg, overview } from '../stats.js';
 import { playerBanner } from './banner.js';
 import { camBlock } from './play.js';
-import { trophies, badgeSlots } from '../trophies.js';
 import { resultText } from '../history.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars } from './common.js';
@@ -41,19 +40,9 @@ function searchRows() {
   }).join('')}</div>`;
 }
 
-/** Eigene Trophäen nur neu berechnen, wenn sich die Matches geändert haben */
-let tCache = { key: '', state: null };
-function myTrophies() {
-  const last = S.matches[S.matches.length - 1];
-  const key = `${S.mainId}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
-  if (tCache.key !== key) tCache = { key, state: trophies(S.matches, S.mainId, { since: profile(S.mainId)?.createdAt ?? null }) };
-  return tCache.state;
-}
-/** Banner-Daten des Hauptspielers (Name, Ø, gewählte Abzeichen) – fürs VS-Intro im Match */
+/** Banner-Daten des Hauptspielers (Name, Ø) – fürs VS-Intro im Match */
 export function myBannerData() {
-  const state = S.mainId ? myTrophies() : {};
-  return { name: nameOfMain(), avg: S.mainId ? overview(S.matches, S.mainId).avg : null,
-    badges: badgeSlots(S.prefs.badges, state).map((id) => (id ? { id, tier: state[id].tier } : null)) };
+  return { name: nameOfMain(), avg: S.mainId ? overview(S.matches, S.mainId).avg : null };
 }
 const nameOfMain = () => auth.user?.username || S.profiles.find((p) => p.id === S.mainId)?.name || '';
 
@@ -74,9 +63,7 @@ function confirmBlock() {
 }
 
 function myBanner(name) {
-  const state = S.mainId ? myTrophies() : {};
-  const badges = badgeSlots(S.prefs.badges, state).map((id) => (id ? { id, tier: state[id].tier } : null));
-  return playerBanner({ name, avg: S.mainId ? overview(S.matches, S.mainId).avg : null, badges, state });
+  return playerBanner({ name, avg: S.mainId ? overview(S.matches, S.mainId).avg : null });
 }
 
 export function friendsView() {
@@ -121,7 +108,7 @@ const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';
   const head = `<header class="bar"><button class="sq" data-act="backFriends" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">Freund</span><span class="sq ghost"></span></header>`;
-  const top = `${playerBanner({ name, avg: d?.stats?.x501?.avg ?? null, badges: d?.stats?.badges || [null, null, null] })}
+  const top = `${playerBanner({ name, avg: d?.stats?.x501?.avg ?? null })}
     ${d?.user?.friendsSince ? `<p class="foot pb-since">Freunde seit ${dateStr(d.user.friendsSince)}</p>` : ''}`;
   if (!d) return `${head}<main class="page">${top}<p class="foot">${fr?.error ? esc(fr.error) : 'Lade Statistik …'}</p></main>`;
   const st = d.stats || { total: 0, games: {} }, x = st.x501;

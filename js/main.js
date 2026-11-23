@@ -426,7 +426,7 @@ function startGame() {
     const m = S.current, me = myBannerData();
     m.names = { ...(m.names || {}), [S.mainId]: nameOf(S.mainId), ...Object.fromEntries(fr.map((e) => [e.id, e.name])) };
     m.friends = fr.map((e) => ({ pid: e.id, uid: e.friend.uid, name: e.name, mode: e.friend.mode }));
-    m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null, badges: e.banner?.badges || [null, null, null] }])) };
+    m.banners = { [S.mainId]: me, ...Object.fromEntries(fr.map((e) => [e.id, { name: e.name, avg: e.banner?.avg ?? null }])) };
   }
   if (CAM_GAMES.has(S.game) && S.prefs.camPlay === false) S.current.camera = false;
   addBanners(S.current);
@@ -454,9 +454,9 @@ function addBanners(m) {
     const id = side[0];
     if (b[id]) continue;
     b[id] = id === S.mainId ? myBannerData()
-      : isBot(id) ? { name: bot(id).name, avg: bot(id).avg, bot: id, badges: (bot(id).badges || []).map(([t, tier]) => ({ id: t, tier })) }
-      : profile(id) ? { name: nameOf(id), avg: overview(S.matches, id).avg, badges: [null, null, null] }
-      : { name: nameOf(id), avg: null, badges: [null, null, null] };
+      : isBot(id) ? { name: bot(id).name, avg: bot(id).avg, bot: id }
+      : profile(id) ? { name: nameOf(id), avg: overview(S.matches, id).avg }
+      : { name: nameOf(id), avg: null };
   }
   m.banners = b;
 }
@@ -738,16 +738,6 @@ const actions = {
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
-  /* Banner: Abzeichen-Platz antippen → Auswahl darunter auf/zu; Trophäe wählen → in den Platz (synchronisiert über prefs) */
-  badgeSlot(el) { const i = Number(el.dataset.v); ui.badgePick = ui.badgePick === i ? null : i; render(); },
-  badgeSet(el) {
-    const i = ui.badgePick, id = el.dataset.v || null;
-    if (!Number.isInteger(i)) return;
-    const b = Array.isArray(S.prefs.badges) ? S.prefs.badges.slice(0, 3) : [];
-    while (b.length < 3) b.push(null);
-    if (id) for (let k = 0; k < 3; k++) if (b[k] === id) b[k] = null; // keine Trophäe doppelt
-    b[i] = id; S.prefs.badges = b; ui.badgePick = null; render();
-  },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
   compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
   backStats() { S.screen = 'home'; S.tab = 'stats'; render(); window.scrollTo(0, 0); },
@@ -820,7 +810,7 @@ const actions = {
     } else S.lineup = S.lineup.filter((e) => e.friend?.mode !== 'remote');
     const teams = S.lineup.map((e) => e.team);
     const team = teams.filter((t) => t === 'A').length <= teams.filter((t) => t === 'B').length ? 'A' : 'B';
-    S.lineup.push({ id: f.pid, team, name: f.username, friend: { uid: f.id, mode }, banner: { avg: f.avg, badges: f.badges } });
+    S.lineup.push({ id: f.pid, team, name: f.username, friend: { uid: f.id, mode }, banner: { avg: f.avg } });
     ui.modal = null; ui.addFriend = null;
     toast(mode === 'remote' ? `${f.username} spielt auf seinem Gerät` : `${f.username} spielt hier mit`);
     render();

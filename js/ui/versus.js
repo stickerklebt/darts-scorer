@@ -9,7 +9,7 @@ const bannerOf = (m, pid, mine) => {
   // eigenes Banner immer mit den eigenen, aktuellen Daten (Ø, gewählte Pokale) – auch auf dem Gerät des Eingeladenen
   const b = pid === S.mainId ? myBannerData() : m.banners?.[pid];
   // eigenes Banner rot, Gegner weiß
-  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, badges: b?.badges || [null, null, null], variant: mine ? '' : 'white', pic: b?.bot || null });
+  return playerBanner({ name: b?.name || nameOf(pid), avg: b?.avg ?? null, variant: mine ? '' : 'white', pic: b?.bot || null });
 };
 
 /** Vollbild: Banner oben, großes VS, Banner unten (bei mehr Spielern alle untereinander). Weiter nur durch Antippen. */

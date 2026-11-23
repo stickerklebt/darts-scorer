@@ -63,7 +63,7 @@ export function friendRoutes(r, { db, limits }) {
     const me = c.user.id;
     const friends = q.friends.all(me, me, me).map((f) => {
       const s = statsFor(f.id);
-      return { id: f.id, username: f.username, since: f.since, pid: s?.pid ?? null, avg: s?.x501?.avg ?? null, badges: s?.badges ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null };
+      return { id: f.id, username: f.username, since: f.since, pid: s?.pid ?? null, avg: s?.x501?.avg ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null };
     });
     return { friends, incoming: q.incoming.all(me), outgoing: q.outgoing.all(me) };
   });

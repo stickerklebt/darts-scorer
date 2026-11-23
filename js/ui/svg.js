@@ -108,7 +108,7 @@ function dartShape(color, ink) {
 
 /* ---------- Wappen (App-Logo) ---------- */
 let crestN = 0;
-export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
+export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } = {}) {
   const C = COLORS, cx = 100, cy = 122, cid = `crc${++crestN}`;
   // Dartscheibe im Schild: 20 Segmente creme/schwarz, Goldring, rotes Bull
   let board = '';
@@ -139,13 +139,13 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
     </g>` : '';
   return `<svg viewBox="0 0 200 240" width="${size}" height="${size * 1.2}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     ${bg ? `<rect x="-20" y="-20" width="240" height="280" fill="${bg}"/>` : ''}
-    <g stroke="${C.gold}" stroke-width=".6" opacity=".45">${Array.from({ length: 48 }, (_, i) => { const a = (i * 7.5 * Math.PI) / 180, r0 = 70, r1 = i % 2 ? 98 : 108; return `<path d="M${r2(100 + r0 * Math.cos(a))} ${r2(124 + r0 * Math.sin(a))} L${r2(100 + r1 * Math.cos(a))} ${r2(124 + r1 * Math.sin(a))}"/>`; }).join('')}</g>
+    ${lite ? '' : `<g stroke="${C.gold}" stroke-width=".6" opacity=".45">${Array.from({ length: 48 }, (_, i) => { const a = (i * 7.5 * Math.PI) / 180, r0 = 70, r1 = i % 2 ? 98 : 108; return `<path d="M${r2(100 + r0 * Math.cos(a))} ${r2(124 + r0 * Math.sin(a))} L${r2(100 + r1 * Math.cos(a))} ${r2(124 + r1 * Math.sin(a))}"/>`; }).join('')}</g>`}
     <g transform="translate(100 120) rotate(-38)">${dartShape(C.gold, C.ink).replace('<g>', '<g transform="scale(1.62)">')}</g>
     <g transform="translate(100 120) rotate(-142)">${dartShape(C.gold, C.ink).replace('<g>', '<g transform="scale(1.62)">')}</g>
-    ${laurelWreath(100, 128, 84, C.gold, 7)}
+    ${lite ? '' : laurelWreath(100, 128, 84, C.gold, 7)}
     <path d="${shield}" fill="${C.ink}" stroke="${C.gold}" stroke-width="4"/>
     <clipPath id="${cid}"><path d="${shield}"/></clipPath>
-    <g clip-path="url(#${cid})" stroke="${C.gold}" stroke-width=".55" opacity=".32">${Array.from({ length: 34 }, (_, i) => `<path d="M${40 + i * 6} 56 L${r2(-30 + i * 6 + jit(i, 3) * 3)} 212"/>`).join('')}</g>
+    ${lite ? '' : `<g clip-path="url(#${cid})" stroke="${C.gold}" stroke-width=".55" opacity=".32">${Array.from({ length: 34 }, (_, i) => `<path d="M${40 + i * 6} 56 L${r2(-30 + i * 6 + jit(i, 3) * 3)} 212"/>`).join('')}</g>`}
     <path d="M51 64 H149 V118 C149 161 124 183 100 198 C76 183 51 161 51 118 Z" fill="none" stroke="${C.cream}" stroke-width="1"/>
     ${board}
     ${crown}
@@ -161,7 +161,7 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
 let lineN = 0;
 export function crestLine(opts = {}) {
   const C = COLORS, g = `crl${++lineN}`, dark = '#120f0c';
-  let s = crest(opts);
+  let s = crest({ lite: true, ...opts }); // schlichter: ohne Strahlen, Lorbeerkranz und Schraffur im Schild
   s = s.split(`fill="${C.gold}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1.3"`)
     .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
     .split(`fill="${C.cream2}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1"`)

@@ -104,7 +104,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + situations · football · board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · football · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -164,14 +164,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben das eigene Banner, in der Mitte die Freunde, ganz unten unter „Mehr“ vier Kacheln (nur Symbol + Titel) Spielhistorie ·
   Eigener Caller · Einstellungen · Kamera, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
 - **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
-  von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben,
-  darunter 3 Abzeichen mit grünen Ranken. Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
-- **Trophäen** (`js/trophies.js`, aus den Matches berechnet, läuft auch auf dem Server): Katalog `TROPHIES` (Scoring, Finishes,
-  Legs, Einzeldart, Laufbahn, Bots), Stufen bronze · silver · gold · royal (Königsrot) · legendary (nur 9-Darter).
-  Alle haben vorerst dasselbe Pokal-Wappen (`trophyBadge`), Farbe = erreichte Stufe, nicht erreicht = ausgegraut.
-  Eigenes Banner: Abzeichen antippen → darunter Auswahl aller Trophäen; nur erreichte wählbar, keine doppelt.
-  Wahl in `prefs.badges` (synchronisiert); Freunde sehen sie über `friend-stats.js` (`badges`). Doppelquote im Match erst ab
-  3 Versuchen; Robin Hood = zwei eigene Darts beim Ausbullen unter 2 mm auseinander.
+  von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben (keine Abzeichen mehr). Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
+- **Trophäen/Pokale gibt es nicht mehr** (auf Wunsch komplett entfernt: kein `trophies.js`, keine Abzeichen im Banner, keine `prefs.badges`, Server ohne `badges`).
 - **Freunde** (im Backstage): Suche nach Namensanfang, Anfrage → Annehmen/Ablehnen/Zurückziehen, gegenseitige Anfrage =
   sofort Freunde. Profil (Screen `friend`): 501-Kennzahlen des Hauptspielers, Formkurve der letzten 10, Spiele je Modus –
   vom Server aus den Matches berechnet (`friend-stats.js` → `js/stats.js`), keine Einzelmatches/Mitspielernamen.
@@ -179,7 +173,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   „Spielt auf meinem Gerät mit“ oder „Spielt auf seinem Gerät mit“. Aufstellungs-Eintrag `{ id: pid des Freundes (sein mainId),
   name, friend: { uid, mode: 'local' | 'remote' }, banner }`; Match bekommt `names`, `friends`, `banners` (Namen ohne eigenes Profil
   über `nameOf` → `m.names`). Jedes Spiel mit Gegner (Freund, Gast, Bot) startet mit dem VS-Intro: eigenes Banner rot,
-  Gegner-Banner weiß (`variant: 'white'`); Bots mit Bild auf dem Band, ihrem Ø und drei festen Pokalen (`badges` in `js/bots.js`), Gäste ohne Ø (`addBanners` in `main.js`).
+  Gegner-Banner weiß (`variant: 'white'`); Bots mit Bild auf dem Band und ihrem Ø, Gäste ohne Ø (`addBanners` in `main.js`).
   · **Online** (`remote`): nur du gegen einen Freund, Anwurf ausgelost, kein Ausbullen. Einladung (`POST /api/games`, gilt 10 min)
   → beim Freund Fenster + Liste im Backstage → Annehmen. Laufendes Match steht in `games` (rev): wer dran ist, gibt ein und schickt
   den Stand (`PUT`, falscher rev → 409 mit aktuellem Stand), das andere Gerät fragt alle 1,2 s (`GET …?rev=`, nicht protokolliert).
@@ -351,7 +345,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
 - Versteckte Statistik-Zahlen erscheinen auf allen Geräten nur per Klick/Tippen (kein Einblenden beim Darüberfahren mit der Maus).
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
-- Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
+- Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js, schlicht: ohne Strahlen, Lorbeer, Schraffur) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
 - X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, Anheben beim Darüberfahren, `.hero-go`).
 - **Fußball** (`js/football.js`, Partyspiel, immer 1 gegen 1): Seite 1 hat das Tor `opts.goal` (D16/D20/D6/D19), Seite 2 das
   gegenüberliegende Doppel (16 ↔ 4, 20 ↔ 3, 6 ↔ 11, 19 ↔ 1). Ball frei zu Beginn und nach jedem Tor; 25 oder Bull = Ball (auch Ballgewinn),
