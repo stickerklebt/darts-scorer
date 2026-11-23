@@ -2427,4 +2427,4 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .splash::after { background: radial-gradient(circle, rgba(190,24,40,.16), rgba(120,10,20,.06) 45%, transparent 70%) !important; }
 
 /* Setup ohne Abschnitts-Überschriften: etwas Abstand zwischen Spielern und Spieloptionen */
-.setup .addp + .opts, .setup .addp ~ .opts:first-of-type { margin-top: 18px; }
+.setup > .opts { margin-top: 18px; }
