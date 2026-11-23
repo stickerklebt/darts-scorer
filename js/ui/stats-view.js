@@ -85,7 +85,7 @@ function dblInfo(st, key) {
 }
 
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
-    Liste: beste Quote zuerst oder nach Zahl; Erklärung der Farben klein am Ende. */
+    Liste: immer beste Quote zuerst; Erklärung der Farben aufklappbar direkt unter der Scheibe. */
 export function doublesBlock(st, sel, withList = true) {
   const fields = st.doubles.fields, rating = doubleRating(st.doubles);
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
@@ -93,22 +93,25 @@ export function doublesBlock(st, sel, withList = true) {
   rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   const medal = (k) => (rating[k]?.top ? `<span class="medal m${rating[k].top}" title="Platz ${rating[k].top}"></span>` : '');
-  const legend = `<div class="heat-key">
+  // Erklärung der Farben: direkt unter der Scheibe, eingeklappt nur ein Knopf „Erklärung“
+  const legOpen = ui.statsOpen?.has('legend');
+  const legend = `<div class="heat-leg ${legOpen ? 'open' : ''}"><button class="heat-leg-h" data-act="statsFold" data-v="legend">Erklärung der Farben${icon('chevR', 2.4, 14)}</button>
+    ${legOpen ? `<div class="heat-key">
       <span class="hk-scale"><small>schwächer</small>${['bad', 'weak', 'avg', 'good', 'great'].map((t) => `<i style="background:${TIER_COLORS[t]}"></i>`).join('')}<small>besser</small></span>
       <span class="hk-med"><span class="medal m1"></span><small>deine 3 besten</small></span>
       <span class="hk-none"><i></i><small>unter ${MIN_ATTEMPTS} Versuchen</small></span>
     </div>
-    <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>`;
+    <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>` : ''}</div>`;
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board">${heatBoard(fields, sel || null, rating)}</div>
       ${withList && sel ? dblInfo(st, sel) : ''}
+      ${withList ? legend : ''}
     </div>
     ${withList ? '<div class="dbl-right">' : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${medal(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
-    ${withList ? '</div>' : ''}</div>
-    ${withList ? legend : ''}`;
+    ${withList ? '</div>' : ''}</div>`;
 }
 
 /** Einklappbarer Abschnitt (zu Beginn zu), mit kurzer Zusammenfassung im Kopf */

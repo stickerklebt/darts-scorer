@@ -298,7 +298,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Verlauf & mehr“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel einheitlich mit Silber-Rand (glimmend), in der Liste
-  als silberner Ring. Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 5, läuft unten aus, Rest per Scrollen in der Box. Farblegende klein am Ende.
+  als silberner Ring. Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus, Rest per Scrollen in der Box. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
   Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie

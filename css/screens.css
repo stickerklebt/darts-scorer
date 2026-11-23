@@ -1983,7 +1983,14 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .kv.pair { grid-template-columns: 2fr 1fr !important; }
 
 /* Doppel-Liste: man sieht die besten 5, darunter läuft sie ins Nichts aus; Rest durch Scrollen in der Box */
-.sbtable-wrap.dbl-scroll { max-height: 290px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+.sbtable-wrap.dbl-scroll { max-height: 250px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
   -webkit-mask-image: linear-gradient(#000 calc(100% - 70px), transparent); mask-image: linear-gradient(#000 calc(100% - 70px), transparent); }
 .sbtable-wrap.dbl-scroll .sbtable { margin-bottom: 60px; }
 .sbtable-wrap.dbl-scroll th { position: sticky; top: 0; z-index: 1; }
+
+/* Erklärung der Farben unter der Doppel-Scheibe: eingeklappt nur ein kleiner Knopf */
+.heat-leg { margin-top: 10px; text-align: center; }
+.heat-leg-h { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-family: var(--f-display); font-size: 15px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: none; }
+.heat-leg-h svg { transition: transform .2s; }
+.heat-leg.open .heat-leg-h svg { transform: rotate(90deg); }
+.heat-leg .heat-key { margin-top: 8px; }
