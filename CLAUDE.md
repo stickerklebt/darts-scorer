@@ -344,7 +344,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Die Bruchchallenge heißt in der App nur noch **„Challenge“** (`GAMES.bruch.title`, Screen-Titel, Ergebnis); intern bleibt der Schlüssel `bruch`.
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
 - Versteckte Statistik-Zahlen erscheinen auf allen Geräten nur per Klick/Tippen (kein Einblenden beim Darüberfahren mit der Maus).
-- Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
+- Haupt-Reiter heißen **Play · Stats · VIP** (früher Backstage; VIP mit Kronen-Symbol `vip`; intern weiter `play`/`stats`/`friends`).
 - Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js, schlicht: ohne Strahlen, Lorbeer, Schraffur) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
 - X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, darüber „First to X Legs“ `.hero-line`, kein Play-Knopf, beim Darüberfahren keine Veränderung, `.hero-go`).
 - **Fußball** (`js/football.js`, Partyspiel, immer 1 gegen 1): Seite 1 hat das Tor `opts.goal` (D16/D20/D6/D19), Seite 2 das

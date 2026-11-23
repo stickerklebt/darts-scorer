@@ -859,7 +859,7 @@ const actions = {
   async camRemote(el) {
     try {
       const codes = ui.camMine || [];
-      if (link.role !== 'ctl') { if (!codes.length) { toast('Keine Kamera gefunden – am Handy in Backstage › Kamera starten'); return; } for (const c of codes) await joinAsController(c); }
+      if (link.role !== 'ctl') { if (!codes.length) { toast('Keine Kamera gefunden – am Handy in VIP › Kamera starten'); return; } for (const c of codes) await joinAsController(c); }
       const code = el?.dataset?.v || link.cams.find((c) => !c.calibrated)?.code || link.cams[0]?.code;
       const cam = link.cams.find((c) => c.code === code);
       if (code) openRemoteSetup({ code, n: `${cam?.n || 1}${cam?.device ? ` · ${cam.device}` : ''}`, toast, onDone: () => render() });

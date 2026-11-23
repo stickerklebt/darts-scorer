@@ -197,7 +197,7 @@ function addPlayerSheet() {
         <button class="btn line" data-act="addFriendBack">Anderen Freund wählen</button>`;
     } else body = fr.length ? `<div class="slist">${fr.map((f) => `<button class="srow" data-act="addFriendPick" data-v="${esc(f.id)}" ${inLineup.has(f.pid) ? 'disabled' : ''}>
         <span class="pc sm" style="${pcVars(3)}">${esc(f.username.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(f.username)}<small>${inLineup.has(f.pid) ? 'spielt schon mit' : f.avg ? `Ø 501 ${String(Math.round(f.avg * 10) / 10).replace('.', ',')}` : 'Freund'}</small></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
-      : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie im Backstage hinzu.' : 'Lade Freunde …'}</p>`;
+      : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie im VIP-Bereich hinzu.' : 'Lade Freunde …'}</p>`;
   } else if (tab === 'guest') {
     body = `<p class="ap-hint">Wie heißt dein Gast? Er spielt nur dieses Spiel mit – nichts wird für ihn gespeichert, beim nächsten Spiel gibst du den Namen neu ein. Wer seine Statistik behalten will, legt ein Konto an und wird dein Freund.</p>
       <input id="newPlayer" class="field" placeholder="Name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">

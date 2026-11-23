@@ -271,6 +271,7 @@ const P = {
   ticket: '<path d="M3.5 6.5h17v3.6a2 2 0 000 3.8v3.6h-17v-3.6a2 2 0 000-3.8z"/><path d="M12 9.3l.85 1.75 1.95.3-1.4 1.35.33 1.95L12 13.7l-1.73.9.33-1.95-1.4-1.35 1.95-.3z" fill="currentColor" stroke="none"/>',
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21M8.5 21h7"/>',
   people: '<circle cx="9" cy="8" r="3.6"/><path d="M2.5 20.5c0-3.8 2.9-6.3 6.5-6.3s6.5 2.5 6.5 6.3"/><path d="M15.6 4.6a3.4 3.4 0 010 6.6M17.8 14.6c2.3.7 3.7 2.8 3.7 5.9"/>',
+  vip: '<path d="M4 18.5h16"/><path d="M4.6 15.5L3.2 7.2l4.9 3.6L12 4.6l3.9 6.2 4.9-3.6-1.4 8.3z"/><circle cx="12" cy="12.4" r="1.3" fill="currentColor"/>',
   trash: '<path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>',
   chart: '<path d="M3 21h18"/><path d="M6 17V11M11 17V6M16 17v-8M21 17v-4"/>',
   board: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>',
