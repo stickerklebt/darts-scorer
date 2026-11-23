@@ -1,6 +1,5 @@
 /* Tabs (Spielen · Statistik · Freunde) und Tab „Spielen“. Die Anmeldung steht in ui/auth.js. */
-import { S, ui, nameOf } from '../store.js';
-import { overview } from '../stats.js';
+import { S, ui } from '../store.js';
 import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
 import { incomingCount } from './friends.js';
@@ -43,14 +42,10 @@ function camBlock() {
 }
 
 export function playView() {
-  const ov = overview(S.matches, S.mainId), m = S.current, name = nameOf(S.mainId), o = S.opts.x01;
+  const m = S.current, o = S.opts.x01;
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   const others = Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired);
   return `<main class="page">
-    <button class="me" data-act="rename">
-      <span class="me-name"><span class="nm">${esc(name)}</span><svg class="nm-trace" aria-hidden="true"><text x="0" y="0.84em">${esc(name)}</text><text class="t2" x="0" y="0.84em">${esc(name)}</text></svg></span>
-      <span class="me-avg" title="Ø 501"><span class="glitter"><b class="pop shimmer" data-t="${fmt(ov.avg)}">${fmt(ov.avg)}</b>${sparkles(7, 3)}</span></span>
-    </button>
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
     <section class="hero">
       <div class="hero-art">${heroArt()}</div>
