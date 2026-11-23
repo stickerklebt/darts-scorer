@@ -2187,3 +2187,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   background: radial-gradient(ellipse at 50% 60%, rgba(255,110,60,.45), rgba(229,64,44,.18) 45%, transparent 72%); pointer-events: none; filter: blur(2px); }
 @keyframes tabline-glow { 50% { box-shadow: 0 0 6px rgba(255,106,61,.7), 0 0 16px rgba(229,64,44,.5), 0 0 30px rgba(229,64,44,.25); } }
 @media (prefers-reduced-motion: reduce) { .tabs .tabline::before, .subpop .subtabs.three .sub-line::before { animation: none; } }
+
+/* Symbol-Pille: Leuchtstrich über dem Spitzchen (wurde in der Mitte verdeckt) */
+.subpop .subtabs.three .sub-line { bottom: 8px; z-index: 2; }
