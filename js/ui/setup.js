@@ -100,5 +100,5 @@ export function setupView() {
     ${camRow(id)}
     ${moreOptions(id)}
   </main>
-  <div class="dock"><div><button class="btn red big start" data-act="start">${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</button>${fuse(-3, 7, 2)}</div></div>`;
+  <div class="dock su-dock"><div><button class="start-pill" data-act="start"><span>${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</span></button></div></div>`;
 }

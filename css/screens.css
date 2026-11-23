@@ -2406,3 +2406,16 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* Setup: Spielerzeile antippen zeigt Hoch/Entfernen */
 .prow[data-act="prowSel"] { cursor: pointer; }
 .prow.open { box-shadow: inset 0 0 0 1px rgba(236,201,106,.45); }
+
+/* Setup: Start-Knopf im Stil der Reiter-Leiste – schwebende dunkle Pille mit Goldrand, Innenlinie, warmem Schein, Leuchtstrich unter dem Wort */
+.dock.su-dock { background: linear-gradient(rgba(11,10,8,0), var(--ink) 45%); border-top: 0; padding-top: 22px; }
+.start-pill { position: relative; width: min(560px, 100%); height: 62px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 999px;
+  background: rgba(17,15,12,.95); border: 1px solid rgba(212,166,58,.55);
+  box-shadow: 0 10px 30px rgba(0,0,0,.6), inset 0 0 0 3px rgba(11,10,8,.9), inset 0 0 0 4px rgba(212,166,58,.18), 0 0 34px rgba(229,64,44,.22);
+  font-family: var(--f-num); font-size: 22px; letter-spacing: .22em; text-transform: uppercase; color: var(--cream); transition: box-shadow .25s, transform .1s; }
+.start-pill span { position: relative; }
+.start-pill span::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, #e5402c, #ff8a4c 50%, #e5402c); box-shadow: 0 0 6px rgba(255,106,61,.55), 0 2px 12px rgba(229,64,44,.3); }
+.start-pill::before { content: ""; position: absolute; left: 50%; bottom: 2px; width: 60%; height: 26px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(ellipse at 50% 80%, rgba(255,110,60,.22), transparent 70%); }
+.start-pill:active { transform: scale(.985); box-shadow: 0 6px 20px rgba(0,0,0,.6), inset 0 0 0 3px rgba(11,10,8,.9), inset 0 0 0 4px rgba(212,166,58,.25), 0 0 46px rgba(229,64,44,.35); }
