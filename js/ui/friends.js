@@ -114,7 +114,7 @@ export function friendsView() {
 }
 
 /* ---------------- Profil eines Freundes ---------------- */
-const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div class="kv-c glint ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div class="kv-c glint ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${String(sub).includes('class="rv"') ? `<span class="kv-row"><b>${v}</b><em>${sub}</em></span>` : `<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}`}</div>`).join('')}</div>`;
 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';

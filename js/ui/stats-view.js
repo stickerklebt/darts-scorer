@@ -8,6 +8,7 @@ import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
+import { situations, MIN_N, GOOD, BAD } from '../situations.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
@@ -24,7 +25,7 @@ const block = (title, body) => `<section class="sblock">${title ? `<h2 class="la
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map(([k, v, sub, ref], i) => {
   const tap = ref && v !== '–';
-  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
+  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}${String(sub).includes('class="rv"') ? `<span class="kv-row"><b>${v}</b><em>${sub}</em></span>` : `<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}`}</${tap ? 'button' : 'div'}>`;
 }).join('')}</div>`;
 const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
@@ -33,8 +34,7 @@ export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
   return `<div class="st-head">
-    <div class="st-who glint" style="--gd:-6s">
-      <span class="st-name"><small>Statistik von</small><b>${esc(name)}</b></span></div>
+    <h1 class="st-plain">${esc(name)}</h1>
     <button class="sq st-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen">${icon('clock', 2, 22)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
@@ -50,7 +50,7 @@ function overviewTab(st, pid) {
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
   return `<div class="hero-stat">${goldSmoke('gsS')}${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
-      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? `${pct(favDbl.rate)}${rv(` · ${favDbl.hits} / ${favDbl.attempts}`)}` : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
+      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–', '', st.top5[0]], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
       ['Doppelquote', pct(st.doubles.rate), rv(`${st.doubles.hits} / ${st.doubles.attempts}`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
@@ -120,13 +120,8 @@ export function doublesBlock(st, sel, withList = true) {
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
   // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen). Doppelquote-Verlauf und Checkout stehen im Reiter Doppel.
-  const c = st.counts;
   return block('', historyCharts(st, pid, distChart(st)))
-    + block('Scoring-Werte', cards([
-      ['60+ / 100+ / 140+', `${c.t60} / ${c.t100} / ${c.t140}`], ['180er', c.t180],
-      ['Bester Match-Ø', fmt(st.bestMatchAvg, 2), '', st.bestAvgRef], ['Ø Darts pro Leg', fmt(st.avgLegDarts, 1)],
-      ['Legs ≤ 15 Darts', st.le15],
-    ], 'three', pid));
+    + situationsBlock(situations(matchesOf(S.matches, pid, S.statsPeriod), pid));
 }
 
 export function emptyState(pid, any) {
@@ -160,4 +155,33 @@ export function profilePicker() {
       <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}${p.id === S.mainId ? ' <span class="tag">Du</span>' : ''}</span>
       ${p.id === cur ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
+}
+
+/* „Wann du gut wirfst“: Scoring-Aufnahmen nach Umständen (js/situations.js). Oben Kurzfassung, darunter je Gruppe
+   eine Zeile pro Umstand: Balken = Abweichung vom eigenen Scoring-Ø, Ø, Chance auf gut/schlecht. Aufnahmen erst auf Tippen. */
+const sign = (d) => `${d >= 0 ? '+' : '−'}${fmt(Math.abs(d), 1)}`;
+function situationsBlock(r) {
+  if (!r.base.n) return block('Wann du gut wirfst', '<p class="chart-empty">Noch keine Scoring-Aufnahmen in diesem Zeitraum.</p>');
+  const h = r.highlights, b = r.base;
+  const hl = [
+    ['Comeback', h.comeback ? pct(h.comeback.rate) : '–', h.comeback ? `nach unter ${BAD} gleich ${GOOD}+ (sonst ${pct(b.good)})` : `ab ${MIN_N} Fällen`],
+    ['Clutch', h.clutch ? sign(h.clutch.delta) : '–', h.clutch ? `Ø ${fmt(h.clutch.avg, 1)}, wenn der Gegner im Finish steht` : 'noch zu wenig Fälle'],
+    ['Heiße Hand', h.hot ? sign(h.hot.delta) : '–', h.hot ? `Ø ${fmt(h.hot.avg, 1)} nach einer ${GOOD}+` : 'noch zu wenig Fälle'],
+    ['Am stärksten', h.best ? fmt(h.best.avg, 1) : '–', h.best ? h.best.label : ''],
+    ['Am schwächsten', h.worst ? fmt(h.worst.avg, 1) : '–', h.worst ? h.worst.label : ''],
+    ['Beste Tageszeit', h.daytime ? h.daytime.k : '–', h.daytime ? `Ø ${fmt(h.daytime.avg, 1)}` : 'noch zu wenig Fälle'],
+  ];
+  const row = (k, label) => {
+    const x = r.rows[k];
+    if (!x || x.n < MIN_N) return `<div class="sit-r off"><span class="sit-l">${label}</span><span class="sit-bar"></span><span class="sit-v">–</span><span class="sit-p">zu wenig</span></div>`;
+    const d = x.avg - b.avg, w = Math.min(50, (Math.abs(d) / 20) * 50);
+    return `<div class="sit-r has-rv"><span class="sit-l">${label}${rv(` · ${x.n} Aufn.`)}</span>
+      <span class="sit-bar"><i class="${d >= 0 ? 'up' : 'dn'}" style="${d >= 0 ? 'left:50%' : `left:${50 - w}%`};width:${w}%"></i></span>
+      <span class="sit-v">${fmt(x.avg, 1)}<small>${sign(d)}</small></span>
+      <span class="sit-p"><b class="g">${pct(x.good)}</b> · <b class="b">${pct(x.bad)}</b></span></div>`;
+  };
+  return block('Wann du gut wirfst', `<p class="foot sit-note">Nur Scoring (Rest über 170). Dein Scoring-Ø: <b>${fmt(b.avg, 1)}</b> · gut = ${GOOD}+, schlecht = unter ${BAD}</p>
+    ${cards(hl, 'three sit-hl')}
+    <div class="sit-head"><span></span><span></span><span>Ø</span><span><b class="g">gut</b> · <b class="b">schlecht</b></span></div>
+    ${r.groups.map(([title, rows]) => `<div class="sit-g"><h3>${title}</h3>${rows.map(([k, l]) => row(k, l)).join('')}</div>`).join('')}`);
 }

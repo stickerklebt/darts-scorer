@@ -1,5 +1,5 @@
 /* Versuche/Treffer in Statistiken: zuerst nur die Prozente. Antippen blendet die Zahlen kurz ein (Fade),
-   nach 4 s blenden sie wieder aus. Markierung: Behälter `.has-rv`, versteckter Teil `.rv`. */
+   nach 6 s blenden sie wieder aus. Markierung: Behälter `.has-rv`, versteckter Teil `.rv`. */
 export const rv = (text) => `<span class="rv">${text}</span>`;
 const timers = new WeakMap();
 document.addEventListener('click', (e) => {
@@ -8,5 +8,5 @@ document.addEventListener('click', (e) => {
   if (!box) return;
   box.classList.add('rv-on');
   clearTimeout(timers.get(box));
-  timers.set(box, setTimeout(() => box.classList.remove('rv-on'), 4000));
+  timers.set(box, setTimeout(() => box.classList.remove('rv-on'), 6000));
 });

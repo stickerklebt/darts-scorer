@@ -103,7 +103,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · board-geometry · detect · trophies · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -288,12 +288,12 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   `since = 0` neu geholt. (Vorher hat das am 23.11. zwei Matches im Konto gelöscht.)
 - Überblick ohne die Zeile Matches · Siege · Längste Serie.
 - **Versuche erst auf Tippen** (`js/ui/reveal.js`, `rv()` + `.has-rv`): Statistik-Karten mit Quote zeigen nur die Prozente;
-  Antippen blendet „Treffer / Versuche“ weich ein, nach 4 s wieder aus (Doppelquote, Lieblingsdoppel, Quote nach Bereich, Gesamt-Doppelquote, Doppel-Fenster, Freundesprofil).
+  Antippen blendet „Treffer / Versuche“ weich ein, nach 6 s wieder aus, rechts neben der Zahl (Doppelquote, Lieblingsdoppel, Quote nach Bereich, Gesamt-Doppelquote, Doppel-Fenster, Freundesprofil).
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
-  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average-Verlauf, Verteilung der Aufnahmen (immer offen), darunter Block „Scoring-Werte“ (60+/100+/140+, 180er, Bester Match-Ø, Ø Darts pro Leg, Legs ≤ 15;
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average-Verlauf, Verteilung der Aufnahmen (immer offen), darunter „Wann du gut wirfst“ (`js/situations.js`: Scoring-Aufnahmen nach Umständen – nach schlechter/guter Aufnahme, Aufnahme im Leg, Druck (Gegner im Finish, vorne/hinten), Match-Stand, Leg im Match, Tageszeit, Spiel des Tages, Gegnerart; gut = 60+, schlecht < 30, bewertet ab 12 Aufnahmen; oben Kurzfassung Comeback · Clutch · Heiße Hand · Am stärksten/schwächsten · Beste Tageszeit;
   sonst nichts vom Scoring), sonst nichts. Checkout (breit zweispaltig: links Höchstes + Quote nach Bereich, rechts Top 5) und als Letztes der Doppelquote-Verlauf stehen im Reiter Doppel ganz unten. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
   (Bestes Leg steht im Überblick; 9-Darter gibt es als Trophäe). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
@@ -335,3 +335,5 @@ Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (
 Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über nginx + systemd), Stand 17.11.2026.
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
+
+- Statistik-Kopf: nur der Name (Cinzel, ohne Kasten, ohne „Statistik von“), daneben der Uhr-Knopf.
