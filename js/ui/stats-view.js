@@ -54,7 +54,7 @@ function overviewTab(st, pid) {
   const rating = doubleRating(st.doubles);
   const favK = Object.keys(rating).find((k) => rating[k].top === 1);
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
-  return `<div class="hero-stat has-rv">${goldSmoke('gsS')}${fuse(5, 12)}<small>${rv("Average")}</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv(`Höchste Aufnahme ${st.top5[0]?.score ?? '–'}`)}</em></div>
+  return `<div class="hero-stat has-rv">${goldSmoke('gsS')}${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv(`501 · ${st.darts} Darts · ${st.points} Punkte · Höchste Aufnahme ${st.top5[0]?.score ?? '–'}`)}</em></div>
     ${cards([
       ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Darts geworfen', st.darts, `${st.points} Punkte`], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
