@@ -104,7 +104,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + situations · football · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · football · insights · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -357,3 +357,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   X01 steht zusätzlich als letzte Kachel unter „Partyspiel“ – dort nur die anderen Startwerte 101 · 301 · 701 · 1001 (`ui.x01Var = 'other'`, `X01_OTHER`).
 - **Flüssig beim Antippen:** `save()` speichert erst nach dem Zeichnen (zusammengefasst, `flushSave()` beim Verlassen/Verstecken der Seite und vor Reload);
   die Statistik wird zwischengespeichert (`cachedStats`) und nur bei geänderten Matches/Zeitraum neu berechnet. Seiten-Scrollbalken-Platz ist reserviert (`scrollbar-gutter: stable`).
+- **Auffällig** (Statistik › Zahlen ganz unten, `js/insights.js`, 501-Matches im Zeitraum): Matchdart-Nerven (Doppelquote bei Matchdarts vs. sonst),
+  Entscheidungsleg (Ø im letzten möglichen Leg vs. Schnitt), Bust-Schock (Ø der Aufnahme direkt nach einem Bust), Erster Versuch oder Nachwerfen
+  (Doppelquote erster Doppel-Dart der Aufnahme vs. nach Fehlwurf), Tageszeit (bester Abschnitt bzw. „Nach 22 Uhr …“), Wochentag (bester/schwächster).
+  Je Karte Zahl + ein Satz; Mindestmengen (10 Aufnahmen / 6 Doppelversuche), sonst „Noch zu wenig Daten“.

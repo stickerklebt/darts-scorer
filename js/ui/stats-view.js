@@ -9,6 +9,7 @@ import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
 import { legCurve } from '../situations.js';
+import { insights } from '../insights.js';
 import { legCurveChart, chartBox } from './charts.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
@@ -62,7 +63,8 @@ function overviewTab(st, pid) {
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], 'three', pid)}
     <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
-    ${checkoutTab(st, pid)}`;
+    ${checkoutTab(st, pid)}
+    ${insightsBlock(cachedInsights(pid))}`;
 }
 
 function checkoutTab(st, pid) {
@@ -162,4 +164,46 @@ export function profilePicker() {
       <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}${p.id === S.mainId ? ' <span class="tag">Du</span>' : ''}</span>
       ${p.id === cur ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
+}
+
+/* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */
+let inCache = { key: '', r: null };
+function cachedInsights(pid) {
+  const last = S.matches[S.matches.length - 1];
+  const key = `${pid}|${S.statsPeriod}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
+  if (inCache.key !== key) inCache = { key, r: insights(matchesOf(S.matches, pid, S.statsPeriod), pid) };
+  return inCache.r;
+}
+const sgn = (d) => `${d >= 0 ? '+' : '−'}${fmt(Math.abs(d), 1)}`;
+const DAYPART_LINE = { morgens: 'Frühaufsteher!', nachmittags: 'Der Kaffee wirkt.', abends: 'Feierabend-Form.', nachts: 'Nachteule!' };
+function insightsBlock(r) {
+  const few = 'Noch zu wenig Daten';
+  const items = [];
+  const md = r.matchdart;
+  items.push(['Matchdart-Nerven', md ? pct(md.md) : '–', md
+    ? `bei Matchdarts · sonst ${pct(md.other)}. ${md.md < md.other * 0.8 ? 'Die Hand zittert ein wenig.' : md.md > md.other * 1.2 ? 'Eiskalt, wenn es zählt.' : 'Nerven wie Drahtseile.'}`
+    : few]);
+  const dc = r.decider;
+  items.push(['Entscheidungsleg', dc ? sgn(dc.delta) : '–', dc
+    ? `Ø ${fmt(dc.avg, 1)} im letzten möglichen Leg. ${dc.delta >= 2 ? 'Du lebst für den Showdown.' : dc.delta <= -2 ? 'Da wird es eng in der Brust.' : 'Ganz normal weiter.'}`
+    : few]);
+  const b = r.bust;
+  items.push(['Bust-Schock', b ? sgn(b.delta) : '–', b
+    ? `Nach einem Bust wirfst du im Schnitt ${fmt(Math.abs(b.delta), 0)} Punkte ${b.delta < 0 ? 'schlechter. Tief durchatmen.' : 'besser. Jetzt erst recht!'}`
+    : few]);
+  const ft = r.firstTry;
+  items.push(['Erster Versuch', ft ? pct(ft.first) : '–', ft
+    ? `beim ersten Dart aufs Doppel · Nachwerfen ${pct(ft.retry)}. ${ft.first >= ft.retry ? 'Der erste sitzt.' : 'Du brauchst Anlauf.'}`
+    : few]);
+  const dt = r.daytime;
+  const night = dt?.night, nightD = night ? night.avg - dt.base : null;
+  items.push(['Tageszeit', dt ? dt.best.k : '–', !dt ? few
+    : night && Math.abs(nightD) >= 1
+      ? `Nach 22 Uhr ${nightD >= 0 ? 'steigt' : 'fällt'} dein Average um ${fmt(Math.abs(nightD), 0)} Punkte. ${nightD >= 0 ? 'Nachteule!' : 'Ab ins Bett.'}`
+      : `Am besten wirfst du ${dt.best.k} (${sgn(dt.best.avg - dt.base)}). ${DAYPART_LINE[dt.best.k]}`]);
+  const wd = r.weekday;
+  items.push(['Wochentag', wd ? wd.best.k.slice(0, 2) : '–', wd
+    ? `Bester Tag ${wd.best.k} (Ø ${fmt(wd.best.avg, 1)}) · schwächster ${wd.worst.k} (Ø ${fmt(wd.worst.avg, 1)}).`
+    : few]);
+  return block('Auffällig', `<div class="kv three ins">${items.map(([k, v, t], i) => `<div class="kv-c glint ins-c" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b><em>${t}</em></div>`).join('')}</div>`);
 }
