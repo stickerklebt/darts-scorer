@@ -92,12 +92,12 @@ export function friendsView() {
   // Backstage: alles rund ums Spiel außer Spielen und Statistik – Spielhistorie, eigener Caller, Einstellungen, Freunde
   const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe'], ['camAsDevice', 'cam', 'Kamera', 'Dieses Handy filmt das Board']];
   return `<main class="page friends backstage">
+    ${myBanner(me?.username || '')}
     <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b></button>`).join('')}</div>
     ${(ui.invites || []).length ? `<h2 class="label">Einladungen zum Spiel</h2><div class="slist">${ui.invites.map((v) => `<div class="srow">${chip(v.host)}
       <span class="lbl">${esc(v.host)} möchte gegen dich spielen<small>${v.game === 'x01' ? `${v.opts?.start} · First to ${v.opts?.target}` : esc(GAMES[v.game]?.title || '')}</small></span>
       <button class="btn line sm-btn" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red sm-btn" data-act="inviteYes" data-v="${esc(v.id)}">Spielen</button></div>`).join('')}</div>` : ''}
     <h2 class="label">Freunde${inc.length ? ` <span class="badge-n">${inc.length}</span>` : ''}</h2>
-    ${myBanner(me?.username || '')}
     <h2 class="label">Freund hinzufügen</h2>
     <input id="friendSearch" class="field search" value="${esc(ui.fsearch?.q || '')}" placeholder="Namen suchen …" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search">
     ${searchRows()}

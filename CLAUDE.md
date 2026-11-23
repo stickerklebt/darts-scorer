@@ -160,7 +160,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)
   und „Spiel löschen“ (mit Bestätigung). Gelöscht wird aus `S.matches` → fehlt in jeder Statistik, Sync löscht es auf dem
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
-- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): oben vier Kacheln (nur Symbol + Titel) Spielhistorie ·
+- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben das eigene Banner, darunter vier Kacheln (nur Symbol + Titel) Spielhistorie ·
   Eigener Caller · Einstellungen · Kamera, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
 - **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
   von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben,
@@ -346,3 +346,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme, Top-5-Listen und „Wann du gut wirfst“ leichter (1 px gedämpft). Gleitender Schnitt im Diagramm durchgezogen, aber handgemacht: Rot leicht ungleich (Verlauf `AVG_INK` in `charts.js`), dunkler versetzter Druck darunter, `#rough`.
 - Reihenfolge im Statistik-Reiter Scoring: Average pro Match · Aufnahmen im Leg · Doppelquote pro Match · Verteilung der Aufnahmen · Wann du gut wirfst.
 - Reiter Spielen ohne Namen/Ø-Kopf oben (Kennzahlen nur im Reiter Statistik, Name in den Einstellungen).
+- Die Bruchchallenge heißt in der App nur noch **„Challenge“** (`GAMES.bruch.title`, Screen-Titel, Ergebnis); intern bleibt der Schlüssel `bruch`.
