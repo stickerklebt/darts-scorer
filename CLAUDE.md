@@ -340,7 +340,7 @@ Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem G
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
 - **Haupt-Reiter** (Spielen · Statistik · Backstage, `tabsBar`) schweben als Pille unten in der Mitte und tauchen beim Öffnen von unten auf.
-  In der Statistik taucht darüber eine kleine Symbol-Pille auf (`.subpop`): Überblick (Krone) · Doppel (äußerer Ausschnitt eines Segments, Doppelfeld orange) · Scoring (Kurve); Zeitraum: lange (0,5 s) auf den Reiter „Statistik“ drücken
+  In der Statistik taucht darüber eine kleine Symbol-Pille auf (`.subpop`): Überblick (Krone) · Doppel (Doppelring-Bögen über die Breite, zwei Segmentlinien, Feld dazwischen orange) · Scoring (Kurve); Zeitraum: lange (0,5 s) auf den Reiter „Statistik“ drücken
   (`SUB_ICONS` in `stats-view.js`). Die App startet immer im Reiter Spielen; in der Statistik ist beim Start und beim Öffnen des Reiters immer Doppel (Mitte) gewählt. Wechsel auch per Wischen links/rechts
   (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste). Statistik-Kopf ohne Namen; anderer Zeitraum erscheint als Chip.
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme, Top-5-Listen und „Wann du gut wirfst“ leichter (1 px gedämpft). Gleitender Schnitt im Diagramm durchgezogen, aber handgemacht: Rot leicht ungleich (Verlauf `AVG_INK` in `charts.js`), dunkler versetzter Druck darunter, `#rough`.
