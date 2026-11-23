@@ -2241,3 +2241,14 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* Spezifischer als die alten Regeln (scrollbar-width: thin an .sbtable-wrap.dbl-scroll / .flist.fl-scroll) – sonst blieb der Regler sichtbar */
 .sbtable-wrap.dbl-scroll:not(.scrolling), .flist.fl-scroll:not(.scrolling) { scrollbar-width: none !important; }
 .sbtable-wrap.dbl-scroll:not(.scrolling)::-webkit-scrollbar, .flist.fl-scroll:not(.scrolling)::-webkit-scrollbar { display: none; width: 0 !important; }
+
+/* Haupt-Reiter: Leuchtstrich sauber genau unter Symbol + Wort (am Wort verankert, reicht nach links bis unter das Symbol) */
+.tabs .tab.on::after, .tabs .tab.on::before { display: none; }
+.tabs .tab > span { position: relative; }
+.tabs .tab.on > span::after { content: ""; position: absolute; left: calc(-1 * (var(--tic, 20px) + var(--tgap, 9px))); right: 0; bottom: -9px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, #e5402c, #ff8a4c 50%, #e5402c);
+  box-shadow: 0 0 6px rgba(255,106,61,.55), 0 2px 12px rgba(229,64,44,.3);
+  transform-origin: center; animation: tabline-clean .35s cubic-bezier(.2,.9,.3,1.1); }
+@keyframes tabline-clean { from { transform: scaleX(.3); opacity: 0; } }
+@media (max-width: 440px) { .tabs .tab { --tic: 17px; --tgap: 6px; } }
+@media (prefers-reduced-motion: reduce) { .tabs .tab.on > span::after { animation: none; } }
