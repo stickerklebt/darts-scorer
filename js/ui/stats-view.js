@@ -133,9 +133,17 @@ export function emptyState(pid, any) {
   </div>`;
 }
 
+/** Statistik nur neu rechnen, wenn sich Matches/Zeitraum geändert haben (sonst ruckelt jedes Antippen in der Statistik) */
+let stCache = { key: '', st: null };
+function cachedStats(pid) {
+  const last = S.matches[S.matches.length - 1];
+  const key = `${pid}|${S.statsPeriod}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
+  if (stCache.key !== key) stCache = { key, st: fullStats(S.matches, pid, S.statsPeriod) };
+  return stCache.st;
+}
 export function statsView() {
   const pid = statsPid();
-  const st = fullStats(S.matches, pid, S.statsPeriod);
+  const st = cachedStats(pid);
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);

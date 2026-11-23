@@ -54,9 +54,25 @@ export const ui = { entry: '', mult: 1, modal: null, toast: null, moment: null, 
 let saveHook = null;
 /** Wird nach jedem Speichern aufgerufen (Sync zum Server, siehe sync.js). */
 export const setSaveHook = (fn) => { saveHook = fn; };
+/* Speichern erst NACH dem Zeichnen (der ganze Stand samt aller Matches als JSON kostet Zeit – sonst ruckelt jedes Antippen).
+   Mehrere Aufrufe hintereinander werden zu einem zusammengefasst; beim Verlassen/Verstecken der Seite sofort. */
+let savePending = false;
+const afterPaint = (fn) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => setTimeout(fn, 0)) : setTimeout(fn, 0));
 export function save() {
+  if (savePending) return;
+  savePending = true;
+  afterPaint(flushSave);
+}
+export function flushSave() {
+  if (!savePending) return;
+  savePending = false;
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* privater Modus */ }
   if (saveHook) saveHook();
+}
+if (typeof addEventListener === 'function') {
+  addEventListener('pagehide', flushSave);
+  addEventListener('beforeunload', flushSave);
+  if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => { if (document.hidden) flushSave(); });
 }
 /** Lokale Daten dieses Geräts komplett leeren (Abmelden, anderes Konto). Keine Testdaten nachladen. */
 export function clearLocal() {

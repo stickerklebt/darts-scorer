@@ -1,5 +1,5 @@
 /* Einstieg: Rendering, Aktionen, Events. */
-import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid, markRemoved, unmarkRemoved } from './store.js';
+import { S, ui, save, flushSave, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid, markRemoved, unmarkRemoved } from './store.js';
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
 import { overview } from './stats.js';
@@ -1382,7 +1382,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const reloadWhenIdle = () => {
     if (reloading) return;
     if (S.screen === 'game' && S.current && !S.current.done) { setTimeout(reloadWhenIdle, 1000); return; }
-    reloading = true; save(); location.reload();
+    reloading = true; save(); flushSave(); location.reload();
   };
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) reloadWhenIdle(); });
   navigator.serviceWorker.register('sw.js').then((r) => {

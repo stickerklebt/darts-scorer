@@ -355,3 +355,5 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (breit: Liste genau so hoch wie die Scheibe, `fitDblList` in main.js); nur das beste Doppel leuchtet weiß umrandet.
 - Reiter Play: große 501-Karte ohne X01-Abzeichen/Titel – spielt **immer 501** (Startpunkte nicht umstellbar, `ui.x01Var = '501'`).
   X01 steht zusätzlich als letzte Kachel unter „Partyspiel“ – dort nur die anderen Startwerte 101 · 301 · 701 · 1001 (`ui.x01Var = 'other'`, `X01_OTHER`).
+- **Flüssig beim Antippen:** `save()` speichert erst nach dem Zeichnen (zusammengefasst, `flushSave()` beim Verlassen/Verstecken der Seite und vor Reload);
+  die Statistik wird zwischengespeichert (`cachedStats`) und nur bei geänderten Matches/Zeitraum neu berechnet. Seiten-Scrollbalken-Platz ist reserviert (`scrollbar-gutter: stable`).
