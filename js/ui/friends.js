@@ -1,6 +1,7 @@
 /* Reiter „Freunde“: eigener Name, Suche nach eindeutigen Namen, Anfragen, Freundesliste.
    Freundesprofil: wichtigste 501-Kennzahlen (vom Server aus den Matches des Freundes berechnet). */
 import { S, ui, profile } from '../store.js';
+import { rv } from './reveal.js';
 import { auth } from '../sync.js';
 import { movingAvg, overview } from '../stats.js';
 import { playerBanner } from './banner.js';
@@ -113,7 +114,7 @@ export function friendsView() {
 }
 
 /* ---------------- Profil eines Freundes ---------------- */
-const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div class="kv-c glint" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
+const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div class="kv-c glint ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</div>`).join('')}</div>`;
 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';
@@ -130,7 +131,7 @@ export function friendView() {
       ${cards([
         ['Bester Average', fmt(x.bestMatchAvg, 2)], ['First 9', fmt(x.f9, 2)],
         ['Höchste Aufnahme', x.highestTurn ?? '–'], ['Höchstes Checkout', x.highestCo ?? '–'],
-        ['Doppelquote', pct(x.doubles.rate), `${x.doubles.hits} / ${x.doubles.attempts}`], ['Siegquote', pct(x.winRate), `${x.wins} Siege`],
+        ['Doppelquote', pct(x.doubles.rate), rv(`${x.doubles.hits} / ${x.doubles.attempts}`)], ['Siegquote', pct(x.winRate), `${x.wins} Siege`],
         ['180er', x.counts.t180, `140+: ${x.counts.t140} · 100+: ${x.counts.t100}`], ['Bestes Leg', x.bestLeg ? `${x.bestLeg} D` : '–', x.avgLegDarts ? `Ø ${fmt(x.avgLegDarts)} Darts` : ''],
       ])}
       <div class="minirow"><span><small>Matches</small><b>${x.matches}</b></span><span><small>Längste Serie</small><b>${x.bestStreak}</b></span><span><small>Lieblingsdoppel</small><b>${x.favourite ? esc(x.favourite.field) : '–'}</b></span></div>

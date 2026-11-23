@@ -1997,8 +1997,13 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Doppel-Reiter: oben rechts die Gesamt-Doppelquote (füllt den freien Platz), die Tabelle unten */
 .dbl-hero b { font-size: clamp(56px, 16vw, 92px) !important; }
-.dbl-hero { margin-bottom: 0; cursor: pointer; } /* Antippen blendet Treffer/Versuche ein */
+.dbl-hero { margin-bottom: 0; }
 @media (min-width: 900px) {
   .dbl-layout .dbl-right { align-self: stretch; display: flex; flex-direction: column; }
   .dbl-layout .dbl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 200px; }
 }
+
+/* Versuche/Treffer erst nach Antippen (js/ui/reveal.js): kurz ein-, nach 4 s wieder ausblenden */
+.has-rv { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.rv { opacity: 0; transition: opacity .35s ease; }
+.has-rv.rv-on .rv { opacity: 1; }

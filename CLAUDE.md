@@ -287,6 +287,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Spielende): Fehlt ein bekanntes Match nur lokal (z. B. alter Stand aus einem zweiten Tab), wird es NICHT gelöscht, sondern per
   `since = 0` neu geholt. (Vorher hat das am 23.11. zwei Matches im Konto gelöscht.)
 - Überblick ohne die Zeile Matches · Siege · Längste Serie.
+- **Versuche erst auf Tippen** (`js/ui/reveal.js`, `rv()` + `.has-rv`): Statistik-Karten mit Quote zeigen nur die Prozente;
+  Antippen blendet „Treffer / Versuche“ weich ein, nach 4 s wieder aus (Doppelquote, Lieblingsdoppel, Quote nach Bereich, Gesamt-Doppelquote, Doppel-Fenster, Freundesprofil).
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
@@ -298,7 +300,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel einheitlich mit Silber-Rand (glimmend), in der Liste
-  als silberner Ring. Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus; rechts oben darüber groß die Gesamt-Doppelquote (Treffer/Versuche erst nach Antippen; füllt den Platz neben der Scheibe), Tabelle unten, Rest per Scrollen in der Box. Farblegende klein am Ende.
+  als silberner Ring. Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus; rechts oben darüber groß die Gesamt-Doppelquote (füllt den Platz neben der Scheibe), Tabelle unten, Rest per Scrollen in der Box. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
   Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie

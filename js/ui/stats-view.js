@@ -7,6 +7,7 @@ import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
+import { rv } from './reveal.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
@@ -23,7 +24,7 @@ const block = (title, body) => `<section class="sblock">${title ? `<h2 class="la
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map(([k, v, sub, ref], i) => {
   const tap = ref && v !== '–';
-  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
+  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}</${tap ? 'button' : 'div'}>`;
 }).join('')}</div>`;
 const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
 const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
@@ -49,23 +50,23 @@ function overviewTab(st, pid) {
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
   return `<div class="hero-stat">${goldSmoke('gsS')}${fuse(5, 12)}<small>Overall-Average · 501</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${st.darts} Darts · ${st.points} Punkte</em></div>
     ${cards([
-      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? `${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}` : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
+      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? `${pct(favDbl.rate)}${rv(` · ${favDbl.hits} / ${favDbl.attempts}`)}` : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–', '', st.top5[0]], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
-      ['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
+      ['Doppelquote', pct(st.doubles.rate), rv(`${st.doubles.hits} / ${st.doubles.attempts}`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], '', pid)}`;
 }
 
 function checkoutTab(st, pid) {
   return record('Höchstes Checkout', st.highestCo ?? '–', '')
-    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), `${r.hits} / ${r.chances}`]), 'three'))
+    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))
     + rankList('Top 5 Checkouts', st.topCo, pid);
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
-  const head = `<div class="di-head"><b>${key}</b>${f ? `<span><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${f.hits} / ${f.attempts}</em></span>` : ''}
+  const head = `<div class="di-head"><b>${key}</b>${f ? `<span class="has-rv"><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${rv(`${f.hits} / ${f.attempts}`)}</em></span>` : ''}
     <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
@@ -108,7 +109,7 @@ export function doublesBlock(st, sel, withList = true) {
       ${withList ? legend : ''}
     </div>
     ${withList ? `<div class="dbl-right">
-      <div class="hero-stat dbl-hero" data-act="statsFold" data-v="dblHero">${fuse(5, 12)}<small>Doppelquote gesamt</small><b>${pct(st.doubles.rate)}</b>${ui.statsOpen?.has('dblHero') ? `<em>${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout</em>` : ''}</div>` : ''}
+      <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote gesamt</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>` : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${medal(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
