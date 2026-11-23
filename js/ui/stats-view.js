@@ -124,8 +124,8 @@ export function doublesBlock(st, sel, withList = true) {
 
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
-  // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen). Doppelquote-Verlauf und Checkout stehen im Reiter Doppel.
-  return block('', historyCharts(st, pid, distChart(st)))
+  // Average-Verlauf, Verteilung der Aufnahmen, Doppelquote-Verlauf, dann „Wann du gut wirfst“. Checkout steht im Reiter Doppel.
+  return block('', historyCharts(st, pid, distChart(st)) + doubleChart(st, pid))
     + situationsBlock(situations(matchesOf(S.matches, pid, S.statsPeriod), pid));
 }
 
@@ -148,7 +148,7 @@ export function statsView() {
   const sub = subOf(S.statsSub);
   // Unter-Reiter als kleine Symbol-Pille, die über dem Haupt-Reiter „Statistik“ unten auftaucht; Wechsel auch per Wischen (main.js)
   const nav = `<div class="subpop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}" aria-label="${l}" title="${l}">${subIcon(k)}</button>`).join('')}<i class="sub-line"></i></nav></div>`; // Zeitraum: lange auf den Reiter „Statistik“ drücken (main.js)
-  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${head}
     <div class="subbody sub-${sub}">${body}</div>
   </main>${nav}`;
