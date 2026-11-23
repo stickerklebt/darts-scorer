@@ -67,6 +67,10 @@ function patchChildren(a, b) {
 function patchNode(x, y) {
   if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName || (x.nodeType === 1 && (x.namespaceURI !== y.namespaceURI || x.getAttribute('data-key') !== y.getAttribute('data-key')))) { x.replaceWith(y); return; }
   if (x.nodeType !== 1) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; return; }
+  // Vom Nutzer eingeblendete Zahlen (reveal.js) überleben ein Neuzeichnen: Klassen rv-on/end und der gezoomte Diagramm-Ausschnitt bleiben
+  if (x.classList.contains('rv-on') && (y.classList.contains('has-tg') || y.classList.contains('has-rv'))) y.classList.add('rv-on');
+  if (x.classList.contains('end') && y.classList.contains('dbl-scroll')) y.classList.add('end');
+  if (x.dataset?.crop && x.dataset.crop === y.getAttribute('data-crop')) y.setAttribute('viewBox', x.getAttribute('viewBox'));
   for (const at of [...x.attributes]) if (!y.hasAttribute(at.name)) x.removeAttribute(at.name);
   for (const at of [...y.attributes]) if (x.getAttribute(at.name) !== at.value) x.setAttribute(at.name, at.value);
   if (x.tagName === 'INPUT' && y.hasAttribute('value') && x !== document.activeElement) x.value = y.getAttribute('value');
