@@ -60,14 +60,11 @@ export function heatBoard(fields, sel, rating = {}) {
     s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${dark[k]}"/>`;
     const key = `D${n}`, d = ringPath(R.dblIn, R.dblOut, a0, a1);
     s += `<path class="hd ${sel === key ? 'sel' : ''}" d="${d}" fill="${fillFor(key)}" data-act="heat" data-v="${key}"/>`;
-    const top = rating[key]?.top;
-    if (top) { glow += `<path class="hmed-g" d="${d}" stroke="${MEDALS[top - 1]}"/>`; medals += `<path class="hmed" d="${d}" stroke="${MEDALS[top - 1]}"/>`; }
     const [x, y] = pt(125, (a0 + a1) / 2).split(',');
-    nums += `<text x="${x}" y="${y}" class="hn ${top ? `t${top}` : ''}" text-anchor="middle" dominant-baseline="central">${n}</text>`;
+    nums += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central">${n}</text>`;
   });
   s += `<circle r="${R.outerBull}" fill="#2c251c"/>`;
   s += `<circle class="hd ${sel === 'Bull' ? 'sel' : ''}" r="${R.bull + 3}" fill="${fillFor('Bull')}" data-act="heat" data-v="Bull"/>`;
-  if (rating.Bull?.top) { const c = MEDALS[rating.Bull.top - 1]; glow += `<circle class="hmed-g" r="${R.bull + 3}" stroke="${c}"/>`; medals += `<circle class="hmed" r="${R.bull + 3}" stroke="${c}"/>`; }
   s += `<g class="hwire">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(R.outerBull, segAngles(i)[0])} L${pt(R.dblOut, segAngles(i)[0])}"/>`).join('')}</g>`;
   return `<svg class="heatboard" viewBox="-${R.edge} -${R.edge} ${R.edge * 2} ${R.edge * 2}" aria-label="Doppelquote je Feld">${s}<g filter="url(#hGlow)">${glow}</g>${medals}${nums}</svg>`;
