@@ -11,8 +11,13 @@ import { rv } from './reveal.js';
 import { situations, MIN_N, GOOD, BAD } from '../situations.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
-/** Symbole statt Text in der Unter-Reiter-Leiste */
-const SUB_ICONS = { overview: 'crown', doubles: 'board', more: 'trend' };
+/** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Krone · Scheibe · Kurve */
+const SUB_ICONS = {
+  overview: '<path d="M4 19h16"/><path d="M4.5 16L3 7.5l5 4L12 5l4 6.5 5-4L19.5 16z"/><circle cx="12" cy="5" r=".6" fill="currentColor"/>',
+  doubles: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>',
+  more: '<path d="M3 21h18"/><path d="M4 16l5-5 4 3 7-7"/><path d="M15 7h5v5"/>',
+};
+const subIcon = (k) => `<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SUB_ICONS[k]}</svg>`;
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
 /** Frühere Unter-Reiter landen in „Scoring“ */
 const subOf = (k) => (k === 'scoring' || k === 'checkout' || k === 'history' ? 'more' : SUBTABS.some(([x]) => x === k) ? k : 'overview');
@@ -35,10 +40,8 @@ const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3
 export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
-  return `<div class="st-head">
-    <button class="sq st-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen">${icon('clock', 2, 22)}</button>
-    ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
-  </div>
+  // Der Zeitraum-Knopf steht jetzt in der oberen Symbol-Leiste (statsView); hier nur noch der Chip bei anderem Zeitraum
+  return `${S.profiles.length > 1 ? `<div class="st-head"><button class="btn line st-cmp" data-act="compare">Vergleichen</button></div>` : ''}
   ${S.statsPeriod !== 'all' ? `<button class="period-chip" data-act="period" data-v="all">${icon('clock', 2, 15)}<span>${PERIOD_LONG[S.statsPeriod]}</span><b aria-label="Zurück auf Gesamt">×</b></button>` : ''}`;
 }
 
@@ -143,7 +146,8 @@ export function statsView() {
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
   // Unter-Reiter oben als Leiste (dort, wo sonst die Haupt-Reiter standen – die schweben jetzt unten); Wechsel auch per Wischen (main.js)
-  const nav = `<div class="subtop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}" aria-label="${l}" title="${l}">${icon(SUB_ICONS[k], 1.8, 24)}</button>`).join('')}<i class="sub-line"></i></nav></div>`;
+  const nav = `<div class="subtop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}" aria-label="${l}" title="${l}">${subIcon(k)}</button>`).join('')}<i class="sub-line"></i></nav>
+    <button class="sub-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen" title="Zeitraum">${icon('clock', 1.8, 22)}</button></div>`;
   const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${nav}${head}
     <div class="subbody sub-${sub}">${body}</div>
