@@ -2238,3 +2238,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .dbl-scroll.scrolling, .fl-scroll.scrolling { scrollbar-width: thin; scrollbar-color: rgba(212,166,58,.5) transparent; }
 .dbl-scroll.scrolling::-webkit-scrollbar, .fl-scroll.scrolling::-webkit-scrollbar { width: 5px; }
 .dbl-scroll.scrolling::-webkit-scrollbar-thumb, .fl-scroll.scrolling::-webkit-scrollbar-thumb { background: rgba(212,166,58,.5); border-radius: 3px; }
+/* Spezifischer als die alten Regeln (scrollbar-width: thin an .sbtable-wrap.dbl-scroll / .flist.fl-scroll) – sonst blieb der Regler sichtbar */
+.sbtable-wrap.dbl-scroll:not(.scrolling), .flist.fl-scroll:not(.scrolling) { scrollbar-width: none !important; }
+.sbtable-wrap.dbl-scroll:not(.scrolling)::-webkit-scrollbar, .flist.fl-scroll:not(.scrolling)::-webkit-scrollbar { display: none; width: 0 !important; }
