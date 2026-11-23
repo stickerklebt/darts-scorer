@@ -11,6 +11,8 @@ import { rv } from './reveal.js';
 import { situations, MIN_N, GOOD, BAD } from '../situations.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
+/** Symbole statt Text in der Unter-Reiter-Leiste */
+const SUB_ICONS = { overview: 'crown', doubles: 'board', more: 'trend' };
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
 /** Frühere Unter-Reiter landen in „Scoring“ */
 const subOf = (k) => (k === 'scoring' || k === 'checkout' || k === 'history' ? 'more' : SUBTABS.some(([x]) => x === k) ? k : 'overview');
@@ -141,7 +143,7 @@ export function statsView() {
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
   // Unter-Reiter oben als Leiste (dort, wo sonst die Haupt-Reiter standen – die schweben jetzt unten); Wechsel auch per Wischen (main.js)
-  const nav = `<div class="subtop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav></div>`;
+  const nav = `<div class="subtop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}" aria-label="${l}" title="${l}">${icon(SUB_ICONS[k], 1.8, 24)}</button>`).join('')}<i class="sub-line"></i></nav></div>`;
   const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${nav}${head}
     <div class="subbody sub-${sub}">${body}</div>

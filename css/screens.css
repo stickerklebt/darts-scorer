@@ -2086,12 +2086,15 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .tabs .tabline::before { left: 26%; right: 26%; margin: 0; top: 0; width: auto; height: 3px; border: 0; border-radius: 2px; background: var(--red); box-shadow: 0 0 12px rgba(229,64,44,.7); }
 .tabs ~ .page { padding-bottom: calc(var(--sab) + 96px); }
 
-/* Statistik: Unter-Reiter oben als Leiste (wie früher die Haupt-Reiter) */
-.subtop { position: sticky; top: 0; z-index: 20; background: var(--ink); border-bottom: 1px solid var(--gold);
-  padding: var(--sat) calc(var(--sar) + 8px) 0 calc(var(--sal) + 8px); }
-.subtop .subtabs.three { max-width: 720px; margin: 0 auto; }
+/* Statistik: Unter-Reiter oben, zurückhaltend – kurzer Goldstrich, darunter drei Symbole; nicht über die ganze Breite */
+.subtop { position: sticky; top: 0; z-index: 20; padding: calc(var(--sat) + 10px) 0 0; background: linear-gradient(var(--ink) 75%, rgba(11,10,8,0)); }
+.subtop::before { content: ""; display: block; width: 180px; height: 1px; margin: 0 auto; background: linear-gradient(90deg, transparent, rgba(212,166,58,.7), transparent); }
+.subtop .subtabs.three { width: 180px; margin: 2px auto 0; }
 .subtop .subtabs.three::before, .subtop .subtabs.three::after { display: none; }
-.subtop .subtabs.three .sub-line { bottom: -1px; }
+.subtop .subtabs.three button { height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--cream2); opacity: .45; }
+.subtop .subtabs.three button.on { opacity: 1; color: var(--gold-l); text-shadow: none; }
+.subtop .subtabs.three button.on .ic { filter: drop-shadow(0 0 6px rgba(236,201,106,.45)); }
+.subtop .subtabs.three .sub-line { bottom: 2px; height: 2px; }
 .st-head { justify-content: flex-end; }
 
 /* Gleitender Schnitt: durchgezogen, aber nicht perfekt – Tinte leicht ungleich rot, leicht versetzter dunkler Druck, Feder-Wackeln */
