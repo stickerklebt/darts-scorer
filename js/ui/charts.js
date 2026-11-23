@@ -64,7 +64,7 @@ export function barChart(items) {
   const n = items.length, iw = W - 12, ih = H - PAD.t - 34, bw = iw / n;
   let s = `<path d="M6 ${PAD.t + ih}H${W - 6}" stroke="${COLORS.cream2}" stroke-opacity=".6"/>`;
   items.forEach(([lbl, c], i) => {
-    const h = max ? (c / max) * ih : 0, x0 = r1(6 + i * bw + 4), w = r1(bw - 8), y0 = r1(PAD.t + ih - h);
+    const h = max ? (c / max) * (ih - 14) : 0, x0 = r1(6 + i * bw + 4), w = r1(bw - 8), y0 = r1(PAD.t + ih - h);
     const col = i === n - 1 ? COLORS.red : i >= n - 3 ? COLORS.gold : COLORS.cream;
     s += `<rect class="bar" style="--k:${i}" x="${x0}" y="${y0}" width="${w}" height="${r1(h)}" fill="${col}" stroke="${COLORS.ink}" stroke-width="1"/>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${y0 - 4}" class="bv" text-anchor="middle">${c}</text>`;

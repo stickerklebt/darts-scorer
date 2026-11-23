@@ -118,7 +118,13 @@ export function doublesBlock(st, sel, withList = true) {
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
   // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen). Doppelquote-Verlauf und Checkout stehen im Reiter Doppel.
-  return block('', historyCharts(st, pid, distChart(st)));
+  const c = st.counts;
+  return block('', historyCharts(st, pid, distChart(st)))
+    + block('Scoring-Werte', cards([
+      ['60+ / 100+ / 140+', `${c.t60} / ${c.t100} / ${c.t140}`], ['180er', c.t180],
+      ['Bester Match-Ø', fmt(st.bestMatchAvg, 2), '', st.bestAvgRef], ['Ø Darts pro Leg', fmt(st.avgLegDarts, 1)],
+      ['Legs ≤ 15 Darts', st.le15], ['Bust-Quote', pct(st.bustRate), 'der Aufnahmen'],
+    ], 'pair', pid));
 }
 
 export function emptyState(pid, any) {
