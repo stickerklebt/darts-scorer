@@ -52,7 +52,7 @@ export function playView() {
     <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">
       <div class="hero-art">${heroArt()}</div>
       ${corners}${fuse(6, 11)}
-      <div class="hero-line">First to X Legs</div>
+      <div class="hero-line"><span class="hl-orn" aria-hidden="true">${stars(1)}</span><span class="hl-txt">First to <b>X</b> Legs</span><span class="hl-orn" aria-hidden="true">${stars(1)}</span></div>
       <div class="hero-main">
         <div class="hero-num">501${sparkles(5, 11)}</div>
       </div>

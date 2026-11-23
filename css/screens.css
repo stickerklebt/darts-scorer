@@ -2366,3 +2366,15 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 /* 501-Karte: kurze Zeile über der Zahl (First to X Legs) */
 .hero-line { position: relative; z-index: 3; text-align: center; font-family: var(--f-num); font-size: clamp(18px, 4.2vw, 26px); letter-spacing: .22em; text-transform: uppercase;
   color: var(--gold-l); text-shadow: 0 0 12px rgba(255,138,76,.35); margin-bottom: 4px; }
+
+/* „First to X Legs“ im Queen-Stil: römische Versalien (Cinzel), Gold-Verlauf mit feiner Kontur, Stern links/rechts an auslaufenden Linien, X rot-orange */
+.hero-line { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0 auto 6px; font-family: var(--f-display); font-weight: 700;
+  font-size: clamp(16px, 3.8vw, 24px); letter-spacing: .16em; text-transform: uppercase; text-shadow: none; }
+.hero-line .hl-txt { background: linear-gradient(180deg, #fff3c4 0%, #ecc96a 48%, #c9971f 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: .6px rgba(60,30,5,.55); filter: drop-shadow(0 0 10px rgba(255,138,76,.28)); padding: 0 2px; }
+.hero-line .hl-txt b { font-weight: 700; background: linear-gradient(180deg, #ffd0a0, #ff8a4c 55%, #e5402c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero-line .hl-orn { position: relative; display: inline-flex; align-items: center; color: var(--gold); }
+.hero-line .hl-orn::before { content: ""; position: absolute; top: 50%; width: clamp(30px, 9vw, 80px); height: 1px; }
+.hero-line .hl-orn:first-child::before { right: calc(100% + 6px); background: linear-gradient(90deg, transparent, rgba(236,201,106,.8)); }
+.hero-line .hl-orn:last-child::before { left: calc(100% + 6px); background: linear-gradient(90deg, rgba(236,201,106,.8), transparent); }
+.hero-line .hl-orn svg { width: 14px; height: 14px; }
