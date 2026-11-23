@@ -2063,3 +2063,11 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .rl.tap::after { color: var(--gold); }
 .rl.tap:active { background: rgba(212,166,58,.08); }
 .record > div::before, .record > div::after { color: var(--red); }
+
+/* Statistik-Kästen im Stil von „Höchstes Checkout“: schwarz, Goldrahmen, feine Gold-Innenlinie (Diagramme, „Wann du gut wirfst“) */
+.chart, .sit-g { background: var(--ink) !important; border: 2px solid var(--gold) !important;
+  box-shadow: inset 0 0 0 5px var(--ink), inset 0 0 0 6px rgba(212,166,58,.55); }
+.sit-g { padding: 6px; }
+.sit-g h3 { background: transparent; color: var(--gold-l); text-align: center; font-size: 14px; padding: 10px 12px 8px; border-bottom: 1px solid rgba(212,166,58,.3); }
+.sit-r { border-top: 1px solid rgba(212,166,58,.14); }
+.sit-g h3 + .sit-r { border-top: 0; }
