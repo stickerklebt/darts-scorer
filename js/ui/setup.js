@@ -40,9 +40,6 @@ function moreOptions(id) {
   const x01 = id === 'x01' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
     + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   const team = optRow('Spielweise', seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0));
-  // Zusammenfassung der eingeklappten Einstellungen, damit nichts versteckt „anders“ ist
-  const sum = [id === 'x01' ? o.start : null, id === 'x01' ? (o.out === 'double' ? 'Double Out' : 'Single Out') : null,
-    id === 'x01' && o.mode === 'sets' ? 'Sets' : null, S.teamMode ? 'Teams' : null].filter(Boolean).join(' · ');
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
     <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
