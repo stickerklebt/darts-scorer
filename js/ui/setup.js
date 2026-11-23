@@ -73,14 +73,14 @@ export function setupView() {
   const rows = L.map((e, i) => {
     const ci = S.teamMode ? TEAM_LETTERS.indexOf(e.team) : i;
     const bot = isBot(e.id);
-    return `<div class="prow ${bot ? 'isbot' : ''}" style="${pcVars(ci)}">
+    const open = ui.prowSel === i; // Hoch/Entfernen erst nach Antippen des Spielers
+    return `<div class="prow ${bot ? 'isbot' : ''} ${open ? 'open' : ''}" style="${pcVars(ci)}" data-act="prowSel" data-v="${i}">
       <span class="pc">${S.teamMode ? e.team : i + 1}</span>
       ${bot ? `<span class="pav">${avatar(e.id, 34)}</span>` : ''}
       <span class="pname">${esc(nameOf(e.id))}${bot ? `<small>Bot · Ø ${BOTS.find((b) => b.id === e.id).avg}</small>` : e.friend ? `<small>Freund · ${e.friend.mode === 'remote' ? 'spielt auf seinem Gerät' : 'spielt hier mit, bestätigt danach'}</small>` : e.guest ? '<small>Gast · nur dieses Spiel, ohne Statistik</small>' : ''}</span>
-      ${e.id === S.mainId ? '<span class="tag">Du</span>' : ''}
       ${S.teamMode ? `<button class="teambtn" data-act="team" data-v="${i}">Team ${e.team}</button>` : ''}
-      <button class="sq sm" data-act="pup" data-v="${i}" ${i ? '' : 'disabled'} aria-label="Nach oben">${icon('up', 2.4, 18)}</button>
-      <button class="sq sm del" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>
+      ${open ? `<button class="sq sm" data-act="pup" data-v="${i}" ${i ? '' : 'disabled'} aria-label="Nach oben">${icon('up', 2.4, 18)}</button>
+      <button class="sq sm del" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>` : ''}
     </div>`;
   }).join('');
   const nSides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length;

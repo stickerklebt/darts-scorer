@@ -365,3 +365,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Kacheln unter „Partyspiel“ nur mit Symbol (kein Name); der Name steht nach dem Antippen im Setup unter der Leiste mit Logo links daneben (`.su-title`, bei der großen Karte „501“).
 - Backstage ohne Bewegung: keine Lichtpunkte (`.glint`), kein Funkeln, keine Animationen (Block am Ende von `screens.css`).
 - „First to … Legs/Sets“ im Setup ist ein **Drehrad** (`js/ui/wheel.js`, `wheelHTML`/`initWheels`): einrastende Walze, Mitte gilt, Legs 1–20, Sets 1–10; antippen dreht hin, mit der Maus ziehen (mit Schwung).
+- Setup-Spielerliste: kein „Du“-Schild; Hoch/Entfernen erscheinen erst nach Antippen des Spielers (`ui.prowSel`).

@@ -925,8 +925,10 @@ const actions = {
     render();
   },
   addProfile(el) { if (ui.modal?.type === 'addPlayer') ui.modal = null; addToLineup(el.dataset.v); },
-  pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); render(); },
-  pup(el) { const i = Number(el.dataset.v), L = S.lineup; [L[i - 1], L[i]] = [L[i], L[i - 1]]; render(); },
+  // Spieler antippen → Hoch/Entfernen ein-/ausblenden
+  prowSel(el) { const i = Number(el.dataset.v); ui.prowSel = ui.prowSel === i ? null : i; render(); },
+  pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); ui.prowSel = null; render(); },
+  pup(el) { const i = Number(el.dataset.v), L = S.lineup; [L[i - 1], L[i]] = [L[i], L[i - 1]]; ui.prowSel = i - 1; render(); },
   pshuffle() { const L = S.lineup; for (let i = L.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L[i], L[j]] = [L[j], L[i]]; } render(); },
   start() { if (S.current && !S.current.done) { ui.modal = { type: 'confirmNew' }; render(); } else startGame(); },
   startForce() { startGame(); },

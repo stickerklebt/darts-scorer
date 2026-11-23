@@ -2402,3 +2402,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 
 /* Ausgegraute Auswahl (z. B. Teams bei nur 1 Spieler) */
 .seg-off { opacity: .35; pointer-events: none; filter: grayscale(.6); }
+
+/* Setup: Spielerzeile antippen zeigt Hoch/Entfernen */
+.prow[data-act="prowSel"] { cursor: pointer; }
+.prow.open { box-shadow: inset 0 0 0 1px rgba(236,201,106,.45); }
