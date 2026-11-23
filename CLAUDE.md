@@ -296,9 +296,9 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (Bestes Leg steht im Überblick; 9-Darter gibt es als Trophäe). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Verlauf & mehr“. Doppelfarben relativ zur eigenen
-  Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral.
+  Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel einheitlich mit Silber-Rand (glimmend), in der Liste
-  als silberner Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
+  als silberner Ring. Liste: „Beste zuerst“ (Standard, erst ab 10 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
   Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie

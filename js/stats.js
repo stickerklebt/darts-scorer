@@ -151,7 +151,7 @@ function setsOf(m, s) {
 }
 
 /* ---------------- Doppelfelder relativ zur eigenen Gesamtquote ---------------- */
-export const MIN_ATTEMPTS = 5;
+export const MIN_ATTEMPTS = 10; // erst ab 10 Versuchen bewertet (Farbe, Top 3, Lieblingsdoppel, „Beste zuerst“)
 /** Stufen nach Verhältnis Feldquote / eigene Gesamtquote */
 export const TIERS = [
   { k: 'great', min: 1.5, label: 'deutlich besser (ab 1,5×)' },
