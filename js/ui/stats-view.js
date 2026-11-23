@@ -12,14 +12,7 @@ import { situations, legCurve, MIN_N, GOOD, BAD } from '../situations.js';
 import { legCurveChart, chartBox } from './charts.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
-/** Symbole statt Text in der Unter-Reiter-Leiste (hier direkt gezeichnet): Krone · Scheibe · Kurve */
-const SUB_ICONS = {
-  overview: '<path d="M4 19h16"/><path d="M4.5 16L3 7.5l5 4L12 5l4 6.5 5-4L19.5 16z"/><circle cx="12" cy="5" r=".6" fill="currentColor"/>',
-  // Doppel (nach Skizze): zwei Bögen des Doppelrings über die ganze Breite, zwei Segmentlinien, dazwischen das Doppelfeld orange
-  doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#ea6a2e" stroke="none"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/>',
-  more: '<path d="M3 21h18"/><path d="M4 16l5-5 4 3 7-7"/><path d="M15 7h5v5"/>',
-};
-const subIcon = (k) => `<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SUB_ICONS[k]}</svg>`;
+const subIcon = (k) => `<b class="sub-num">${SUBTABS.findIndex(([x]) => x === k) + 1}</b>`; // Zahlen 1 · 2 · 3 statt Symbole
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
 /** Frühere Unter-Reiter landen in „Scoring“ */
 const subOf = (k) => (k === 'scoring' || k === 'checkout' || k === 'history' ? 'more' : SUBTABS.some(([x]) => x === k) ? k : 'overview');
@@ -57,10 +50,11 @@ function overviewTab(st, pid) {
   return `<div class="hero-stat has-rv">${goldSmoke('gsS')}${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv(`501 · ${st.darts} Darts · ${st.points} Punkte · Höchste Aufnahme ${st.top5[0]?.score ?? '–'}`)}</em></div>
     ${cards([
       ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
-      ['Darts geworfen', st.darts, `${st.points} Punkte`], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
-      ['Doppelquote', pct(st.doubles.rate), rv(`${st.doubles.hits} / ${st.doubles.attempts}`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
+      ['Darts geworfen', st.darts, `${st.points} Punkte`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
-    ], '', pid)}`;
+    ], 'three', pid)}
+    <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
+    ${checkoutTab(st, pid)}`;
 }
 
 function checkoutTab(st, pid) {
@@ -105,7 +99,7 @@ export function doublesBlock(st, sel, withList = true) {
       ${withList && sel ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? `<div class="dbl-right">
-      <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>` : ''}
+` : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
@@ -140,7 +134,7 @@ export function statsView() {
   const sub = subOf(S.statsSub);
   // Unter-Reiter als kleine Symbol-Pille, die über dem Haupt-Reiter „Statistik“ unten auftaucht; Wechsel auch per Wischen (main.js)
   const nav = `<div class="subpop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}" aria-label="${l}" title="${l}">${subIcon(k)}</button>`).join('')}<i class="sub-line"></i></nav></div>`; // Zeitraum: lange auf den Reiter „Statistik“ drücken (main.js)
-  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${head}
     <div class="subbody sub-${sub}">${body}</div>
   </main>${nav}`;

@@ -2299,3 +2299,14 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .fb-has { color: #7cc487; }
 .fb-ball { display: inline-block; width: .32em; height: .32em; margin-left: .12em; vertical-align: .9em; border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fff, #d9c9a3 60%, #8a7c5e); box-shadow: 0 0 10px rgba(255,255,255,.35); }
+
+/* Unter-Reiter als Zahlen 1 · 2 · 3 */
+.sub-num { font-family: var(--f-num); font-weight: 400; font-size: 24px; line-height: 1; transform: scaleX(1.1); display: inline-block; }
+.subpop .subtabs.three button.on .sub-num { color: #ffb067; text-shadow: 0 0 10px rgba(255,138,76,.55); }
+/* Überblick: Doppelquote-Karte mit Abstand */
+.page.stats .dbl-hero { margin: 18px 0 4px; }
+/* Doppel-Reiter breit: rechte Spalte nur die Liste – sie nutzt die Höhe der Scheibe */
+@media (min-width: 900px) {
+  .dbl-layout .dbl-right .dbl-head { margin-top: 0; }
+  .dbl-layout .dbl-right .sbtable-wrap.dbl-scroll { flex: 1; max-height: none; min-height: 0; height: 0; }
+}
