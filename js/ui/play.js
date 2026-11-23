@@ -12,8 +12,8 @@ export const tabIndex = () => Math.max(0, TABS.indexOf(S.tab));
 export function tabsBar() {
   const i = tabIndex(), n = incomingCount();
   return `<nav class="tabs"><div class="tabs-in">
-    <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${icon('dart', 2)}<span>Spielen</span></button>
-    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Statistik</span></button>
+    <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${icon('dart', 2)}<span>Play</span></button>
+    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Stats</span></button>
     <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('ticket', 2)}<span>Backstage</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
