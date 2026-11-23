@@ -1979,3 +1979,5 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .kv.one { grid-template-columns: 1fr !important; margin-bottom: 10px; }
 .sbtable td small { display: block; font-size: 11px; color: var(--muted); }
 .ch-h small { font-family: var(--f-text); font-size: 12px; letter-spacing: 0; text-transform: none; color: var(--muted); margin-left: 6px; }
+/* 60+/100+/140+ und 180er nebeneinander (breite und schmale Karte) */
+.kv.pair { grid-template-columns: 2fr 1fr !important; }
