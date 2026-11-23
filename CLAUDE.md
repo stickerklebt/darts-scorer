@@ -358,4 +358,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Ball bleibt über die Aufnahme hinaus; mit Ball auf das gegnerische Doppel = Tor. Sieg bei `opts.target` Toren (3/5/7). Eingabe `fbPad`:
   25 · Bull · D(Gegner-Tor) · Daneben, was gerade zählt leuchtet; Bot zielt ohne Ball aufs Bull, mit Ball aufs Tor. Nicht in der Statistik.
 - Statistik-Unter-Reiter in der Pille: Überblick = „123“ (Zahlen), Doppel = Doppelfeld-Symbol, Scoring = Kurve. Überblick: Average, 6 Karten, darunter große Doppelquote-Karte
-  und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (Liste nutzt breit die Höhe der Scheibe).
+  und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (breit: Liste genau so hoch wie die Scheibe, `fitDblList` in main.js); nur das beste Doppel leuchtet weiß umrandet.

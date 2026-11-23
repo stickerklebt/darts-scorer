@@ -77,6 +77,17 @@ function patchNode(x, y) {
   if (x.tagName === 'INPUT' && y.hasAttribute('value') && x !== document.activeElement) x.value = y.getAttribute('value');
   patchChildren(x, y);
 }
+/** Doppel-Reiter (breit): Liste rechts genau so hoch wie die Scheibe links */
+function fitDblList() {
+  const dl = document.querySelector('.dbl-layout');
+  if (!dl) return;
+  const board = dl.querySelector('.heat-board'), list = dl.querySelector('.dbl-scroll'), head = dl.querySelector('.dbl-head');
+  if (!board || !list) return;
+  if (innerWidth < 900) { list.style.maxHeight = ''; return; }
+  const top = (head ? head.getBoundingClientRect().height + 10 : 0);
+  list.style.maxHeight = `${Math.max(160, Math.round(board.getBoundingClientRect().height - top))}px`;
+}
+addEventListener('resize', () => fitDblList());
 function render() {
   if (auth.user) ensureMainProfile();
   save();
@@ -102,6 +113,7 @@ function render() {
   if (ui.lastKey && ui.lastKey !== key) { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   ui.lastKey = key;
   // Bot am Zug: Eingabebereich so hoch wie zuletzt die eigene Tastatur, damit die Karten oben nicht springen
+  fitDblList();
   const pad = app.querySelector('.game .pad');
   if (pad) {
     if (!pad.querySelector('.botpad')) { pad.style.minHeight = ''; pad.style.height = ''; ui.padH = pad.offsetHeight || ui.padH; }
