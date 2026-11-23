@@ -2136,3 +2136,12 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .subpop .subtabs.three .sub-line { box-shadow: 0 0 12px rgba(229,64,44,.7); animation: tabglow 3.6s ease-in-out infinite; border-radius: 2px; }
 .subpop .subtabs.three .sub-line::before { box-shadow: 0 0 10px rgba(229,64,44,.8), 0 0 22px rgba(229,64,44,.45); }
 .subpop .subtabs.three button.on .ic { filter: drop-shadow(0 0 5px rgba(229,64,44,.55)); }
+
+/* Handy (schmal, hoch): im Spiel ohne „… ist dran“-Leiste und ohne Schnellwahl; die eingegebene Zahl groß */
+@media (max-width: 600px) and (orientation: portrait) {
+  .game .ticker:not(:has(.tk-target)) { display: none; }
+  .game .quick { display: none; }
+  .game .entry { align-items: center; }
+  .game .entry .val { font-size: 76px; }
+  .game .entry .val small { font-size: 16px; }
+}
