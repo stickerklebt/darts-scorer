@@ -44,7 +44,7 @@ function moreOptions(id) {
   const sum = [id === 'x01' ? o.start : null, id === 'x01' ? (o.out === 'double' ? 'Double Out' : 'Single Out') : null,
     id === 'x01' && o.mode === 'sets' ? 'Sets' : null, S.teamMode ? 'Teams' : null].filter(Boolean).join(' · ');
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
-    <button class="more-h" data-act="more"><span>Mehr Optionen${sum ? `<small>${sum}</small>` : ''}</span>${icon('chevR', 2.4, 18)}</button>
+    <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
       <div class="opts">${team}${x01}</div>
       ${S.teamMode ? '<p class="foot">Tippe bei den Spielern auf „Team“, um sie zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge der Liste.</p>' : ''}
