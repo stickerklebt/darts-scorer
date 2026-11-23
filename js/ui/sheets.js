@@ -13,6 +13,7 @@ import { auth, sync } from '../sync.js';
 import { dateStr } from './stats-view.js';
 import { legSheet } from './legdetail.js';
 import { bruchResult } from './bruch.js';
+import { histSheet } from './history.js';
 import { link } from '../camera-link.js';
 import { stationMode } from './camstation.js';
 import { camBigView } from './camview.js';
@@ -100,6 +101,8 @@ export function sheetView() {
     inner = `<h3>Zeitraum</h3><p>Welche Spiele sollen in die Statistik?</p>
       <div class="slist">${opts.map(([v, l, sub]) => `<button class="srow" data-act="period" data-v="${v}"><span class="lbl">${l}${sub ? `<small>${sub}</small>` : ''}</span>${S.statsPeriod === v ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
+  } else if (md.type === 'hist') {
+    inner = histSheet(md.id);
   } else if (md.type === 'histDel') {
     inner = `<h3>Spiel löschen?</h3><p>${esc(md.label)}<br>Das Spiel verschwindet aus der Historie und zählt nicht mehr in der Statistik – auch auf deinen anderen Geräten und bei deinen Freunden. Das lässt sich nicht rückgängig machen.</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="histDelForce">Löschen</button></div>`;
@@ -165,7 +168,7 @@ export function sheetView() {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;
   }
-  return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' || md.type === 'camBig' ? 'wide' : ''}">${inner}</div></div>`;
+  return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' || md.type === 'camBig' ? 'wide' : md.type === 'hist' ? 'wide pop' : ''}">${inner}</div></div>`;
 }
 
 /** Spieler hinzufügen: drei Wege – Freund, Gast (nur dieses Spiel), Bot */

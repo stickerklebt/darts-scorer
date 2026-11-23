@@ -653,7 +653,7 @@ const actions = {
   /* Spielhistorie */
   history() { ui.histFrom = S.tab; ui.openHist = null; ui.modal = null; S.screen = 'history'; render(); window.scrollTo(0, 0); },
   histBack() { S.screen = 'home'; S.tab = ui.histFrom || 'play'; ui.openHist = null; render(); window.scrollTo(0, 0); },
-  histOpen(el) { ui.openHist = ui.openHist === el.dataset.v ? null : el.dataset.v; render(); },
+  histOpen(el) { ui.modal = { type: 'hist', id: el.dataset.v }; render(); }, // Details als Fenster in der Mitte
   histFilter(el) { ui.histFilter = el.dataset.v; ui.openHist = null; render(); },
   histDel(el) {
     const r = historyRows(S.matches, S.mainId).find((x) => x.id === el.dataset.v);

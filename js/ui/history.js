@@ -1,5 +1,5 @@
 /* Screen „Spielhistorie“: alle gespielten Spiele, neueste zuerst, nach Monat gruppiert, Filter nach Modus.
-   Antippen klappt Details auf (Statistik-Tabelle bzw. Platzierung) – dort lässt sich das Spiel löschen. */
+   Antippen öffnet ein Fenster in der Mitte mit den Details (Statistik-Tabelle bzw. Platzierung) – dort lässt sich das Spiel löschen. */
 import { S, ui, nameOf, sideName } from '../store.js';
 import { historyRows } from '../history.js';
 import { GAMES } from '../games.js';
@@ -14,22 +14,31 @@ const month = (t) => new Date(t).toLocaleDateString('de-DE', { month: 'long', ye
 const time = (t) => new Date(t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
 function row(r) {
-  const open = ui.openHist === r.id;
-  const m = open ? S.matches.find((x) => x.id === r.id) : null;
   const [cls, mark] = OUT[r.outcome] || ['n', '·'];
   const title = GAMES[r.game]?.title || r.game;
-  const who = r.side < 0 ? `${esc(r.winners.map(sideName).join(' · '))} gewinnt`
-    : r.opp.length ? `gegen ${esc(r.opp.map(nameOf).join(' · '))}` : 'Training';
-  return `<div class="ml hist ${open ? 'open' : ''}">
+  return `<div class="ml hist">
     <button class="ml-row" data-act="histOpen" data-v="${esc(r.id)}">
       <span class="ml-res ${cls}">${mark}</span>
       <span class="hist-badge">${badge(r.game, 30)}</span>
-      <span class="ml-mid"><b>${who}</b><small>${r.game === 'x01' && r.start ? r.start : title} · ${dateStr(r.date)} ${time(r.date)} · ${esc(r.result)}${r.demo ? ' · Test' : ''}</small></span>
+      <span class="ml-mid"><b>${whoText(r)}</b><small>${r.game === 'x01' && r.start ? r.start : title} · ${dateStr(r.date)} ${time(r.date)} · ${esc(r.result)}${r.demo ? ' · Test' : ''}</small></span>
       ${r.game === 'x01' && r.avg !== null ? `<span class="ml-avg"><small>Ø</small><b>${fmt(r.avg)}</b></span>` : ''}
     </button>
-    ${m ? `<div class="ml-detail">${m.game === 'x01' ? x01Table(m) : m.game === 'bruch' ? `<h2 class="label">Herausforderungen</h2><ul class="br-hist">${(m.bruch?.items || []).map((x) => `<li class="${x.done ? 'ok' : ''}">${x.done ? '✓' : '✕'} ${esc(x.text)}</li>`).join('')}</ul>` : `<h2 class="label">Platzierung</h2>${partyRanks(m)}`}
-      <button class="btn line hist-del" data-act="histDel" data-v="${esc(r.id)}">${icon('minus', 2.6, 16)} Spiel löschen</button></div>` : ''}
   </div>`;
+}
+const whoText = (r) => (r.side < 0 ? `${esc(r.winners.map(sideName).join(' · '))} gewinnt`
+  : r.opp.length ? `gegen ${esc(r.opp.map(nameOf).join(' · '))}` : 'Training');
+
+/** Fenster in der Mitte mit den Details eines Spiels (statt Aufklappen in der Liste) */
+export function histSheet(id) {
+  const r = historyRows(S.matches, S.mainId).find((x) => x.id === id), m = S.matches.find((x) => x.id === id);
+  if (!r || !m) return '<h3>Spiel nicht gefunden</h3><div class="sbtns"><button class="btn red" data-act="closeModal">Schließen</button></div>';
+  const title = GAMES[r.game]?.title || r.game;
+  const body = m.game === 'x01' ? x01Table(m)
+    : m.game === 'bruch' ? `<h2 class="label">Herausforderungen</h2><ul class="br-hist">${(m.bruch?.items || []).map((x) => `<li class="${x.done ? 'ok' : ''}">${x.done ? '✓' : '✕'} ${esc(x.text)}</li>`).join('')}</ul>`
+    : `<h2 class="label">Platzierung</h2>${partyRanks(m)}`;
+  return `<h3>${whoText(r)}</h3><p>${r.game === 'x01' && r.start ? r.start : title} · ${dateStr(r.date)} ${time(r.date)} · ${esc(r.result)}</p>
+    <div class="hist-sheet">${body}</div>
+    <div class="sbtns"><button class="btn line hist-del" data-act="histDel" data-v="${esc(r.id)}">${icon('minus', 2.6, 16)} Spiel löschen</button><button class="btn red" data-act="closeModal">Schließen</button></div>`;
 }
 
 export function historyView() {

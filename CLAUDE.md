@@ -157,7 +157,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (Spitze = Treffpunkt). Lupe: runder „Glas“-Ausschnitt mit feinem Goldring, Dartpfeil statt Fadenkreuz, Feldname als Pille darunter. Ausnahme vom „kein Leuchten im Spiel“: nur diese Treffer.
 - **Spielhistorie** (Screen `history`, Knopf im Reiter Spielen neben Einstellungen und unter Statistik › Verlauf):
   alle fertigen Spiele aller Modi, neueste zuerst, nach Monat gruppiert, Filter Alle · X01 · Cricket · Party. Zeile: S/N/=
-  aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)
+  aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Fenster in der Mitte mit Details (X01-Tabelle bzw. Platzierung, `histSheet`)
   und „Spiel löschen“ (mit Bestätigung). Gelöscht wird aus `S.matches` → fehlt in jeder Statistik, Sync löscht es auf dem
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
 - **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): ganz oben das eigene Banner, in der Mitte die Freunde, ganz unten unter „Mehr“ vier Kacheln (nur Symbol + Titel) Spielhistorie ·
