@@ -1285,6 +1285,7 @@ setOnChange(() => render());
 if (S.screen === 'friend') S.screen = 'home';
 S.statsPeriod = 'all';
 S.statsSub = 'doubles'; // beim Start immer der mittlere Reiter (Doppel)
+S.tab = 'play'; // beim Öffnen der App immer im Reiter „Spielen“ (ein laufendes Spiel bleibt offen)
 render();
 initOnline({
   render, toast, loggedIn: () => !!auth.user,
