@@ -47,7 +47,7 @@ export function playView() {
   const others = Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired);
   return `<main class="page">
     ${m && !m.done ? `<button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>` : ''}
-    <section class="hero">
+    <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">
       <div class="hero-art">${heroArt()}</div>
       ${corners}${fuse(6, 11)}
       <div class="hero-band">${stars(2)}<span>Der Klassiker</span>${stars(2)}</div>
@@ -56,9 +56,6 @@ export function playView() {
         <div class="hero-num">${o.start}${sparkles(5, 11)}</div>
       </div>
       <div class="hero-meta">${o.out === 'double' ? 'Double Out' : 'Single Out'} · First to ${o.target} ${o.mode === 'sets' ? 'Sets' : 'Legs'}</div>
-      <div class="hero-btns one">
-        <button class="btn red big" data-act="pick" data-v="x01">Spielen</button>
-      </div>
     </section>
     <h2 class="label">Partyspiel</h2>
     <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">

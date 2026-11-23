@@ -351,4 +351,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Mit Maus (MacBook/PC, `(hover: hover) and (pointer: fine)`): Versteckte Statistik-Zahlen (`.has-rv`, Diagramme `.has-tg`) erscheinen beim Darüberfahren und gehen beim Verlassen weg; Klick schaltet dort nicht.
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
 - Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
-- X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen und Spielen-Knopf dunkel mit Verlaufsrand und warmem Leuchten.
+- X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, Anheben beim Darüberfahren, `.hero-go`).
