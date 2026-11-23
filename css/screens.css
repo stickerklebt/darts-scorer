@@ -2051,3 +2051,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .kv-c.tap { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
 .kv-row { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .kv-row em { margin-top: 0; font-size: 15px; white-space: nowrap; }
+
+/* Name in der Mitte der Kopfzeile (Uhr-Knopf bleibt rechts) */
+.st-head { position: relative; justify-content: flex-end; }
+.st-head .st-plain { position: absolute; left: 64px; right: 64px; top: 50%; transform: translateY(-50%); text-align: center; pointer-events: none; }

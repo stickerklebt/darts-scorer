@@ -336,4 +336,4 @@ Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über ngin
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
-- Statistik-Kopf: nur der Name (Cinzel, ohne Kasten, ohne „Statistik von“), daneben der Uhr-Knopf.
+- Statistik-Kopf: nur der Name in der Mitte (Cinzel, ohne Kasten, ohne „Statistik von“), daneben der Uhr-Knopf.
