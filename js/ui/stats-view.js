@@ -137,8 +137,6 @@ function moreTab(st, pid) {
   return block('', historyCharts(st, pid))
     + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st, pid))
     + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid))
-    + fold('legs', 'Legs', `Bestes ${st.bestLeg ? `${st.bestLeg} Darts` : '–'} · Ø ${fmt(st.avgLegDarts)} Darts`,
-      cards([['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef], ['Ø Darts/Leg', fmt(st.avgLegDarts)], ['9-Darter', st.nine], ['Legs ≤ 15 Darts', st.le15]], 'four', pid))
     + fold('matches', 'Matches', `${st.matches} ${st.matches === 1 ? 'Match' : 'Matches'} · ${st.wins} Siege`,
       matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
 }
