@@ -55,7 +55,7 @@ export function playView() {
       </div>
     </section>
     <h2 class="label">Partyspiel</h2>
-    <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" style="--mc:${MODE_COLORS[id]};--bi:${i}">
+    <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${MODE_COLORS[id]};--bi:${i}">
       <span class="mode-art">${badge(id, 52)}</span><span class="mode-name">${GAMES[id].title}</span></button>`).join('')}</div>
   </main>`;
 }

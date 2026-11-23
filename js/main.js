@@ -562,6 +562,9 @@ const throwOne = (m, n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult)
 
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
+/** Startpunkte der X01-Kachel unter Partyspiel (501 gibt es nur über die große Karte) */
+const X01_OTHER = [101, 301, 701, 1001];
+
 const actions = {
   /* Anmeldung: E-Mail oder Name → Passwort bzw. (nur mit E-Mail) Registrierung */
   authEmail() {
@@ -761,7 +764,15 @@ const actions = {
   },
   pick(el) {
     if (el.dataset.v === 'bruch') { S.screen = 'bruch'; render(); window.scrollTo(0, 0); return; }
-    S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false; render(); window.scrollTo(0, 0);
+    S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false;
+    // X01: die große Karte ist immer 501; die Kachel unter Partyspiel spielt alle anderen Startpunkte (101 · 301 · 701 · 1001)
+    if (S.game === 'x01') {
+      ui.x01Var = el.dataset.var === 'other' ? 'other' : '501';
+      const o = S.opts.x01;
+      if (ui.x01Var === '501') o.start = 501;
+      else if (o.start === 501 || !X01_OTHER.includes(o.start)) o.start = 301;
+    }
+    render(); window.scrollTo(0, 0);
   },
   /* Bruchchallenge */
   bruchStart(el) { S.bruch = BR.start(Number(el.dataset.v)); requestWakeLock(); render(); window.scrollTo(0, 0); },

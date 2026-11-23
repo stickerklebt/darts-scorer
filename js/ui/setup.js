@@ -17,8 +17,11 @@ const TEAM_LETTERS = 'ABCDEF';
 function mainOptions(id) {
   const o = S.opts[id];
   if (id === 'x01') {
+    // 501 nur über die große Karte; die X01-Kachel wählt einen anderen Startwert
+    if (ui.x01Var !== 'other' && o.start !== 501) o.start = 501; // große Karte: immer 501, nicht umstellbar
+    const start = ui.x01Var === 'other' ? optRow('Startpunkte', seg('opt', 'start', [[101, '101'], [301, '301'], [701, '701'], [1001, '1001']], o.start)) : '';
     const tOpts = o.mode === 'sets' ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, 7];
-    return optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', seg('opt', 'target', tOpts.map((v) => [v, String(v)]), o.target));
+    return start + optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', seg('opt', 'target', tOpts.map((v) => [v, String(v)]), o.target));
   }
   if (id === 'highscore') return optRow('Runden', seg('opt', 'rounds', [[5, '5'], [10, '10'], [15, '15'], [20, '20']], o.rounds));
   if (id === 'shanghai') return optRow('Ziele', seg('opt', 'rounds', [[7, '1–7'], [10, '1–10'], [20, '1–20']], o.rounds));
@@ -34,8 +37,7 @@ function mainOptions(id) {
 /** Klappfenster „Mehr Optionen“ */
 function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
-  const x01 = id === 'x01' ? optRow('Startpunkte', seg('opt', 'start', [[301, '301'], [501, '501'], [701, '701']], o.start))
-    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
+  const x01 = id === 'x01' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
     + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   const team = optRow('Spielweise', seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0));
   // Zusammenfassung der eingeklappten Einstellungen, damit nichts versteckt „anders“ ist
