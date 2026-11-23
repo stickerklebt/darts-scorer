@@ -2,7 +2,7 @@
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } from '../stats.js';
-import { esc, fmt, seg, pcVars } from './common.js';
+import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
 import { historyCharts, distChart } from './stats-extra.js';
@@ -89,10 +89,8 @@ function dblInfo(st, key) {
 export function doublesBlock(st, sel, withList = true) {
   const fields = st.doubles.fields, rating = doubleRating(st.doubles);
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
-  const sort = ui.heatSort === 'field' ? 'field' : 'rate';
-  const num = (k) => (k === 'Bull' ? 25 : Number(k.slice(1)));
   const rated = (r) => (r.attempts >= MIN_ATTEMPTS ? 1 : 0);
-  rows.sort((a, b) => (sort === 'field' ? num(a.k) - num(b.k) : rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts));
+  rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   const medal = (k) => (rating[k]?.top ? `<span class="medal m${rating[k].top}" title="Platz ${rating[k].top}"></span>` : '');
   const legend = `<div class="heat-key">
@@ -106,8 +104,8 @@ export function doublesBlock(st, sel, withList = true) {
       ${withList && sel ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? '<div class="dbl-right">' : ''}
-    ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2>${seg('heatSort', 'v', [['rate', 'Beste zuerst'], ['field', 'Nach Zahl']], sort, 'seg sm')}</div>
-      <div class="sbtable-wrap"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
+    ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
+      <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}${medal(r.k)}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
     ${withList ? '</div>' : ''}</div>
     ${withList ? legend : ''}`;

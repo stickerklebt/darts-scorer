@@ -707,7 +707,6 @@ const actions = {
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
-  heatSort(el) { ui.heatSort = el.dataset.v; render(); },
   /* Banner: Abzeichen-Platz antippen → Auswahl darunter auf/zu; Trophäe wählen → in den Platz (synchronisiert über prefs) */
   badgeSlot(el) { const i = Number(el.dataset.v); ui.badgePick = ui.badgePick === i ? null : i; render(); },
   badgeSet(el) {
