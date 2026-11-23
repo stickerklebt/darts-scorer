@@ -104,7 +104,8 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
         if (t.bust) busts++;
         const sc = t.score;
         if (sc === 180) counts.t180++; else if (sc >= 140) counts.t140++; else if (sc >= 100) counts.t100++; else if (sc >= 60) counts.t60++;
-        buckets[BUCKETS.findIndex(([, lo, hi]) => sc >= lo && sc <= hi)]++;
+        // Verteilung nur aus dem Scoring (Rest vor der Aufnahme über 170) – im Checkout-Bereich wirft man bewusst kleine Zahlen
+        if (t.startRem > 170) buckets[BUCKETS.findIndex(([, lo, hi]) => sc >= lo && sc <= hi)]++;
         top.push({ score: sc, date, opp, mid: m.id, li, ti });
         if (t.out) {
           cos.push({ score: sc, date, opp, darts: t.darts, mid: m.id, li, ti });

@@ -60,7 +60,7 @@ function overviewTab(st, pid) {
 function scoringTab(st, pid) {
   const c = st.counts;
   return block('', rankList('Top 5 Aufnahmen', st.top5, pid))
-    + block('Anzahl', cards([['180', c.t180], ['140+', c.t140], ['100+', c.t100], ['60+', c.t60]], 'four'))
+    + block('Anzahl', cards([['60+ / 100+ / 140+', `${c.t60} / ${c.t100} / ${c.t140}`]], 'one') + cards([['180er', c.t180]], 'one'))
     + block('Pro Aufnahme', cards([['Ø Aufnahme', fmt(st.perTurn)], ['Bust-Quote', pct(st.bustRate)]]))
     + block('', distChart(st));
 }

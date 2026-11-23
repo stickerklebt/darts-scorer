@@ -42,7 +42,7 @@ export function historyCharts(st, pid = '') {
     <h3 class="ch-h">Doppelquote pro Match</h3>${lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` })}`;
 }
 /** Scoring: Verteilung der Aufnahmen */
-export const distChart = (st) => `<h3 class="ch-h">Verteilung der Aufnahmen</h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`;
+export const distChart = (st) => `<h3 class="ch-h">Verteilung der Aufnahmen <small>nur Scoring – Rest über 170</small></h3>${barChart(BUCKETS.map(([l], i) => [l, st.buckets[i]]))}`;
 
 /** Aufklappbare Matchliste */
 export function matchList(st) {

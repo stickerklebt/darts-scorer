@@ -1,5 +1,5 @@
 /* X01-Engine: Legs/Sets, Summen- und Einzeldart-Eingabe, Teams, Undo. Reine Logik ohne DOM. */
-import { POSS, val, label, targetFor, route } from './checkout.js';
+import { POSS, val, label, targetFor, route, isDoubleAttempt, attemptField, hitsField } from './checkout.js';
 import { throwerOf } from './match.js';
 
 export const LEGS_PER_SET = 3;
@@ -104,7 +104,7 @@ export function undo(m) {
 
 /** Statistik einer Seite oder eines Profils innerhalb eines Matches. key: { s } oder { pid } */
 export function matchStats(m, key) {
-  let pts = 0, darts = 0, f9p = 0, f9d = 0, high = 0, t100 = 0, t140 = 0, t180 = 0, hco = 0, best = null;
+  let pts = 0, darts = 0, f9p = 0, f9d = 0, high = 0, t60 = 0, t100 = 0, t140 = 0, t180 = 0, hco = 0, best = null, dAtt = 0, dHit = 0;
   for (const l of m.legs) {
     let n = 0, ld = 0;
     for (const t of l.turns) {
@@ -114,9 +114,10 @@ export function matchStats(m, key) {
       if (n < 3) { f9p += t.score; f9d += t.darts; }
       n++;
       high = Math.max(high, t.score);
-      if (t.score === 180) t180++; else if (t.score >= 140) t140++; else if (t.score >= 100) t100++;
+      if (t.score === 180) t180++; else if (t.score >= 140) t140++; else if (t.score >= 100) t100++; else if (t.score >= 60 && !t.bust) t60++;
       if (t.out) { hco = Math.max(hco, t.score); if (best === null || ld < best) best = ld; }
+      if (dbl(m)) for (const th of t.throws || []) if (isDoubleAttempt(th.before)) { dAtt++; if (hitsField(th, attemptField(th.before))) dHit++; }
     }
   }
-  return { pts, darts, avg: darts ? (pts / darts) * 3 : 0, f9: f9d ? (f9p / f9d) * 3 : 0, high, t100, t140, t180, hco, best };
+  return { pts, darts, avg: darts ? (pts / darts) * 3 : 0, f9: f9d ? (f9p / f9d) * 3 : 0, high, t60, t100, t140, t180, hco, best, dAtt, dHit, dRate: dAtt ? dHit / dAtt : null };
 }

@@ -14,9 +14,11 @@ export function x01Table(m) {
   const rows = [
     ['Ø 3 Darts', (s) => st[s].avg, (v) => fmt(v, 2), 'max'], ['First 9 Ø', (s) => st[s].f9, (v) => fmt(v, 2), 'max'],
     ...(X.isSets(m) ? [['Sets', (s) => X.setsWon(m, s), String, 'max']] : []), ['Legs', (s) => X.legsWon(m, s), String, 'max'],
-    ['Höchste Aufnahme', (s) => st[s].high, String, 'max'], ['100+', (s) => st[s].t100, String, 'max'], ['140+', (s) => st[s].t140, String, 'max'],
-    ['180', (s) => st[s].t180, String, 'max'], ['Höchstes Finish', (s) => st[s].hco, (v) => v || '–', 'max'],
-    ['Bestes Leg', (s) => st[s].best, (v) => (v ? `${v} Darts` : '–'), 'min'], ['Darts', (s) => st[s].darts, String, null],
+    ['Höchste Aufnahme', (s) => st[s].high, String, 'max'],
+    ['60+ / 100+ / 140+', (s) => st[s].t60 + st[s].t100 * 100 + st[s].t140 * 10000, (v, s) => `${st[s].t60} / ${st[s].t100} / ${st[s].t140}`, null],
+    ['180er', (s) => st[s].t180, String, 'max'], ['Höchstes Finish', (s) => st[s].hco, (v) => v || '–', 'max'],
+    ...(m.opts.out === 'double' ? [['Doppelquote', (s) => st[s].dRate, (v, s) => (v === null ? '–' : `${String(Math.round(v * 1000) / 10).replace('.', ',')} %<small>${st[s].dHit}/${st[s].dAtt}</small>`), 'max']] : []),
+    ['Bestes Leg', (s) => st[s].best, (v) => (v ? `${v} Darts` : '–'), 'min'],
   ];
   const body = rows.map(([l, get, show, dir]) => {
     const vals = m.sides.map((_, s) => get(s));
@@ -25,7 +27,7 @@ export function x01Table(m) {
       const valid = vals.filter((v) => v !== null && v !== 0);
       if (valid.length) best = dir === 'max' ? Math.max(...valid) : Math.min(...valid);
     }
-    return `<tr><td>${l}</td>${vals.map((v) => `<td class="${best !== null && v === best ? 'best' : ''}">${show(v)}</td>`).join('')}</tr>`;
+    return `<tr><td>${l}</td>${vals.map((v, s) => `<td class="${best !== null && v === best ? 'best' : ''}">${show(v, s)}</td>`).join('')}</tr>`;
   }).join('');
   const head = `<tr><th><div></div></th>${m.sides.map((side, s) => `<th class="${w.includes(s) ? 'win' : ''}" style="${pcVars(s)}"><div>${esc(isTeam(side) ? `Team ${side.map(nameOf).join(' · ')}` : nameOf(side[0]))}</div></th>`).join('')}</tr>`;
   let per = '';
