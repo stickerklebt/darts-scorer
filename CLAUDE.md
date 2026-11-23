@@ -371,4 +371,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Rechtlich: **keine** Star-Wars-Motive verwenden (kein Helm/Maske, kein Laserschwert, kein Imperiums-/Sith-Zeichen, kein Todesstern, keine
   Film-Schrift, keine Atem-Geräusche, keine Zitate). Nur eigene Darts-Heraldik + dunkle Farben. Der Name ist ein Wortspiel nah an einer
   geschützten Marke – vor kommerzieller Veröffentlichung juristisch prüfen lassen.
-- Setup-Kopf (`.su-title`) im DartVader-Stil: Name/Zahl groß (League Gothic) mit Verlauf Stahl → Glut-Rot, tiefrotes Leuchten, Logo dunkel mit Stahlrand.
+- Setup-Kopf (`.su-title`) wie die große 501-Karte: Name/Zahl groß (League Gothic) in Creme mit rotem versetzten Schatten, `#ink`, warmes Glühen dahinter.

@@ -2440,3 +2440,9 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   transform: scaleX(var(--num-w, 1.16)); transform-origin: center; margin: 0 .1em; }
 .su-title .badge-mode { position: relative; --badge-bg: #120f0c; --badge-ink: #e5402c; --badge-line: #b9bcc2; width: 58px !important; height: 58px !important;
   box-shadow: inset 0 0 0 1.5px #c4c7cd, 0 0 18px rgba(170,16,34,.45) !important; }
+
+/* Setup-Kopf wie die große 501-Karte: Creme-Zahl mit rotem versetzten Schatten, Bleisatz-Kante, warmes Glühen dahinter */
+.su-title h1 { background: none !important; -webkit-background-clip: border-box; background-clip: border-box; color: var(--cream) !important; -webkit-text-stroke: 0;
+  text-shadow: 3px 2px 0 var(--red), 0 0 26px rgba(255,214,120,.35); filter: url(#ink); }
+.su-title::before { background: radial-gradient(ellipse at center, rgba(120,72,30,.45), rgba(70,36,14,.18) 50%, transparent 72%) !important; }
+.su-title .badge-mode { --badge-bg: var(--red); --badge-ink: var(--ink); --badge-line: var(--ink); box-shadow: 0 0 16px rgba(255,138,76,.3) !important; }
