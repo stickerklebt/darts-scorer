@@ -2399,3 +2399,6 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   border-left: 1px solid rgba(236,201,106,.55); border-right: 1px solid rgba(236,201,106,.55); }
 .wheel { cursor: grab; user-select: none; -webkit-user-select: none; }
 .wheel.dragging { cursor: grabbing; }
+
+/* Ausgegraute Auswahl (z. B. Teams bei nur 1 Spieler) */
+.seg-off { opacity: .35; pointer-events: none; filter: grayscale(.6); }

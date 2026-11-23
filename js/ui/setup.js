@@ -40,7 +40,10 @@ function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
   const x01 = id === 'x01' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
     + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
-  const team = optRow('Spielweise', seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0));
+  // Teams erst ab 2 Spielern (im Team spielen sie zusammen eine Punktzahl herunter) – vorher ausgegraut
+  if (L.length < 2 && S.teamMode) S.teamMode = false;
+  const team = optRow('Spielweise', `<div class="${L.length < 2 ? 'seg-off' : ''}">${seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0)}</div>`)
+    + (L.length < 2 ? '<p class="foot">Teams gibt es ab 2 Spielern – im Team spielt ihr zusammen von 501 herunter.</p>' : '');
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
     <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
