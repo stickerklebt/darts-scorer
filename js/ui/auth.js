@@ -1,4 +1,4 @@
-/* Anmeldung beim Start: 1) E-Mail → 2a) Passwort (Konto gibt es) oder 2b) Passwort festlegen + eindeutigen Namen wählen.
+/* Anmeldung beim Start: 1) E-Mail oder Name → 2a) Passwort (Konto gibt es) oder 2b) Passwort festlegen + eindeutigen Namen wählen.
    Eine gerahmte Karte mit Eck-Ornamenten und wanderndem Licht, Schritt-Anzeige oben, Wappen mit Lichtschein darüber. */
 import { ui } from '../store.js';
 import { esc } from './common.js';
@@ -38,9 +38,9 @@ export function authView() {
   } else {
     body = `<div class="auth-form" data-key="auth-email">
       <h1 class="display">Willkommen</h1>
-      <p class="auth-lead">Melde dich mit deiner E-Mail an – neu oder schon dabei, das klären wir im nächsten Schritt.</p>
-      <label class="auth-lbl" for="authEmail">E-Mail</label>
-      <input id="authEmail" class="field plain" type="email" placeholder="name@beispiel.de" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" value="${esc(a.email || '')}">
+      <p class="auth-lead">Melde dich mit deiner E-Mail oder deinem Namen an. Neu hier? Dann mit E-Mail – den Rest klären wir im nächsten Schritt.</p>
+      <label class="auth-lbl" for="authEmail">E-Mail oder Name</label>
+      <input id="authEmail" class="field plain" type="text" placeholder="name@beispiel.de oder Name" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" value="${esc(a.email || '')}">
       ${err}
       <button class="btn red big" data-act="authEmail" ${busy}>${a.busy ? 'Moment …' : 'Weiter'}</button>
     </div>`;
@@ -51,7 +51,7 @@ export function authView() {
     <div class="auth-halo" aria-hidden="true"></div>
     <div class="auth-crest">${crest({ size: 150 })}</div>
     <section class="auth-card glint" style="--gd:-2s">${corners}
-      <div class="auth-steps"><span class="on">1 · E-Mail</span><i class="${a.step !== 'email' ? 'on' : ''}"></i><span class="${a.step !== 'email' ? 'on' : ''}">2 · ${s2}</span></div>
+      <div class="auth-steps"><span class="on">1 · Konto</span><i class="${a.step !== 'email' ? 'on' : ''}"></i><span class="${a.step !== 'email' ? 'on' : ''}">2 · ${s2}</span></div>
       ${body}
     </section>
     <p class="auth-foot">${stars(3, '#d4a63a', 9)}<span>Deine Spiele liegen sicher in deinem Konto – spielen geht auch offline.</span></p>

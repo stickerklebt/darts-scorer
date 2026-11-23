@@ -83,6 +83,11 @@ test('Anmeldung: E-Mail-Schritt, Registrieren, Name eindeutig, Login, Logout', a
     // Login
     assert.equal((await b('POST', '/api/auth/login', { email: 'a@test.de', password: 'falsch!!' })).status, 401);
     assert.equal((await b('POST', '/api/auth/login', { email: 'a@test.de', password: 'geheim123' })).status, 200);
+    // Anmelden auch nur mit dem Namen (Groß/Klein egal); unbekannter Name → exists false
+    assert.deepEqual((await b('POST', '/api/auth/email', { email: 'ANNA' })).body, { exists: true, byName: true });
+    assert.deepEqual((await b('POST', '/api/auth/email', { email: 'Niemand' })).body, { exists: false, byName: true });
+    assert.equal((await b('POST', '/api/auth/login', { email: 'anna', password: 'falsch!!' })).status, 401);
+    assert.equal((await b('POST', '/api/auth/login', { email: 'Anna', password: 'geheim123' })).status, 200);
     assert.equal((await b('GET', '/api/me')).body.user.username, 'Anna');
     await b('POST', '/api/auth/logout', {});
     assert.equal((await b('GET', '/api/me')).status, 401);

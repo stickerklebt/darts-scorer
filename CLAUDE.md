@@ -138,7 +138,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 (`current`) und UI-Zustand bleiben lokal.
 
 ## Regeln der neuen Funktionen
-- **Anmeldung** beim Start (`ui/auth.js`): E-Mail → Konto vorhanden? Passwort : Passwort festlegen (2×, mind. 8) + eindeutiger
+- **Anmeldung** beim Start (`ui/auth.js`): E-Mail **oder Name** (ohne „@“ = Name, Groß/Klein egal; mit Namen nur anmelden, neues Konto nur per E-Mail) → Konto vorhanden? Passwort : Passwort festlegen (2×, mind. 8) + eindeutiger
   Name (3–20, Buchstaben/Ziffern/_.-, Groß/Klein egal eindeutig, Bot-Namen reserviert, Live-Prüfung). Hauptspieler = Kontoname
   (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst

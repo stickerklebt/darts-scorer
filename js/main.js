@@ -534,13 +534,15 @@ const throwOne = (m, n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult)
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
 const actions = {
-  /* Anmeldung: E-Mail → Passwort bzw. Registrierung */
+  /* Anmeldung: E-Mail oder Name → Passwort bzw. (nur mit E-Mail) Registrierung */
   authEmail() {
     const email = field('authEmail');
     if (!email) return $('#authEmail')?.focus();
     ui.auth.email = email;
     authCall(async () => {
       const r = await api('POST', 'api/auth/email', { email });
+      // Mit Namen nur anmelden – ein neues Konto braucht eine E-Mail
+      if (r.byName && !r.exists) { ui.auth.error = `Kein Konto mit dem Namen „${email}“. Neu hier? Dann mit deiner E-Mail registrieren.`; return; }
       ui.auth.step = r.exists ? 'login' : 'register';
       ui.auth.nameHint = ''; ui.auth.nameOk = false;
       setTimeout(() => $(r.exists ? '#authPw' : '#authName')?.focus(), 60);
