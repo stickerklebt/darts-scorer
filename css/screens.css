@@ -2358,3 +2358,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 @keyframes tap-ripple { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.3); opacity: 0; } }
 .hero.hero-go:active .hero-tap { transform: scale(.92); }
 @media (prefers-reduced-motion: reduce) { .hero-tap i { animation: none; opacity: 0; } }
+/* Play-Knopf nicht neben der Zahl (die Zahl blieb sonst nicht mittig), sondern frei unten mittig auf der Karte */
+.hero.hero-go { position: relative; }
+.hero.hero-go .hero-tap { position: absolute; left: 50%; bottom: 26px; margin: 0; transform: translateX(-50%); width: 46px; height: 46px; }
+.hero.hero-go:active .hero-tap { transform: translateX(-50%) scale(.92); }
