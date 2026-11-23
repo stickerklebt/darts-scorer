@@ -1,0 +1,65 @@
+/* Drehrad zum Auswählen einer Zahl (z. B. „First to … Legs“ 1–20): waagerechte Leiste mit Einrasten (scroll-snap),
+   die Zahl in der Mitte gilt. Zahlen weiter außen werden kleiner und blasser (wie auf einer Walze).
+   Antippen einer Zahl dreht das Rad dorthin. Ändert sich der Wert, wird onPick(key, value) aufgerufen. */
+
+const ITEM = 56; // Breite einer Zahl in px (muss zu .wheel-i in screens.css passen)
+
+/** HTML des Rads. key = Optionsname (z. B. 'target'), Werte min…max */
+export function wheelHTML(key, min, max, value) {
+  const items = [];
+  for (let v = min; v <= max; v++) items.push(`<button class="wheel-i ${v === value ? 'on' : ''}" data-wheel-v="${v}" tabindex="-1">${v}</button>`);
+  return `<div class="wheel-box"><div class="wheel" data-wheel="${key}" data-min="${min}" data-value="${value}" role="slider" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${value}" tabindex="0">
+    <div class="wheel-track">${items.join('')}</div></div></div>`;
+}
+
+let onPick = () => {};
+const timers = new WeakMap();
+const user = new WeakSet(); // Rad, das gerade vom Nutzer gedreht wird – dann nicht von außen zurücksetzen
+
+/** Optik: Zahlen je nach Abstand zur Mitte verkleinern/abdunkeln */
+function shade(w) {
+  const mid = w.scrollLeft + w.clientWidth / 2;
+  for (const el of w.querySelectorAll('.wheel-i')) {
+    const c = el.offsetLeft + el.offsetWidth / 2, d = Math.min(1, Math.abs(c - mid) / (ITEM * 3.2));
+    el.style.transform = `scale(${(1.25 - d * 0.55).toFixed(3)})`;
+    el.style.opacity = (1 - d * 0.75).toFixed(3);
+  }
+}
+const valueAt = (w) => Number(w.dataset.min) + Math.round(w.scrollLeft / ITEM);
+
+/** Nach jedem Neuzeichnen: Räder auf ihren Wert stellen (sofern nicht gerade gedreht wird) */
+export function initWheels(pick) {
+  onPick = pick || onPick;
+  for (const w of document.querySelectorAll('.wheel')) {
+    const target = (Number(w.dataset.value) - Number(w.dataset.min)) * ITEM;
+    if (!user.has(w) && Math.abs(w.scrollLeft - target) > 2) w.scrollLeft = target;
+    shade(w);
+  }
+}
+
+document.addEventListener('scroll', (e) => {
+  const w = e.target;
+  if (!w.classList?.contains('wheel')) return;
+  user.add(w);
+  requestAnimationFrame(() => shade(w));
+  clearTimeout(timers.get(w));
+  // Wert erst übernehmen, wenn das Rad eingerastet ist
+  timers.set(w, setTimeout(() => {
+    user.delete(w);
+    const v = valueAt(w);
+    if (String(v) !== w.dataset.value) { w.dataset.value = String(v); onPick(w.dataset.wheel, v); }
+  }, 140));
+}, true);
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest?.('.wheel-i');
+  if (!b) return;
+  const w = b.closest('.wheel');
+  w.scrollTo({ left: (Number(b.dataset.wheelV) - Number(w.dataset.min)) * ITEM, behavior: 'smooth' });
+});
+document.addEventListener('keydown', (e) => {
+  const w = e.target.closest?.('.wheel');
+  if (!w || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+  e.preventDefault();
+  w.scrollBy({ left: e.key === 'ArrowRight' ? ITEM : -ITEM, behavior: 'smooth' });
+});

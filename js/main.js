@@ -28,6 +28,7 @@ import { historyRows, deleteMatch } from './history.js';
 import { api } from './api.js';
 import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
 import { statsView, SUBTABS } from './ui/stats-view.js';
+import { initWheels } from './ui/wheel.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
@@ -114,6 +115,7 @@ function render() {
   ui.lastKey = key;
   // Bot am Zug: Eingabebereich so hoch wie zuletzt die eigene Tastatur, damit die Karten oben nicht springen
   fitDblList();
+  initWheels((k, v) => { if (S.screen === 'setup' && S.opts[S.game]) { S.opts[S.game][k] = v; render(); } });
   const pad = app.querySelector('.game .pad');
   if (pad) {
     if (!pad.querySelector('.botpad')) { pad.style.minHeight = ''; pad.style.height = ''; ui.padH = pad.offsetHeight || ui.padH; }
@@ -791,7 +793,7 @@ const actions = {
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;
     o[k] = /^\d+$/.test(v) ? Number(v) : v;
-    if (k === 'mode' && S.game === 'x01') o.target = Math.min(o.target, o.mode === 'sets' ? 5 : 7);
+    if (k === 'mode' && S.game === 'x01') o.target = Math.min(o.target, o.mode === 'sets' ? 10 : 20);
     render();
   },
   teamMode(el) {
