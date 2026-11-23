@@ -161,7 +161,7 @@ export function profilePicker() {
   const cur = statsPid();
   return `<h3>Spieler wählen</h3><p>Wessen Statistik möchtest du sehen?</p>
     <div class="slist plist-pick">${S.profiles.map((p, i) => `<button class="srow" data-act="statsPick" data-v="${p.id}">
-      <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}${p.id === S.mainId ? ' <span class="tag">Du</span>' : ''}</span>
+      <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}</span>
       ${p.id === cur ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
 }
