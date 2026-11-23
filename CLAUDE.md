@@ -211,7 +211,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (ohne Busts, X01 nur außerhalb des Checkout-Bereichs = Rest vor der Aufnahme > 170); ab 30 davon die 8 häufigsten nach Wert,
   sonst ausgeblendet. Antippen zeigt die Zahl erst ~0,4 s groß im Eingabefeld (Kontrolle), dann wird sie übernommen.
   Shanghai/Halbieren behalten ihre Vielfachen.
-  Auf dem Handy (hochkant, ≤ 600 px) gibt es im Spiel keine Schnellwahl und keine „… ist dran“-Leiste; die eingegebene Zahl steht groß (76 px), „Letzte“ in der Karte nur als schmale Zeile.
+  Auf dem Handy (hochkant, ≤ 600 px) gibt es im Spiel keine Schnellwahl und keine „… ist dran“-Leiste; die eingegebene Zahl steht groß (76 px), „Letzte“ in der Karte in einer Zeile, Zahl groß (30 px).
 - **Kamera-Erkennung** (Anleitung für Nutzer: `KAMERA-ANLEITUNG.md`). Rollen: **Kamera-Gerät** (filmt, erkennt, schickt Würfe) und
   **Steuer-Gerät** (Scoreboard, Spiellogik, Korrektur); dazu **Ein-Geräte-Modus**. Dateien: `camera.js` (Start, Kamerawahl, Wake Lock),
   `calibration.js` (Assistent: Platzierung · 4 Punkte mit Lupe/verschiebbar · Overlay + Draufsicht · Testdart; `localStorage['darts.calib']`
