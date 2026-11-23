@@ -35,3 +35,14 @@ test('Umstände: Gegner im Finish', () => {
   assert.equal(r.rows.oppFinish.n, 1); // 3. Aufnahme von a
   assert.equal(r.base.n, 8);
 });
+
+test('Verlauf im Leg: Ø je Aufnahme-Nummer bis 170', async () => {
+  const { legCurve } = await import('../js/situations.js');
+  const t0 = new Date(2026, 10, 20, 19).getTime();
+  const ms = [game(t0), game(t0 + 1), game(t0 + 2)]; // a: 20, 100, 45, 60, 26 (alle über 170)
+  const r = legCurve(ms, 'a');
+  assert.equal(r.avgTurns, 5);
+  assert.deepEqual(r.points.map((p) => p.avg), [20, 100, 45, 60, 26]);
+  assert.equal(r.points[1].count, 3);
+  assert.equal(legCurve(ms.slice(0, 2), 'a').points.length, 0); // unter 3 Werten → nichts
+});

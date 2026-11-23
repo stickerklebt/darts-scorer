@@ -78,3 +78,40 @@ export function barChart(items) {
   });
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${s}</svg>`;
 }
+
+/**
+ * Verlauf im Leg: Ø Punkte je Aufnahme (1., 2., 3. …) von 501 bis zum Finish-Bereich. Beste Aufnahme gold hervorgehoben,
+ * Werte über den Punkten, unten „501“ links und „170“ rechts.
+ */
+export function legCurveChart(points) {
+  if (points.length < 2) return '<p class="chart-empty">Noch zu wenige Legs für diesen Verlauf.</p>';
+  const H2 = 190, pad = { l: 34, r: 16, t: 26, b: 42 };
+  const { lo, hi } = axisRange(points.map((p) => p.avg));
+  const n = points.length, iw = W - pad.l - pad.r, ih = H2 - pad.t - pad.b;
+  const x = (i) => r1(pad.l + (i / (n - 1)) * iw), y = (v) => r1(pad.t + ih - ((v - lo) / (hi - lo)) * ih);
+  const best = points.reduce((b, p) => (p.avg > b.avg ? p : b), points[0]);
+  let g = '';
+  for (let k = 0; k <= 4; k++) {
+    const v = lo + ((hi - lo) * k) / 4, yy = y(v);
+    g += `<path d="M${pad.l} ${yy}H${W - pad.r}" stroke="${k ? COLORS.gold : COLORS.cream2}" stroke-opacity="${k ? 0.22 : 0.6}" stroke-width="1" ${k ? 'stroke-dasharray="2 3"' : ''}/>`;
+    g += `<text x="${pad.l - 6}" y="${yy}" class="ax" text-anchor="end" dominant-baseline="central">${Math.round(v)}</text>`;
+  }
+  const d = points.map((p, i) => `${i ? 'L' : 'M'}${x(i)} ${y(p.avg)}`).join('');
+  const dots = points.map((p, i) => {
+    const top = p === best;
+    return `<rect class="dt" style="--k:${i}" x="${r1(x(i) - 2.5)}" y="${r1(y(p.avg) - 2.5)}" width="5" height="5" fill="${top ? COLORS.gold : COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>
+      ${top ? `<circle cx="${x(i)}" cy="${y(p.avg)}" r="7" fill="none" stroke="${COLORS.gold}" stroke-width="1.4"/>` : ''}
+      <text x="${x(i)}" y="${r1(y(p.avg) - (top ? 11 : 8))}" class="bv${top ? ' top' : ''}" text-anchor="middle">${Math.round(p.avg)}</text>
+      <text x="${x(i)}" y="${H2 - pad.b + 14}" class="ax" text-anchor="middle">${p.n}.</text>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H2}" role="img">
+    ${g}
+    <defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
+    <path class="ln avg-under" pathLength="1" d="${d}" transform="translate(.8 1)" fill="none" stroke="#7d2215" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
+    <path class="ln avg" pathLength="1" d="${d}" fill="none" stroke="url(#avgInk${gid})" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <text x="${pad.l}" y="${H2 - 6}" class="ax dim">501</text>
+    <text x="${r1(pad.l + iw / 2)}" y="${H2 - 6}" class="ax dim" text-anchor="middle">Aufnahme im Leg</text>
+    <text x="${W - pad.r}" y="${H2 - 6}" class="ax dim" text-anchor="end">170</text>
+  </svg>`;
+}
