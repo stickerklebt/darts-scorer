@@ -53,8 +53,7 @@ function overviewTab(st, pid) {
       ['Höchste Aufnahme', st.top5[0]?.score ?? '–', '', st.top5[0]], ['Höchstes Checkout', st.highestCo ?? '–', '', st.topCo[0]],
       ['Doppelquote', pct(st.doubles.rate), `${st.doubles.hits} / ${st.doubles.attempts}`], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
-    ], '', pid)}
-    <div class="minirow"><span><small>Matches</small><b>${st.matches}</b></span><span><small>Siege</small><b>${st.wins}</b></span><span><small>Längste Serie</small><b>${st.bestStreak}</b></span></div>`;
+    ], '', pid)}`;
 }
 
 function scoringTab(st, pid) {
@@ -106,7 +105,7 @@ export function doublesBlock(st, sel, withList = true) {
   const medal = (k) => (rating[k]?.top ? `<span class="medal m${rating[k].top}" title="Platz ${rating[k].top}"></span>` : '');
   const legend = `<div class="heat-key">
       <span class="hk-scale"><small>schwächer</small>${['bad', 'weak', 'avg', 'good', 'great'].map((t) => `<i style="background:${TIER_COLORS[t]}"></i>`).join('')}<small>besser</small></span>
-      <span class="hk-med"><span class="medal m1"></span><span class="medal m2"></span><span class="medal m3"></span><small>deine 3 besten</small></span>
+      <span class="hk-med"><span class="medal m1"></span><small>deine 3 besten</small></span>
       <span class="hk-none"><i></i><small>unter ${MIN_ATTEMPTS} Versuchen</small></span>
     </div>
     <p class="foot heat-note">Farben im Vergleich zu deiner Gesamt-Doppelquote von ${pct(st.doubles.rate)}.</p>`;

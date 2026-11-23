@@ -930,9 +930,9 @@
 .sbtable.dbl th > div { text-align: right; }
 .sbtable.dbl th:first-child > div { text-align: left; }
 .medal { display: inline-block; width: 16px; height: 16px; border-radius: 50%; margin-left: 8px; vertical-align: -2px; border: 2.5px solid; background: transparent; }
-.medal.m1 { border-color: #ffd45c; box-shadow: 0 0 8px rgba(255,212,92,.6); }
+.medal.m1 { border-color: #dfe4ea; box-shadow: 0 0 8px rgba(223,228,234,.45); }
 .medal.m2 { border-color: #dfe4ea; box-shadow: 0 0 8px rgba(223,228,234,.45); }
-.medal.m3 { border-color: #d9925a; box-shadow: 0 0 8px rgba(217,146,90,.45); }
+.medal.m3 { border-color: #dfe4ea; box-shadow: 0 0 8px rgba(223,228,234,.45); }
 .heat-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); }
 .heat-key small { font-family: var(--f-text); font-size: 14px; color: var(--muted); letter-spacing: .01em; }
 .hk-scale { display: inline-flex; align-items: center; gap: 3px; }

@@ -77,13 +77,20 @@ export function applyState(st) {
     else S[k] = st[k];
   }
 }
+/* Löschen geht nur ausdrücklich: gelöschte Match-ids merken, der nächste Sync meldet sie dem Server.
+   (Fehlt ein Match bloß lokal – z. B. weil ein anderer Tab alten Stand gespeichert hat –, wird es NICHT gelöscht, sondern neu geholt.) */
+export function markRemoved(ids) { S.pendingRemove = [...new Set([...(S.pendingRemove || []), ...ids])]; }
+export function unmarkRemoved(id) { if (S.pendingRemove?.length) S.pendingRemove = S.pendingRemove.filter((x) => x !== id); }
+
 export function resetAll() {
+  const gone = S.matches.map((m) => m.id).concat(S.pendingRemove || []);
   const seeded = S.demoSeeded; // Testdaten nach „Alle Daten löschen“ nicht erneut einfügen
   try { localStorage.removeItem(KEY); } catch (e) { /* */ }
   for (const k of Object.keys(S)) delete S[k];
   Object.assign(S, DEF());
   S.demoSeeded = !!seeded;
   S.cleanV = 1;
+  S.pendingRemove = gone; // „Alle Daten löschen“ löscht auch im Konto
 }
 
 export const uid = (p) => `${p}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;

@@ -120,16 +120,23 @@ export function syncNow() {
         const local = new Map(S.matches.map((m) => [m.id, m]));
         const upsert = [];
         for (const [id, m] of local) { const h = hashMatch(m); if (meta.hashes[id] !== h) upsert.push([id, m, h]); }
-        const remove = Object.keys(meta.hashes).filter((id) => !local.has(id));
+        // Gelöscht wird NUR, was ausdrücklich gelöscht wurde (S.pendingRemove). Fehlt ein bekanntes Match bloß lokal
+        // (alter Stand aus einem anderen Tab/Fenster), wird es nicht gelöscht, sondern vom Server neu geholt (since = 0).
+        const pend = new Set(S.pendingRemove || []);
+        const remove = [...pend].filter((id) => !local.has(id));
+        const lost = Object.keys(meta.hashes).filter((id) => !local.has(id) && !pend.has(id));
+        if (lost.length) { for (const id of lost) delete meta.hashes[id]; meta.rev = 0; }
         const stJson = JSON.stringify(pickState(S)), sh = hashStr(stJson);
-        const sendState = sh !== meta.stateHash;
+        const sendState = sh !== meta.stateHash && !lost.length;
         const part = upsert.slice(0, BATCH);
         const body = { since: meta.rev };
         if (part.length) body.upsert = part.map(([, m]) => m);
         if (remove.length) body.remove = remove;
         if (sendState) body.state = JSON.parse(stJson);
         const r = await api('POST', 'api/sync', body);
+        if (remove.length) { S.pendingRemove = (S.pendingRemove || []).filter((id) => !remove.includes(id)); changed = true; }
         if (applyResponse(r, { upsert: part.map(([id, , h]) => [id, h]), remove, stateHash: sendState ? sh : null })) changed = true;
+        if (lost.length) { again = true; break; } // danach gleich noch ein normaler Abgleich
         if (upsert.length <= BATCH && !r.stateConflict && !r.resync) break;
       }
       sync.state = 'ok'; sync.at = Date.now(); sync.msg = ''; retry = 0; auth.offline = false;

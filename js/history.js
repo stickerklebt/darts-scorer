@@ -63,6 +63,7 @@ export function historyRows(matches, pid, filter = 'all') {
 export function deleteMatch(S, id) {
   const before = S.matches.length;
   S.matches = S.matches.filter((m) => m.id !== id);
+  if (S.matches.length < before) S.pendingRemove = [...new Set([...(S.pendingRemove || []), id])]; // ausdrücklich gelöscht → Server
   if (S.current && S.current.id === id && S.current.done) S.current = null; // Ergebnis-Screen dieses Spiels nicht wiederbeleben
   return S.matches.length < before;
 }

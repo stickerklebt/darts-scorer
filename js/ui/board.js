@@ -41,7 +41,7 @@ export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', 
 export const tierColor = (t) => (t ? TIER_COLORS[t] : null);
 
 /** Medaillen-Farben für die drei besten Doppel */
-export const MEDALS = ['#ffd45c', '#dfe4ea', '#d9925a'];
+export const MEDALS = ['#dfe4ea', '#dfe4ea', '#dfe4ea']; // Top 3 einheitlich in Silber
 
 /**
  * Doppel-Heatmap im Stil der Eingabe-Scheibe: dunkle Felder, Doppel in der Farbe ihrer Stufe

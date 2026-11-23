@@ -62,3 +62,12 @@ test('Solo-Spiel ist Training: kein Sieg in Statistik und Siegquote', () => {
   assert.equal(fs.wins, 1); assert.equal(fs.list.find((r) => r.id === solo.id).solo, true);
   assert.equal(historyRows([solo], 'a')[0].outcome, 'solo');
 });
+
+test('Löschen ist ausdrücklich: deleteMatch merkt die id für den Server vor', async () => {
+  const { deleteMatch } = await import('../js/history.js');
+  const S = { matches: [{ id: 'a' }, { id: 'b' }], current: null };
+  assert.equal(deleteMatch(S, 'a'), true);
+  assert.deepEqual(S.pendingRemove, ['a']);
+  assert.equal(deleteMatch(S, 'zz'), false);
+  assert.deepEqual(S.pendingRemove, ['a']);
+});

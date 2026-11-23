@@ -1,5 +1,5 @@
 /* Einstieg: Rendering, Aktionen, Events. */
-import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid } from './store.js';
+import { S, ui, save, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid, markRemoved, unmarkRemoved } from './store.js';
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
 import { overview } from './stats.js';
@@ -142,8 +142,8 @@ function releaseWakeLock() { try { wakeLock && wakeLock.release(); } catch (e) {
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.screen === 'game') requestWakeLock(); });
 
 /* ---------------- Match-Ablauf ---------------- */
-const archive = (m) => { S.matches.push(JSON.parse(JSON.stringify({ ...m, pending: [], endedAt: Date.now() }))); };
-const unarchive = (m) => { const i = S.matches.findIndex((x) => x.id === m.id); if (i >= 0) S.matches.splice(i, 1); };
+const archive = (m) => { unmarkRemoved(m.id); S.matches.push(JSON.parse(JSON.stringify({ ...m, pending: [], endedAt: Date.now() }))); };
+const unarchive = (m) => { const i = S.matches.findIndex((x) => x.id === m.id); if (i >= 0) { S.matches.splice(i, 1); markRemoved([m.id]); } };
 
 function finish() {
   const m = S.current;

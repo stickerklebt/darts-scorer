@@ -160,8 +160,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   aus Sicht des Hauptspielers, Modus, Gegner, Datum, Ergebnis, Ø bei X01. Antippen → Details (X01-Tabelle bzw. Platzierung)
   und „Spiel löschen“ (mit Bestätigung). Gelöscht wird aus `S.matches` → fehlt in jeder Statistik, Sync löscht es auf dem
   Server (Grabstein) → auch andere Geräte und Freundes-Statistik.
-- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): oben drei Kacheln Spielhistorie · Eigener Caller ·
-  Einstellungen, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
+- **Backstage** (dritter Reiter, Ticket-Symbol; interner Schlüssel `friends`): oben vier Kacheln (nur Symbol + Titel) Spielhistorie ·
+  Eigener Caller · Einstellungen · Kamera, darunter die Freunde. Der Reiter „Spielen“ hat keine Knöpfe für Historie/Einstellungen mehr.
 - **Spieler-Banner** (`ui/banner.js`, `playerBanner`): im Backstage und oben im Freundesprofil. Kein Hintergrund, nur das Band
   von links bis rechts (Schwalbenschwanz-Enden): schwarz mit Flammen-Rand, Name groß in Karminrot, Ø 501 in Gold direkt daneben,
   darunter 3 Abzeichen mit grünen Ranken. Stil eines heraldischen Plakats – **kein** Queen-Wappen/-Logo nachbauen.
@@ -283,6 +283,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   2 Sprüche und 2 eigene Aufnahmen (2.–8., nie die erste) aus; gesagt wird nach genau diesen Aufnahmen, unabhängig von Ereignissen.
   Keine Ereignis- oder End-Sprüche für diese Bots. Avatare sind gezeichnete SVGs (`art` → `ART` in `ui/avatar.js`).
   Bilder optional: Datei in `bots/` + Eintrag in `bots/bilder.json` (hat Vorrang vor dem gezeichneten Avatar).
+- **Sync löscht nur ausdrücklich** (`S.pendingRemove`, gesetzt von deleteMatch, Testdaten entfernen, Alle Daten löschen, Undo nach
+  Spielende): Fehlt ein bekanntes Match nur lokal (z. B. alter Stand aus einem zweiten Tab), wird es NICHT gelöscht, sondern per
+  `since = 0` neu geholt. (Vorher hat das am 23.11. zwei Matches im Konto gelöscht.)
+- Überblick ohne die Zeile Matches · Siege · Längste Serie.
 - **Match-Statistik** (`x01Table`): Ø, First 9, Legs, Höchste, „60+ / 100+ / 140+“ in einer Zeile, „180er“, Höchstes Finish,
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
@@ -293,8 +297,8 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Verlauf & mehr“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 5 Versuchen neutral.
-  Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel mit Gold-/Silber-/Bronze-Rand (glimmend), in der Liste
-  als Medaillen-Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
+  Heatmap-Scheibe im Stil der Eingabe-Scheibe; die 3 besten Doppel einheitlich mit Silber-Rand (glimmend), in der Liste
+  als silberner Ring. Liste: „Beste zuerst“ (Standard, erst ab 5 Versuchen) oder „Nach Zahl“. Farblegende klein am Ende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
   Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie

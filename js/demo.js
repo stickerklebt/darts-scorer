@@ -104,6 +104,7 @@ export function seedDemo(S, now = Date.now()) {
 /** Nur Demo-Matches und Demo-Spieler entfernen – echte Daten bleiben. */
 export function removeDemo(S) {
   const ids = new Set(S.profiles.filter((p) => p.demo).map((p) => p.id));
+  S.pendingRemove = [...new Set([...(S.pendingRemove || []), ...S.matches.filter((m) => m.demo).map((m) => m.id)])];
   S.matches = S.matches.filter((m) => !m.demo);
   S.profiles = S.profiles.filter((p) => !p.demo);
   S.lineup = S.lineup.filter((e) => !ids.has(e.id));
