@@ -63,3 +63,33 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
   w.scrollBy({ left: e.key === 'ArrowRight' ? ITEM : -ITEM, behavior: 'smooth' });
 });
+
+/* Mit der Maus (bzw. jedem Zeiger) am Rad ziehen: beim Loslassen auf die nächste Zahl einrasten, mit etwas Schwung */
+let drag = null;
+document.addEventListener('pointerdown', (e) => {
+  const w = e.target.closest?.('.wheel');
+  if (!w || e.pointerType === 'touch') return; // Finger wischen nativ
+  drag = { w, x: e.clientX, left: w.scrollLeft, moved: false, lastX: e.clientX, lastT: performance.now(), v: 0 };
+  w.style.scrollSnapType = 'none';
+  w.classList.add('dragging');
+});
+document.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (Math.abs(dx) > 3) drag.moved = true;
+  drag.w.scrollLeft = drag.left - dx;
+  const now = performance.now();
+  drag.v = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT); drag.lastX = e.clientX; drag.lastT = now;
+});
+function endDrag() {
+  if (!drag) return;
+  const { w, v, moved } = drag;
+  drag = null;
+  w.classList.remove('dragging');
+  const goal = Math.round((w.scrollLeft - v * 120) / ITEM) * ITEM; // Schwung: schnell gezogen → ein paar Zahlen weiter
+  w.style.scrollSnapType = '';
+  w.scrollTo({ left: Math.max(0, goal), behavior: 'smooth' });
+  if (moved) { const stop = (ev) => { ev.stopPropagation(); ev.preventDefault(); }; document.addEventListener('click', stop, { capture: true, once: true }); setTimeout(() => document.removeEventListener('click', stop, true), 50); }
+}
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
