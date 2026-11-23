@@ -123,7 +123,7 @@ function moreTab(st, pid) {
     + block('Scoring-Werte', cards([
       ['60+ / 100+ / 140+', `${c.t60} / ${c.t100} / ${c.t140}`], ['180er', c.t180],
       ['Bester Match-Ø', fmt(st.bestMatchAvg, 2), '', st.bestAvgRef], ['Ø Darts pro Leg', fmt(st.avgLegDarts, 1)],
-      ['Legs ≤ 15 Darts', st.le15], ['Bust-Quote', pct(st.bustRate), 'der Aufnahmen'],
+      ['Legs ≤ 15 Darts', st.le15],
     ], 'three', pid));
 }
 
