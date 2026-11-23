@@ -292,7 +292,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
   treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average-Verlauf, Verteilung der Aufnahmen (immer offen,
-  sonst nichts vom Scoring), darunter eingeklappt Checkout (`ui.statsOpen`). Der Doppelquote-Verlauf steht im Reiter Doppel ganz unten. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
+  sonst nichts vom Scoring), sonst nichts. Doppelquote-Verlauf und darunter Checkout (Höchstes, Quote nach Bereich, Top 5) stehen im Reiter Doppel ganz unten. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
   (Bestes Leg steht im Überblick; 9-Darter gibt es als Trophäe). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen

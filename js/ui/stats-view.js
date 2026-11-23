@@ -115,20 +115,10 @@ export function doublesBlock(st, sel, withList = true) {
     ${withList ? '</div>' : ''}</div>`;
 }
 
-/** Einklappbarer Abschnitt (zu Beginn zu), mit kurzer Zusammenfassung im Kopf */
-function fold(key, title, summary, body) {
-  const open = ui.statsOpen?.has(key);
-  return `<section class="fold ${open ? 'open' : ''}">
-    <button class="fold-h" data-act="statsFold" data-v="${key}"><span><b>${title}</b>${summary ? `<small>${summary}</small>` : ''}</span>${icon('chevR', 2.4, 18)}</button>
-    ${open ? `<div class="fold-b">${body}</div>` : ''}
-  </section>`;
-}
-
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {
-  // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen), dann eingeklappt Checkout. Doppelquote-Verlauf steht im Reiter Doppel.
-  return block('', historyCharts(st, pid, distChart(st)))
-    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid));
+  // Average-Verlauf, darunter die Verteilung der Aufnahmen (immer offen). Doppelquote-Verlauf und Checkout stehen im Reiter Doppel.
+  return block('', historyCharts(st, pid, distChart(st)));
 }
 
 export function emptyState(pid, any) {
@@ -148,7 +138,7 @@ export function statsView() {
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
-  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
+  const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + block('', doubleChart(st, pid)) + checkoutTab(st, pid) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
   return `${head}
     <nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
     <div class="subbody sub-${sub}">${body}</div>
