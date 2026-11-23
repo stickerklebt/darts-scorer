@@ -353,3 +353,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   25 · Bull · D(Gegner-Tor) · Daneben, was gerade zählt leuchtet; Bot zielt ohne Ball aufs Bull, mit Ball aufs Tor. Nicht in der Statistik.
 - Statistik-Unter-Reiter in der Pille: Überblick = „123“ (Zahlen), Doppel = Doppelfeld-Symbol, Scoring = Kurve. Überblick: Average, 6 Karten, darunter große Doppelquote-Karte
   und der Checkout-Bereich (Höchstes Checkout, Quote nach Bereich, Top 5). Doppel-Reiter: nur Scheibe + Liste (breit: Liste genau so hoch wie die Scheibe, `fitDblList` in main.js); nur das beste Doppel leuchtet weiß umrandet.
+- Reiter Play: große 501-Karte ohne X01-Abzeichen/Titel (startet direkt X01); X01 steht zusätzlich als erste Kachel unter „Partyspiel“ (vor Cricket, Fußball, Challenge).
