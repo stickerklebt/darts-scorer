@@ -140,11 +140,11 @@ export function statsView() {
   const head = `<main class="page stats">${statsHeader(pid)}`;
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
+  // Unter-Reiter oben als Leiste (dort, wo sonst die Haupt-Reiter standen – die schweben jetzt unten); Wechsel auch per Wischen (main.js)
+  const nav = `<div class="subtop"><nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav></div>`;
   const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
-  // Unter-Reiter fest am unteren Rand; zwischen den Bereichen auch per Wischen (links/rechts) wechseln (main.js)
-  return `${head}
+  return `${nav}${head}
     <div class="subbody sub-${sub}">${body}</div>
-    <nav class="subtabs three bottom" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
   </main>`;
 }
 

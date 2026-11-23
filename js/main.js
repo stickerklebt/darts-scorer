@@ -1003,8 +1003,8 @@ document.addEventListener('touchend', (e) => {
   const t = e.changedTouches[0], dx = t.clientX - swipe0.x, dy = t.clientY - swipe0.y;
   const ok = Math.abs(dx) > 70 && Math.abs(dy) < Math.abs(dx) * 0.5 && Date.now() - swipe0.t < 700;
   swipe0 = null;
-  if (!ok || !document.querySelector('.subtabs.bottom')) return;
-  const keys = SUBTABS.map(([k]) => k), i = keys.indexOf(document.querySelector('.subtabs.bottom .on')?.dataset.v);
+  if (!ok || !document.querySelector('.subtop .subtabs')) return;
+  const keys = SUBTABS.map(([k]) => k), i = keys.indexOf(document.querySelector('.subtop .subtabs .on')?.dataset.v);
   const next = keys[i + (dx < 0 ? 1 : -1)];
   if (i >= 0 && next) actions.statsSub({ dataset: { v: next } });
 }, { passive: true });

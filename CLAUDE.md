@@ -336,6 +336,7 @@ Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über ngin
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
-- Statistik-Kopf: kein Name mehr, nur der Uhr-Knopf rechts. Unter-Reiter Überblick · Doppel · Scoring schweben als schmale Pille unten in der Mitte (taucht beim Öffnen von unten auf)
-  (`.subtabs.bottom`), Wechsel auch per Wischen links/rechts (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste).
+- **Haupt-Reiter** (Spielen · Statistik · Backstage, `tabsBar`) schweben als Pille unten in der Mitte und tauchen beim Öffnen von unten auf.
+  In der Statistik steht oben die Leiste der Unter-Reiter Überblick · Doppel · Scoring (`.subtop`, sticky), Wechsel auch per Wischen
+  links/rechts (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste). Statistik-Kopf ohne Namen, nur Uhr-Knopf rechts.
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme, Top-5-Listen und „Wann du gut wirfst“ leichter (1 px gedämpft). Gleitender Schnitt im Diagramm durchgezogen, aber handgemacht: Rot leicht ungleich (Verlauf `AVG_INK` in `charts.js`), dunkler versetzter Druck darunter, `#rough`.
