@@ -5,7 +5,7 @@ import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } 
 import { esc, fmt, seg, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, TIER_COLORS, tierColor } from './board.js';
-import { historyCharts, distChart, matchList } from './stats-extra.js';
+import { historyCharts, distChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 
 export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr'], ['all', 'Gesamt']];
@@ -136,9 +136,7 @@ function moreTab(st, pid) {
   const c = st.counts;
   return block('', historyCharts(st, pid))
     + fold('scoring', 'Scoring', `Höchste ${st.top5[0]?.score ?? '–'} · 180er ${c.t180} · Ø Aufnahme ${fmt(st.perTurn)}`, scoringTab(st, pid))
-    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid))
-    + fold('matches', 'Matches', `${st.matches} ${st.matches === 1 ? 'Match' : 'Matches'} · ${st.wins} Siege`,
-      matchList(st) + '<button class="btn line hist-link" data-act="history">Alle Spiele · löschen</button>');
+    + fold('checkout', 'Checkout', `Höchstes ${st.highestCo ?? '–'} · Doppelquote ${pct(st.doubles.rate)}`, checkoutTab(st, pid));
 }
 
 export function emptyState(pid, any) {
