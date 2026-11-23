@@ -89,15 +89,13 @@ export function friendsView() {
           <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
-  // Backstage: alles rund ums Spiel außer Spielen und Statistik – Spielhistorie, eigener Caller, Einstellungen, Freunde
+  // Backstage: oben das eigene Banner, in der Mitte die Freunde, unten die Kacheln (Spielhistorie, eigener Caller, Einstellungen, Kamera)
   const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe'], ['camAsDevice', 'cam', 'Kamera', 'Dieses Handy filmt das Board']];
   return `<main class="page friends backstage">
     ${myBanner(me?.username || '')}
-    <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b></button>`).join('')}</div>
     ${(ui.invites || []).length ? `<h2 class="label">Einladungen zum Spiel</h2><div class="slist">${ui.invites.map((v) => `<div class="srow">${chip(v.host)}
       <span class="lbl">${esc(v.host)} möchte gegen dich spielen<small>${v.game === 'x01' ? `${v.opts?.start} · First to ${v.opts?.target}` : esc(GAMES[v.game]?.title || '')}</small></span>
       <button class="btn line sm-btn" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red sm-btn" data-act="inviteYes" data-v="${esc(v.id)}">Spielen</button></div>`).join('')}</div>` : ''}
-    <h2 class="label">Freunde${inc.length ? ` <span class="badge-n">${inc.length}</span>` : ''}</h2>
     <h2 class="label">Freund hinzufügen</h2>
     <input id="friendSearch" class="field search" value="${esc(ui.fsearch?.q || '')}" placeholder="Namen suchen …" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search">
     ${searchRows()}
@@ -110,6 +108,8 @@ export function friendsView() {
       <div class="slist">${out.map((x) => `<div class="srow">${chip(x.username)}<span class="lbl">${esc(x.username)}<small>wartet auf Antwort</small></span>
         <button class="btn line sm-btn" data-act="friendCancel" data-v="${esc(x.id)}">Zurückziehen</button></div>`).join('')}</div>` : ''}
     ${confirmBlock()}
+    <h2 class="label">Mehr</h2>
+    <div class="bs-tiles">${tiles.map(([act, ic, t, sub], k) => `<button class="bs-tile glint" data-act="${act}" style="--gd:-${k * 1.7}s">${icon(ic, 1.9, 26)}<b>${t}</b></button>`).join('')}</div>
   </main>`;
 }
 
