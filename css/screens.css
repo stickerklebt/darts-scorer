@@ -2176,3 +2176,14 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .has-tg.rv-on .chart-key { max-height: 40px; margin-top: 8px; }
 .has-tg .ch-h small { display: inline-block; transform: translateX(-6px); transition: opacity .35s ease .1s, transform .45s ease .1s; }
 .has-tg.rv-on .ch-h small { transform: none; }
+
+/* Leuchtstrich unter dem aktiven Reiter: ohne dunklen Streifen (der Schein kam vom leeren Kasten), dafür kräftiger warmer Verlauf */
+.tabs .tabline, .subpop .subtabs.three .sub-line { box-shadow: none !important; animation: none; }
+.tabs .tabline::before, .subpop .subtabs.three .sub-line::before {
+  background: linear-gradient(90deg, rgba(229,64,44,0), #ff6a3d 22%, #ffb067 50%, #ff6a3d 78%, rgba(229,64,44,0));
+  box-shadow: 0 0 10px rgba(255,106,61,.95), 0 0 24px rgba(229,64,44,.8), 0 0 46px rgba(229,64,44,.45);
+  animation: tabline-glow 3.6s ease-in-out infinite; }
+.tabs .tabline::after, .subpop .subtabs.three .sub-line::after { content: ""; display: block; position: absolute; left: 6%; right: 6%; top: -16px; height: 30px; border: 0; width: auto;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255,110,60,.45), rgba(229,64,44,.18) 45%, transparent 72%); pointer-events: none; filter: blur(2px); }
+@keyframes tabline-glow { 50% { box-shadow: 0 0 6px rgba(255,106,61,.7), 0 0 16px rgba(229,64,44,.5), 0 0 30px rgba(229,64,44,.25); } }
+@media (prefers-reduced-motion: reduce) { .tabs .tabline::before, .subpop .subtabs.three .sub-line::before { animation: none; } }
