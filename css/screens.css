@@ -2071,3 +2071,13 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .sit-g h3 { background: transparent; color: var(--gold-l); text-align: center; font-size: 14px; padding: 10px 12px 8px; border-bottom: 1px solid rgba(212,166,58,.3); }
 .sit-r { border-top: 1px solid rgba(212,166,58,.14); }
 .sit-g h3 + .sit-r { border-top: 0; }
+
+/* Statistik: Unter-Reiter fest unten (wie eine zweite Leiste), roter Strich oben; Platz unten freihalten */
+.page.stats:has(.subtabs.bottom) { padding-bottom: calc(var(--sab) + 84px); }
+.subtabs.three.bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; margin: 0; padding: 0 calc(var(--sar) + 8px) var(--sab) calc(var(--sal) + 8px);
+  background: rgba(11,10,8,.96); border-top: 1px solid rgba(212,166,58,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  grid-template-columns: repeat(3, minmax(0, 240px)); justify-content: center; }
+.subtabs.three.bottom::after { display: none; }
+.subtabs.three.bottom button { height: 58px; border-bottom: 0; }
+.subtabs.three.bottom .sub-line { top: 0; bottom: auto; left: 50%; width: min(240px, calc((100vw - 16px) / 3)); transform: translateX(calc((var(--n) - 1.5) * 100%)); }
+.st-head { justify-content: flex-end; }

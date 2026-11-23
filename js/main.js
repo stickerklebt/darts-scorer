@@ -26,7 +26,7 @@ import { historyView } from './ui/history.js';
 import { historyRows, deleteMatch } from './history.js';
 import { api } from './api.js';
 import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
-import { statsView } from './ui/stats-view.js';
+import { statsView, SUBTABS } from './ui/stats-view.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
@@ -992,6 +992,22 @@ document.addEventListener('click', (e) => {
   if (el.dataset.act === 'scrim' && e.target !== el) return;
   actions[el.dataset.act]?.(el);
 });
+/* Statistik: zwischen Überblick · Doppel · Scoring wischen (waagerecht, deutlich mehr als senkrecht) */
+let swipe0 = null;
+document.addEventListener('touchstart', (e) => {
+  swipe0 = S.screen === 'home' && S.tab === 'stats' && e.touches.length === 1 && !e.target.closest('.dbl-scroll, .heat-board, .chart, input')
+    ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() } : null;
+}, { passive: true });
+document.addEventListener('touchend', (e) => {
+  if (!swipe0) return;
+  const t = e.changedTouches[0], dx = t.clientX - swipe0.x, dy = t.clientY - swipe0.y;
+  const ok = Math.abs(dx) > 70 && Math.abs(dy) < Math.abs(dx) * 0.5 && Date.now() - swipe0.t < 700;
+  swipe0 = null;
+  if (!ok || !document.querySelector('.subtabs.bottom')) return;
+  const keys = SUBTABS.map(([k]) => k), i = keys.indexOf(document.querySelector('.subtabs.bottom .on')?.dataset.v);
+  const next = keys[i + (dx < 0 ? 1 : -1)];
+  if (i >= 0 && next) actions.statsSub({ dataset: { v: next } });
+}, { passive: true });
 document.addEventListener('keydown', (e) => {
   if (e.target.matches('input')) {
     if (e.key !== 'Enter') return;

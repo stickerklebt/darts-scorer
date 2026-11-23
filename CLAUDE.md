@@ -336,5 +336,6 @@ Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über ngin
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
-- Statistik-Kopf: nur der Name in der Mitte (Cinzel, ohne Kasten, ohne „Statistik von“), daneben der Uhr-Knopf.
+- Statistik-Kopf: kein Name mehr, nur der Uhr-Knopf rechts. Unter-Reiter Überblick · Doppel · Scoring stehen fest am unteren Rand
+  (`.subtabs.bottom`), Wechsel auch per Wischen links/rechts (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste).
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Diagramme und „Wann du gut wirfst“-Gruppen im selben Stil (Goldrahmen 2 px + Innenlinie per inset box-shadow).

@@ -34,7 +34,6 @@ export function statsHeader(pid) {
   const name = nameOf(pid);
   const pi = S.profiles.findIndex((p) => p.id === pid);
   return `<div class="st-head">
-    <h1 class="st-plain">${esc(name)}</h1>
     <button class="sq st-clock ${S.statsPeriod !== 'all' ? 'on' : ''}" data-act="periodPick" aria-label="Zeitraum wählen">${icon('clock', 2, 22)}</button>
     ${S.profiles.length > 1 ? `<button class="btn line st-cmp" data-act="compare">Vergleichen</button>` : ''}
   </div>
@@ -142,9 +141,10 @@ export function statsView() {
   if (!st.matches) return `${head}${emptyState(pid, matchesOf(S.matches, pid).length > 0)}</main>`;
   const sub = subOf(S.statsSub);
   const body = sub === 'doubles' ? doublesBlock(st, ui.heatSel) + checkoutTab(st, pid) + block('', doubleChart(st, pid)) : sub === 'more' ? moreTab(st, pid) : overviewTab(st, pid);
+  // Unter-Reiter fest am unteren Rand; zwischen den Bereichen auch per Wischen (links/rechts) wechseln (main.js)
   return `${head}
-    <nav class="subtabs three" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
     <div class="subbody sub-${sub}">${body}</div>
+    <nav class="subtabs three bottom" style="--n:${SUBTABS.findIndex(([k]) => k === sub)}">${SUBTABS.map(([k, l]) => `<button class="${k === sub ? 'on' : ''}" data-act="statsSub" data-v="${k}">${l}</button>`).join('')}<i class="sub-line"></i></nav>
   </main>`;
 }
 
