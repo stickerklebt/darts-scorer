@@ -2168,3 +2168,11 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .has-tg.rv-on .chart .ax, .has-tg.rv-on .chart .bv:not(.pc), .has-tg.rv-on .chart-key, .has-tg.rv-on .ch-h small { opacity: 1; }
 .has-tg .chart .ax.dim { opacity: 0; }
 .has-tg.rv-on .chart .ax.dim { opacity: .75; }
+
+/* Diagramm-Einblendung: Achsen/Werte kommen nach dem Herauszoomen weich nach, Legende klappt auf (kein Leerraum, solange zu) */
+.has-tg .chart .ax, .has-tg .chart .bv:not(.pc) { transition: opacity .4s ease .25s; }
+.has-tg:not(.rv-on) .chart .ax, .has-tg:not(.rv-on) .chart .bv:not(.pc) { transition-delay: 0s; transition-duration: .2s; }
+.has-tg .chart-key { max-height: 0; overflow: hidden; margin-top: 0; transition: max-height .45s ease, opacity .35s ease .15s, margin-top .45s ease; }
+.has-tg.rv-on .chart-key { max-height: 40px; margin-top: 8px; }
+.has-tg .ch-h small { display: inline-block; transform: translateX(-6px); transition: opacity .35s ease .1s, transform .45s ease .1s; }
+.has-tg.rv-on .ch-h small { transform: none; }

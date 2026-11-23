@@ -52,7 +52,9 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
     const d = `<rect class="dt" style="--k:${k}" x="${r1(x(p.i) - 2)}" y="${r1(y(p.v) - 2)}" width="4" height="4" fill="${COLORS.cream}" stroke="${COLORS.ink}" stroke-width=".8"/>`;
     return taps?.[p.i] ? `<g class="dt-tap" ${taps[p.i]}><circle cx="${x(p.i)}" cy="${y(p.v)}" r="${Math.min(10, Math.max(5, iw / n / 2))}" fill="transparent"/><circle class="dt-ring" cx="${x(p.i)}" cy="${y(p.v)}" r="5" fill="none" stroke="${COLORS.gold}" stroke-width="1.4"/>${d}</g>` : d;
   }).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
+  // Ohne Zahlen: auf die Fläche der Linien gezoomt (data-crop); Antippen zoomt weich heraus und zeigt Achsen (reveal.js)
+  const crop = `${PAD.l - 6} ${PAD.t - 6} ${W - PAD.r - PAD.l + 12} ${H - PAD.b - PAD.t + 12}`;
+  return `<svg class="chart" viewBox="${crop}" data-crop="${crop}" data-full="0 0 ${W} ${H}" role="img">
     ${g}
     <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".5" stroke-width="1"/>
     ${mv.length > 1 ? `<defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
@@ -79,7 +81,8 @@ export function barChart(items) {
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 14}" class="ax" text-anchor="middle">${lbl}</text>`;
     s += `<text x="${r1(x0 + w / 2)}" y="${H - 2}" class="ax dim" text-anchor="middle">${c}×</text>`;
   });
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${s}</svg>`;
+  const crop = `0 ${PAD.t - 2} ${W} ${ih + 4}`; // ohne Bereich/Anzahl unten: nur Balken + Prozente
+  return `<svg class="chart" viewBox="${crop}" data-crop="${crop}" data-full="0 0 ${W} ${H}" role="img">${s}</svg>`;
 }
 
 /**
@@ -107,7 +110,8 @@ export function legCurveChart(points) {
       <text x="${x(i)}" y="${r1(y(p.avg) - (top ? 11 : 8))}" class="bv pc${top ? ' top' : ''}" text-anchor="middle">${Math.round(p.avg)}</text>
       <text x="${x(i)}" y="${H2 - pad.b + 14}" class="ax" text-anchor="middle">${p.n}.</text>`;
   }).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H2}" role="img">
+  const crop = `${pad.l - 8} ${pad.t - 20} ${iw + 16} ${ih + 26}`;
+  return `<svg class="chart" viewBox="${crop}" data-crop="${crop}" data-full="0 0 ${W} ${H2}" role="img">
     ${g}
     <defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
     <path class="ln avg-under" pathLength="1" d="${d}" transform="translate(.8 1)" fill="none" stroke="#7d2215" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
