@@ -292,10 +292,10 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
-  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average-Verlauf, Verteilung der Aufnahmen (immer offen), „Aufnahmen im Leg“ (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170, x-Achse bis zur Ø Anzahl Aufnahmen, nur mit ≥ 3 Werten, beste gold), („Wann du gut wirfst“ wurde auf Wunsch entfernt); oben Kurzfassung Comeback · Clutch · Heiße Hand · Start ins Leg · Am stärksten/schwächsten;
-  sonst nichts vom Scoring), sonst nichts. Checkout (breit zweispaltig: links Höchstes + Quote nach Bereich, rechts Top 5) steht im Reiter Doppel ganz unten; der Doppelquote-Verlauf steht im Scoring unter der Verteilung. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
-  (Bestes Leg steht im Überblick; 9-Darter gibt es als Trophäe). Zeitraum: Standard immer „Gesamt“
-  (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern nur über den Uhr-Knopf im Kopf → Auswahlfenster; ein anderer
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
+  beste gold) · Doppelquote pro Match · Verteilung der Aufnahmen – sonst nichts („Wann du gut wirfst“ entfernt). Checkout steht im Überblick. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
+  (Bestes Leg steht im Überblick). Zeitraum: Standard immer „Gesamt“
+  (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern durch langes Drücken auf den Reiter „Stats“ → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
   Heatmap-Scheibe im Stil der Eingabe-Scheibe; keine Hervorhebung der 3 besten mehr (kein Silber-Rand, keine Ringe in der Liste). Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus; rechts oben darüber groß die Gesamt-Doppelquote (füllt den Platz neben der Scheibe), Tabelle unten, Rest per Scrollen in der Box. Keine Farblegende.
