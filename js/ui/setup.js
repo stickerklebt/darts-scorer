@@ -88,11 +88,9 @@ export function setupView() {
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
     <div class="su-title">${badge(id, 44)}<h1>${id === 'x01' && ui.x01Var !== 'other' ? '501' : g.title}</h1></div>
-    <h2 class="label">Spieler &amp; Bots</h2>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     ${remote ? `<p class="foot"><b class="solo-hint">Online gegen ${esc(remote.name)}:</b> jeder an seinem Gerät, der Anwurf wird ausgelost.</p>` : ''}
-    <h2 class="label">Spiel</h2>
     <div class="opts">${mainOptions(id)}</div>
     ${nSides >= 2 && !remote ? `<h2 class="label">Anwurf</h2>
     ${seg('anwurf', 'v', [['bull', 'Ausbullen'], ['list', 'Wer oben steht']], S.anwurf)}
