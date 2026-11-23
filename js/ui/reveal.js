@@ -2,10 +2,8 @@
    nach 6 s blenden sie wieder aus. Markierung: Behälter `.has-rv`, versteckter Teil `.rv`. */
 export const rv = (text) => `<span class="rv">${text}</span>`;
 const timers = new WeakMap();
-/** MacBook/PC (Maus): Zeigen beim Darüberfahren statt per Klick */
-const HOVER = typeof matchMedia === 'function' ? matchMedia('(hover: hover) and (pointer: fine)') : { matches: false };
 document.addEventListener('click', (e) => {
-  if (HOVER.matches || e.target.closest('[data-act]')) return;
+  if (e.target.closest('[data-act]')) return;
   const box = e.target.closest('.has-rv');
   if (!box) return;
   clearTimeout(timers.get(box));
@@ -16,7 +14,7 @@ document.addEventListener('click', (e) => {
 /* Diagramme (`.has-tg`): Antippen blendet Zahlen, Achsen, Legende und Erklärung für 5 s ein; nochmal tippen blendet sie aus.
    Ein Tipp auf einen Match-Punkt (data-act) öffnet weiter das Match. */
 document.addEventListener('click', (e) => {
-  if (HOVER.matches || e.target.closest('[data-act]')) return;
+  if (e.target.closest('[data-act]')) return;
   const box = e.target.closest('.has-tg');
   if (!box) return;
   clearTimeout(timers.get(box));
@@ -54,21 +52,3 @@ document.addEventListener('scroll', (e) => {
   timers.set(el, setTimeout(() => el.classList.remove('scrolling'), 900));
 }, true);
 
-/* Maus: beim Darüberfahren einblenden, beim Verlassen wieder ausblenden (Karten und Diagramme) */
-document.addEventListener('mouseover', (e) => {
-  if (!HOVER.matches) return;
-  for (const sel of ['.has-rv', '.has-tg']) {
-    const box = e.target.closest?.(sel);
-    if (!box || box.contains(e.relatedTarget)) continue;
-    clearTimeout(timers.get(box));
-    if (sel === '.has-tg') setChart(box, true); else box.classList.add('rv-on');
-  }
-});
-document.addEventListener('mouseout', (e) => {
-  if (!HOVER.matches) return;
-  for (const sel of ['.has-rv', '.has-tg']) {
-    const box = e.target.closest?.(sel);
-    if (!box || box.contains(e.relatedTarget)) continue;
-    if (sel === '.has-tg') setChart(box, false); else box.classList.remove('rv-on');
-  }
-});

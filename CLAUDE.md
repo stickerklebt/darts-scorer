@@ -349,7 +349,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Reiter Spielen ohne Namen/Ø-Kopf oben (Kennzahlen nur im Reiter Statistik, Name in den Einstellungen).
 - Die Bruchchallenge heißt in der App nur noch **„Challenge“** (`GAMES.bruch.title`, Screen-Titel, Ergebnis); intern bleibt der Schlüssel `bruch`.
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
-- Mit Maus (MacBook/PC, `(hover: hover) and (pointer: fine)`): Versteckte Statistik-Zahlen (`.has-rv`, Diagramme `.has-tg`) erscheinen beim Darüberfahren und gehen beim Verlassen weg; Klick schaltet dort nicht.
+- Versteckte Statistik-Zahlen erscheinen auf allen Geräten nur per Klick/Tippen (kein Einblenden beim Darüberfahren mit der Maus).
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
 - Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.
 - X01-Karte im Reiter Play ebenfalls im Kontur-Stil: 501 bleibt weiß, warmer Verlauf im Hintergrund, Abzeichen dunkel; kein Spielen-Knopf – die ganze Karte ist der Startknopf (atmende Glut, Anheben beim Darüberfahren, `.hero-go`).
