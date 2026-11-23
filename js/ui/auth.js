@@ -2,7 +2,7 @@
    Eine gerahmte Karte mit Eck-Ornamenten und wanderndem Licht, Schritt-Anzeige oben, Wappen mit Lichtschein darüber. */
 import { ui } from '../store.js';
 import { esc } from './common.js';
-import { crest, cornerOrnament, stars } from './svg.js';
+import { crestLine, cornerOrnament, stars } from './svg.js';
 
 export function authView() {
   const a = ui.auth || (ui.auth = { step: 'email', email: '' });
@@ -49,7 +49,7 @@ export function authView() {
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   return `<div class="stage auth">
     <div class="auth-halo" aria-hidden="true"></div>
-    <div class="auth-crest">${crest({ size: 150 })}</div>
+    <div class="auth-crest">${crestLine({ size: 150 })}</div>
     <section class="auth-card glint" style="--gd:-2s">${corners}
       <div class="auth-steps"><span class="on">1 · Konto</span><i class="${a.step !== 'email' ? 'on' : ''}"></i><span class="${a.step !== 'email' ? 'on' : ''}">2 · ${s2}</span></div>
       ${body}

@@ -350,3 +350,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
 - Mit Maus (MacBook/PC, `(hover: hover) and (pointer: fine)`): Versteckte Statistik-Zahlen (`.has-rv`, Diagramme `.has-tg`) erscheinen beim Darüberfahren und gehen beim Verlassen weg; Klick schaltet dort nicht.
 - Haupt-Reiter heißen **Play · Stats · Backstage** (nur die Beschriftung; intern weiter `play`/`stats`/`friends`).
+- Wappen auf Start-Splash und Anmeldung: `crestLine()` (svg.js) – Stil der Reiter-Leiste: dunkle Flächen, Konturen mit Verlauf Gold → Orange → Rot, warmes Leuchten.

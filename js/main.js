@@ -38,7 +38,7 @@ import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt
 import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
-import { crest } from './ui/svg.js';
+import { crestLine } from './ui/svg.js';
 import { entryDone, entryPossible, label } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
@@ -1343,7 +1343,7 @@ setTimeout(() => rollAvg(), 950); // nach dem Splash
 probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';
-splash.innerHTML = crest({ size: 220 });
+splash.innerHTML = crestLine({ size: 220 });
 document.body.appendChild(splash);
 setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
 if (S.screen === 'game') requestWakeLock();

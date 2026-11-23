@@ -154,6 +154,25 @@ export function crest({ size = 200, banner = 'DARTS', bg = null } = {}) {
   </svg>`;
 }
 
+/**
+ * Wappen im Stil der Reiter-Leiste unten: dunkle Flächen, feine Konturen mit Verlauf Gold → Orange → Rot (wie das aktive Reiter-Symbol).
+ * Baut auf crest() auf und tauscht nur die Farben: Gold-Flächen werden dunkel mit Verlaufs-Kontur, Creme-Flächen gedämpft.
+ */
+let lineN = 0;
+export function crestLine(opts = {}) {
+  const C = COLORS, g = `crl${++lineN}`, dark = '#120f0c';
+  let s = crest(opts);
+  s = s.split(`fill="${C.gold}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1.3"`)
+    .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
+    .split(`fill="${C.cream2}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1"`)
+    .split(`fill="${C.cream}" stroke="${C.ink}"`).join(`fill="${dark}" stroke="url(#${g})"`)
+    .split(`fill="${C.cream}"`).join(`fill="rgba(236,201,106,.14)" stroke="url(#${g})" stroke-width=".5"`)
+    .split(`fill="${C.ink}">`).join(`fill="url(#${g})">`);
+  const defs = `<defs><linearGradient id="${g}" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="160" y2="240">
+    <stop offset="0" stop-color="#f3d27a"/><stop offset=".45" stop-color="#ecc96a"/><stop offset=".75" stop-color="#ff8a4c"/><stop offset="1" stop-color="#e5402c"/></linearGradient></defs>`;
+  return s.replace('aria-hidden="true">', `aria-hidden="true">${defs}`);
+}
+
 /* ---------- Ornamente ---------- */
 export const cornerOrnament = (color = COLORS.gold) => `<svg viewBox="0 0 40 40" aria-hidden="true">
   <path d="M2 38 V9 Q2.4 2.2 9 2 H38" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
