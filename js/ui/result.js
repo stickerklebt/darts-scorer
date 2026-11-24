@@ -1,6 +1,5 @@
 /* Ergebnis-/Sieger-Screen */
 import { S, ui, nameOf, sideName, isTeam } from '../store.js';
-import { avatar } from './avatar.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
 import * as C from '../cricket.js';
@@ -65,7 +64,7 @@ export function resultView() {
       <h1 class="display vic-name">${esc(name)}</h1>
       <div class="vic-score num">${sub}</div>
     </section>
-    ${ui.endLines?.length ? `<div class="endlines">${ui.endLines.map((l) => `<div class="endline">${avatar(l.id, 52)}<div class="speech in"><b>${esc(nameOf(l.id))}</b>${esc(l.text)}</div></div>`).join('')}</div>` : ''}
+    ${ui.endLines?.length ? `<div class="endlines">${ui.endLines.map((l) => `<div class="endline"><div class="speech in"><b>${esc(nameOf(l.id))}</b>${esc(l.text)}</div></div>`).join('')}</div>` : ''}
     ${m.game === 'x01' ? x01Table(m) : partyRanks(m)}
     <div class="result-btns">
       <button class="btn red big" data-act="rematch">Revanche</button>

@@ -372,3 +372,5 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Film-Schrift, keine Atem-Geräusche, keine Zitate). Nur eigene Darts-Heraldik + dunkle Farben. Der Name ist ein Wortspiel nah an einer
   geschützten Marke – vor kommerzieller Veröffentlichung juristisch prüfen lassen.
 - Setup-Kopf (`.su-title`) wie die große 501-Karte: Name/Zahl groß (League Gothic) in Creme mit rotem versetzten Schatten, `#ink`, warmes Glühen dahinter.
+- **Bot-Bilder nur in der Bot-Auswahl** (Spieler hinzufügen › Bot). Sonst überall nur der Name: Setup-Liste (Zusatz wie „Bot · Ø 42“ erst nach Antippen der Zeile),
+  Spielerkarte im Spiel, VS-Intro, Ausbullen, Ergebnis-Sprüche – keine Avatare.

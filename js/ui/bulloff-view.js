@@ -4,7 +4,6 @@ import { bullNext, segmentAt, MM } from '../bulloff.js';
 import { label } from '../checkout.js';
 import { esc, fmt, pcVars } from './common.js';
 import { isBot } from '../bots.js';
-import { avatar } from './avatar.js';
 import { PLAYER_COLORS, icon } from './svg.js';
 import { realBoard } from './board.js';
 
@@ -44,7 +43,7 @@ export function bulloffView() {
     </header>
     <div class="bo-main">
       <div class="bo-left">
-        ${res ? '' : `<div class="bo-who" style="${pcVars(cur)}">${botNext ? avatar(bullThrower(m, next), 40) : ''}<b>${esc(whoName)}</b><span>wirft aufs Bull</span></div>`}
+        ${res ? '' : `<div class="bo-who" style="${pcVars(cur)}"><b>${esc(whoName)}</b><span>wirft aufs Bull</span></div>`}
         <div class="bo-board" id="boBoard">${realBoard(darts)}${banner}</div>
       </div>
       <div class="bo-side">

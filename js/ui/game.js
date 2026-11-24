@@ -16,7 +16,6 @@ import { camThumb } from './camview.js';
 import { voiceOn } from '../voice.js';
 import { realBoard } from './board.js';
 import { isBot, bot } from '../bots.js';
-import { avatar } from './avatar.js';
 import { PLAYER_COLORS } from './svg.js';
 
 const whoText = (m, s, thrower) => (isBot(thrower) ? `${nameOf(thrower)} wirft` : isTeam(m.sides[s]) ? `${possessive(nameOf(thrower))} Wurf` : `${nameOf(thrower)} ist dran`);
@@ -47,14 +46,14 @@ function scoreboard(items, cur, swap) {
   </div>`).join('')}</div>`;
 }
 
-/** Bot-Bereich in der Karte: Bild, kleine Scheibe mit den Darts der Aufnahme, Sprechblase, Andeutung bei starken Würfen. */
+/** Bot-Bereich in der Karte: (kein Bild mehr) kleine Scheibe mit den Darts der Aufnahme, Sprechblase, Andeutung bei starken Würfen. */
 function botBox(m, s, next) {
   const side = m.sides[s], botId = isBot(next) ? next : side.find(isBot);
   if (!botId) return '';
   const marks = (ui.botMarks?.[s] || []).map((d) => ({ x: d.x, y: d.y, color: PLAYER_COLORS[s % 6], fly: Date.now() - d.at < 450 }));
   const sp = ui.speech?.[botId];
   const hint = ui.botHint && ui.botHint.s === s && Date.now() - ui.botHint.at < 1600 ? `<b class="bot-pop">${esc(ui.botHint.text)}<i></i><i></i><i></i></b>` : '';
-  return `<div class="botbox">${avatar(botId, 46)}<div class="minib">${realBoard(marks, 17)}</div>
+  return `<div class="botbox"><div class="minib">${realBoard(marks, 17)}</div>
     ${sp && sp.until > Date.now() ? `<div class="speech">${esc(sp.text)}</div>` : ''}${hint}</div>`;
 }
 

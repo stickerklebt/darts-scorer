@@ -8,7 +8,6 @@ import { GAMES, MAX_PLAYERS } from '../games.js';
 import { BOTS, isBot } from '../bots.js';
 import { esc, pcVars, seg, optRow } from './common.js';
 import { badge, divider, icon, fuse } from './svg.js';
-import { avatar } from './avatar.js';
 import { camReady } from './camstation.js';
 import { wheelHTML } from './wheel.js';
 
@@ -80,8 +79,7 @@ export function setupView() {
     const open = ui.prowSel === i; // Hoch/Entfernen erst nach Antippen des Spielers
     return `<div class="prow ${bot ? 'isbot' : ''} ${open ? 'open' : ''}" style="${pcVars(ci)}" data-act="prowSel" data-v="${i}">
       <span class="pc">${S.teamMode ? e.team : i + 1}</span>
-      ${bot ? `<span class="pav">${avatar(e.id, 34)}</span>` : ''}
-      <span class="pname">${esc(nameOf(e.id))}${bot ? `<small>Bot · Ø ${BOTS.find((b) => b.id === e.id).avg}</small>` : e.friend ? `<small>Freund · ${e.friend.mode === 'remote' ? 'spielt auf seinem Gerät' : 'spielt hier mit, bestätigt danach'}</small>` : e.guest ? '<small>Gast · nur dieses Spiel, ohne Statistik</small>' : ''}</span>
+      <span class="pname">${esc(nameOf(e.id))}${!open ? '' : bot ? `<small>Bot · Ø ${BOTS.find((b) => b.id === e.id).avg}</small>` : e.friend ? `<small>Freund · ${e.friend.mode === 'remote' ? 'spielt auf seinem Gerät' : 'spielt hier mit, bestätigt danach'}</small>` : e.guest ? '<small>Gast · nur dieses Spiel, ohne Statistik</small>' : ''}</span>
       ${S.teamMode ? `<button class="teambtn" data-act="team" data-v="${i}">Team ${e.team}</button>` : ''}
       ${open ? `<button class="sq sm" data-act="pup" data-v="${i}" ${i ? '' : 'disabled'} aria-label="Nach oben">${icon('up', 2.4, 18)}</button>
       <button class="sq sm del" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>` : ''}
