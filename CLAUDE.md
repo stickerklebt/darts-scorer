@@ -378,3 +378,8 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).
 - **Profil** (VIP › oben der Name in Gold (ohne Kasten/Orange) mit goldenem Stift `.bs-namebox`, antippen → Fenster `profile` im Look der Reiter-Leiste `.vipsheet`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).
+- **Farbwelt „Gitarre“ (seit 24.11.2026, gilt vor älteren Farbangaben):** Grundtöne Navy aus dem Blue-Burst (`--ink #060c17`, Panels #0f1b2e/#14243b),
+  Hintergrund als Verlauf (oben Petrol-Schimmer, unten Navy), Text Perlweiß/Ahorn-Eis (`--cream #edf2ef`), Akzent statt Rot ein Burst-Blau
+  (`--red` ist jetzt #2f7fc1, Glühen Eisblau statt Orange), Metall Gold (Hardware, Rahmen) und Silber (`--silver #c8ccd0`, Linien/Kanten).
+  Spielerfarben: Burst-Blau · Gold · Silber · Abalone #4fb3a6 · Palisander #8a4b32 · Perlweiß. Umgesetzt per Farb-Tabelle (Skript) über
+  CSS und Farbkonstanten; Dartscheiben (echte Rot/Grün-Felder), Heatmap-Stufen und Comic-Animationen bleiben in ihren Farben.

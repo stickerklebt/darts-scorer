@@ -1,13 +1,13 @@
 /* Eigene SVG-Grafiken: Wappen, Ornamente, Badges, Comic-Elemente, Icons. Alles selbst entworfen. */
 
 export const COLORS = {
-  ink: '#0b0a08', cream: '#f3e9d2', cream2: '#d9c9a3', gold: '#d4a63a', goldL: '#ecc96a',
-  red: '#e5402c', blue: '#2f6fe4', yellow: '#ffd23f', green: '#1f9a4c', violet: '#8b5cf6', teal: '#d4a63a',
-  stone: '#5b4f3e', stoneD: '#3a3229', stoneL: '#a89d87',
-  pink: '#e5402c', cyan: '#2f6fe4', magic: '#8b5cf6', spark: '#ffd23f',
+  ink: '#060c17', cream: '#edf2ef', cream2: '#bfcfcb', gold: '#d4a63a', goldL: '#ecc96a',
+  red: '#2f7fc1', blue: '#2f6fe4', yellow: '#e6c766', green: '#1f9a4c', violet: '#8b5cf6', teal: '#d4a63a',
+  stone: '#4a5d73', stoneD: '#25384f', stoneL: '#97a8b5',
+  pink: '#2f7fc1', cyan: '#2f6fe4', magic: '#8b5cf6', spark: '#e6c766',
 };
-export const PLAYER_COLORS = ['#e5402c', '#2f6fe4', '#ffd23f', '#1f9a4c', '#8b5cf6', '#f3e9d2'];
-export const PLAYER_INK = ['#f3e9d2', '#f3e9d2', '#0b0a08', '#f3e9d2', '#f3e9d2', '#0b0a08'];
+export const PLAYER_COLORS = ['#2f7fc1', '#d4a63a', '#c8ccd0', '#4fb3a6', '#8a4b32', '#edf2ef']; // Gitarre: Burst-Blau · Gold · Silber · Abalone · Palisander · Perlweiß
+export const PLAYER_INK = ['#edf2ef', '#edf2ef', '#060c17', '#edf2ef', '#edf2ef', '#060c17'];
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const polar = (cx, cy, r, deg) => [r2(cx + r * Math.cos((deg * Math.PI) / 180)), r2(cy + r * Math.sin((deg * Math.PI) / 180))];
@@ -35,7 +35,7 @@ function leaf(x, y, len, w, rot, color) {
   const h = len / 2;
   return `<g transform="translate(${x} ${y}) rotate(${r2(rot)})">
     <path d="M${-h},0 C${r2(-h * 0.4)},${r2(-w * 1.15)} ${r2(h * 0.45)},${r2(-w * 0.95)} ${h},${r2(w * 0.12)} C${r2(h * 0.35)},${r2(w * 0.95)} ${r2(-h * 0.45)},${r2(w * 1.05)} ${-h},0Z" fill="${color}"/>
-    <path d="M${r2(-h * 0.85)},0 Q0,${r2(-w * 0.18)} ${r2(h * 0.8)},${r2(w * 0.08)}" fill="none" stroke="#0b0a08" stroke-opacity=".55" stroke-width=".7"/>
+    <path d="M${r2(-h * 0.85)},0 Q0,${r2(-w * 0.18)} ${r2(h * 0.8)},${r2(w * 0.08)}" fill="none" stroke="#060c17" stroke-opacity=".55" stroke-width=".7"/>
   </g>`;
 }
 function laurelBranch(cx, cy, R, from, to, n, color) {
@@ -160,7 +160,7 @@ export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } 
  */
 let lineN = 0;
 export function crestLine(opts = {}) {
-  const C = COLORS, g = `crl${++lineN}`, dark = '#120f0c';
+  const C = COLORS, g = `crl${++lineN}`, dark = '#0a1322';
   let s = crest({ lite: true, banner: 'DARTVADER', ...opts }); // schlichter: ohne Strahlen, Lorbeerkranz und Schraffur im Schild
   s = s.split(`fill="${C.gold}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1.3"`)
     .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
@@ -170,7 +170,7 @@ export function crestLine(opts = {}) {
     .split(`fill="${C.ink}">`).join(`fill="url(#${g})">`);
   // DartVader: dunkler – Stahl oben, Glut-Rot unten (nur Farben, keine Film-Motive)
   const defs = `<defs><linearGradient id="${g}" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="160" y2="240">
-    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#e5402c"/><stop offset="1" stop-color="#9a1022"/></linearGradient></defs>`;
+    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#2f7fc1"/><stop offset="1" stop-color="#123a6b"/></linearGradient></defs>`;
   return s.replace('aria-hidden="true">', `aria-hidden="true">${defs}`);
 }
 
@@ -213,20 +213,20 @@ const SYMBOLS = {
   cricket: '<path d="M5 4l14 16M19 4L5 20" stroke="currentColor" stroke-width="2.6" fill="none"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
   bruch: '<path d="M13.5 2.5 6 13.2h5l-1.5 8.3L18 10.6h-5.2z" fill="currentColor"/>',
   // Fußball: Fünfeck in der Mitte, Nähte zu den Sechsecken, angeschnittene Fünfecke am Rand
-  football: '<defs><clipPath id="fbclip"><circle cx="12" cy="12" r="9.6"/></clipPath></defs><circle cx="12" cy="12" r="9.6" fill="#f6f1e4"/><g clip-path="url(#fbclip)"><path d="M12.00,8.50L12.00,6.50M8.77,4.15L20.46,12.65M15.33,10.92L17.23,10.30M18.47,6.50L14.00,20.25M14.06,14.83L15.23,16.45M19.23,16.45L4.77,16.45M9.94,14.83L8.77,16.45M10.00,20.25L5.53,6.50M8.67,10.92L6.77,10.30M3.54,12.65L15.23,4.15" fill="none" stroke="#0b0a08" stroke-width=".7" stroke-opacity=".7"/><polygon points="12.00,6.50 8.77,4.15 10.00,0.35 14.00,0.35 15.23,4.15" fill="#0b0a08"/><polygon points="17.23,10.30 18.47,6.50 22.46,6.50 23.70,10.30 20.46,12.65" fill="#0b0a08"/><polygon points="15.23,16.45 19.23,16.45 20.46,20.25 17.23,22.60 14.00,20.25" fill="#0b0a08"/><polygon points="8.77,16.45 10.00,20.25 6.77,22.60 3.54,20.25 4.77,16.45" fill="#0b0a08"/><polygon points="6.77,10.30 3.54,12.65 0.30,10.30 1.54,6.50 5.53,6.50" fill="#0b0a08"/></g><polygon points="12.00,8.50 15.33,10.92 14.06,14.83 9.94,14.83 8.67,10.92" fill="#0b0a08"/><circle cx="12" cy="12" r="9.6" fill="none" stroke="#0b0a08" stroke-width="1.2"/>',
+  football: '<defs><clipPath id="fbclip"><circle cx="12" cy="12" r="9.6"/></clipPath></defs><circle cx="12" cy="12" r="9.6" fill="#f6f1e4"/><g clip-path="url(#fbclip)"><path d="M12.00,8.50L12.00,6.50M8.77,4.15L20.46,12.65M15.33,10.92L17.23,10.30M18.47,6.50L14.00,20.25M14.06,14.83L15.23,16.45M19.23,16.45L4.77,16.45M9.94,14.83L8.77,16.45M10.00,20.25L5.53,6.50M8.67,10.92L6.77,10.30M3.54,12.65L15.23,4.15" fill="none" stroke="#060c17" stroke-width=".7" stroke-opacity=".7"/><polygon points="12.00,6.50 8.77,4.15 10.00,0.35 14.00,0.35 15.23,4.15" fill="#060c17"/><polygon points="17.23,10.30 18.47,6.50 22.46,6.50 23.70,10.30 20.46,12.65" fill="#060c17"/><polygon points="15.23,16.45 19.23,16.45 20.46,20.25 17.23,22.60 14.00,20.25" fill="#060c17"/><polygon points="8.77,16.45 10.00,20.25 6.77,22.60 3.54,20.25 4.77,16.45" fill="#060c17"/><polygon points="6.77,10.30 3.54,12.65 0.30,10.30 1.54,6.50 5.53,6.50" fill="#060c17"/></g><polygon points="12.00,8.50 15.33,10.92 14.06,14.83 9.94,14.83 8.67,10.92" fill="#060c17"/><circle cx="12" cy="12" r="9.6" fill="none" stroke="#060c17" stroke-width="1.2"/>',
   atc: '<path d="M20 12a8 8 0 11-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19.5 2.5v4.5H15" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
 };
 /* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
    [Hintergrund des Abzeichens, Farbe des Symbols, Rand] – die Kachel auf „Spielen“ hat dazu ein eigenes Muster (screens.css). */
 const MODE_STYLE = {
   x01: [COLORS.red, COLORS.ink, COLORS.ink],
-  highscore: ['#0b0a08', '#f0c24a', '#f0c24a'],
-  shanghai: ['#f0c24a', '#0b0a08', '#0b0a08'],
-  halveit: ['#0b0a08', '#f07a24', '#f07a24'],
-  cricket: ['#f07a24', '#0b0a08', '#0b0a08'],
+  highscore: ['#060c17', '#f0c24a', '#f0c24a'],
+  shanghai: ['#f0c24a', '#060c17', '#060c17'],
+  halveit: ['#060c17', '#d4a63a', '#d4a63a'],
+  cricket: ['#d4a63a', '#060c17', '#060c17'],
   atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
-  bruch: ['#0b0a08', '#ffd86b', '#e7b73c'],
-  football: ['#2f9e57', '#0b0a08', '#0b0a08'],
+  bruch: ['#060c17', '#ffd86b', '#e7b73c'],
+  football: ['#2f9e57', '#060c17', '#060c17'],
 };
 export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
 export const badge = (game, size = 44) => {
@@ -293,7 +293,7 @@ export const magicCorner = (c1 = COLORS.cyan, c2 = COLORS.pink, c3 = COLORS.spar
 
 /* ---------- Pokal (detailreich: Bänder, Lorbeer, Edelsteine, Sockel mit Plakette) ---------- */
 export const trophy = (C = COLORS) => {
-  const K = '#0b0a08', G = '#ffd23f', D = '#d4a63a', L = '#fff4c4';
+  const K = '#060c17', G = '#e6c766', D = '#d4a63a', L = '#fff4c4';
   let beads = ''; for (let i = 0; i < 9; i++) beads += `<circle cx="${34 + i * 6.5}" cy="22" r="1.6" fill="${K}"/>`;
   return `<svg viewBox="0 0 120 150" aria-hidden="true">
   <path d="M30 26 H14 C8 26 6 32 7 38 C9 52 20 60 34 62 M90 26 H106 C112 26 114 32 113 38 C111 52 100 60 86 62" fill="none" stroke="${K}" stroke-width="9" stroke-linecap="round"/>
