@@ -29,6 +29,7 @@ import { api } from './api.js';
 import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
 import { statsView, SUBTABS } from './ui/stats-view.js';
 import { initWheels } from './ui/wheel.js';
+import { dartFromFile } from './dartscan.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
@@ -731,6 +732,7 @@ const actions = {
   },
   settings() { ui.modal = { type: 'settings' }; render(); },
   profileOpen() { ui.modal = { type: 'profile' }; render(); },
+  dartRemove() { delete S.prefs.myDart; render(); },
   /* Rekord-Karte/Zeile in der Statistik → Leg bzw. Match im Detail */
   rec(el) {
     const d = el.dataset, num = (v) => (v === '' || v === undefined ? null : Number(v));
@@ -1061,6 +1063,15 @@ document.addEventListener('touchend', (e) => {
   const next = keys[i + (dx < 0 ? 1 : -1)];
   if (i >= 0 && next) actions.statsSub({ dataset: { v: next } });
 }, { passive: true });
+/* Eigener Dart: Foto gewählt → erkennen, nachzeichnen, im Profil (prefs, wird synchronisiert) speichern */
+document.addEventListener('change', async (e) => {
+  if (e.target.id !== 'dartFile' || !e.target.files?.[0]) return;
+  const file = e.target.files[0];
+  ui.dartBusy = true; render();
+  try { S.prefs.myDart = await dartFromFile(file); toast('Dein Dart ist da'); }
+  catch (err) { toast(err.message || 'Dart nicht erkannt'); }
+  finally { ui.dartBusy = false; render(); }
+});
 document.addEventListener('keydown', (e) => {
   if (e.target.matches('input')) {
     if (e.key !== 'Enter') return;

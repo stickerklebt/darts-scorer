@@ -59,6 +59,9 @@ export function sheetView() {
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
+      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App zeichnet ihn nach.</small></span>
+        <div class="dart-btns"><label class="btn dark dart-cam" ${ui.dartBusy ? 'aria-disabled="true"' : ''}>${ui.dartBusy ? 'Erkenne Dart …' : S.prefs.myDart ? 'Neues Foto' : 'Dart fotografieren'}<input id="dartFile" type="file" accept="image/*" capture="environment" hidden></label>
+        ${S.prefs.myDart ? '<button class="btn line" data-act="dartRemove">Entfernen</button>' : ''}</div></div></div>
       <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>
       ${u ? '<button class="btn textonly del-acct" data-act="delAcct">Konto löschen</button>' : ''}`;
   } else if (md.type === 'settings') {

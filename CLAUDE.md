@@ -104,7 +104,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + situations · football · insights · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · football · insights · dartscan · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -383,3 +383,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   (`--red` ist jetzt #2f7fc1, Glühen Eisblau statt Orange), Metall Gold (Hardware, Rahmen) und Silber (`--silver #c8ccd0`, Linien/Kanten).
   Spielerfarben: Burst-Blau · Gold · Silber · Abalone #4fb3a6 · Palisander #8a4b32 · Perlweiß. Umgesetzt per Farb-Tabelle (Skript) über
   CSS und Farbkonstanten; Dartscheiben (echte Rot/Grün-Felder), Heatmap-Stufen und Comic-Animationen bleiben in ihren Farben.
+- **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
+  `js/dartscan.js`: Hintergrund = Median der Randpixel, Maske (nur Schließen, damit die Spitze bleibt) → größte Fläche → PCA-Achse →
+  waagerecht drehen, breiteste Stelle (Flight) nach links → im App-Stil nachzeichnen (Helligkeit in 4 App-Tönen Navy/Stahl/Silber/Gold-Hell,
+  Goldkontur), 600 px PNG als data-URL in `prefs.myDart` (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.

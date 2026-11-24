@@ -62,9 +62,21 @@ function confirmBlock() {
     }).join('')}</div>`;
 }
 
+/** VIP oben: Name mit Stift direkt daneben, darunter waagerecht der eigene Dart (Foto, im App-Stil nachgezeichnet) oder ein schlichter Platzhalter */
 function myBanner(name) {
-  return `<button class="bs-namebox" data-act="profileOpen" aria-label="Profil bearbeiten"><span class="bs-name">${esc(name)}</span><span class="bs-pen">${icon('pen', 1.8, 20)}</span></button>`; // Name im Kasten, Stift = bearbeiten // Backstage: oben nur der Name, kein Banner
+  const mine = S.prefs.myDart;
+  return `<div class="vip-head">
+    <button class="bs-namebox" data-act="profileOpen" aria-label="Profil bearbeiten"><span class="bs-name">${esc(name)}</span><span class="bs-pen">${icon('pen', 1.8, 20)}</span></button>
+    <div class="vip-dart ${mine ? 'mine' : 'plain'}">${mine ? `<img src="${mine}" alt="Dein Dart">` : plainDart()}</div>
+  </div>`;
 }
+/** Schlichter Dart (Flight links, Spitze rechts) – bewusst etwas leer, bis man seinen eigenen fotografiert */
+const plainDart = () => `<svg viewBox="0 0 600 70" aria-label="Dart (Platzhalter)">
+  <path d="M6 10 L118 30 L118 40 L6 60 L30 35 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M118 35 H250" stroke="currentColor" stroke-width="4"/>
+  <rect x="250" y="27" width="170" height="16" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M420 35 H594" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
 
 export function friendsView() {
   const me = auth.user, f = ui.friends?.data, err = ui.friends?.error;

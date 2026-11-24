@@ -2518,3 +2518,14 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #1e4a72 0%, #1029
 .chart, .sit-g, .rlist { border-color: rgba(200,204,208,.45) !important; }
 .sbtable-wrap { border-color: rgba(200,204,208,.3) !important; background: rgba(10,19,34,.85) !important; }
 .tabs, .subpop, .start-pill { border-color: rgba(212,166,58,.6) !important; box-shadow: 0 10px 30px rgba(0,0,0,.55), inset 0 0 0 3px rgba(6,12,23,.9), inset 0 0 0 4px rgba(200,204,208,.22), 0 0 34px rgba(63,127,168,.25) !important; }
+
+/* VIP-Kopf: Name + Stift (Stift direkt daneben, nie auf dem Namen), darunter der Dart über die ganze Breite */
+.vip-head { margin: 8px 0 10px; }
+.bs-pen { right: auto !important; top: auto !important; transform: none !important; }
+.vip-dart { width: 100%; margin: 6px 0 0; display: flex; align-items: center; justify-content: center; }
+.vip-dart img { display: block; width: 100%; height: auto; max-height: 110px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(0,0,0,.55)) drop-shadow(0 0 10px rgba(212,166,58,.18)); }
+.vip-dart.plain svg { width: 100%; height: auto; max-height: 70px; color: rgba(200,204,208,.45); }
+.dart-btns { display: flex; gap: 10px; margin-top: 10px; }
+.dart-btns .btn { flex: 1; }
+.dart-cam { cursor: pointer; text-align: center; }
+.dart-cam[aria-disabled="true"] { opacity: .6; pointer-events: none; }
