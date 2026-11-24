@@ -61,7 +61,7 @@ export function sheetView() {
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
-      <div class="sbtns"><button class="btn line" data-act="wipe" style="color:var(--red);border-color:var(--red)">Alle Daten löschen</button><button class="btn red" data-act="closeModal">Fertig</button></div>
+      <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>
       ${u ? '<button class="btn textonly del-acct" data-act="delAcct">Konto löschen</button>' : ''}`;
   } else if (md.type === 'addPlayer') {
     inner = addPlayerSheet();
