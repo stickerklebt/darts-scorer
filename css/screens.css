@@ -2498,3 +2498,10 @@ button.bs-name { display: block; width: 100%; background: none; border: 0; curso
 .bs-namebox .bs-name::before, .bs-namebox .bs-name::after, .bs-namebox::after { display: none !important; }
 .bs-namebox { border: 0 !important; box-shadow: none !important; background: none !important; padding-top: 6px; padding-bottom: 6px; }
 .bs-name { filter: drop-shadow(0 2px 10px rgba(236,201,106,.18)) !important; }
+
+/* VIP: Stift direkt neben dem Namen (nicht mehr allein am rechten Rand), etwas kleiner, Tippfläche bleibt groß genug */
+.bs-namebox { width: auto; max-width: 100%; padding-left: 0; padding-right: 0; gap: 10px; }
+.bs-pen { position: static; transform: none; width: 32px; height: 32px; flex: none; }
+.bs-pen svg { width: 16px; height: 16px; }
+.bs-pen::before { content: ""; position: absolute; inset: -8px; } /* unsichtbar größere Tippfläche */
+.bs-pen { position: relative; }
