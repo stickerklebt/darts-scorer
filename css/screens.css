@@ -2479,3 +2479,17 @@ button.bs-name { display: block; width: 100%; background: none; border: 0; curso
 .sheet.vipsheet .btn.red { background: linear-gradient(#120f0c, #120f0c) padding-box, linear-gradient(90deg, #ecc96a, #ff8a4c 55%, #e5402c) border-box; border: 1.5px solid transparent;
   color: #ffb067; box-shadow: 0 0 16px rgba(229,64,44,.25); }
 .sheet.vipsheet .field { border-radius: 14px; }
+
+/* VIP-Name: oranger Strich ÜBER dem Namen (so breit wie der Name), sein Schein fällt weich nach unten über den Namen */
+.bs-namebox .bs-name::after { display: none; }
+.bs-namebox .bs-name::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(229,64,44,.2), #ff8a4c 30%, #ffb067 50%, #ff8a4c 70%, rgba(229,64,44,.2));
+  box-shadow: 0 0 8px rgba(255,106,61,.6); }
+.bs-namebox .bs-name { padding-top: 4px; }
+.bs-namebox .bs-name > i, .bs-namebox::after { content: ""; position: absolute; pointer-events: none; }
+.bs-namebox::after { left: 50%; top: 10px; width: min(70%, 320px); height: 70%; transform: translateX(-50%); border-radius: 0 0 50% 50%;
+  background: linear-gradient(180deg, rgba(255,138,76,.30), rgba(255,138,76,.10) 45%, transparent 85%); filter: blur(4px); }
+/* Stift in Gold */
+.bs-pen { color: #f3d27a; border: 1px solid transparent; background: linear-gradient(#14110d, #14110d) padding-box, linear-gradient(160deg, #fff3c4, #ecc96a 45%, #a8771a) border-box;
+  box-shadow: 0 0 12px rgba(236,201,106,.35), inset 0 0 8px rgba(236,201,106,.12); }
+.bs-pen svg { filter: drop-shadow(0 0 4px rgba(236,201,106,.55)); }
