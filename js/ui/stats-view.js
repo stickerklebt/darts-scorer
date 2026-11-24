@@ -38,7 +38,16 @@ const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map
   const tap = ref && v !== '–';
   return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}${String(sub).includes('class="rv"') ? `<span class="kv-row"><b>${v}</b><em>${sub}</em></span>` : `<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}`}</${tap ? 'button' : 'div'}>`;
 }).join('')}</div>`;
-const record = (title, value, sub) => `<div class="record">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}</div></div>`;
+/** Rekord-Karte. hidden: Zusatz, der erst nach Antippen erscheint (z. B. wie das Checkout gespielt wurde) */
+const record = (title, value, sub, hidden = '') => `<div class="record ${hidden ? 'has-rv' : ''}">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}${hidden ? `<em class="rec-how">${rv(hidden)}</em>` : ''}</div></div>`;
+/** Wie wurde ein Checkout geworfen? → „Single 3 · Doppel 11“ (ohne Einzeldarts: Hinweis) */
+const DART_WORD = { 1: 'Single', 2: 'Doppel', 3: 'Triple' };
+function checkoutHow(ref) {
+  const t = ref && S.matches.find((m) => m.id === ref.mid)?.legs?.[ref.li]?.turns?.[ref.ti];
+  if (!t) return '';
+  if (!t.throws?.length) return t.input === 'voice' ? 'angesagt, ohne einzelne Darts' : 'als Summe eingegeben';
+  return t.throws.map((d) => (d.n === 0 ? 'daneben' : d.n === 25 ? (d.m === 2 ? 'Bull' : 'Single Bull') : `${DART_WORD[d.m]} ${d.n}`)).join(' · ');
+}
 const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
@@ -69,7 +78,7 @@ function overviewTab(st, pid) {
 
 function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
-  return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '')
+  return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
     + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))}</div>
     <div class="co-right">${rankList('Top 5 Checkouts', st.topCo, pid)}</div></div>`;
 }

@@ -2446,3 +2446,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
   text-shadow: 3px 2px 0 var(--red), 0 0 26px rgba(255,214,120,.35); filter: url(#ink); }
 .su-title::before { background: radial-gradient(ellipse at center, rgba(120,72,30,.45), rgba(70,36,14,.18) 50%, transparent 72%) !important; }
 .su-title .badge-mode { --badge-bg: var(--red); --badge-ink: var(--ink); --badge-line: var(--ink); box-shadow: 0 0 16px rgba(255,138,76,.3) !important; }
+
+/* Höchstes Checkout: Darts erscheinen nach Antippen unter der Zahl */
+.record.has-rv { cursor: pointer; }
+.record .rec-how { display: block; margin-top: 6px; font-family: var(--f-num); font-style: normal; font-size: 18px; letter-spacing: .08em; color: var(--gold-l) !important; }

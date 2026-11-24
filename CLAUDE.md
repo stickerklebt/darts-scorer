@@ -374,3 +374,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Setup-Kopf (`.su-title`) wie die große 501-Karte: Name/Zahl groß (League Gothic) in Creme mit rotem versetzten Schatten, `#ink`, warmes Glühen dahinter.
 - **Bot-Bilder nur in der Bot-Auswahl** (Spieler hinzufügen › Bot). Sonst überall nur der Name: Setup-Liste (Zusatz wie „Bot · Ø 42“ erst nach Antippen der Zeile),
   Spielerkarte im Spiel, VS-Intro, Ausbullen, Ergebnis-Sprüche – keine Avatare.
+- Höchstes Checkout (Rekord-Karte): Antippen zeigt, wie es geworfen wurde („Single 3 · Doppel 16“, `checkoutHow`); ohne Einzeldarts ein Hinweis.
