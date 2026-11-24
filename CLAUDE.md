@@ -190,7 +190,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   (`ui.padH`), damit oben nichts springt. Auf dem Handy keine kleine Scheibe in der Bot-Karte.
 - **Average im Spiel ausblendbar** (`prefs.showAvg`, Zahnrad im Spiel bzw. Einstellungen): blendet die Ø-Angaben in den Karten und beim Bot aus.
   Ebenso „Darts im Leg anzeigen“ (`prefs.showDarts`, X01): blendet die Darts-Zahl des laufenden Legs in den Karten aus.
-- **Setup**: ein Screen ohne Kopfkarte – 1 Spieler & Bots · 2 Spiel (First to … bzw. Runden/Ziele) · 3 Anwurf (nur ab zwei Seiten,
+- **Setup**: ein Screen – Spieler & Bots · Spiel (Drehrad First to …) · Start; Anwurf standardmäßig „wer oben steht“, Ausbullen unter „Mehr Optionen“ (nur ab zwei Seiten,
   bei Solo ausgeblendet) · Start. „Mehr Optionen“ (aufklappbar, ohne Zusammenfassung):
   Jeder für sich/Teams, Startpunkte 301/501/701, Check-Out, Legs/Sets, Reihenfolge mischen, Spielregeln.
   Hinzufügen nur über **ein Plus** → Auswahlfenster: Freunde · Gast · Bot (Freunde zuerst). **Gast** = Name für genau dieses Spiel (kein Profil,

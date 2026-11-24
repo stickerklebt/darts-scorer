@@ -1309,6 +1309,8 @@ document.addEventListener('pointercancel', (e) => aimEnd(e, false));
 /* ---------------- Start ---------------- */
 /* Einmaliger Neustart der Daten (Wunsch nach Update 3): alle Matches/Statistiken und alle Spieler außer dem
    Hauptspieler löschen, keine Testdaten mehr einfügen. Läuft genau einmal (S.cleanV). */
+/* Einmalig: Anwurf wieder auf „wer oben steht“ (Ausbullen gibt es nur noch unter „Mehr Optionen“) */
+if (!S.anwurfV) { S.anwurf = 'list'; S.anwurfV = 1; }
 /* Einmalig: Einzeldarts standardmäßig über die neue Scheibe eingeben (Tastatur bleibt in den Einstellungen wählbar). */
 if (!S.aimV) { S.prefs.dartInput = 'board'; S.aimV = 1; }
 if (!S.cleanV) {

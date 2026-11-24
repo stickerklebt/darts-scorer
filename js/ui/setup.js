@@ -1,5 +1,5 @@
 /* Setup: ein Screen mit allem, was man vor dem Spiel braucht. Sichtbar: Spieler & Bots · Spiel (First to X bzw. Runden)
-   · Anwurf (nur ab zwei Seiten) · Start. Seltenes unter „Mehr Optionen“: Teams, Startpunkte, Check-Out, Legs/Sets, Mischen, Regeln. */
+   · Start. Seltenes unter „Mehr Optionen“: Anwurf (Ausbullen), Teams, Startpunkte, Check-Out, Legs/Sets, Mischen, Regeln. */
 import { S, ui, nameOf } from '../store.js';
 import * as X from '../x01.js';
 import * as G from '../party.js';
@@ -42,12 +42,16 @@ function moreOptions(id) {
     + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   // Teams erst ab 2 Spielern (im Team spielen sie zusammen eine Punktzahl herunter) – vorher ausgegraut
   if (L.length < 2 && S.teamMode) S.teamMode = false;
+  // Anwurf: Standard „wer oben steht, fängt an“; Ausbullen nur hier unter „Mehr Optionen“ (ab zwei Seiten, nicht online)
+  const sides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length, online = L.some((e) => e.friend?.mode === 'remote');
+  const anwurf = sides >= 2 && !online ? optRow('Anwurf', seg('anwurf', 'v', [['list', 'Wer oben steht'], ['bull', 'Ausbullen']], S.anwurf))
+    + `<p class="foot">${S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>` : '';
   const team = optRow('Spielweise', `<div class="${L.length < 2 ? 'seg-off' : ''}">${seg('teamMode', 'v', [[0, 'Jeder für sich'], [1, 'Teams']], S.teamMode ? 1 : 0)}</div>`)
     + (L.length < 2 ? '<p class="foot">Teams gibt es ab 2 Spielern – im Team spielt ihr zusammen von 501 herunter.</p>' : '');
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
     <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
-      <div class="opts">${team}${x01}</div>
+      <div class="opts">${anwurf}${team}${x01}</div>
       ${S.teamMode ? '<p class="foot">Tippe bei den Spielern auf „Team“, um sie zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge der Liste.</p>' : ''}
       ${id === 'x01' && o.mode === 'sets' ? `<p class="foot">Ein Set gewinnt, wer zuerst ${X.LEGS_PER_SET} Legs holt.</p>` : ''}
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
@@ -92,9 +96,6 @@ export function setupView() {
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     ${remote ? `<p class="foot"><b class="solo-hint">Online gegen ${esc(remote.name)}:</b> jeder an seinem Gerät, der Anwurf wird ausgelost.</p>` : ''}
     <div class="opts">${mainOptions(id)}</div>
-    ${nSides >= 2 && !remote ? `<h2 class="label">Anwurf</h2>
-    ${seg('anwurf', 'v', [['bull', 'Ausbullen'], ['list', 'Wer oben steht']], S.anwurf)}
-    <p class="foot">${S.anwurf === 'bull' ? 'Vor dem Match wirft jede Seite einen Dart aufs Bull. Wer am nächsten dran ist, fängt an.' : 'Der erste Spieler bzw. das erste Team der Liste fängt an.'}</p>` : ''}
     ${camRow(id)}
     ${moreOptions(id)}
   </main>
