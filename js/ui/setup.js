@@ -87,7 +87,6 @@ export function setupView() {
       <button class="sq sm del" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>` : ''}
     </div>`;
   }).join('');
-  const nSides = S.teamMode ? new Set(L.map((e) => e.team)).size : L.length;
   const remote = L.find((e) => e.friend?.mode === 'remote');
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
