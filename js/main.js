@@ -730,6 +730,7 @@ const actions = {
     render();
   },
   settings() { ui.modal = { type: 'settings' }; render(); },
+  profileOpen() { ui.modal = { type: 'profile' }; render(); },
   /* Rekord-Karte/Zeile in der Statistik → Leg bzw. Match im Detail */
   rec(el) {
     const d = el.dataset, num = (v) => (v === '' || v === undefined ? null : Number(v));
