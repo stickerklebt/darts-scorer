@@ -376,5 +376,5 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Spielerkarte im Spiel, VS-Intro, Ausbullen, Ergebnis-Sprüche – keine Avatare.
 - Höchstes Checkout (Rekord-Karte): Antippen zeigt, wie es geworfen wurde („Single 3 · Doppel 16“, `checkoutHow`); ohne Einzeldarts ein Hinweis.
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).
-- **Profil** (VIP › oben auf den eigenen Namen tippen, Fenster `profile`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
+- **Profil** (VIP › oben der Name im Kasten `.bs-namebox` mit Stift, antippen → Fenster `profile` im Look der Reiter-Leiste `.vipsheet`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).

@@ -63,7 +63,7 @@ function confirmBlock() {
 }
 
 function myBanner(name) {
-  return `<button class="bs-name" data-act="profileOpen" aria-label="Profil bearbeiten">${esc(name)}</button>`; // Backstage: oben nur der Name, kein Banner
+  return `<button class="bs-namebox" data-act="profileOpen" aria-label="Profil bearbeiten"><span class="bs-name">${esc(name)}</span><span class="bs-pen">${icon('pen', 1.8, 20)}</span></button>`; // Name im Kasten, Stift = bearbeiten // Backstage: oben nur der Name, kein Banner
 }
 
 export function friendsView() {

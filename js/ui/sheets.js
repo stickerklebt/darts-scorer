@@ -179,7 +179,7 @@ export function sheetView() {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;
   }
-  return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' || md.type === 'camBig' ? 'wide' : md.type === 'hist' ? 'wide pop' : ''}">${inner}</div></div>`;
+  return `<div class="scrim" data-act="scrim"><div class="sheet ${md.type === 'leg' || md.type === 'camBig' ? 'wide' : md.type === 'hist' ? 'wide pop' : ['profile', 'rename', 'password', 'logoutUnsynced', 'delAcct'].includes(md.type) ? 'vipsheet pop' : ''}">${inner}</div></div>`;
 }
 
 /** Spieler hinzufügen: drei Wege – Freund, Gast (nur dieses Spiel), Bot */
