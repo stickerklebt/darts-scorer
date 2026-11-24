@@ -13,16 +13,16 @@
 
 :root {
   /* Grundtöne */
-  --ink: #060c17; --coal: #0a1322; --panel: #0f1b2e; --panel2: #14243b; --panel3: #1b2f4b;
-  --line: #25384f; --line2: #4a5d73;
-  --cream: #edf2ef; --cream2: #bfcfcb; --muted: #97a8b5; --dim: #5d6f80;
+  --ink: #0a0a0b; --coal: #0f0f11; --panel: #161618; --panel2: #1c1c1f; --panel3: #242428;
+  --line: #2f2f34; --line2: #5b5b62;
+  --cream: #f2efe7; --cream2: #d2cbbd; --muted: #a6a49f; --dim: #6c6b69;
   /* Pop-Art-Palette */
-  --red: #2f7fc1; --red-d: #1d4f86; --gold: #d4a63a; --gold-l: #ecc96a;
-  --blue: #2f6fe4; --blue-d: #1d4aa3; --yellow: #e6c766; --green: #1f9a4c; --violet: #8b5cf6;
+  --red: #b8862b; --red-d: #7a5a1c; --gold: #d4a63a; --gold-l: #ecc96a;
+  --blue: #c8ccd0; --blue-d: #8e959c; --yellow: #e6c766; --green: #1f9a4c; --violet: #a9a9ad;
   /* Spielerfarben */
-  /* Farbwelt „Gitarre“ (Burst Navy → Royal → Petrol → Eis, Ahorn-Perlweiß, Gold-Hardware, Nickel-Silber, Abalone, Palisander) */
-  --silver: #c8ccd0; --silver-d: #8e959c; --petrol: #3f7fa8; --ice: #cfe2e0; --abalone: #4fb3a6; --rosewood: #8a4b32;
-  --p0: #2f7fc1; --p1: #d4a63a; --p2: #c8ccd0; --p3: #4fb3a6; --p4: #8a4b32; --p5: var(--cream);
+  /* Farbwelt Gold & Silber (kein Blau): Graphit-Schwarz, Perlweiß, Altgold-Akzent, Gold, Silber, Roségold, Champagner, Bronze */
+  --silver: #c8ccd0; --silver-d: #8e959c; --petrol: #9aa0a6; --ice: #e4e2dc; --abalone: #e0c27a; --rosewood: #8a4b32;
+  --p0: #d4a63a; --p1: #c8ccd0; --p2: #c98a6a; --p3: #e8d7a8; --p4: #9c6a34; --p5: var(--cream);
   /* Schrift */
   --f-num: 'League Gothic', 'Arial Narrow', 'Helvetica Neue', sans-serif;
   --f-display: 'Fell Digits', 'Cinzel', 'Iowan Old Style', 'Times New Roman', serif;
@@ -43,7 +43,7 @@
   --tex-zebra: repeating-linear-gradient(90deg, var(--gold) 0 2px, transparent 2px 8px);
   --teal: var(--gold); --teal-d: #8d6b1f;
   /* Comic-Farben für Momente (Queen-Pop-Art statt Neon) */
-  --mg-pink: #2f7fc1; --mg-cyan: #2f6fe4; --mg-violet: #8b5cf6; --mg-gold: #e6c766;
+  --mg-pink: #b8862b; --mg-cyan: #c8ccd0; --mg-violet: #a9a9ad; --mg-gold: #e6c766;
   --tex-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 0L7 7M7 0L0 7' stroke='%23d4a63a' stroke-opacity='.18' stroke-width='.8'/%3E%3C/svg%3E");
   /* Handgezogene Linie (für Labels, Trenner) und gealtertes Papier (nur auf Elementen) */
   --hand-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8'%3E%3Cpath d='M1 4.4 C18 3.1 34 5.3 52 4 S88 2.9 106 4.6 S140 5.2 159 3.7' fill='none' stroke='%23d4a63a' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M8 6.6 C40 5.9 70 7.1 120 6.2' fill='none' stroke='%23d4a63a' stroke-opacity='.45' stroke-width='.6'/%3E%3C/svg%3E");

@@ -1,7 +1,7 @@
 /* Comic-Grafiken für die Animationen. Alles eigene SVGs. */
 import { starPath, sparkPath, bladeDart, COLORS } from './svg.js';
 
-const K = '#0e1211'; // Konturfarbe
+const K = '#11100f'; // Konturfarbe
 const sv = (vb, body, cls = '') => `<svg class="${cls}" viewBox="${vb}" aria-hidden="true">${body}</svg>`;
 
 export const egg = () => sv('0 0 120 100', `
@@ -17,7 +17,7 @@ export const toast = () => sv('0 0 100 100', `
 
 export const toaster = () => sv('0 0 180 120', `
   <rect x="10" y="30" width="160" height="80" rx="18" fill="#b9c2c0" stroke="${K}" stroke-width="5"/>
-  <rect x="22" y="40" width="40" height="60" rx="10" fill="#e8eeec" opacity=".7"/>
+  <rect x="22" y="40" width="40" height="60" rx="10" fill="#ecebea" opacity=".7"/>
   <rect x="40" y="22" width="44" height="14" fill="${K}"/><rect x="98" y="22" width="44" height="14" fill="${K}"/>
   <rect x="160" y="50" width="16" height="10" fill="${K}"/>
   <circle cx="148" cy="90" r="7" fill="${COLORS.red}" stroke="${K}" stroke-width="3"/>
@@ -28,7 +28,7 @@ export const bacon = () => sv('0 0 160 50', `
   <path d="M10 31 C28 14 42 50 61 30 C80 10 95 50 115 30 C131 15 144 34 153 28" fill="none" stroke="#f3c2a8" stroke-width="5"/>`);
 
 export const teacup = () => sv('0 0 150 120', `
-  <path d="M40 40 C44 30 48 20 44 10 M64 40 C68 28 72 22 66 8 M88 40 C92 30 96 22 90 10" fill="none" stroke="#e8eeec" stroke-width="4" stroke-linecap="round" class="steam"/>
+  <path d="M40 40 C44 30 48 20 44 10 M64 40 C68 28 72 22 66 8 M88 40 C92 30 96 22 90 10" fill="none" stroke="#ecebea" stroke-width="4" stroke-linecap="round" class="steam"/>
   <path d="M110 58 C134 52 136 86 108 84" fill="none" stroke="${K}" stroke-width="12"/><path d="M110 58 C134 52 136 86 108 84" fill="none" stroke="#f3efe2" stroke-width="5"/>
   <path d="M24 46 H116 C116 84 100 100 70 100 C40 100 24 84 24 46 Z" fill="#f3efe2" stroke="${K}" stroke-width="5"/>
   <ellipse cx="70" cy="47" rx="44" ry="6" fill="#8a4d22" stroke="${K}" stroke-width="3"/>
@@ -40,7 +40,7 @@ export const setSquare = () => {
   let ticks = '';
   for (let i = 1; i < 20; i++) ticks += `<path d="M${14 + i * 9.6} 196 v${i % 5 ? -7 : -14}" stroke="${K}" stroke-width="1.6"/>`;
   return sv('0 0 220 210', `
-  <path d="M10 200 L210 200 L10 20 Z" fill="rgba(140,214,255,.55)" stroke="${K}" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M10 200 L210 200 L10 20 Z" fill="rgba(200,198,195,.55)" stroke="${K}" stroke-width="5" stroke-linejoin="round"/>
   <path d="M40 180 L150 180 L40 81 Z" fill="none" stroke="${K}" stroke-width="2.5" stroke-dasharray="6 5"/>
   ${ticks}
   <path d="M168 200 A42 42 0 0 0 179 172" fill="none" stroke="${COLORS.red}" stroke-width="6"/>
@@ -59,13 +59,13 @@ export const hand = (flip = false) => sv('0 0 100 130', `<g ${flip ? 'transform=
   <path d="M44 70 C50 74 58 74 64 70" fill="none" stroke="#c99974" stroke-width="3" stroke-linecap="round"/></g>`);
 
 export const camera = (flash = true) => sv('0 0 160 140', `
-  ${flash ? `<path d="M24 6 L64 6 L58 36 L30 36 Z" fill="#e8eeec" stroke="${K}" stroke-width="4"/><circle cx="44" cy="20" r="9" fill="#fffbe0" stroke="${K}" stroke-width="3"/><rect x="40" y="36" width="8" height="18" fill="${K}"/>` : ''}
+  ${flash ? `<path d="M24 6 L64 6 L58 36 L30 36 Z" fill="#ecebea" stroke="${K}" stroke-width="4"/><circle cx="44" cy="20" r="9" fill="#fffbe0" stroke="${K}" stroke-width="3"/><rect x="40" y="36" width="8" height="18" fill="${K}"/>` : ''}
   <rect x="12" y="52" width="136" height="80" rx="8" fill="#2a302e" stroke="${K}" stroke-width="5"/>
   <rect x="12" y="52" width="136" height="16" fill="#6b7470"/>
   <rect x="104" y="40" width="34" height="14" fill="#2a302e" stroke="${K}" stroke-width="4"/>
   <circle cx="80" cy="96" r="30" fill="#6b7470" stroke="${K}" stroke-width="5"/>
-  <circle cx="80" cy="96" r="20" fill="#14304d" stroke="${K}" stroke-width="4"/>
-  <circle cx="72" cy="88" r="6" fill="#9fd8ff"/>`);
+  <circle cx="80" cy="96" r="20" fill="#32312f" stroke="${K}" stroke-width="4"/>
+  <circle cx="72" cy="88" r="6" fill="#d1d0cd"/>`);
 
 /** Atomrakete, Spitze rechts */
 export const nukeRocket = () => sv('-130 -50 260 100', `
@@ -98,14 +98,14 @@ export const chestLid = () => sv('0 0 240 110', `
 /** Großer Fisch, Maul rechts */
 export const bigFish = () => {
   let scales = '';
-  for (let r = 0; r < 3; r++) for (let i = 0; i < 6; i++) scales += `<path d="M${30 + i * 26 + (r % 2) * 13} ${-24 + r * 22} a12 12 0 0 1 0 22" fill="none" stroke="#1f5f6f" stroke-width="3"/>`;
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 6; i++) scales += `<path d="M${30 + i * 26 + (r % 2) * 13} ${-24 + r * 22} a12 12 0 0 1 0 22" fill="none" stroke="#4a4844" stroke-width="3"/>`;
   return sv('-140 -90 300 180', `
-  <path d="M-96 0 L-138 -58 C-126 -20 -126 20 -138 58 Z" fill="#3fa7b5" stroke="${K}" stroke-width="6" stroke-linejoin="round" class="tail"/>
-  <path d="M-110 0 C-80 -76 70 -86 130 -14 C140 -4 140 6 130 14 C70 86 -80 76 -110 0 Z" fill="#5cc6cf" stroke="${K}" stroke-width="7"/>
+  <path d="M-96 0 L-138 -58 C-126 -20 -126 20 -138 58 Z" fill="#c6932e" stroke="${K}" stroke-width="6" stroke-linejoin="round" class="tail"/>
+  <path d="M-110 0 C-80 -76 70 -86 130 -14 C140 -4 140 6 130 14 C70 86 -80 76 -110 0 Z" fill="#d7ab54" stroke="${K}" stroke-width="7"/>
   <path d="M-96 6 C-60 56 60 66 120 18 C70 44 -40 46 -96 6 Z" fill="#e8f4ea"/>
-  <path d="M-10 -58 C10 -96 50 -92 66 -62 Z" fill="#3fa7b5" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M-10 -58 C10 -96 50 -92 66 -62 Z" fill="#c6932e" stroke="${K}" stroke-width="6" stroke-linejoin="round"/>
   ${scales}
-  <path d="M10 26 C26 46 46 48 60 36 C44 34 28 30 10 26 Z" fill="#3fa7b5" stroke="${K}" stroke-width="4"/>
+  <path d="M10 26 C26 46 46 48 60 36 C44 34 28 30 10 26 Z" fill="#c6932e" stroke="${K}" stroke-width="4"/>
   <circle cx="92" cy="-18" r="17" fill="#fff" stroke="${K}" stroke-width="5"/><circle cx="97" cy="-18" r="8" fill="${K}"/><circle cx="100" cy="-22" r="3" fill="#fff"/>
   <path d="M138 2 C126 6 116 8 104 6" fill="none" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
   <path d="M70 -46 C82 -40 92 -40 102 -44" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round"/>`);

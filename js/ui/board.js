@@ -41,7 +41,7 @@ export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', 
 export const tierColor = (t) => (t ? TIER_COLORS[t] : null);
 
 /** Medaillen-Farben für die drei besten Doppel */
-export const MEDALS = ['#dfe4ea', '#dfe4ea', '#dfe4ea']; // Top 3 einheitlich in Silber
+export const MEDALS = ['#e6e5e3', '#e6e5e3', '#e6e5e3']; // Top 3 einheitlich in Silber
 
 /**
  * Doppel-Heatmap im Stil der Eingabe-Scheibe: dunkle Felder, Doppel in der Farbe ihrer Stufe
@@ -77,10 +77,10 @@ export function heatBoard(fields, sel, rating = {}) {
 const N_R = 198;
 export function realBoardInner() {
   const C = COLORS;
-  let s = `<circle r="${MM.edge}" fill="#0b0e0d"/><circle r="${MM.dblOut + 2}" fill="${C.ink}"/>`;
+  let s = `<circle r="${MM.edge}" fill="#0d0d0c"/><circle r="${MM.dblOut + 2}" fill="${C.ink}"/>`;
   ORDER.forEach((n, i) => {
     const [a0, a1] = segAngles(i), dark = i % 2 === 0;
-    const single = dark ? '#151a19' : '#d9d5c4', ring = dark ? C.red : C.green;
+    const single = dark ? '#181817' : '#d9d5c4', ring = dark ? C.red : C.green;
     s += `<path d="${ringPath(MM.outer, MM.triIn, a0, a1)}" fill="${single}"/><path d="${ringPath(MM.triIn, MM.triOut, a0, a1)}" fill="${ring}"/>`;
     s += `<path d="${ringPath(MM.triOut, MM.dblIn, a0, a1)}" fill="${single}"/><path d="${ringPath(MM.dblIn, MM.dblOut, a0, a1)}" fill="${ring}"/>`;
     const [x, y] = pt(N_R, (a0 + a1) / 2).split(',');
@@ -94,6 +94,6 @@ export function realBoardInner() {
 /** Ganze Scheibe mit Darts: darts = [{ x, y, color, win?, pending? }] */
 export function realBoard(darts = [], dot = 7.5) {
   const d = darts.map((t) => `<g class="rbd ${t.win ? 'win' : ''} ${t.pending ? 'pending' : ''} ${t.fly ? 'fly' : ''}" transform="translate(${t.x} ${t.y})" style="--dc:${t.color}">
-    ${t.win ? '<circle class="halo" r="16"/>' : ''}<circle r="${dot}" fill="${t.color}" stroke="#0b0e0d" stroke-width="${dot / 2.9}"/><circle r="${dot / 3.7}" fill="#0b0e0d"/></g>`).join('');
+    ${t.win ? '<circle class="halo" r="16"/>' : ''}<circle r="${dot}" fill="${t.color}" stroke="#0d0d0c" stroke-width="${dot / 2.9}"/><circle r="${dot / 3.7}" fill="#0d0d0c"/></g>`).join('');
   return `<svg class="realboard" viewBox="-230 -230 460 460" aria-label="Dartscheibe">${realBoardInner()}${d}</svg>`;
 }

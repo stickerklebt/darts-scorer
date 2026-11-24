@@ -73,7 +73,7 @@ function camBar(m, thrower) {
     if (!x) return `<span class="cb-slot empty">${ROMAN[i]}</span>`;
     return `<button class="cb-slot ${x.conf < 0.7 ? 'check' : ''}" data-act="camSlot" data-v="${i}"><b>${x.n === 0 ? '0' : esc(x.label)}</b><small>${x.conf < 0.7 ? 'Bitte prüfen' : x.fixed ? 'korrigiert' : `${x.n * x.m}`}</small></button>`;
   };
-  const marks = d.filter((x) => Number.isFinite(x.x)).map((x, i) => ({ x: x.x, y: x.y, color: x.conf < 0.7 ? '#e6c766' : '#edf2ef', fly: false, n: i }));
+  const marks = d.filter((x) => Number.isFinite(x.x)).map((x, i) => ({ x: x.x, y: x.y, color: x.conf < 0.7 ? '#e6c766' : '#f2efe7', fly: false, n: i }));
   const auto = S.prefs.camAuto !== false;
   const end = d.length === 3
     ? (auto && ui.ct?.deadline ? `<span class="cb-count">Wertung in <b>${Math.max(0, Math.ceil((ui.ct.deadline - Date.now()) / 1000))}</b> s</span>` : '<button class="btn red" data-act="camOk">OK</button>')

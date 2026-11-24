@@ -206,7 +206,7 @@ function draw(box) {
   }
   if (S.step === 2 || S.step === 3) S.extra.forEach((e) => { // Zusatzpunkte als kleine Rauten
     const sx = f.x + e.img[0] * f.w, sy = f.y + e.img[1] * f.h;
-    g.strokeStyle = '#7fd6ff'; g.fillStyle = 'rgba(127,214,255,.25)'; g.lineWidth = 2;
+    g.strokeStyle = '#c2c0bc'; g.fillStyle = 'rgba(194,192,188,.25)'; g.lineWidth = 2;
     g.beginPath(); g.moveTo(sx, sy - 9); g.lineTo(sx + 9, sy); g.lineTo(sx, sy + 9); g.lineTo(sx - 9, sy); g.closePath(); g.fill(); g.stroke();
   });
   if (S.step === 2 || S.step === 3) S.pts.forEach(([x, y], i) => {

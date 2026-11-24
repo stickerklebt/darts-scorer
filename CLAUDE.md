@@ -378,12 +378,11 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).
 - **Profil** (VIP › oben der Name in Gold (ohne Kasten/Orange) mit goldenem Stift `.bs-namebox`, antippen → Fenster `profile` im Look der Reiter-Leiste `.vipsheet`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).
-- **Farbwelt „Gitarre“ (seit 24.11.2026, gilt vor älteren Farbangaben):** Grundtöne Navy aus dem Blue-Burst (`--ink #060c17`, Panels #0f1b2e/#14243b),
-  Hintergrund als Verlauf (oben Petrol-Schimmer, unten Navy), Text Perlweiß/Ahorn-Eis (`--cream #edf2ef`), Akzent statt Rot ein Burst-Blau
-  (`--red` ist jetzt #2f7fc1, Glühen Eisblau statt Orange), Metall Gold (Hardware, Rahmen) und Silber (`--silver #c8ccd0`, Linien/Kanten).
-  Spielerfarben: Burst-Blau · Gold · Silber · Abalone #4fb3a6 · Palisander #8a4b32 · Perlweiß. Umgesetzt per Farb-Tabelle (Skript) über
-  CSS und Farbkonstanten; Dartscheiben (echte Rot/Grün-Felder), Heatmap-Stufen und Comic-Animationen bleiben in ihren Farben.
+- **Farbwelt Gold & Silber (seit 24.11.2026, gilt vor älteren Farbangaben): kein Blau.** Grundtöne Graphit-Schwarz (`--ink #0a0a0b`, Panels #161618/#1c1c1f),
+  Hintergrund-Verlauf oben mit leichtem Goldschimmer, Text Perlweiß (`--cream #f2efe7`), Akzent Altgold (`--red` ist jetzt #b8862b, Glühen silbern/golden),
+  Gold (Rahmen, Hardware) und Silber (`--silver #c8ccd0`, Linien/Kanten). Spielerfarben: Gold · Silber · Roségold #c98a6a · Champagner #e8d7a8 · Bronze #9c6a34 · Perlweiß.
+  Umgesetzt per Skript (Blautöne: dunkel → Graphit, hell → Silber, kräftig → Altgold). Dartscheiben (Rot/Grün), Heatmap-Stufen bleiben. Keine neuen Blautöne.
 - **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
   `js/dartscan.js`: Hintergrund = Median der Randpixel, Maske (nur Schließen, damit die Spitze bleibt) → größte Fläche → PCA-Achse →
-  waagerecht drehen, breiteste Stelle (Flight) nach links → im App-Stil nachzeichnen (Helligkeit in 4 App-Tönen Navy/Stahl/Silber/Gold-Hell,
+  waagerecht drehen, breiteste Stelle (Flight) nach links → im App-Stil nachzeichnen (Helligkeit in 4 App-Tönen Graphit/Stahl/Silber/Gold-Hell,
   Goldkontur), 600 px PNG als data-URL in `prefs.myDart` (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.
