@@ -2505,3 +2505,4 @@ button.bs-name { display: block; width: 100%; background: none; border: 0; curso
 .bs-pen svg { width: 16px; height: 16px; }
 .bs-pen::before { content: ""; position: absolute; inset: -8px; } /* unsichtbar größere Tippfläche */
 .bs-pen { position: relative; }
+.bs-namebox { width: fit-content; margin-left: auto; margin-right: auto; }
