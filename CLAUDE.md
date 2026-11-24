@@ -364,7 +364,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - „Spiel fortsetzen“ (Reiter Play) hat rechts einen Mülleimer (`discardCurrent`): löscht das laufende Spiel nach einer Nachfrage (online: beendet es für beide).
 - Kacheln unter „Partyspiel“ nur mit Symbol (kein Name); der Name steht nach dem Antippen im Setup unter der Leiste, mittig, mit Logo links daneben (`.su-title`, bei der großen Karte „501“).
 - Backstage ohne Bewegung: keine Lichtpunkte (`.glint`), kein Funkeln, keine Animationen (Block am Ende von `screens.css`).
-- „First to … Legs/Sets“ im Setup ist ein **Drehrad** (`js/ui/wheel.js`, `wheelHTML`/`initWheels`): einrastende Walze, Mitte gilt, Legs 1–20, Sets 1–10; antippen dreht hin, mit der Maus ziehen (mit Schwung).
+- „First to … Legs/Sets“ im Setup ist ein **Drehrad** (`js/ui/wheel.js`, `wheelHTML`/`initWheels`): einrastende Walze, Mitte gilt, Legs 1–20, Sets 1–10; antippen dreht hin, mit der Maus ziehen (mit Schwung); am Handy ein Haptik-Tick je Zahl (Android `vibrate`, iPhone über verstecktes `<input switch>`).
 - Setup-Spielerliste: kein „Du“-Schild; Hoch/Entfernen erscheinen erst nach Antippen des Spielers (`ui.prowSel`).
 - Setup-Startknopf (`.start-pill`): dunkle Pille im Stil der Reiter-Leiste (Goldrand, Innenlinie, warmer Schein, Leuchtstrich unter dem Wort), Dock ohne Goldlinie.
 - **App-Name: DartVader** (Titel, Manifest, Home-Bildschirm, Wappen-Band „DARTVADER“). Wappen (`crestLine`) in Stahl → Glut-Rot mit tiefrotem Leuchten.

@@ -37,11 +37,32 @@ export function initWheels(pick) {
   }
 }
 
+/* Haptik (nur Handy): bei jeder Zahl, die beim Drehen in die Mitte rückt, ein kurzer Tick.
+   Android: navigator.vibrate. iPhone (Safari ab iOS 18): Umschalten eines versteckten Switch-Kästchens löst den System-Tick aus. */
+const PHONE = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+let hapticLabel = null;
+function tick() {
+  if (!PHONE) return;
+  if (navigator.vibrate) { navigator.vibrate(6); return; }
+  if (!hapticLabel) {
+    hapticLabel = document.createElement('label');
+    hapticLabel.setAttribute('aria-hidden', 'true');
+    hapticLabel.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;left:-10px;top:0';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.setAttribute('switch', ''); cb.tabIndex = -1;
+    hapticLabel.appendChild(cb); document.body.appendChild(hapticLabel);
+  }
+  hapticLabel.click();
+}
+const lastTick = new WeakMap();
+
 document.addEventListener('scroll', (e) => {
   const w = e.target;
   if (!w.classList?.contains('wheel')) return;
   user.add(w);
   requestAnimationFrame(() => shade(w));
+  const cur = valueAt(w);
+  if (lastTick.has(w) && lastTick.get(w) !== cur) tick();
+  lastTick.set(w, cur);
   clearTimeout(timers.get(w));
   // Wert erst übernehmen, wenn das Rad eingerastet ist
   timers.set(w, setTimeout(() => {
