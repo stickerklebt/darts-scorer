@@ -2493,3 +2493,8 @@ button.bs-name { display: block; width: 100%; background: none; border: 0; curso
 .bs-pen { color: #f3d27a; border: 1px solid transparent; background: linear-gradient(#14110d, #14110d) padding-box, linear-gradient(160deg, #fff3c4, #ecc96a 45%, #a8771a) border-box;
   box-shadow: 0 0 12px rgba(236,201,106,.35), inset 0 0 8px rgba(236,201,106,.12); }
 .bs-pen svg { filter: drop-shadow(0 0 4px rgba(236,201,106,.55)); }
+
+/* VIP-Name: nur Gold – kein oranger Strich, kein oranger Schein, keine Kante */
+.bs-namebox .bs-name::before, .bs-namebox .bs-name::after, .bs-namebox::after { display: none !important; }
+.bs-namebox { border: 0 !important; box-shadow: none !important; background: none !important; padding-top: 6px; padding-bottom: 6px; }
+.bs-name { filter: drop-shadow(0 2px 10px rgba(236,201,106,.18)) !important; }
