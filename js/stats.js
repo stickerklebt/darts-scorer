@@ -150,7 +150,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     avg: darts ? (pts / darts) * 3 : null, bestMatchAvg, f9: f9d ? (f9p / f9d) * 3 : null,
     legsWon, legsTotal, darts, points: pts, turns,
     top5: top.sort(byScoreThenDate).slice(0, 5), counts, perTurn: turns ? pts / turns : null, bustRate: turns ? busts / turns : null,
-    highestCo: cos.length ? Math.max(...cos.map((c) => c.score)) : null, topCo: cos.slice().sort(byScoreThenDate).slice(0, 5),
+    highestCo: cos.length ? Math.max(...cos.map((c) => c.score)) : null, topCo: cos.slice().sort(byScoreThenDate).slice(0, 10),
     doubles, ranges: RANGES.map(([name], i) => ({ name, ...ranges[i], rate: ranges[i].chances ? ranges[i].hits / ranges[i].chances : null })),
     favourite: fav ? { field: fav[0], count: fav[1] } : null,
     dartsPerCheckout: doubles.hits ? doubles.attempts / doubles.hits : null,
@@ -296,36 +296,28 @@ export function legDetail(m, li, pid) {
 }
 
 /* ---------------- High Finish: wie oft sitzt der 1., 2., 3. Dart? ----------------
-   Aufnahmen, die bei Rest 101–170 mit einem möglichen 3-Dart-Finish beginnen (Double Out, Dart für Dart erfasst).
-   Ein Dart „trifft“, wenn er genau das Feld trifft, das der Checkout-Weg in diesem Moment vorsah (throw.target).
-   Ergebnis je Startrest: tries/hits für Dart 1–3. Zusammengefasst wird im Bereich um den Regler (finishWindow). */
+   Checkout-Versuch = Aufnahme, die bei Rest 101–170 mit einem möglichen 3-Dart-Finish beginnt (Double Out, Dart für Dart erfasst).
+   Ein Dart gilt als getroffen, wenn das Finish danach mit den übrigen Darts noch möglich ist (142: T20 oder T19 lassen 82/85 –
+   beides noch mit 2 Darts checkbar; 105: eine 5 lässt 100 – auch getroffen). Der 3. Dart ist getroffen, wenn das Leg aus ist.
+   Wer einen Dart nicht trifft, kann danach keinen mehr treffen: Dart 2 zählt nur nach getroffenem Dart 1, Dart 3 nur nach Dart 2.
+   Quote je Dart = getroffen / Versuche mit diesem Dart. */
 export const HF_MIN = 101, HF_MAX = 170;
 export function finishOdds(matches, pid) {
-  const by = {};
+  const tries = [0, 0, 0], hits = [0, 0, 0];
   for (const m of matches) {
     if (!m || m.game !== 'x01' || m.opts?.out !== 'double') continue;
     for (const l of m.legs || []) for (const t of l.turns) {
       if (t.pid !== pid || !t.throws?.length || t.input !== 'darts') continue;
-      const r0 = t.startRem;
-      if (!(r0 >= HF_MIN && r0 <= HF_MAX) || !route(r0, 3)) continue;
-      const e = (by[r0] ||= { tries: [0, 0, 0], hits: [0, 0, 0] });
-      t.throws.slice(0, 3).forEach((d, k) => {
-        if (!d.target || d.x) return;
-        e.tries[k]++;
-        if (d.n !== 0 && label(d) === d.target) e.hits[k]++;
-      });
+      let rem = t.startRem;
+      if (!(rem >= HF_MIN && rem <= HF_MAX) || !route(rem, 3)) continue;
+      for (let k = 0; k < 3 && k < t.throws.length; k++) {
+        const d = t.throws[k], after = rem - d.n * d.m;
+        tries[k]++;
+        const ok = k === 2 ? after === 0 && d.m === 2 : after >= 2 && !!route(after, 2 - k);
+        if (!ok) break;
+        hits[k]++; rem = after;
+      }
     }
   }
-  return by;
-}
-/** Bereich um den Regler: pos 0 … 1 → Mitte zwischen 101 und 170, ± span. Gibt { from, to, darts: [{ tries, hits, rate }] } */
-export function finishWindow(by, pos, span = 9) {
-  const c = HF_MIN + Math.max(0, Math.min(1, pos)) * (HF_MAX - HF_MIN);
-  const from = Math.max(HF_MIN, Math.round(c - span)), to = Math.min(HF_MAX, Math.round(c + span));
-  const darts = [0, 1, 2].map((k) => {
-    let tries = 0, hits = 0;
-    for (let r = from; r <= to; r++) { const e = by[r]; if (e) { tries += e.tries[k]; hits += e.hits[k]; } }
-    return { tries, hits, rate: tries ? hits / tries : null };
-  });
-  return { from, to, darts };
+  return [0, 1, 2].map((k) => ({ tries: tries[k], hits: hits[k], rate: tries[k] ? hits[k] / tries[k] : null }));
 }

@@ -455,3 +455,10 @@ Offen: E-Mail-Bestätigung.
   · Statistik › Überblick: **High Finish** (`finishOdds`/`finishWindow` in `stats.js`, `hfCard`): Treffer je Dart (1./2./3.) bei Aufnahmen ab Rest 101–170 mit 3-Dart-Finish; Treffer = Feld des Checkout-Wegs (`throw.target`). Regler zeigt nur 101 und 170, Bereich ±9 um die Reglerstelle, bewusst ohne Angabe.
   · Benutzername **3–16 Zeichen** (`js/limits.js`, auch Server); „Benutzername zu lang – höchstens 16 Zeichen.“ erscheint erst bei zu langer Eingabe.
   · VIP: Freunde ohne Profilbild – Name links, rechts sein eingescannter Dart (`GET /api/friends/:id/dart`, Liste/Profil liefern `dart` = rev) oder ein Standard-Dart (`defaultDart`); Freundesprofil ohne Banner: Name groß, darunter der Dart.
+- **Update 26.11.2026 (2)** (Block „UPDATE 26.11.2026 (2)“ in `screens.css`): „The Game“ ohne Striche, „Partyspiele“ mit rotem, nach rechts auslaufendem Strich darunter.
+  Setup ohne roten Schein hinter der 501; am Drehrad blitzt ab und zu Rot an den senkrechten/waagerechten Linien (Zahlen silbern). Startknopf `.start-go` im Stil der Statistik-Kästen
+  (wanderndes Silberlicht am Rand, bewegte Verläufe dahinter, ab und zu Rot in Wort und Rand). Spiel: Namen groß (30 px, Handy 20 px, dort eigene Zeile), keine Lichtblitze über den Karten,
+  Bot-Scheibe durchsichtig, wenn er nicht dran ist, aktive Karte einfarbig Bordeaux, Rest silbern-edel, Zahl-Vorschläge wieder groß (schnelles Tippen), Legs-Kästchen groß.
+  **Sets-Modus**: oben mittig 3 kleine Kästchen (Legs im Set), darunter die großen (Sets); höchstens First to 7 Sets. VIP-Profilfenster normal lesbar (hell, kein Rot).
+  **High Finish neu gezählt** (`finishOdds`): Dart getroffen, wenn das Finish danach noch möglich ist (3. Dart = ausgecheckt); Dart 2/3 zählen nur nach getroffenem Vordart. Kein Regler mehr;
+  Karte steht unter „Top 10 Checkouts“ (Liste scrollt, 5 sichtbar).

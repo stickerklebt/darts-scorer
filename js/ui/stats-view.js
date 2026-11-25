@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel, finishOdds, finishWindow } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel, finishOdds } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, numRing } from './svg.js';
 import { heatBoard, ratingColor } from './board.js';
@@ -49,7 +49,7 @@ function checkoutHow(ref) {
   if (!t.throws?.length) return t.input === 'voice' ? 'angesagt, ohne einzelne Darts' : 'als Summe eingegeben';
   return t.throws.map((d) => (d.n === 0 ? 'daneben' : d.n === 25 ? (d.m === 2 ? 'Bull' : 'Single Bull') : `${DART_WORD[d.m]} ${d.n}`)).join(' · ');
 }
-const rankList = (title, rows, pid = '') => `<div class="rlist"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
+const rankList = (title, rows, pid = '', scroll = false) => `<div class="rlist ${scroll && rows.length > 5 ? 'rl-scroll' : ''}"><h3>${title}</h3>${rows.length ? rows.map((r, i) => `<${r.mid ? 'button' : 'div'} class="rl ${r.mid ? 'tap' : ''}" ${r.mid ? recAttrs(r, pid) : ''}><span class="rl-i">${i + 1}</span><span class="rl-v">${r.score}</span><span class="rl-s">${dateStr(r.date)}${r.opp.length ? ` · gegen ${esc(oppStr(r.opp))}` : ''}</span></${r.mid ? 'button' : 'div'}>`).join('') : '<p class="rl-empty">Noch nichts eingetragen</p>'}</div>`;
 
 export function statsHeader(pid) {
   const name = nameOf(pid);
@@ -74,7 +74,6 @@ function overviewTab(st, pid) {
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], 'three', pid)}
     <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
-    ${hfCard(pid)}
     ${checkoutTab(st, pid)}
     ${insightsBlock(cachedInsights(pid))}`;
 }
@@ -83,7 +82,7 @@ function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
   return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
     + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))}</div>
-    <div class="co-right">${rankList('Top 5 Checkouts', st.topCo, pid)}</div></div>`;
+    <div class="co-right">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div>`;
 }
 
 /** Doppel groß mit einem Punkt je Treffer – erscheint an Stelle der Heatmap-Scheibe (fertige Matches + laufendes Spiel) */
@@ -198,23 +197,19 @@ export function profilePicker() {
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
 }
 
-/* High Finish: wie oft sitzt der 1., 2., 3. Dart, wenn die Aufnahme bei Rest 101–170 beginnt? Regler von 101 (links) bis 170 (rechts) –
-   welcher Bereich genau gilt, steht absichtlich nirgends. Kompakt (nicht so groß wie die Diagramme im Reiter Scoring). */
-let hfCache = { key: '', by: null };
+/* High Finish: bei Checkout-Versuchen ab Rest 101–170 – wie oft sitzt der 1., 2., 3. Dart (getroffen = Finish danach noch möglich). Kompakt. */
+let hfCache = { key: '', r: null };
 export function hfCard(pid) {
   const last = S.matches[S.matches.length - 1];
   const key = `${pid}|${S.statsPeriod}|${statsModes().join(',')}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
-  if (hfCache.key !== key) hfCache = { key, by: finishOdds(matchesOf(S.matches, pid, S.statsPeriod), pid) };
-  const pos = Number.isFinite(ui.hfPos) ? ui.hfPos : 0;
-  const w = finishWindow(hfCache.by, pos / 100);
+  if (hfCache.key !== key) hfCache = { key, r: finishOdds(matchesOf(S.matches, pid, S.statsPeriod), pid) };
   const bar = (d, i) => {
     const p = d.rate === null ? null : Math.round(d.rate * 100);
-    return `<div class="hf-col"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small></div>`;
+    return `<div class="hf-col has-rv"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small><em>${rv(`${d.hits} / ${d.tries}`)}</em></div>`;
   };
   return `<div class="hf-card"><small class="hf-t">High Finish · Treffer je Dart</small>
-    <div class="hf-cols">${w.darts.map(bar).join('')}</div>
-    <input id="hfRange" class="hf-range" type="range" min="0" max="100" step="1" value="${pos}" aria-label="Bereich zwischen 101 und 170">
-    <div class="hf-ends"><span>101</span><span>170</span></div></div>`;
+    <div class="hf-cols">${hfCache.r.map(bar).join('')}</div>
+    <p class="hf-note">Checkout-Versuche ab Rest 101 – getroffen, wenn das Finish danach noch geht</p></div>`;
 }
 
 /* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */

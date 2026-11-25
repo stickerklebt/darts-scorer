@@ -3427,3 +3427,101 @@ html.no-motion .game .sbp::before { display: none; }
   .game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { font-size: 14px !important; letter-spacing: .02em !important; }
   .game .sbp-head { gap: 5px; padding: 4px 8px 0; }
 }
+
+/* ================= UPDATE 26.11.2026 (2) ================= */
+/* Play: „The Game“ ohne Striche; „Partyspiele“ ohne Seitenstriche, dafür darunter ein roter Strich, der nach rechts ausläuft; etwas höher */
+.label.play-lbl::before, .label.play-lbl::after { display: none !important; content: none !important; }
+.label.play-lbl { filter: none !important; }
+.play-lbl.party-lbl { margin-top: 31px; flex-direction: column; gap: 7px; }
+.play-lbl.party-lbl > * { display: none; }
+.play-lbl.party-lbl { position: relative; padding-bottom: 9px; }
+.play-lbl.party-lbl { background: linear-gradient(90deg, rgba(196,42,75,.95), rgba(196,42,75,.45) 40%, rgba(196,42,75,0) 100%) left bottom / 100% 1px no-repeat; }
+
+/* Setup: kein roter Schein mehr hinter der 501 */
+.su-501 .su-sheen { display: none; }
+/* Drehrad: Zahlen silbern, an den senkrechten und waagerechten Linien blitzt ab und zu Rot hin und her (Linien bleiben silbern) */
+.wheel-i.on { color: #f2f4f7 !important; text-shadow: 0 0 10px rgba(255,255,255,.35); }
+.wheel { border-color: rgba(206,210,216,.4) !important; }
+.wheel-box::after { border-left-color: rgba(222,226,231,.6) !important; border-right-color: rgba(222,226,231,.6) !important; animation: whRedV 5.5s ease-in-out infinite; }
+@keyframes whRedV { 0%, 62%, 100% { border-left-color: rgba(222,226,231,.6); border-right-color: rgba(222,226,231,.6); box-shadow: none; }
+  68% { border-left-color: #e0516f; border-right-color: rgba(222,226,231,.6); box-shadow: -4px 0 10px -4px rgba(224,81,111,.8); }
+  74% { border-left-color: rgba(222,226,231,.6); border-right-color: #e0516f; box-shadow: 4px 0 10px -4px rgba(224,81,111,.8); }
+  80% { border-left-color: #e0516f; border-right-color: rgba(222,226,231,.6); box-shadow: -4px 0 10px -4px rgba(224,81,111,.6); } }
+.wheel-box::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: var(--r-panel);
+  background: linear-gradient(90deg, transparent, rgba(255,90,120,.95), transparent) 0 0 / 30% 1.5px no-repeat, linear-gradient(90deg, transparent, rgba(255,90,120,.95), transparent) 100% 100% / 30% 1.5px no-repeat;
+  animation: whRedH 7s ease-in-out infinite; opacity: 0; filter: drop-shadow(0 0 4px rgba(224,81,111,.9)); }
+@keyframes whRedH { 0%, 40% { opacity: 0; background-position: 0 0, 100% 100%; } 46% { opacity: 1; } 60% { background-position: 100% 0, 0 100%; opacity: 1; }
+  74% { background-position: 10% 0, 90% 100%; opacity: .9; } 82%, 100% { opacity: 0; background-position: 60% 0, 40% 100%; } }
+html.no-motion .wheel-box::before, html.no-motion .wheel-box::after { animation: none; }
+
+/* Start-Knopf: wie die Kästen im Statistik-Reiter – Silberrand mit wanderndem Licht, Farbverläufe bewegen sich dahinter (kräftiger),
+   „Start“ mittig; ab und zu blitzt Rot im Wort und am Rand auf, sonst alles silbern */
+@property --sgA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.start-go { overflow: hidden; isolation: isolate; height: 62px; border-radius: 14px; border: 0 !important; justify-content: center;
+  background: #0d0d10 !important; box-shadow: 0 10px 26px rgba(0,0,0,.55) !important; }
+.start-go::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 2; pointer-events: none;
+  background: conic-gradient(from var(--sgA), rgba(206,210,216,.45) 0deg, #ffffff 40deg, rgba(206,210,216,.45) 80deg, rgba(206,210,216,.45) 180deg, #f2f4f7 220deg, rgba(206,210,216,.45) 260deg, rgba(206,210,216,.45) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: sgRing 4.5s linear infinite, sgRingRed 9s ease-in-out infinite; }
+@keyframes sgRing { to { --sgA: 360deg; } }
+@keyframes sgRingRed { 0%, 70%, 100% { filter: none; } 74% { filter: hue-rotate(0deg) sepia(1) saturate(6) hue-rotate(-30deg) brightness(.95); } 78% { filter: none; } 82% { filter: sepia(1) saturate(6) hue-rotate(-30deg) brightness(.95); } 86% { filter: none; } }
+.start-go .sg-bg { position: absolute; inset: -40%; z-index: 0; pointer-events: none;
+  background: radial-gradient(30% 40% at 30% 50%, rgba(255,255,255,.2), transparent 70%), radial-gradient(28% 45% at 70% 40%, rgba(196,42,75,.35), transparent 70%),
+    radial-gradient(35% 40% at 55% 70%, rgba(206,210,216,.18), transparent 70%);
+  animation: sgDrift 7s ease-in-out infinite alternate; }
+@keyframes sgDrift { 0% { transform: translate(-12%, -4%) rotate(0deg); } 50% { transform: translate(8%, 6%) rotate(12deg); } 100% { transform: translate(14%, -6%) rotate(-8deg); } }
+.start-go .sg-t { position: relative; z-index: 1; padding-left: .22em; color: #f2f4f7; text-shadow: 0 0 12px rgba(255,255,255,.35); animation: sgWordRed 6.5s ease-in-out infinite; }
+@keyframes sgWordRed { 0%, 76%, 100% { color: #f2f4f7; text-shadow: 0 0 12px rgba(255,255,255,.35); } 80% { color: #ff8aa2; text-shadow: 0 0 14px rgba(224,81,111,.9), 0 0 26px rgba(196,42,75,.6); } 84% { color: #f2f4f7; } 88% { color: #ff8aa2; text-shadow: 0 0 12px rgba(224,81,111,.8); } 92% { color: #f2f4f7; } }
+html.no-motion .start-go::before, html.no-motion .start-go .sg-bg, html.no-motion .start-go .sg-t { animation: none; }
+
+/* Spiel: keine Lichtblitze über den Karten */
+.game .sbp::before { display: none !important; animation: none !important; }
+/* Namen deutlich größer (beide gleich) */
+.game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { font-size: 30px !important; }
+.game .sbp-head { min-height: 52px; }
+@media (max-width: 600px) { .game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { font-size: 20px !important; } .game .sbp-head { min-height: 38px; } }
+/* Bot-Scheibe durchsichtiger, solange er nicht dran ist */
+.game .sbp.off .minib { opacity: .4; transition: opacity .3s; }
+/* Aktive Karte: genau eine Farbe (Bordeaux), kein Verlauf */
+.game:not(.botturn) .sbp.on { background: #7a1430 !important; background-image: none !important; }
+/* Rest: silbern-edel – heller Titan-Verlauf wie die 501, aber nah am bisherigen Weiß */
+.game .sbp.on .sbp-rem > span {
+  background: linear-gradient(180deg, #ffffff 0%, #eef0f3 30%, #b9bec6 48%, #f7f8fa 56%, #d6dae0 78%, #ffffff 100%); -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.5)) drop-shadow(2px 3px 0 #4a0817) drop-shadow(0 0 12px rgba(255,255,255,.18)); }
+/* Zahl-Vorschläge wieder groß und gut antippbar (schnelles Eintippen) */
+.game .quick { gap: 6px; }
+.game .quick button { height: 48px !important; font-size: 22px !important; color: #eef0f3 !important; background: linear-gradient(180deg, #16161a, #0f0f12) !important;
+  border: 1px solid rgba(206,210,216,.32) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.07) !important; }
+@media (max-height: 760px) and (orientation: landscape) { .game .quick button { height: 40px !important; font-size: 19px !important; } }
+/* Legs/Sets oben rechts deutlich größer */
+.game .pips { gap: 7px; }
+.game .pips i { width: 26px; height: 26px; border-radius: 6px; border-width: 2px !important; }
+.game .pips.many i { width: 16px; height: 16px; border-radius: 4px; }
+.game .setpips { display: inline-flex; flex-direction: column; align-items: center; gap: 5px; flex: none; }
+.game .setpips > span { display: flex; gap: 5px; }
+.game .setpips i { display: block; border: 2px solid rgba(226,230,235,.85); background: rgba(0,0,0,.28); box-shadow: inset 0 1px 0 rgba(255,255,255,.14); }
+.game .setpips i.w { background: linear-gradient(180deg, #ffffff, #c9ced5); border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,.55); }
+.game .sp-legs i { width: 13px; height: 13px; border-radius: 3px; border-width: 1.5px; }
+.game .sp-sets i { width: 24px; height: 24px; border-radius: 6px; }
+.game .sp-sets.many i { width: 17px; height: 17px; border-radius: 4px; }
+@media (max-width: 600px) {
+  .game .pips i { width: 17px; height: 17px; border-radius: 4px; } .game .pips.many i { width: 10px; height: 10px; }
+  .game .sp-legs i { width: 8px; height: 8px; border-radius: 2px; } .game .sp-sets i { width: 14px; height: 14px; border-radius: 3px; } .game .sp-sets.many i { width: 9px; height: 9px; }
+  .game .setpips, .game .setpips > span { gap: 3px; }
+}
+/* VIP-Profil (Stift am Namen): alles normal lesbar – helle Schrift, kein Rot */
+.sheet.vipsheet, .sheet.vipsheet h3, .sheet.vipsheet .lbl, .sheet.vipsheet .srow, .sheet.vipsheet p { color: #eef0f3 !important; -webkit-text-fill-color: #eef0f3 !important; background-clip: border-box !important; -webkit-background-clip: border-box !important; text-shadow: none !important; filter: none !important; }
+.sheet.vipsheet small, .sheet.vipsheet .lbl small { color: rgba(222,226,231,.65) !important; -webkit-text-fill-color: rgba(222,226,231,.65) !important; }
+.sheet.vipsheet .val { color: #eef0f3 !important; -webkit-text-fill-color: #eef0f3 !important; }
+.sheet.vipsheet .btn { color: #eef0f3 !important; -webkit-text-fill-color: #eef0f3 !important; }
+.sheet.vipsheet .del-acct { color: rgba(222,226,231,.6) !important; -webkit-text-fill-color: rgba(222,226,231,.6) !important; }
+/* Statistik: Top 10 Checkouts – 5 sichtbar, Rest scrollen; High Finish darunter */
+.rlist.rl-scroll { max-height: 330px; overflow-y: auto; overscroll-behavior: contain; -webkit-mask-image: linear-gradient(#000 85%, transparent); mask-image: linear-gradient(#000 85%, transparent); }
+.hf-col em { font-style: normal; font-size: 12px; color: rgba(222,226,231,.6); min-height: 0; }
+.hf-note { margin: 8px 0 0; font-size: 12px; color: rgba(222,226,231,.55); text-align: center; }
+/* Handy: Name bekommt die ganze Breite, Scheibe und Kästchen rutschen in die Zeile darunter */
+@media (max-width: 600px) {
+  .game .duo .sbp-head { flex-wrap: wrap; row-gap: 3px; }
+  .game .duo .sbp-name { flex: 1 0 100%; }
+  .game .duo .sbp-head .speech { top: 62px; }
+}

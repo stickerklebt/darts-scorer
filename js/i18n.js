@@ -99,7 +99,7 @@ export const DICT = {
   'Alle gespeicherten Spiele': 'All saved games', 'Letztes Jahr': 'Last year', 'Letzte 7 Tage': 'Last 7 days', 'Letzte 30 Tage': 'Last 30 days', '7 Tage': '7 days',
   '30 Tage': '30 days', '1 Jahr': '1 year', 'Zurück auf Gesamt': 'Back to all time', 'Average': 'Average', 'Modus 501': '501 mode', 'First 9': 'First 9',
   'Darts geworfen': 'Darts thrown', 'Ø Darts aufs Doppel': 'Avg darts at double', 'pro Checkout': 'per checkout', 'Bestes Leg': 'Best leg', '180er': '180s',
-  'Höchstes Checkout': 'Highest checkout', 'Quote nach Bereich': 'Rate by range', 'Top 5 Checkouts': 'Top 5 checkouts', 'Doppelquote': 'Checkout rate',
+  'Höchstes Checkout': 'Highest checkout', 'Quote nach Bereich': 'Rate by range', 'Top 5 Checkouts': 'Top 5 checkouts', 'Top 10 Checkouts': 'Top 10 checkouts', 'Checkout-Versuche ab Rest 101 – getroffen, wenn das Finish danach noch geht': 'Checkout attempts from 101 – a hit keeps the finish possible', 'Doppelquote': 'Checkout rate',
   'Lieblingsdoppel': 'Favourite double', 'Verteilung der Aufnahmen': 'Score distribution', 'Aufnahmen im Leg': 'Turns per leg', 'Average pro Match': 'Average per match',
   'First 9 Average pro Match': 'First 9 average per match', 'Ø der ersten drei Aufnahmen jedes Legs': 'Average of the first three turns of each leg',
   'Doppelquote gesamt': 'Overall checkout rate', 'nur Scoring – Rest über 170': 'scoring only – above 170 left', 'Doppelquote insgesamt bis zu diesem Match': 'Overall checkout rate up to this match',

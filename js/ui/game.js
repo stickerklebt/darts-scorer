@@ -62,6 +62,9 @@ function botBox(m, s, next) {
 const teamLine = (side, next) => `<span class="tt">TEAM</span>${side.map((id) => (id === next ? `<b>${esc(nameOf(id))}</b>` : esc(nameOf(id)))).join(' · ')}`;
 
 /** Gewonnene Legs als Kästchen: wenige Legs groß und deutlich, viele klein; ab 8 nur noch die Zahl */
+/** Sets-Modus: oben mittig 3 kleine Kästchen für die Legs im laufenden Set, darunter die großen für die Sets (bis zu 7) */
+const setPips = (sets, total, legs) => `<span class="setpips"><span class="sp-legs">${Array.from({ length: X.LEGS_PER_SET }, (_, i) => `<i class="${i < legs ? 'w' : ''}"></i>`).join('')}</span>
+  <span class="sp-sets ${total > 4 ? 'many' : ''}">${Array.from({ length: total }, (_, i) => `<i class="${i < sets ? 'w' : ''}"></i>`).join('')}</span></span>`;
 const pips = (won, total) => (total > 7 ? `<span class="setlbl">${won}</span>` : `<span class="pips ${total > 4 ? 'many' : ''}">${Array.from({ length: total }, (_, i) => `<i class="${i < won ? 'w' : ''}"></i>`).join('')}</span>`);
 
 /** Kamera-Erkennung: 3 Dart-Slots (antippen = korrigieren), kleines Board mit den Treffern, Miss, Aufnahme beenden,
@@ -142,7 +145,7 @@ export function gameView() {
       return {
         name: nameOf(next), team: isTeam(side) ? teamLine(side, next) : '', starter: s === l.starter, extra: botBox(m, s, next),
         big: X.rem(m, l, s) - (s === cur ? ps : 0), co: s === cur ? co : '',
-        right: sets ? `<span class="setlbl">S${X.setsWon(m, s)} · L${X.legsInSet(m, s, l.set)}</span>` : pips(X.legsWon(m, s), m.opts.target),
+        right: sets ? (m.opts.target <= 7 ? setPips(X.setsWon(m, s), m.opts.target, X.legsInSet(m, s, l.set)) : `<span class="setlbl">S${X.setsWon(m, s)} · L${X.legsInSet(m, s, l.set)}</span>`) : pips(X.legsWon(m, s), m.opts.target),
         rowInfo: sets ? `S <b>${X.setsWon(m, s)}</b> L <b>${X.legsInSet(m, s, l.set)}</b>` : `Legs <b>${X.legsWon(m, s)}</b>`,
         stats: [['Ø', fmt(st.avg)], ['Letzte', last ? (last.bust ? 'Bust' : last.score) : '–'], ...(m.opts.out === 'double' ? [['Doppel', pctTxt(st.dRate)]] : [])],
       };

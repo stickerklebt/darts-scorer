@@ -583,7 +583,6 @@ document.addEventListener('input', (e) => {
   if (e.target.id === 'authName') checkAuthName(e.target.value);
   if (e.target.id === 'friendSearch') searchFriends(e.target.value.trim().replace(/^@/, ''));
   if (e.target.id === 'newPlayer') checkName();
-  if (e.target.id === 'hfRange') { ui.hfPos = Number(e.target.value); render(); } // High-Finish-Regler (Statistik › Überblick)
   if (e.target.id === 'pSearch') {
     const q = e.target.value.trim().toLowerCase();
     let n = 0;
@@ -878,7 +877,7 @@ const actions = {
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;
     o[k] = /^\d+$/.test(v) ? Number(v) : v;
-    if (k === 'mode' && S.game === 'x01') o.target = Math.min(o.target, o.mode === 'sets' ? 10 : 20);
+    if (k === 'mode' && S.game === 'x01') o.target = Math.min(o.target, o.mode === 'sets' ? 7 : 20);
     render();
   },
   teamMode(el) {

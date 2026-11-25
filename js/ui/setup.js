@@ -20,10 +20,11 @@ function mainOptions(id) {
   if (id === 'x01') {
     // 501 nur über die große Karte; die X01-Kachel wählt einen anderen Startwert
     if (ui.x01Var !== 'other' && o.start !== 501) o.start = 501; // große Karte: immer 501, nicht umstellbar
-    if (ui.x01Var !== 'other' && o.in === 'double') o.in = 'single'; // Double In nur im X01-Modus (101 … 1001), nie bei der 501-Karte
+    if (ui.x01Var !== 'other' && o.in === 'double') o.in = 'single';
+    if (o.mode === 'sets' && o.target > 7) o.target = 7; // höchstens First to 7 Sets // Double In nur im X01-Modus (101 … 1001), nie bei der 501-Karte
     const start = ui.x01Var === 'other' ? optRow('Startpunkte', seg('opt', 'start', [[101, '101'], [301, '301'], [701, '701'], [1001, '1001']], o.start)) : '';
     // Drehrad: Legs 1–20, Sets 1–10
-    return start + optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', wheelHTML('target', 1, o.mode === 'sets' ? 10 : 20, o.target));
+    return start + optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', wheelHTML('target', 1, o.mode === 'sets' ? 7 : 20, o.target));
   }
   if (id === 'highscore') return optRow('Runden', seg('opt', 'rounds', [[5, '5'], [10, '10'], [15, '15'], [20, '20']], o.rounds));
   if (id === 'shanghai') return optRow('Ziele', seg('opt', 'rounds', [[7, '1–7'], [10, '1–10'], [20, '1–20']], o.rounds));
@@ -93,7 +94,7 @@ export function setupView() {
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
     ${id === 'x01' && ui.x01Var !== 'other'
-    ? `<div class="su-title su-501"><div class="su-sheen" aria-hidden="true"></div>${metal501(S.opts.x01.out === 'single' ? 'Single Out' : 'Double Out', 'small')}</div>`
+    ? `<div class="su-title su-501">${metal501(S.opts.x01.out === 'single' ? 'Single Out' : 'Double Out', 'small')}</div>`
     : `<div class="su-title">${badge(id, 44)}<h1>${id === 'x01' ? 'X01 / Double In' : g.title}</h1></div>`}
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
@@ -102,5 +103,5 @@ export function setupView() {
     ${camRow(id)}
     ${moreOptions(id)}
   </main>
-  <div class="dock su-dock"><div><button class="start-go" data-act="start"><span>${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</span><i aria-hidden="true">${icon('chevR', 2.6, 22)}</i></button></div></div>`;
+  <div class="dock su-dock"><div><button class="start-go" data-act="start"><span class="sg-bg" aria-hidden="true"></span><span class="sg-t">${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</span></button></div></div>`;
 }
