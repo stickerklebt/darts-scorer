@@ -99,7 +99,7 @@ function render() {
   save();
   const m = S.current;
   let html;
-  if (!auth.user) html = authView();
+  if (!auth.user || ui.auth?.step === 'reset') html = authView();
   else if (S.screen === 'game' && m && !m.done) html = m.online && m.online.status !== 'active' ? onlineWaitView(m) : inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
   else if (S.screen === 'setup' && GAMES[S.game] && (!GAMES[S.game].retired || partyTiles(S.prefs).includes(S.game))) html = setupView();
@@ -619,6 +619,21 @@ const actions = {
       ui.auth = null; S.screen = 'home'; S.tab = 'play';
       await login(r.user);
       loadFriends(); loadCalls(r.user.id);
+    });
+  },
+  authForgot() {
+    authCall(async () => { await api('POST', 'api/auth/forgot', { email: ui.auth.email }); ui.auth.step = 'sent'; });
+  },
+  authReset() {
+    const password = $('#authPw')?.value || '', pw2 = $('#authPw2')?.value || '';
+    if (!password) return $('#authPw')?.focus();
+    if (password !== pw2) { ui.auth.error = 'Die beiden Passwörter sind nicht gleich.'; return render(); }
+    authCall(async () => {
+      const r = await api('POST', 'api/auth/reset', { token: ui.auth.token, password });
+      ui.auth = null; S.screen = 'home'; S.tab = 'play';
+      await login(r.user);
+      loadFriends(); loadCalls(r.user.id);
+      toast('Neues Passwort gespeichert');
     });
   },
   authRegister() {
@@ -1404,6 +1419,11 @@ initOnline({
   },
 });
 startOnlineLoops();
+// Link aus der Passwort-Mail: ?reset=TOKEN → Schritt „Neues Passwort“ (Token sofort aus der Adresszeile nehmen)
+{
+  const reset = new URLSearchParams(location.search).get('reset');
+  if (reset) { history.replaceState(null, '', location.pathname); ui.auth = { step: 'reset', token: reset, email: '' }; }
+}
 bootAuth().then(async () => {
   if (!auth.user) return;
   loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox();

@@ -46,6 +46,37 @@ function match501(pid, opp, now) {
   return m;
 }
 
+test('Passwort vergessen: Mail mit Link, neues Passwort, Link nur einmal, alte Sitzungen enden', async () => {
+  const mails = [];
+  const s = await boot({ sendMail: async (m) => { mails.push(m); } });
+  try {
+    const a = client(s.base), b = client(s.base);
+    await register(a, 'p@test.de', 'Paula');
+    // unbekanntes Konto: gleiche Antwort, keine Mail
+    assert.deepEqual((await b('POST', '/api/auth/forgot', { email: 'x@test.de' })).body, { ok: true });
+    assert.equal(mails.length, 0);
+    assert.equal((await b('POST', '/api/auth/forgot', { email: 'paula' })).status, 200); // auch mit Namen
+    assert.equal(mails.length, 1);
+    assert.equal(mails[0].to, 'p@test.de');
+    const token = /\?reset=([\w-]+)/.exec(mails[0].text)[1];
+    assert.match(mails[0].text, /^Hallo Paula/);
+    assert.match(mails[0].text, /https:\/\/darts\.j-mahler\.de\/\?reset=/);
+    assert.equal((await b('POST', '/api/auth/reset', { token, password: 'kurz' })).status, 400);
+    assert.equal((await b('POST', '/api/auth/reset', { token: 'falsch', password: 'neues-pw-1' })).status, 400);
+    const r = await b('POST', '/api/auth/reset', { token, password: 'neues-pw-1' });
+    assert.equal(r.status, 200);
+    assert.equal(r.body.user.username, 'Paula');
+    assert.equal((await b('GET', '/api/me')).status, 200);  // dieses Gerät angemeldet
+    assert.equal((await a('GET', '/api/me')).status, 401);  // alte Sitzung beendet
+    assert.equal((await b('POST', '/api/auth/reset', { token, password: 'noch-eins-1' })).status, 400); // nur einmal
+    assert.equal((await a('POST', '/api/auth/login', { email: 'p@test.de', password: 'geheim123' })).status, 401);
+    assert.equal((await a('POST', '/api/auth/login', { email: 'p@test.de', password: 'neues-pw-1' })).status, 200);
+    // höchstens 3 Mails je Konto und Stunde
+    for (let i = 0; i < 3; i++) await b('POST', '/api/auth/forgot', { email: 'p@test.de' });
+    assert.equal((await b('POST', '/api/auth/forgot', { email: 'p@test.de' })).status, 429);
+  } finally { await s.stop(); }
+});
+
 test('Passwort: scrypt-Hash prüft richtig/falsch', async () => {
   const h = await hashPassword('richtig-123', 10);
   assert.match(h, /^scrypt\$10\$8\$1\$/);

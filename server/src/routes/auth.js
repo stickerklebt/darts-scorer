@@ -1,5 +1,6 @@
 /* Anmeldung: E-Mail oder Namen prüfen → Anmelden (Passwort) oder Registrieren (nur mit E-Mail: Passwort festlegen + eindeutiger Name). */
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomBytes, createHash } from 'node:crypto';
+import { createMailer } from '../mail.js';
 import { HttpError } from '../http.js';
 import { tx } from '../db.js';
 import { hashPassword, verifyPassword, needsRehash } from '../passwords.js';
@@ -8,6 +9,8 @@ import { normEmail, checkUsername, checkPassword } from '../validate.js';
 export const publicUser = (u) => ({ id: u.id, email: u.email, username: u.username, createdAt: u.createdAt ?? u.created_at });
 
 export function authRoutes(r, { db, sessions, config, limits }) {
+  const sendMail = createMailer(config);
+  const sha = (t) => createHash('sha256').update(t).digest('hex');
   const q = {
     byEmail: db.prepare('SELECT id, email, username, pw_hash, created_at FROM users WHERE email = ?'),
     byKey: db.prepare('SELECT id FROM users WHERE username_key = ?'),
@@ -15,6 +18,12 @@ export function authRoutes(r, { db, sessions, config, limits }) {
     insertUser: db.prepare('INSERT INTO users (id, email, username, username_key, pw_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'),
     insertState: db.prepare('INSERT INTO user_state (user_id, rev, state, state_rev, updated_at) VALUES (?, 0, NULL, 0, ?)'),
     setHash: db.prepare('UPDATE users SET pw_hash = ?, updated_at = ? WHERE id = ?'),
+    byId: db.prepare('SELECT id, email, username, created_at FROM users WHERE id = ?'),
+    resetIns: db.prepare('INSERT INTO password_resets (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)'),
+    resetGet: db.prepare('SELECT user_id FROM password_resets WHERE token_hash = ? AND expires_at > ?'),
+    resetDelUser: db.prepare('DELETE FROM password_resets WHERE user_id = ?'),
+    resetSweep: db.prepare('DELETE FROM password_resets WHERE expires_at <= ?'),
+    endAll: db.prepare('DELETE FROM sessions WHERE user_id = ?'),
   };
   // Für gleiche Antwortzeit bei unbekannter E-Mail (kein Timing-Leck)
   const dummy = hashPassword('dummy-password-for-timing', config.scryptLogN);
@@ -89,6 +98,45 @@ export function authRoutes(r, { db, sessions, config, limits }) {
     if (needsRehash(u.pw_hash, config.scryptLogN)) q.setHash.run(await hashPassword(password, config.scryptLogN), Date.now(), u.id);
     sessions.start(c.req, c.res, u.id);
     c.log.info('login', { u: u.id });
+    return { user: publicUser(u) };
+  }, { public: true });
+
+  /** Passwort vergessen: Mail mit Einmal-Link (1 h). Antwort immer gleich – verrät nicht, ob es das Konto gibt. */
+  r.post('/api/auth/forgot', async (c) => {
+    limits.auth.hit(c.ip);
+    const v = (await c.json()).email;
+    const u = isName(v) ? q.byName.get(nameKey(v)) : q.byEmail.get(normEmail(v));
+    if (u) {
+      limits.forgot.hit(u.id); // höchstens 3 Mails je Konto und Stunde
+      q.resetSweep.run(Date.now());
+      const token = randomBytes(32).toString('base64url'), now = Date.now();
+      q.resetIns.run(sha(token), u.id, now, now + config.resetMinutes * 60e3);
+      const link = `${config.publicUrl}/?reset=${token}`;
+      try {
+        await sendMail({ to: u.email, subject: 'DartVader: Passwort zurücksetzen',
+          text: `Hallo ${u.username},\n\nüber diesen Link legst du ein neues Passwort fest (gilt ${config.resetMinutes} Minuten, nur einmal):\n\n${link}\n\nDu hast das nicht angefordert? Dann ignoriere diese Mail einfach – dein Passwort bleibt, wie es ist.\n\nDartVader` });
+        c.log.info('password_reset_mail', { target: u.id });
+      } catch (e) {
+        c.log.error('password_reset_mail_failed', { target: u.id, err: e.message });
+        throw new HttpError(503, 'mail_failed', 'Die E-Mail konnte gerade nicht verschickt werden. Bitte später erneut versuchen.');
+      }
+    }
+    return { ok: true };
+  }, { public: true });
+
+  /** Neues Passwort über den Link aus der Mail: Link gilt einmal, alle Sitzungen enden, dieses Gerät ist danach angemeldet. */
+  r.post('/api/auth/reset', async (c) => {
+    limits.auth.hit(c.ip);
+    const b = await c.json();
+    const token = typeof b.token === 'string' ? b.token.slice(0, 100) : '';
+    const row = token ? q.resetGet.get(sha(token), Date.now()) : null;
+    if (!row) throw new HttpError(400, 'reset_invalid', 'Der Link ist abgelaufen oder wurde schon benutzt. Fordere einfach einen neuen an.');
+    const u = q.byId.get(row.user_id);
+    const password = checkPassword(b.password, u.email);
+    const hash = await hashPassword(password, config.scryptLogN);
+    tx(db, () => { q.setHash.run(hash, Date.now(), u.id); q.resetDelUser.run(u.id); q.endAll.run(u.id); });
+    sessions.start(c.req, c.res, u.id);
+    c.log.info('password_reset', { u: u.id });
     return { user: publicUser(u) };
   }, { public: true });
 

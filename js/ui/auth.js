@@ -1,4 +1,5 @@
-/* Anmeldung beim Start: 1) E-Mail oder Name → 2a) Passwort (Konto gibt es) oder 2b) Passwort festlegen + eindeutigen Namen wählen.
+/* Anmeldung beim Start: 1) E-Mail oder Name → 2a) Passwort (Konto gibt es; „Passwort vergessen?“ → Mail mit Link) oder 2b) Passwort festlegen + eindeutigen Namen wählen.
+   Link aus der Mail (?reset=TOKEN) → Schritt „Neues Passwort“.
    Eine gerahmte Karte mit Eck-Ornamenten und wanderndem Licht, Schritt-Anzeige oben, Wappen mit Lichtschein darüber. */
 import { ui } from '../store.js';
 import { esc } from './common.js';
@@ -20,7 +21,23 @@ export function authView() {
       <input id="authPw" class="field plain" type="${type}" placeholder="Dein Passwort" autocomplete="current-password" enterkeyhint="go">
       ${err}
       <button class="btn red big" data-act="authLogin" ${busy}>${a.busy ? 'Moment …' : 'Anmelden'}</button>
-      <p class="auth-note">Passwort vergessen? Zurücksetzen per E-Mail kommt noch – bis dahin hilft der Betreiber des Servers.</p>
+      <button class="auth-forgot" data-act="authForgot" type="button" ${busy}>Passwort vergessen?</button>
+    </div>`;
+  } else if (a.step === 'sent') {
+    body = `<div class="auth-form" data-key="auth-sent">
+      <h1 class="display">Schau in dein Postfach</h1>
+      <p class="auth-lead">Wir haben dir eine E-Mail ${a.email.includes('@') ? `an <b>${esc(a.email)}</b>` : 'an die Adresse deines Kontos'} geschickt. Über den Link darin legst du ein neues Passwort fest – er gilt eine Stunde.</p>
+      <p class="auth-note">Nichts angekommen? Schau auch im Spam-Ordner nach.</p>
+      <button class="btn red big" data-act="authBack">Zurück zur Anmeldung</button>
+    </div>`;
+  } else if (a.step === 'reset') {
+    body = `<div class="auth-form" data-key="auth-reset">
+      <h1 class="display">Neues Passwort</h1>
+      <div class="auth-row"><label class="auth-lbl" for="authPw">Neues Passwort</label>${showBtn}</div>
+      <input id="authPw" class="field plain" type="${type}" placeholder="Mindestens 8 Zeichen" autocomplete="new-password" enterkeyhint="next">
+      <input id="authPw2" class="field plain" type="${type}" placeholder="Passwort wiederholen" autocomplete="new-password" enterkeyhint="go">
+      ${err}
+      <button class="btn red big" data-act="authReset" ${busy}>${a.busy ? 'Moment …' : 'Passwort speichern'}</button>
     </div>`;
   } else if (a.step === 'register') {
     body = `<div class="auth-form" data-key="auth-register">
@@ -45,7 +62,7 @@ export function authView() {
       <button class="btn red big" data-act="authEmail" ${busy}>${a.busy ? 'Moment …' : 'Weiter'}</button>
     </div>`;
   }
-  const s2 = a.step === 'register' ? 'Konto anlegen' : 'Passwort';
+  const s2 = a.step === 'register' ? 'Konto anlegen' : a.step === 'reset' ? 'Neues Passwort' : 'Passwort';
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   return `<div class="stage auth">
     <div class="auth-halo" aria-hidden="true"></div>

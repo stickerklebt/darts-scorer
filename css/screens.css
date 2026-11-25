@@ -2676,3 +2676,7 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .hb-spot .hb-fld { position: relative; }
 .hb-spot .hb-glow { position: absolute; inset: 0 6%; display: block; height: auto; max-width: none; }
 .hb-spot .hb-glow .dspot { position: absolute; inset: 0; width: 100% !important; height: 100% !important; max-width: none; overflow: hidden; }
+
+/* Anmeldung: „Passwort vergessen?“ als dezenter Textknopf unter „Anmelden“ */
+.auth-forgot { display: block; margin: 14px auto 0; padding: 6px 10px; background: none; border: 0; color: var(--gold-l); font-family: var(--f-num); font-size: 15px; letter-spacing: .08em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(227,174,43,.45); cursor: pointer; }
+.auth-forgot:disabled { opacity: .5; }

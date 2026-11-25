@@ -84,6 +84,14 @@ const MIGRATIONS = [
      UNIQUE (to_id, match_id)
    );
    CREATE INDEX match_confirms_to ON match_confirms(to_id);`,
+  /* 4: Passwort vergessen – Einmal-Links (nur Hash gespeichert, 1 h gültig) */
+  `CREATE TABLE password_resets (
+     token_hash  TEXT PRIMARY KEY,
+     user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     created_at  INTEGER NOT NULL,
+     expires_at  INTEGER NOT NULL
+   );
+   CREATE INDEX password_resets_user ON password_resets(user_id);`,
 ];
 
 export function openDb(file, log = null) {

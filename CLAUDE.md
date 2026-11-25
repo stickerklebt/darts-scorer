@@ -141,7 +141,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 ## Regeln der neuen Funktionen
 - **Anmeldung** beim Start (`ui/auth.js`): E-Mail **oder Name** (ohne „@“ = Name, Groß/Klein egal; mit Namen nur anmelden, neues Konto nur per E-Mail) → Konto vorhanden? Passwort : Passwort festlegen (2×, mind. 8) + eindeutiger
   Name (3–20, Buchstaben/Ziffern/_.-, Groß/Klein egal eindeutig, Bot-Namen reserviert, Live-Prüfung). Hauptspieler = Kontoname
-  (`ensureMainProfile`), Umbenennen nur über den Server. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
+  (`ensureMainProfile`), Umbenennen nur über den Server. **Passwort vergessen** (Knopf im Passwort-Schritt): `POST /api/auth/forgot` (E-Mail oder Name, Antwort immer `{ok}`, max. 3 Mails je Konto/Stunde) → Mail über lokales `sendmail` (Postfix, `server/src/mail.js`, Absender/Link fest in `config.js`: `publicUrl`, nie aus dem Host-Header) mit Link `/?reset=TOKEN` (Tabelle `password_resets`, nur Hash, 60 min, einmalig) → App zeigt Schritt „Neues Passwort“ → `POST /api/auth/reset` setzt es, beendet alle Sitzungen und meldet dieses Gerät an. Zustellung (Relay/SPF) regelt Postfix. Erste Anmeldung übernimmt vorhandene lokale Spiele ins Konto
   (hat das Konto schon einen Hauptspieler, werden die lokalen Matches auf dessen id umgeschrieben). Abmelden sichert erst
   und leert dann das Gerät. Einstellungen: Konto (Name, E-Mail, Sync-Stand), Passwort ändern, Abmelden, Konto löschen.
 - **Eigener Caller** (Backstage › Eigener Caller, Screen `caller`; nicht mehr in den Einstellungen): Zahl wählen (Beliebt + alle möglichen 0–180), aufnehmen
@@ -335,7 +335,7 @@ vier neue Bots mit Zufallssprüchen) erledigt. Danach: Cricket, Eingabe ohne OK,
 Bots neu kalibriert (Ø pro Leg + Doppelquote), Queen-Look mit neuen Schriften (League Gothic, IM Fell) und handgemachten Details,
 Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über nginx + systemd), Stand 17.11.2026.
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
-Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
+Offen: E-Mail-Bestätigung.
 
 - **Haupt-Reiter** (Spielen · Statistik · Backstage, `tabsBar`) schweben als Pille (max. 420 px breit, Reiter eng beieinander) unten in der Mitte und tauchen beim Öffnen von unten auf.
   In der Statistik taucht darüber eine kleine Symbol-Pille auf (`.subpop`): Überblick (Krone) · Doppel (Doppelring-Bögen über die Breite, Bögen faden links/rechts aus, zwei Segmentlinien faden nach unten aus, Feld dazwischen orange) · Scoring (Kurve); Zeitraum: lange (0,5 s) auf den Reiter „Statistik“ drücken

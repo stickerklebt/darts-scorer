@@ -22,6 +22,11 @@ export function loadConfig(env = process.env, over = {}) {
     authRatePerMin: 30,               // Anfragen pro Minute und IP auf /api/auth/*
     scryptLogN: 15,                   // scrypt-Kosten: ≈ 32 MB RAM, ~50–100 ms pro Hash
     logRequests: true,
+    /** Passwort vergessen: Link in der Mail zeigt immer hierhin (nie aus dem Host-Header – sonst Link-Fälschung möglich) */
+    publicUrl: 'https://darts.j-mahler.de',
+    /** Mailversand über das lokale sendmail (Postfix). Zustellung/Relay regelt Postfix, nicht die App. */
+    mail: { from: 'DartVader <noreply@j-mahler.de>', sendmail: '/usr/sbin/sendmail' },
+    resetMinutes: 60,
     ...over,
   };
 }

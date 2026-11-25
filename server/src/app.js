@@ -31,6 +31,7 @@ export function createApp({ config, db, log }) {
     search: createLimiter({ limit: 90, windowMs: 60e3 }),
     clientLog: createLimiter({ limit: 20, windowMs: 60e3 }),       // Fehlermeldungen aus der App je IP
     camlink: createLimiter({ limit: 900, windowMs: 60e3 }),        // Kamera-Kopplung: beide Geräte fragen oft nach
+    forgot: createLimiter({ limit: 3, windowMs: 60 * 60e3 }),      // Passwort-vergessen-Mails je Konto und Stunde
   };
   const router = createRouter();
   const deps = { db, sessions, config, limits, log };
