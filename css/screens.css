@@ -2993,3 +2993,20 @@ html, body { background: #0a0a0c !important; background-image: none !important; 
 .mode.mode-plus .badge-mode svg path { stroke: currentColor !important; stroke-width: 2 !important; }
 .mode.mode-plus:hover .badge-mode, .mode.mode-plus:active .badge-mode { color: #fff !important; border-color: rgba(255,255,255,.8); }
 @media (prefers-reduced-motion: reduce) { .mode .badge-mode { animation: none !important; } }
+
+/* Ganz selten flüssiges Gold (wie das geschmolzene Metall auf der Platte): kurze Momente, nie dauerhaft.
+   · 501: etwa alle 23 s fließt einmal Gold über die Zahl und verschwindet wieder
+   · Lichtlinien an den Karten (.glint): jede ~4. Runde läuft das Licht golden statt rot */
+:root { --liquid-gold: linear-gradient(115deg, #4a2f05 0%, #a8700f 12%, #f5c542 22%, #fff6d0 28%, #ffd860 34%, #8a5a0c 46%, #e0a82a 58%, #fff1b0 66%, #c08a18 78%, #5a3a06 90%, #d9a23a 100%); }
+.hero .hero-num::after { content: "501"; position: absolute; inset: 0; z-index: 1; pointer-events: none; text-shadow: none;
+  background: var(--liquid-gold); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(245,197,66,.55)); opacity: 0; animation: goldPour 23s ease-in-out infinite 6s; }
+@keyframes goldPour {
+  0%, 88%, 100% { opacity: 0; background-position: 100% 0; }
+  91% { opacity: 1; } 95% { opacity: .95; } 97.5% { opacity: 0; background-position: 0% 0; }
+}
+@property --gc { syntax: '<color>'; inherits: false; initial-value: rgba(196,42,75,.9); }
+.glint::before { background: conic-gradient(from var(--ga), transparent 0 72%, transparent 76%, var(--gc) 83%, #fff 85%, transparent 89%) !important;
+  animation: glint 5s linear infinite, glintGold 20s step-end infinite !important; animation-delay: var(--gd, 0s), var(--gd, 0s) !important; }
+@keyframes glintGold { 0% { --gc: rgba(196,42,75,.9); } 75% { --gc: rgba(245,197,66,.95); } 100% { --gc: rgba(196,42,75,.9); } }
+@media (prefers-reduced-motion: reduce) { .hero .hero-num::after { animation: none; } }
