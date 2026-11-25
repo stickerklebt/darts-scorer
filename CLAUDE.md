@@ -261,7 +261,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Laufende Challenge in `S.bruch` (nur lokal).
 - **Partyspiele (Galerie, `js/partygames.js`, `ui/partybrowse.js`, Screen `partyBrowse`):** Auf Play stehen die Kacheln aus `prefs.partyTiles`
   (Standard Cricket · Fußball; X01 und Challenge nur über die Galerie, X01 dort ganz oben; immer 3 Kacheln pro Reihe), dahinter eine Plus-Kachel → Galerie: oben „Entdecken“ (alle Modi, die noch nicht
-  auf Play sind, mit Name + Kurzregel, Plus = hinzufügen), ganz unten „Auf deinem Play-Reiter“ mit Stift → Minus auf jeder Kachel. Spielbar: Cricket, Fußball,
+  auf Play sind, mit Name + Kurzregel, Plus = hinzufügen), ganz unten „Auf deinem Play-Reiter“ (nur Kachel + Name, keine Erklärung) mit Stift → Minus auf jeder Kachel. Spielbar: Cricket, Fußball,
   Challenge, X01, Shanghai, Halbieren, Around the Clock, Highscore (die `retired`-Modi sind spielbar, sobald sie auf Play stehen). 10 kommende Modi (`SOON`:
   Killer, Bob's 27, Baseball, Golf, Gotcha, Tic Tac Toe, Mickey Mouse, Scram, 121, Nine Lives) sind nur Kacheln: auf Play ausgegraut mit „Bald“, nicht antippbar.
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
@@ -337,7 +337,7 @@ Server mit Konto per E-Mail, Sync und Freunden mit Statistik (Betrieb über ngin
 Danach: Trophäen, Spieler-Banner, gegen Freunde spielen (online und auf einem Gerät mit Bestätigung).
 Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 
-- **Haupt-Reiter** (Spielen · Statistik · Backstage, `tabsBar`) schweben als Pille unten in der Mitte und tauchen beim Öffnen von unten auf.
+- **Haupt-Reiter** (Spielen · Statistik · Backstage, `tabsBar`) schweben als Pille (max. 420 px breit, Reiter eng beieinander) unten in der Mitte und tauchen beim Öffnen von unten auf.
   In der Statistik taucht darüber eine kleine Symbol-Pille auf (`.subpop`): Überblick (Krone) · Doppel (Doppelring-Bögen über die Breite, Bögen faden links/rechts aus, zwei Segmentlinien faden nach unten aus, Feld dazwischen orange) · Scoring (Kurve); Zeitraum: lange (0,5 s) auf den Reiter „Statistik“ drücken
   (`SUB_ICONS` in `stats-view.js`). Die App startet immer im Reiter Spielen; in der Statistik ist beim Start und beim Öffnen des Reiters immer Doppel (Mitte) gewählt. Wechsel auch per Wischen links/rechts
   (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste). Statistik-Kopf ohne Namen; anderer Zeitraum erscheint als Chip.
