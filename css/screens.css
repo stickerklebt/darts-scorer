@@ -2942,3 +2942,6 @@ body { background: radial-gradient(90% 50% at 50% 110%, rgba(122,20,48,.28), tra
     linear-gradient(rgba(255,255,255,.14), rgba(255,255,255,.14)) !important; }
 .page.backstage .label { background: none !important; -webkit-text-fill-color: #d2465f !important; color: #d2465f !important; filter: drop-shadow(0 0 6px rgba(196,42,75,.45)); animation: none !important; }
 .page.backstage .label::after { background: linear-gradient(90deg, rgba(196,42,75,.7), rgba(200,204,210,.15) 50%, transparent) !important; }
+
+/* App-Hintergrund: fast schwarz, einfarbig – keine Verläufe, kein Schimmer dahinter */
+html, body { background: #0a0a0c !important; background-image: none !important; }
