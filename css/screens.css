@@ -3010,3 +3010,15 @@ html, body { background: #0a0a0c !important; background-image: none !important; 
   animation: glint 5s linear infinite, glintGold 20s step-end infinite !important; animation-delay: var(--gd, 0s), var(--gd, 0s) !important; }
 @keyframes glintGold { 0% { --gc: rgba(196,42,75,.9); } 75% { --gc: rgba(245,197,66,.95); } 100% { --gc: rgba(196,42,75,.9); } }
 @media (prefers-reduced-motion: reduce) { .hero .hero-num::after { animation: none; } }
+
+/* Reiter-Leiste: Ring dünner; Licht läuft am Ring entlang, Helligkeit schwankt (wie im VIP) */
+body .tabs::before, body .subpop::before {
+  padding: 1px !important; filter: drop-shadow(0 0 3px rgba(255,255,255,calc(var(--vg) * .5))) !important;
+  background:
+    conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .3)) 30deg, rgba(255,255,255,var(--vg)) 62deg, transparent 70deg, transparent 180deg,
+      rgba(255,255,255,calc(var(--vg) * .25)) 215deg, rgba(255,255,255,calc(var(--vg) * .8)) 245deg, transparent 252deg, transparent 360deg),
+    linear-gradient(rgba(220,224,230,.35), rgba(220,224,230,.35)) !important;
+  background-size: auto !important;
+  animation: vipSpin 16s ease-in-out infinite alternate, vipGlow 6s ease-in-out infinite !important;
+}
+body .subpop::before { animation-duration: 12s, 4.8s !important; animation-delay: -5s, -2s !important; }

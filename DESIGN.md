@@ -120,7 +120,7 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   Mehr Glitzer + Bordeaux (Nachtrag): 501-Karte mit Bordeaux-Nebel, Bordeaux-/Chrom-Schlieren, Bokeh-Lichtpunkten, aufblitzenden Funkel-Sternen (`.tw`),
   Glas-Stern rechts + kleiner Stern oben links, dunkle Mitte (die 501 bleibt lesbar, weiß mit Bordeaux-Glühen). Partyspiel-Kacheln als Bordeaux-Glas mit Chrom-Ring
   und Funkel-✦ (keine Pop-Art-Farben, kein Raster), Lichtstreif zieht ab und zu über Karte und Kacheln. Reiter-Leiste bordeaux getöntes Glas. Modus-Farben (`MODE_STYLE`) nur Bordeaux/Silber/Schwarz.
-  Reiter-Leiste: neutrales Rauchglas mit Chrom-Rand; Bordeaux nur im Strich unter dem aktiven Reiter und im Verlauf dahinter. Keine Gold-/Gelbtöne mehr
+  Reiter-Leiste: neutrales Rauchglas mit dünnem Ring (1 px), an dem Licht entlangläuft, Helligkeit schwankt (`vipSpin`/`vipGlow`); Bordeaux nur im Strich unter dem aktiven Reiter und im Verlauf dahinter. Keine Gold-/Gelbtöne mehr
   (Lichtlinien, Glanz, Funkeln, Animationen: Silber/Weiß). Doppel-Heatmap und Liste: durchgehender Verlauf statt Stufen – schlecht dunkles Bordeaux → Rot → Rosé →
   glänzend Weiß = am besten (`ratioColor`/`ratingColor` in `board.js`, `ratio` = Quote / eigene Gesamtquote aus `doubleRating`, 0,4 → dunkel, 1,7 → weiß; ab 1,25 zusätzlicher Glanz).
   Statistik mit mehr Bordeaux: roter Nebel in großen Karten (Average, Rekorde) + Bordeaux-Innenlinie, rote Glut unter kleinen Karten, Kartentitel rosé, Ränge rot, Lichtlinie rot → weiß, Label-Linie startet rot.
