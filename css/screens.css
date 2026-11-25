@@ -2933,3 +2933,12 @@ body { background: radial-gradient(90% 50% at 50% 110%, rgba(122,20,48,.28), tra
 .label { filter: drop-shadow(0 0 6px rgba(196,42,75,.35)); }
 .label::after { background: linear-gradient(90deg, #c42a4b, rgba(196,42,75,.35) 40%, rgba(200,204,210,.15) 70%, transparent) !important; }
 .chart .bar { fill: #b3243f; }
+
+/* VIP: kein Rot in den Lichtverläufen (nur silbernes Licht); Bordeaux nur in Texten (Überschriften, Ø-Zahlen) */
+.page.backstage .slist::before, .page.backstage .bs-tile:not(.glint)::before, .page.backstage .bs-tile.glint::before {
+  background: radial-gradient(40% 70% at var(--lx, 30%) 0%, rgba(255,255,255,.16), transparent 70%), radial-gradient(35% 60% at calc(100% - var(--lx, 30%)) 100%, rgba(255,255,255,.07), transparent 70%) !important; }
+.page.backstage .slist::after, .page.backstage .bs-tile::after, .page.backstage .bs-tile.glint::after, .page.backstage .empty-card::after {
+  background: conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,0) 4deg, rgba(255,255,255,calc(var(--vg) * .35)) 40deg, rgba(255,255,255,var(--vg)) 70deg, transparent 78deg, transparent 360deg),
+    linear-gradient(rgba(255,255,255,.14), rgba(255,255,255,.14)) !important; }
+.page.backstage .label { background: none !important; -webkit-text-fill-color: #d2465f !important; color: #d2465f !important; filter: drop-shadow(0 0 6px rgba(196,42,75,.45)); animation: none !important; }
+.page.backstage .label::after { background: linear-gradient(90deg, rgba(196,42,75,.7), rgba(200,204,210,.15) 50%, transparent) !important; }

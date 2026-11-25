@@ -126,4 +126,4 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   Statistik mit mehr Bordeaux: roter Nebel in großen Karten (Average, Rekorde) + Bordeaux-Innenlinie, rote Glut unter kleinen Karten, Kartentitel rosé, Ränge rot, Lichtlinie rot → weiß, Label-Linie startet rot, Seitenhintergrund mit Bordeaux-Schimmer.
   Große Zahlen (Average, Doppelquote, Rekorde, `.pop`): gestaffelter Bordeaux-Schatten (mehrere Stufen hell → dunkel + weicher roter Schein).
   VIP lebendig (ersetzt „Backstage ohne Bewegung“ für die Glasfelder): Rand dunkel/ruhig, nur einzelne Lichtstriche (Verlauf 0 → 100 %) gleiten um Freundesliste und Kacheln,
-  hin und her, mit eigenem Tempo je Feld (`--va`), Helligkeit schwankt (`--vg`) – nie alle gleich hell; dazu ein wandernder, auf- und abblendender Lichtfleck (Silber oben, Bordeaux unten) im Hintergrund.
+  hin und her, mit eigenem Tempo je Feld (`--va`), Helligkeit schwankt (`--vg`) – nie alle gleich hell; dazu ein wandernder, auf- und abblendender silberner Lichtfleck im Hintergrund. Im VIP kein Rot in Lichtverläufen – Bordeaux nur in Texten (Überschriften rot, Ø-Zahlen mit rotem Schatten).
