@@ -2955,3 +2955,18 @@ html, body { background: #0a0a0c !important; background-image: none !important; 
 .mode:not(.mode-soon)::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: 34%; height: 2px; transform: translateX(-50%); border-radius: 2px; pointer-events: none; z-index: 4;
   background: linear-gradient(90deg, transparent, #c42a4b 25%, #f2c7d1 50%, #c42a4b 75%, transparent); box-shadow: 0 0 8px rgba(196,42,75,.7); }
 .mode .mode-art::after { text-shadow: 0 0 6px #fff, 0 0 12px rgba(255,255,255,.6) !important; }
+
+/* 501: ab und zu zieht ganz schnell ein rotes Licht einmal um die Zahl herum (Kopie der Zahl dahinter, nur ihr Schatten leuchtet) */
+.hero .hero-num { position: relative; isolation: isolate; }
+.hero .hero-num::before { content: "501"; position: absolute; inset: 0; z-index: -1; color: transparent !important; -webkit-text-fill-color: transparent; pointer-events: none;
+  text-shadow: none; animation: redOrbit 5.5s cubic-bezier(.5,0,.5,1) infinite; }
+@keyframes redOrbit {
+  0%, 74% { text-shadow: 0 0 0 transparent; }
+  76% { text-shadow: -10px -10px 6px #e0405f, -14px -4px 18px rgba(196,42,75,.9), -6px -14px 30px rgba(196,42,75,.6); }
+  80% { text-shadow: 10px -12px 6px #e0405f, 4px -14px 18px rgba(196,42,75,.9), 14px -6px 30px rgba(196,42,75,.6); }
+  84% { text-shadow: 12px 10px 6px #e0405f, 14px 3px 18px rgba(196,42,75,.9), 6px 14px 30px rgba(196,42,75,.6); }
+  88% { text-shadow: -10px 12px 6px #e0405f, -4px 14px 18px rgba(196,42,75,.9), -14px 6px 30px rgba(196,42,75,.6); }
+  92% { text-shadow: -10px -8px 10px rgba(224,64,95,.6), -12px -2px 22px rgba(196,42,75,.5), 0 0 30px rgba(196,42,75,.3); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .hero .hero-num::before { animation: none; } }
