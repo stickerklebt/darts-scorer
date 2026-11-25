@@ -2659,3 +2659,10 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .hb-spot { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8%; cursor: pointer; animation: hbSpotIn .35s ease-out; }
 .hb-spot .dspot { max-width: 100%; max-height: 100%; }
 @keyframes hbSpotIn { from { opacity: 0; transform: scale(.85); } }
+/* Doppel + Info-Fenster zusammen genau im Quadrat der Scheibe (nichts ragt darunter hinaus) */
+.hb-spot { flex-direction: column; justify-content: center; gap: 4%; padding: 4% 6%; cursor: default; }
+.hb-spot .hb-fld { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.hb-spot .hb-fld .dspot { width: auto; height: 100%; max-width: 88%; }
+.hb-spot .dbl-info { flex: none; width: 100%; max-width: 440px; margin: 0; padding: 10px 14px 10px; }
+.hb-spot .dbl-info .di-arrow { display: none; }
+.hb-spot .dbl-info h4 { margin: 6px 0 4px; }

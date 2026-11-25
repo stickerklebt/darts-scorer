@@ -89,7 +89,8 @@ function spotOverlay(st, key) {
   const dn = /^D(\d+)$/.exec(key || '');
   if (!dn || !st.doubles.fields[key]) return '';
   const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
-  return `<div class="hb-spot" data-act="heat" data-v="${key}" title="Antippen schließt">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}</div>`;
+  // Doppel + Info-Fenster liegen beide genau über der Scheibe – darunter wird nichts länger
+  return `<div class="hb-spot"><div class="hb-fld" data-act="heat" data-v="${key}">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}</div>${dblInfo(st, key)}</div>`;
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
@@ -127,7 +128,7 @@ export function doublesBlock(st, sel, withList = true) {
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}</div>
-      ${withList && sel ? dblInfo(st, sel) : ''}
+      ${withList && sel && !spotOverlay(st, sel) ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? `<div class="dbl-right">
 ` : ''}
