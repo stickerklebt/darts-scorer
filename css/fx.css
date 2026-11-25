@@ -289,7 +289,7 @@
 @keyframes klPulse { 50% { transform: rotate(-2deg) scale(1.08); } }
 /* Atomrakete: längerer Flug, dritte Welle, Pilzwolke */
 .nk-rocket { animation-duration: 1.65s; }
-.nk-wave.w3 { animation-delay: .4s; border-color: rgba(232,116,42,.7); }
+.nk-wave.w3 { animation-delay: .4s; border-color: rgba(247,117,31,.7); }
 .nk-mush { left: 50%; bottom: 0; width: min(60vmin, 360px); height: 70vh; margin-left: calc(min(60vmin, 360px) / -2); z-index: 2; animation: mushUp 2.3s cubic-bezier(.2,.8,.3,1) both; }
 .nk-mush .cap { position: absolute; left: 0; right: 0; top: 0; height: 42%; border-radius: 50% 50% 40% 40%; background: #8a4a1f; background-image: var(--tex-halftone-lg); border: 4px solid #0b0a08; }
 .nk-mush .stem { position: absolute; left: 36%; right: 36%; top: 36%; bottom: 0; background: #6a3a18; background-image: var(--tex-halftone); border: 4px solid #0b0a08; border-bottom: 0; }

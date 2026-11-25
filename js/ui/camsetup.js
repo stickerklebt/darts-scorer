@@ -62,7 +62,7 @@ function segOf(m) {
 
 const SKETCH = `<svg class="cal-sketch" viewBox="0 0 220 120" aria-hidden="true">
   <rect x="2" y="2" width="216" height="116" fill="none" stroke="#3a3229"/>
-  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#d4a63a" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
+  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#e3ae2b" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
   <rect x="160" y="70" width="14" height="26" rx="2" fill="#0b0a08" stroke="#f3e9d2" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#f3e9d2"/>
   <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#a89d87"/><text x="122" y="104" fill="#a89d87" font-size="9">40–80 cm</text>
   <text x="140" y="24" fill="#a89d87" font-size="9">≥ 30 cm vom Rand</text></svg>`;

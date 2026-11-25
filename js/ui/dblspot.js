@@ -38,7 +38,7 @@ export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
       <linearGradient id="dsShine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>
       <path d="${fld}" transform="translate(5 6)" fill="#0b0a08" opacity=".85"/>
       <path class="ds-field" d="${fld}" fill="${col(n)}"/><path d="${fld}" fill="url(#dsDots)"/><path d="${fld}" fill="url(#dsShine)"/>
-      <path d="${fld}" fill="none" stroke="#d4a63a" stroke-width="4" filter="url(#rough-s)"/><path d="${inner}" fill="none" stroke="#ecc96a" stroke-width="1.4" stroke-opacity=".75"/>`;
+      <path d="${fld}" fill="none" stroke="#e3ae2b" stroke-width="4" filter="url(#rough-s)"/><path d="${inner}" fill="none" stroke="#f7d46a" stroke-width="1.4" stroke-opacity=".75"/>`;
     if (last) { const [x, y] = spotXY(last, th); s += `<circle class="ds-dot last" cx="${f1(x)}" cy="${f1(y)}" r="9"/>`; }
     return `<svg class="dspot tap" viewBox="${box(R1, R2, th - HALF, th + HALF, 16)}" data-dspot="1" data-rot="${th}" role="img" aria-label="Doppel ${n}">${s}</svg>`;
   }
@@ -54,7 +54,7 @@ export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
   bd += `<circle r="${23 * u}" fill="${green}" stroke="#0b0a08" stroke-width="3"/><circle r="${10 * u}" fill="${red}"/>`;
   s += `<g class="ds-board" opacity=".32">${bd}</g>`;
   s += `<path d="${fld}" transform="translate(8 10)" fill="#0b0a08" opacity=".8"/><path d="${fld}" fill="${col(n)}"/>`;
-  s += `<path d="${fld}" fill="none" stroke="#d4a63a" stroke-width="10"/>`;
+  s += `<path d="${fld}" fill="none" stroke="#e3ae2b" stroke-width="10"/>`;
   for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="22"/>`; }
   const E = 146 * u + 10;
   return `<svg class="dspot board" viewBox="${f1(-E)} ${f1(-E)} ${f1(2 * E)} ${f1(2 * E)}" role="img" aria-label="Doppel ${n}: ${spots.length} Treffer">${s}</svg>`;
@@ -78,7 +78,7 @@ export function spotAskView(sp) {
   return `<div class="dspot-ask" role="dialog" aria-label="Wo genau getroffen?">
     <div class="ds-rays" aria-hidden="true"></div>
     <div class="dspot-in">${['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('')}
-      <div class="ds-crown" aria-hidden="true">${stars(5, '#d4a63a', 14)}</div>
+      <div class="ds-crown" aria-hidden="true">${stars(5, '#e3ae2b', 14)}</div>
       <h2 class="ds-title" data-t="Wo hast du genau getroffen?">Wo hast du genau getroffen?</h2>
       <div class="ds-field-wrap">${sparkles(7, 5)}${spotSVG(sp.n, [], { tap: true, last: sp.picked || null })}</div>
       <button class="dspot-skip" data-act="spotSkip">Überspringen</button></div></div>`;

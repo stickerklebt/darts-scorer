@@ -1,12 +1,12 @@
 /* Eigene SVG-Grafiken: Wappen, Ornamente, Badges, Comic-Elemente, Icons. Alles selbst entworfen. */
 
 export const COLORS = {
-  ink: '#0b0a08', cream: '#f3e9d2', cream2: '#d9c9a3', gold: '#d4a63a', goldL: '#ecc96a',
-  red: '#e8742a', blue: '#c8ccd0', yellow: '#ffd23f', green: '#1f9a4c', violet: '#c8ccd0', teal: '#d4a63a',
+  ink: '#0b0a08', cream: '#f3e9d2', cream2: '#d9c9a3', gold: '#e3ae2b', goldL: '#f7d46a',
+  red: '#f7751f', blue: '#c8ccd0', yellow: '#ffd23f', green: '#1f9a4c', violet: '#c8ccd0', teal: '#e3ae2b',
   stone: '#5b4f3e', stoneD: '#3a3229', stoneL: '#a89d87',
-  pink: '#e8742a', cyan: '#c8ccd0', magic: '#c8ccd0', spark: '#ffd23f',
+  pink: '#f7751f', cyan: '#c8ccd0', magic: '#c8ccd0', spark: '#ffd23f',
 };
-export const PLAYER_COLORS = ['#e8742a', '#c8ccd0', '#d4a63a', '#f3e9d2', '#a8743a', '#e8b07a']; // Orange · Silber · Gold · Creme · Bronze · Pfirsich
+export const PLAYER_COLORS = ['#f7751f', '#c8ccd0', '#e3ae2b', '#f3e9d2', '#a8743a', '#e8b07a']; // Orange · Silber · Gold · Creme · Bronze · Pfirsich
 export const PLAYER_INK = ['#f3e9d2', '#f3e9d2', '#0b0a08', '#f3e9d2', '#f3e9d2', '#0b0a08'];
 
 const r2 = (x) => Math.round(x * 100) / 100;
@@ -166,11 +166,11 @@ export function crestLine(opts = {}) {
     .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
     .split(`fill="${C.cream2}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1"`)
     .split(`fill="${C.cream}" stroke="${C.ink}"`).join(`fill="${dark}" stroke="url(#${g})"`)
-    .split(`fill="${C.cream}"`).join(`fill="rgba(236,201,106,.14)" stroke="url(#${g})" stroke-width=".5"`)
+    .split(`fill="${C.cream}"`).join(`fill="rgba(247,212,106,.14)" stroke="url(#${g})" stroke-width=".5"`)
     .split(`fill="${C.ink}">`).join(`fill="url(#${g})">`);
   // DartVader: dunkler – Stahl oben, Glut-Rot unten (nur Farben, keine Film-Motive)
   const defs = `<defs><linearGradient id="${g}" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="160" y2="240">
-    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#e8742a"/><stop offset="1" stop-color="#8a4614"/></linearGradient></defs>`;
+    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#f7751f"/><stop offset="1" stop-color="#8a4614"/></linearGradient></defs>`;
   return s.replace('aria-hidden="true">', `aria-hidden="true">${defs}`);
 }
 
@@ -293,7 +293,7 @@ export const magicCorner = (c1 = COLORS.cyan, c2 = COLORS.pink, c3 = COLORS.spar
 
 /* ---------- Pokal (detailreich: Bänder, Lorbeer, Edelsteine, Sockel mit Plakette) ---------- */
 export const trophy = (C = COLORS) => {
-  const K = '#0b0a08', G = '#ffd23f', D = '#d4a63a', L = '#fff4c4';
+  const K = '#0b0a08', G = '#ffd23f', D = '#e3ae2b', L = '#fff4c4';
   let beads = ''; for (let i = 0; i < 9; i++) beads += `<circle cx="${34 + i * 6.5}" cy="22" r="1.6" fill="${K}"/>`;
   return `<svg viewBox="0 0 120 150" aria-hidden="true">
   <path d="M30 26 H14 C8 26 6 32 7 38 C9 52 20 60 34 62 M90 26 H106 C112 26 114 32 113 38 C111 52 100 60 86 62" fill="none" stroke="${K}" stroke-width="9" stroke-linecap="round"/>

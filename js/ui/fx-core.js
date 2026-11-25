@@ -10,7 +10,7 @@ globalThis.__fxThaw = () => { frozen = false; stopFx(); };
 /** Zufall im Bereich */
 export const rand = (a, b) => a + Math.random() * (b - a);
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-export const MAGIC = ['#e5402c', '#2f6fe4', '#ffd23f', '#d4a63a', '#f3e9d2', '#8b5cf6', '#1f9a4c'];
+export const MAGIC = ['#e5402c', '#2f6fe4', '#ffd23f', '#e3ae2b', '#f3e9d2', '#8b5cf6', '#1f9a4c'];
 
 /* ---------- Partikel ---------- */
 export class Particles {

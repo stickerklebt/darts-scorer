@@ -389,7 +389,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).
 - **Farbwelt Gold · Silber · Orange (seit 25.11.2026, gilt vor älteren Farbangaben; Gitarre/Blau und Gold-Silber ohne Orange wurden verworfen):**
   warmes Schwarz (`--ink #0b0a08`), Creme-Text, Gold für Rahmen/Akzente, Silber (`--silver #c8ccd0`) für Linien/Kanten, Akzent Orange statt Rot
-  (`--red` ist jetzt #e8742a, `--red-d` #a84d17), orangefarbenes Glühen. Kein Blau. Dartscheiben behalten ihre echten Rot/Grün-Felder.
+  (`--red` ist jetzt #f7751f wie iPhone-Pro-Orange, `--red-d` #b5480b; Gold #e3ae2b, Gold hell #f7d46a), orangefarbenes Glühen; leuchtendes Orange gern mit weichem, natürlichem Verlauf dahinter (heller Kern → Orange → Bernstein, unscharfer Schein). Kein Blau. Dartscheiben behalten ihre echten Rot/Grün-Felder.
 - **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, groß, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
   `js/dartscan.js` (auch für gemaserte Holztische): Bandpass = leicht geglättet minus stark geglättet (Maserung und Lichtverlauf fallen weg) →
   Schwelle aus der Bildverteilung → Teile über einen Saum verbinden, Dart-Fläche wählen (groß × länglich) + Teile auf der Achsen-Verlängerung (Flight) →

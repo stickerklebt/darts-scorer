@@ -62,7 +62,7 @@ const ring = (r0, r1, a0, a1) => `M${pt(r1, a0)} A${r1},${r1} 0 0,1 ${pt(r1, a1)
 /* Farben: warm-dunkle Felder, leicht getönte Ringe (nicht grell) */
 const F = {
   sA: '#221d16', sB: '#2f281d', rA: '#8a3326', rB: '#2a6b45', b25: '#2f7d4f', b50: '#c4452f',
-  wire: '#d4a63a', num: '#ecc96a', rim: '#12100d',
+  wire: '#e3ae2b', num: '#f7d46a', rim: '#12100d',
 };
 
 /**

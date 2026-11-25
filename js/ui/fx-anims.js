@@ -61,7 +61,7 @@ export function confetti(el, ctx) {
 /** 100–120: Ballons (4 s) – zwei Schwärme, einer platzt */
 export function balloons(el, ctx) {
   add(el, '', 'fx-bg bg-dim');
-  const cols = ['#e5402c', '#2f6fe4', '#ffd23f', '#8b5cf6', '#1f9a4c', '#f3e9d2', '#d4a63a'];
+  const cols = ['#e5402c', '#2f6fe4', '#ffd23f', '#8b5cf6', '#1f9a4c', '#f3e9d2', '#e3ae2b'];
   for (let i = 0; i < 22; i++) {
     const n = add(el, balloon(cols[i % cols.length]), 'bl-b');
     n.style.cssText = `left:${((i % 11) / 11) * 100 + rand(-3, 3)}%;--s:${rand(0.7, 1.25)};--sw:${rand(-14, 14)}px;animation-delay:${(i < 11 ? 0 : 1300) + rand(0, 500)}ms;animation-duration:${rand(2300, 2800)}ms`;
@@ -215,7 +215,7 @@ export function trophy(el, ctx) {
     const cx = W() / 2, cy = H() * 0.48;
     for (let i = 0; i < (t < 1600 ? 2 : 4); i++) {
       const a = rand(0, 6.283), r = rand(Math.min(W(), H()) * 0.35, Math.max(W(), H()) * 0.6);
-      ps.add({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, vx: -Math.cos(a) * r * 1.5, vy: -Math.sin(a) * r * 1.5, shape: Math.random() < 0.35 ? 'spark' : 'circle', size: rand(2, 5), color: pick(['#ffd23f', '#ecc96a', '#f3e9d2']), life: 640 });
+      ps.add({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, vx: -Math.cos(a) * r * 1.5, vy: -Math.sin(a) * r * 1.5, shape: Math.random() < 0.35 ? 'spark' : 'circle', size: rand(2, 5), color: pick(['#ffd23f', '#f7d46a', '#f3e9d2']), life: 640 });
     }
   }, 500, 2600);
   [700, 1100, 1450, 1750, 2000, 2200, 2400, 2550].forEach((t, i) => at(t, () => shake(2 + i * 2.4, 220)));
@@ -226,11 +226,11 @@ export function trophy(el, ctx) {
     const w = add(el, '', 'fx-white long'); setTimeout(() => w.remove(), 1100);
     cup.classList.add('rise');
     const cx = W() / 2, cy = H() * 0.5;
-    p.burst(180, () => { const a = rand(0, 6.283), v = rand(200, 950); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 500, drag: 1.2, shape: pick(['spark', 'circle', 'streak']), rot: a, size: rand(3, 9), color: pick(['#ffd23f', '#fff3c0', '#ffffff', '#d4a63a', '#e5402c']), life: 2000 }; });
+    p.burst(180, () => { const a = rand(0, 6.283), v = rand(200, 950); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 500, drag: 1.2, shape: pick(['spark', 'circle', 'streak']), rot: a, size: rand(3, 9), color: pick(['#ffd23f', '#fff3c0', '#ffffff', '#e3ae2b', '#e5402c']), life: 2000 }; });
   });
   at(3300, () => {
     add(el, `<div class="fx-big">180</div><div class="fx-sub">Maximum!${who(ctx)}</div>`, 'fx-title lb-title');
-    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#ffd23f', '#ecc96a', '#fff3c0', '#e5402c', '#2f6fe4', '#f3e9d2']), life: 2600, fade: false }); }, 3300, 6800);
+    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#ffd23f', '#f7d46a', '#fff3c0', '#e5402c', '#2f6fe4', '#f3e9d2']), life: 2600, fade: false }); }, 3300, 6800);
   });
   at(4200, () => { cup.classList.add('gleam'); shake(6, 200); });
   [['tl', 3500], ['tr', 3600], ['bl', 3700], ['br', 3800]].forEach(([c, t]) => at(t, () => add(el, cornerOrnament(), `tr-corner ${c}`)));
