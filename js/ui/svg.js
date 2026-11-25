@@ -374,37 +374,51 @@ export function chromeStar(cx, cy, up, right, down, left, { rot = 0, glow = 1 } 
   </g>`;
 }
 
-/** 501-Karte: dunkle Bordeaux-Flüssigkeit mit glänzenden Blasen (Lichtkante, Glanzbogen, rotes Leuchten innen), die langsam treiben.
-    Die Mitte bleibt dunkel, damit die 501 lesbar ist. Bewegung per CSS (.bb, --mx/--my/--s/--t). */
+/** 501-Karte: Bordeaux-Flüssigkeit aus großen, glasigen Blasen (Vorlage: rote Öltropfen). Körper in einer „Goo“-Ebene, damit
+    benachbarte Blasen beim Treiben über flüssige Brücken verschmelzen; darüber Glas: helle Lichtkante, dunkles Brechungsband,
+    Glanzfleck, Spiegelbogen gegenüber. Alles bewegt sich per CSS (.bb, gleiche Werte für Körper und Glas → bleibt deckungsgleich). */
 export function heroArt() {
   const B = [ // cx, cy, r, mx, my, scale, Dauer
-    [70, 330, 190, 18, -14, 1.04, 13], [535, 70, 175, -16, 12, 1.05, 15], [585, 375, 125, -12, -10, 1.06, 11], [250, -55, 135, 14, 10, 1.03, 17],
-    [-30, 40, 90, 12, 14, 1.05, 12], [400, 330, 46, -10, -16, 1.08, 9], [170, 175, 22, 8, -12, 1.1, 7], [455, 205, 15, -6, 10, 1.12, 6.5],
-    [330, 395, 28, 10, -8, 1.08, 8], [120, 45, 12, -6, 8, 1.15, 6], [470, 300, 9, 6, -8, 1.2, 5.5], [300, 30, 10, -8, 6, 1.15, 7.5],
+    [40, 330, 215, 22, -16, 1.04, 14], [560, 60, 200, -20, 14, 1.05, 16], [600, 390, 150, -14, -12, 1.06, 12], [255, -70, 150, 16, 12, 1.04, 18],
+    [-40, 30, 105, 14, 16, 1.05, 13], [395, 340, 52, -14, -18, 1.08, 10], [205, 205, 26, 12, -14, 1.1, 8], [452, 210, 18, -8, 12, 1.12, 7],
+    [320, 405, 34, 12, -10, 1.08, 9], [140, 70, 14, -8, 10, 1.15, 6.5], [488, 318, 11, 8, -10, 1.2, 6], [310, 38, 12, -10, 8, 1.15, 8],
   ];
   const f = (v) => Math.round(v * 10) / 10;
-  const bubble = ([cx, cy, r, mx, my, sc, t], k) => {
-    const a0 = (205 * Math.PI) / 180, a1 = (262 * Math.PI) / 180, rr = r * 0.86;
-    const p0 = [cx + rr * Math.cos(a0), cy + rr * Math.sin(a0)], p1 = [cx + rr * Math.cos(a1), cy + rr * Math.sin(a1)];
-    return `<g class="bb" style="--mx:${mx}px;--my:${my}px;--s:${sc};--t:${t}s;animation-delay:-${(k * 1.7) % t}s">
-      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbBody)"/>
-      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbGlow)"/>
-      <circle cx="${cx}" cy="${cy}" r="${f(r - Math.max(1, r * .02))}" fill="none" stroke="url(#bbRim)" stroke-width="${f(Math.max(1, r * .045))}"/>
-      <path d="M${f(p0[0])} ${f(p0[1])}A${f(rr)} ${f(rr)} 0 0 1 ${f(p1[0])} ${f(p1[1])}" fill="none" stroke="#ffd9e1" stroke-opacity=".55" stroke-width="${f(Math.max(1, r * .03))}" stroke-linecap="round" filter="url(#bbSoft)"/>
-      ${r < 50 ? `<circle cx="${f(cx - r * .35)}" cy="${f(cy - r * .4)}" r="${f(Math.max(1, r * .12))}" fill="#fff" opacity=".55"/>` : ''}
-    </g>`;
+  const st = ([, , , mx, my, sc, t], k) => `style="--mx:${mx}px;--my:${my}px;--s:${sc};--t:${t}s;animation-delay:-${f((k * 1.7) % t)}s"`;
+  const arc = (cx, cy, rr, d0, d1) => {
+    const a0 = (d0 * Math.PI) / 180, a1 = (d1 * Math.PI) / 180;
+    return `M${f(cx + rr * Math.cos(a0))} ${f(cy + rr * Math.sin(a0))}A${f(rr)} ${f(rr)} 0 0 1 ${f(cx + rr * Math.cos(a1))} ${f(cy + rr * Math.sin(a1))}`;
   };
+  const body = B.map((b, k) => `<g class="bb" ${st(b, k)}><circle cx="${b[0]}" cy="${b[1]}" r="${b[2]}" fill="#4a0a1a"/></g>`).join('');
+  const glass = B.map((b, k) => {
+    const [cx, cy, r] = b, w = Math.max(1.2, r * 0.018);
+    return `<g class="bb" ${st(b, k)}>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbIn)"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbLow)"/>
+      <circle cx="${cx}" cy="${cy}" r="${f(r * .93)}" fill="none" stroke="#12020a" stroke-opacity=".55" stroke-width="${f(r * .06)}"/>
+      <circle cx="${cx}" cy="${cy}" r="${f(r - w / 2)}" fill="none" stroke="url(#bbRim)" stroke-width="${f(w)}"/>
+      <path d="${arc(cx, cy, r * .9, 196, 262)}" fill="none" stroke="#ffe3ea" stroke-opacity=".8" stroke-width="${f(w * 1.3)}" stroke-linecap="round" filter="url(#bbSoft)"/>
+      <path d="${arc(cx, cy, r * .88, 20, 70)}" fill="none" stroke="#ff8fa6" stroke-opacity=".45" stroke-width="${f(w)}" stroke-linecap="round" filter="url(#bbSoft)"/>
+      <ellipse cx="${f(cx - r * .38)}" cy="${f(cy - r * .42)}" rx="${f(r * .22)}" ry="${f(r * .11)}" transform="rotate(-38 ${f(cx - r * .38)} ${f(cy - r * .42)})" fill="#fff" opacity="${r < 60 ? .5 : .16}" filter="url(#bbBlur)"/>
+    </g>`;
+  }).join('');
   return `<svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
-      <radialGradient id="bbBg" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#14030a"/><stop offset="1" stop-color="#070104"/></radialGradient>
-      <radialGradient id="bbBody" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#0d0105"/><stop offset=".55" stop-color="#2a050f"/><stop offset=".86" stop-color="#5e0f22"/><stop offset="1" stop-color="#22030b"/></radialGradient>
-      <radialGradient id="bbGlow" cx=".28" cy=".82" r=".55"><stop offset="0" stop-color="#b3243f" stop-opacity=".55"/><stop offset=".6" stop-color="#7a1430" stop-opacity=".18"/><stop offset="1" stop-color="#7a1430" stop-opacity="0"/></radialGradient>
-      <linearGradient id="bbRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb3c2" stop-opacity=".85"/><stop offset=".3" stop-color="#c42a4b" stop-opacity=".25"/><stop offset=".6" stop-color="#3a0a18" stop-opacity=".2"/><stop offset=".85" stop-color="#c42a4b" stop-opacity=".55"/><stop offset="1" stop-color="#ff9fb3" stop-opacity=".7"/></linearGradient>
-      <filter id="bbSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2"/></filter>
-      <radialGradient id="bbV" cx=".5" cy=".52" r=".5"><stop offset="0" stop-color="#050103" stop-opacity=".8"/><stop offset=".6" stop-color="#050103" stop-opacity=".4"/><stop offset="1" stop-color="#050103" stop-opacity="0"/></radialGradient>
+      <radialGradient id="bbBg" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#1a040c"/><stop offset="1" stop-color="#0a0105"/></radialGradient>
+      <filter id="bbGoo" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="10" result="b"/>
+        <feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/></filter>
+      <radialGradient id="bbIn" cx=".55" cy=".45" r=".6"><stop offset="0" stop-color="#0a0105" stop-opacity=".9"/><stop offset=".55" stop-color="#1e030b" stop-opacity=".6"/><stop offset="1" stop-color="#1e030b" stop-opacity="0"/></radialGradient>
+      <radialGradient id="bbLow" cx=".25" cy=".85" r=".6"><stop offset="0" stop-color="#d0405f" stop-opacity=".75"/><stop offset=".45" stop-color="#9c1c37" stop-opacity=".35"/><stop offset="1" stop-color="#7a1430" stop-opacity="0"/></radialGradient>
+      <linearGradient id="bbRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd2dc"/><stop offset=".28" stop-color="#e0607c" stop-opacity=".5"/><stop offset=".55" stop-color="#3a0a18" stop-opacity=".3"/><stop offset=".85" stop-color="#d9405f" stop-opacity=".8"/><stop offset="1" stop-color="#ffc2cf"/></linearGradient>
+      <filter id="bbSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation=".9"/></filter>
+      <filter id="bbBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+      <pattern id="bbGrid" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M6 0H0V6" fill="none" stroke="#000" stroke-opacity=".18" stroke-width=".6"/></pattern>
+      <radialGradient id="bbV" cx=".5" cy=".52" r=".5"><stop offset="0" stop-color="#050103" stop-opacity=".55"/><stop offset=".7" stop-color="#050103" stop-opacity=".2"/><stop offset="1" stop-color="#050103" stop-opacity="0"/></radialGradient>
     </defs>
     <rect width="600" height="400" fill="url(#bbBg)"/>
-    <g class="bb-all">${B.map(bubble).join('')}</g>
-    <ellipse cx="300" cy="212" rx="170" ry="120" fill="url(#bbV)"/>
+    <g filter="url(#bbGoo)">${body}</g>
+    <g>${glass}</g>
+    <rect width="600" height="400" fill="url(#bbGrid)"/>
+    <ellipse cx="300" cy="212" rx="160" ry="115" fill="url(#bbV)"/>
   </svg>`;
 }

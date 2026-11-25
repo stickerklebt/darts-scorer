@@ -3037,3 +3037,7 @@ body .tabs .tab.on, body .tabs .tab.on > span { color: #fff !important; }
 body .tabs .tab.on > span { text-shadow: 0 0 4px #fff, 0 0 12px rgba(255,255,255,.65), 0 0 24px rgba(255,255,255,.3) !important; }
 body .subpop .subtabs.three button { opacity: .8 !important; color: #e6e9ee !important; filter: drop-shadow(0 0 4px rgba(255,255,255,.25)); }
 body .subpop .subtabs.three button.on { opacity: 1 !important; color: #fff !important; filter: drop-shadow(0 0 6px rgba(255,255,255,.6)); }
+
+/* 501: der seltene Schimmer über der Zahl ist Silber/Chrom statt Gold */
+.hero .hero-num::after { background: linear-gradient(115deg, #3e424a 0%, #9aa0aa 12%, #eef1f5 22%, #ffffff 28%, #dfe3e9 34%, #6f747d 46%, #c9ced6 58%, #ffffff 66%, #a9afb8 78%, #4a4e56 90%, #b8bec8 100%) !important;
+  background-size: 300% 100% !important; filter: drop-shadow(0 0 10px rgba(255,255,255,.55)) !important; }

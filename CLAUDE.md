@@ -409,7 +409,7 @@ Offen: E-Mail-Bestätigung.
   kein Papier/Kupferstich, Label-Linie als feine Lichtlinie. 501-Karte: Glas-Stern (`chromeStar`, `heroArt` in `svg.js`) auf tiefem Schwarz mit
   Chrom-Schlieren, Rand als Chrom-Ring. Start-Logo/Anmeldung (`crestLine`): nur kleiner Chrom-Stern + „DARTVADER“ clean (Systemschrift, dünn, weit gesperrt).
   Dartscheiben behalten Rot/Grün.
-  501-Karte (neu, ersetzt den Glas-Stern): dunkle Bordeaux-Flüssigkeit mit glänzenden Blasen (Lichtkante, Glanzbogen, rotes Leuchten innen), die langsam treiben und atmen (`.bb`, `bbFloat`), dunkle Mitte für die 501.
+  501-Karte (neu, ersetzt den Glas-Stern): Bordeaux-Flüssigkeit aus großen glasigen Blasen – Körper in einer Goo-Ebene (Blasen verschmelzen beim Treiben über flüssige Brücken), darüber Glas (helle Lichtkante, dunkles Brechungsband, Glanzfleck, Spiegelbogen, feines Raster); treiben und atmen (`.bb`, `bbFloat`). Der seltene Schimmer über der 501 ist Silber (nicht Gold).
   (Alt:) Mehr Glitzer + Bordeaux: 501-Karte mit Bordeaux-Nebel, Bordeaux-/Chrom-Schlieren, Bokeh-Lichtpunkten, aufblitzenden Funkel-Sternen (`.tw`),
   Glas-Stern rechts + kleiner Stern oben links, dunkle Mitte (die 501 bleibt lesbar, weiß mit Bordeaux-Glühen). Partyspiel-Kacheln als Bordeaux-Glas mit Chrom-Ring
   und Funkel-✦ (keine Pop-Art-Farben, kein Raster), Lichtstreif zieht ab und zu über Karte und Kacheln. Reiter-Leiste bordeaux getöntes Glas. Modus-Farben (`MODE_STYLE`) nur Bordeaux/Silber/Schwarz.
