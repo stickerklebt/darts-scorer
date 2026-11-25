@@ -1,4 +1,4 @@
-/* Wo genau im Doppel? Ein Doppelfeld groß (außen = oben, innen = unten), Nachbarfelder blass daneben.
+/* Wo genau im Doppel? Ein Doppelfeld groß, immer so schräg wie auf der Scheibe (Statistik: Nachbarfelder blass daneben, Outside/Inside).
    Position eines Treffers: { a, r } – a = −1 … 1 quer übers Feld (links → rechts), r = 0 (innerer Rand) … 1 (äußerer Rand).
    Gespeichert am Checkout-Dart als throw.spot; Statistik › Doppel zeigt alle Treffer als kleine Punkte. */
 import { ORDER } from '../board-geometry.js';
@@ -13,37 +13,52 @@ function band(r1, r2, a0, a1) {
 }
 /** Feldfarbe wie auf der Scheibe: D20 rot, dann abwechselnd grün/rot */
 const isRed = (n) => ORDER.indexOf(n) % 2 === 0;
-export const spotXY = ({ a, r }) => pt(R1 + (R2 - R1) * r, a * HALF);
+/** Winkel des Feldes auf der Scheibe (im Uhrzeigersinn von oben, 20 oben) – das Feld wird immer so schräg gezeigt wie im Board */
+export const rotOf = (n) => ORDER.indexOf(n) * 18;
+export const spotXY = ({ a, r }, rot = 0) => pt(R1 + (R2 - R1) * r, rot + a * HALF);
+/** viewBox um eine Punktmenge (Ring-Ausschnitt r0…r1, Winkel a0…a1) */
+function box(r0, r1, a0, a1, m) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const r of [r0, r1]) for (let k = 0; k <= 24; k++) { const [x, y] = pt(r, a0 + ((a1 - a0) * k) / 24); x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  return `${f1(x0 - m)} ${f1(y0 - m)} ${f1(x1 - x0 + 2 * m)} ${f1(y1 - y0 + 2 * m)}`;
+}
 
 /** SVG des Doppels n mit Punkten (spots). tap = großes Antipp-Feld (Eingabe nach dem Checkout). */
 export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
-  const i = ORDER.indexOf(n), nb = [ORDER[(i + 19) % 20], ORDER[(i + 1) % 20]];
+  const i = ORDER.indexOf(n), th = rotOf(n), nb = [ORDER[(i + 19) % 20], ORDER[(i + 1) % 20]];
   const red = '#c8402c', green = '#2c8a4a';
   const col = (k) => (isRed(k) ? red : green);
+  const fld = band(R1, R2, th - HALF, th + HALF);
   let s = '';
-  // Nachbarfelder (blass) und Single darunter, Rand außen
-  for (const [k, off] of [[nb[0], -18], [nb[1], 18]]) {
-    s += `<path d="${band(R1, R2, off - HALF, off + HALF)}" fill="${col(k)}" opacity=".28"/>`;
-    s += `<path d="${band(R1 - 230, R1, off - HALF, off + HALF)}" fill="#1a1713" opacity=".6"/>`;
-    const [lx, ly] = pt(R2 + 70, off); s += `<text x="${f1(lx)}" y="${f1(ly)}" class="ds-nb" text-anchor="middle" dominant-baseline="central">${k}</text>`;
+  // Eingabe nach dem Checkout: nur das Feld selbst, groß und schräg wie im Board – keine Nachbarn, keine Beschriftung
+  if (tap) {
+    s += `<path class="ds-field" d="${fld}" fill="${col(n)}"/><path d="${fld}" fill="none" stroke="#d4a63a" stroke-width="3"/>`;
+    if (last) { const [x, y] = spotXY(last, th); s += `<circle class="ds-dot last" cx="${f1(x)}" cy="${f1(y)}" r="9"/>`; }
+    return `<svg class="dspot tap" viewBox="${box(R1, R2, th - HALF, th + HALF, 16)}" data-dspot="1" data-rot="${th}" role="img" aria-label="Doppel ${n}">${s}</svg>`;
   }
-  s += `<path d="${band(R1 - 230, R1, -HALF, HALF)}" fill="#26211b"/>`;
-  s += `<path class="ds-field" d="${band(R1, R2, -HALF, HALF)}" fill="${col(n)}"/>`;
-  s += `<path d="${band(R1, R2, -HALF, HALF)}" fill="none" stroke="#d4a63a" stroke-width="4"/>`;
-  const [nx, ny] = pt(R2 + 72, 0); s += `<text x="${f1(nx)}" y="${f1(ny)}" class="ds-n" text-anchor="middle" dominant-baseline="central">D${n}</text>`;
-  const [ox, oy] = pt(R2 + 18, 0), [ix, iy] = pt(R1 - 22, 0);
-  s += `<text x="${f1(ox + 175)}" y="${f1(oy - 10)}" class="ds-lab" text-anchor="middle">Outside</text><text x="${f1(ix + 150)}" y="${f1(iy + 36)}" class="ds-lab" text-anchor="middle">Inside</text>`;
-  for (const p of spots) { const [x, y] = spotXY(p); s += `<circle class="ds-dot" cx="${f1(x)}" cy="${f1(y)}" r="${tap ? 11 : 7}"/>`; }
-  if (last) { const [x, y] = spotXY(last); s += `<circle class="ds-dot last" cx="${f1(x)}" cy="${f1(y)}" r="13"/>`; }
-  const [, top] = pt(R2 + 125, 0), w = 2 * Math.sin(rad(27)) * R2 + 40;
-  return `<svg class="dspot ${tap ? 'tap' : ''}" viewBox="${f1(-w / 2)} ${f1(top)} ${f1(w)} ${f1(-(top) - (R1 - 260) * Math.cos(rad(27)) + 0)}" ${tap ? 'data-dspot="1"' : ''} role="img" aria-label="Doppel ${n}">${s}</svg>`;
+  // Statistik: Nachbarfelder blass, Single darunter, Beschriftung waagerecht
+  for (const off of [-18, 18]) {
+    const k = off < 0 ? nb[0] : nb[1];
+    s += `<path d="${band(R1, R2, th + off - HALF, th + off + HALF)}" fill="${col(k)}" opacity=".28"/>`;
+    s += `<path d="${band(R1 - 230, R1, th + off - HALF, th + off + HALF)}" fill="#1a1713" opacity=".6"/>`;
+  }
+  s += `<path d="${band(R1 - 230, R1, th - HALF, th + HALF)}" fill="#26211b"/>`;
+  s += `<path class="ds-field" d="${fld}" fill="${col(n)}"/><path d="${fld}" fill="none" stroke="#d4a63a" stroke-width="4"/>`;
+  const tx = (r, cls, txt) => { const [x, y] = pt(r, th); return `<text x="${f1(x)}" y="${f1(y)}" class="${cls}" text-anchor="middle" dominant-baseline="central">${txt}</text>`; };
+  s += tx(R2 + 60, 'ds-lab', 'Outside') + tx(R1 - 60, 'ds-lab', 'Inside') + tx(R1 - 160, 'ds-n', `D${n}`);
+  for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot" cx="${f1(x)}" cy="${f1(y)}" r="7"/>`; }
+  if (last) { const [x, y] = spotXY(last, th); s += `<circle class="ds-dot last" cx="${f1(x)}" cy="${f1(y)}" r="13"/>`; }
+  return `<svg class="dspot" viewBox="${box(R1 - 230, R2 + 100, th - 27, th + 27, 30)}" role="img" aria-label="Doppel ${n}">${s}</svg>`;
 }
 
-/** Antippen im großen Feld → { a, r } (auf das Feld begrenzt) */
+/** Antippen im großen Feld → { a, r } (auf das Feld begrenzt; Schräglage des Feldes herausgerechnet) */
 export function spotFromEvent(svg, e) {
   const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
   const q = p.matrixTransform(svg.getScreenCTM().inverse());
-  const dist = Math.hypot(q.x, q.y), ang = (Math.atan2(q.x, -q.y) * 180) / Math.PI;
+  const rot = Number(svg.dataset.rot) || 0;
+  const dist = Math.hypot(q.x, q.y);
+  let ang = (Math.atan2(q.x, -q.y) * 180) / Math.PI - rot;
+  ang = ((ang + 540) % 360) - 180;
   const c = (v) => Math.max(0, Math.min(1, v));
   return { a: Math.round(Math.max(-1, Math.min(1, ang / HALF)) * 100) / 100, r: Math.round(c((dist - R1) / (R2 - R1)) * 100) / 100 };
 }

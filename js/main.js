@@ -181,10 +181,12 @@ function finish() {
   window.scrollTo(0, 0);
 }
 
-function handle(res) {
+function handle(res, spotAsked = false) {
   const m = S.current;
   if (res.type === 'error') { toast(res.msg); return render(); }
   const t = res.turn;
+  // Checkout auf ein Doppel: zuerst groß „Wo hast du genau getroffen?“, erst danach Animation, Ansage, Leg-Info/Ergebnis
+  if (!spotAsked) { const sp = spotNeeded(m, t, res); if (sp) { askSpot(sp, () => handle(res, true)); return; } }
   // Animation (nur Menschen, nur wenn eingeschaltet). Bots bekommen nur eine kleine Andeutung in ihrer Karte.
   let anim = null;
   if (t && S.prefs.anim && !isBot(t.pid)) anim = fxForTurn(m.game, t, { score: m.game === 'x01' ? t.score : t.v, name: nameOf(t.pid) });
@@ -200,18 +202,15 @@ function handle(res) {
     own = playCall(m.game === 'x01' ? t.score : t.v);
     if (own) sayAfter = Date.now() + own * 1000 + 250;
   }
-  // Checkout auf ein Doppel: danach einmal groß „Wo hast du genau getroffen?“ (Stelle im Doppel → Statistik › Doppel)
-  const spot = spotNeeded(m, t, res);
-  if (res.type === 'match') { const go = spot ? () => askSpot(spot, finish) : finish; if (anim) { render(); anim.then(go); } else go(); return; }
+  if (res.type === 'match') { if (anim) { render(); anim.then(finish); } else finish(); return; }
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
     else if (res.type === 'turn' && !own) say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
     else if (res.type === 'leg' || res.type === 'set') {
       const mo = { kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
-      const show = () => { if (S.current === m) { moment(mo); render(); } };
-      const go = spot ? () => askSpot(spot, show) : show;
-      if (anim) anim.then(go); else go();
+      if (anim) anim.then(() => { if (S.current === m) { moment(mo); render(); } });
+      else moment(mo);
     }
   } else if (m.game === 'football') {
     if (res.event === 'goal') { const sc = t ? t.s : F.curSide(m); toast(`Tor! ${sideName(m.sides[sc])} · ${F.state(m, false).goals.join(' : ')}`); say('Tor!'); }

@@ -2564,3 +2564,9 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 @keyframes dsIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 .di-spot { margin: 10px auto 4px; max-width: 420px; }
 .di-spot .di-n { margin-top: 4px; }
+.dspot-ask .dspot.tap { width: min(520px, 100%); margin: 6px auto 0; filter: drop-shadow(0 0 22px rgba(255,138,76,.35)); }
+/* Abfrage-Schrift im Stil der App: League Gothic, Versalien, gesperrt; Titel Creme mit warmem Schein, Zeile darunter klein in Gold */
+.dspot-in h2 { font-family: var(--f-num); font-size: 34px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--cream);
+  text-shadow: 2px 2px 0 rgba(232,116,42,.55), 0 0 22px rgba(255,138,76,.25); transform: scaleX(var(--num-w, 1.16)); margin: 0 0 6px; }
+.dspot-in p { font-family: var(--f-num); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin: 0 0 16px; }
+.dspot-in p::after { content: ""; display: block; width: 120px; height: 8px; margin: 6px auto 0; background: var(--hand-line) center / 100% 100% no-repeat; opacity: .8; }
