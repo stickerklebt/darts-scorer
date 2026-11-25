@@ -2680,3 +2680,50 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 /* Anmeldung: „Passwort vergessen?“ als dezenter Textknopf unter „Anmelden“ */
 .auth-forgot { display: block; margin: 14px auto 0; padding: 6px 10px; background: none; border: 0; color: var(--gold-l); font-family: var(--f-num); font-size: 15px; letter-spacing: .08em; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(227,174,43,.45); cursor: pointer; }
 .auth-forgot:disabled { opacity: .5; }
+
+/* ================= LIQUID GLASS + FLÜSSIGES GOLD (25.11.2026) =================
+   Reiter-Leisten wie dickes, klares Glas: stark verwischt, Glanz oben, Lichtkante, farbiges Licht unter dem aktiven Reiter.
+   Gold wie geschmolzenes Metall: harter Wechsel hell/dunkel (Spiegelungen) statt flacher Farbe. */
+:root {
+  --gold-metal: linear-gradient(135deg, #6e3f06 0%, #c88a1c 12%, #ffe9a3 24%, #fff8dc 29%, #f0bd3e 38%, #9a6410 52%, #d9a02a 64%, #ffe08a 76%, #fff4c8 81%, #c98a1d 90%, #7a4808 100%);
+  --gold-metal-h: linear-gradient(90deg, #8a5a10, #f2c14a 20%, #fff2c0 32%, #d9a02a 48%, #a06a12 60%, #ffe08a 78%, #c98a1d 92%, #8a5a10);
+}
+/* Glas-Körper */
+body .tabs, body .subpop {
+  background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 38%, rgba(255,255,255,0) 52%, rgba(255,255,255,.04) 100%), rgba(22,18,14,.42) !important;
+  backdrop-filter: blur(22px) saturate(180%) brightness(1.05); -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
+  border: 1px solid transparent !important;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,.42),          /* Lichtkante oben */
+    inset 0 -1px 0 rgba(255,255,255,.10),           /* feine Kante unten */
+    inset 0 10px 18px -10px rgba(255,255,255,.22),   /* Glanz in der Wölbung */
+    inset 0 -14px 22px -14px rgba(255,150,60,.28),   /* warmes Licht von unten durchs Glas */
+    0 14px 34px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.4), 0 0 40px rgba(255,150,50,.16) !important;
+}
+/* Rand aus flüssigem Gold (Maske: nur der Ring) */
+body .tabs::before, body .subpop::before {
+  content: "" !important; display: block !important; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 3;
+  background: var(--gold-metal); background-size: 220% 220%; animation: goldFlow 9s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  filter: drop-shadow(0 0 4px rgba(255,200,90,.35)); opacity: 1; border: 0; width: auto; height: auto; transform: none; margin: 0; left: -1px; top: -1px;
+}
+@keyframes goldFlow { 0%, 100% { background-position: 0% 30%; } 50% { background-position: 100% 70%; } }
+/* aktiver Reiter: farbiges Licht leuchtet von unten ins Glas */
+body .tabs .tab { border-radius: 999px; transition: background .35s ease; }
+body .tabs .tab.on { background: radial-gradient(ellipse 55% 85% at 50% 115%, rgba(255,150,50,.42), rgba(247,117,31,.14) 50%, transparent 75%); }
+body .subpop .subtabs.three button.on { background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(255,150,50,.38), transparent 72%); border-radius: 999px; }
+
+/* Flüssiges Gold auf Überschriften und großen Goldzahlen (Text mit Metall-Verlauf) */
+.label, .di-head b, .hero-stat > small, .record small { text-shadow: none !important;
+  background: var(--gold-metal-h); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent !important;
+  -webkit-text-fill-color: transparent; animation: goldText 8s ease-in-out infinite;
+}
+.label::after { -webkit-text-fill-color: initial; }
+@keyframes goldText { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+
+/* Mehr Licht & Glas auf den Karten: Glanz oben, Lichtkante, Goldrand als Metall */
+.kv-c, .dbl-info, .pb-card, .resume {
+  background-image: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015) 40%, transparent 60%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.35);
+}
+@media (prefers-reduced-motion: reduce) { body .tabs::before, body .subpop::before, .label, .di-head b, .hero-stat > small, .record small { animation: none; } }

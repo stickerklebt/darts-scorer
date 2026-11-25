@@ -399,3 +399,5 @@ Offen: E-Mail-Bestätigung.
   Flight nach links. Dann echter Dart in seinen Farben (Kontrast/Sättigung leicht verstärkt), Tisch transparent, Goldrand (`OUTLINE`), 1000 px PNG in `prefs.myDart`
   (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.
 - Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).
+
+- **Liquid Glass + flüssiges Gold** (seit 25.11.2026, Block „LIQUID GLASS“ am Ende von `screens.css`): Reiter-Leiste und Statistik-Pille aus klarem Glas (stark verwischt, Glanz oben, Lichtkante, warmes Licht von unten, unter dem aktiven Reiter farbiges Licht im Glas), Rand als Ring aus flüssigem Gold (`--gold-metal`, langsam fließend). Überschriften (`.label`), Doppel-Name, Average-Titel, Rekord-Titel in Metall-Gold (`--gold-metal-h`, Text-Clip). Karten mit Glasglanz oben + Lichtkante. Gold soll wie geschmolzenes, spiegelndes Metall wirken (harte Hell/Dunkel-Wechsel), nicht flach.

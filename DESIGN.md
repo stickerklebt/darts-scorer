@@ -107,3 +107,5 @@ Darunter drei Pokale an Medaillenbändern (Rot mit Goldstreifen, Goldring), die 
 Kacheln alle schwarz (einheitlich), Innenrahmen und Stern gold; erkennbar am Muster: Highscore goldene Rasterpunkte ·
 Shanghai goldene Schrägstreifen · Halbieren oranges Schachbrett · Cricket oranges Gitter · Around the Clock goldene Ringe.
 Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYLE` in `svg.js`); X01 bleibt rot.
+
+- **Liquid Glass + flüssiges Gold** (seit 25.11.2026, Block „LIQUID GLASS“ am Ende von `screens.css`): Reiter-Leiste und Statistik-Pille aus klarem Glas (stark verwischt, Glanz oben, Lichtkante, warmes Licht von unten, unter dem aktiven Reiter farbiges Licht im Glas), Rand als Ring aus flüssigem Gold (`--gold-metal`, langsam fließend). Überschriften (`.label`), Doppel-Name, Average-Titel, Rekord-Titel in Metall-Gold (`--gold-metal-h`, Text-Clip). Karten mit Glasglanz oben + Lichtkante. Gold soll wie geschmolzenes, spiegelndes Metall wirken (harte Hell/Dunkel-Wechsel), nicht flach.
