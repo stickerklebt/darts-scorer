@@ -3189,3 +3189,4 @@ html.no-motion .silk-lines .sl-run { display: none; }
 .brand .brand-name { font-weight: 400; }
 /* Linien reagieren aufs Licht wie die 501: heller Glanz dort, wo Finger/Maus (bzw. das wandernde Licht) gerade ist */
 .silk-lines .sl-lit { fill: none; stroke: url(#slL); stroke-width: 3.2; stroke-linecap: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 3px rgba(255,255,255,.7)); }
+.splash svg.brand, .auth-crest svg.brand { filter: brightness(1.4) contrast(1.05) !important; } /* Logo etwas heller */
