@@ -2914,3 +2914,22 @@ body .tabs .tab.on > span { text-shadow: 0 0 10px rgba(255,255,255,.45); }
   text-shadow: 2px 2px 0 #c42a4b, 4px 4px 0 #a3203d, 6px 6px 0 #7a1430, 8px 8px 0 #4f0b1e, 10px 12px 18px rgba(122,20,48,.75), 0 0 30px rgba(179,36,63,.35) !important;
 }
 .pop { text-shadow: 1px 1px 0 #c42a4b, 2px 2px 0 #a3203d, 3px 3px 0 #7a1430, 4px 4px 0 #4f0b1e, 5px 6px 10px rgba(122,20,48,.7) !important; }
+
+/* Mehr Bordeaux in der Statistik (25.11.2026): roter Nebel in den großen Karten, rote Glut unter den kleinen Karten,
+   Rahmen mit Bordeaux-Innenlinie, Ränge rot, rote Lichtlinie statt weißer, Hintergrund mit Bordeaux-Schimmer */
+body { background: radial-gradient(90% 50% at 50% 110%, rgba(122,20,48,.28), transparent 70%) fixed, radial-gradient(60% 40% at 0% 30%, rgba(122,20,48,.14), transparent 70%) fixed, radial-gradient(120% 80% at 50% -10%, #1a1a1f 0%, #08080a 55%) fixed, #08080a !important; }
+.hero-stat, .record {
+  background: radial-gradient(60% 90% at 50% 115%, rgba(179,36,63,.42), rgba(122,20,48,.14) 45%, transparent 75%),
+    radial-gradient(40% 60% at 0% 0%, rgba(122,20,48,.3), transparent 70%), radial-gradient(40% 60% at 100% 0%, rgba(122,20,48,.22), transparent 70%), #0b0b0e !important;
+  box-shadow: inset 0 0 0 5px #0b0b0e, inset 0 0 0 6px rgba(196,42,75,.55), 0 0 34px rgba(122,20,48,.3), 0 14px 30px rgba(0,0,0,.5) !important;
+}
+.kv-c { background-image: radial-gradient(80% 70% at 50% 120%, rgba(179,36,63,.28), transparent 70%), linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015) 40%, transparent 60%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 0 rgba(196,42,75,.55), 0 8px 22px rgba(0,0,0,.35) !important; }
+.kv-c small, .rlist .rl-s { color: #e8a3b2 !important; }
+.glint::before { background: conic-gradient(from var(--ga), transparent 0 72%, rgba(196,42,75,0) 76%, rgba(196,42,75,.9) 83%, #fff 85%, transparent 89%) !important; }
+.rlist .rl-i { background: linear-gradient(180deg, #c42a4b, #7a1430) !important; color: #fff !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(179,36,63,.5); border-radius: 4px; }
+.rlist .rl-v { color: #fff; text-shadow: 1px 1px 0 #c42a4b, 2px 2px 0 #7a1430, 0 0 12px rgba(179,36,63,.5); }
+.rlist { box-shadow: inset 0 0 0 1px rgba(196,42,75,.35), 0 0 26px rgba(122,20,48,.22) !important; }
+.label { filter: drop-shadow(0 0 6px rgba(196,42,75,.35)); }
+.label::after { background: linear-gradient(90deg, #c42a4b, rgba(196,42,75,.35) 40%, rgba(200,204,210,.15) 70%, transparent) !important; }
+.chart .bar { fill: #b3243f; }
