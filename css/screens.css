@@ -3124,3 +3124,22 @@ body .tabs::before, body .subpop::before {
   background: conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .12)) 40deg, rgba(255,255,255,calc(var(--vg) * .5)) 70deg, transparent 78deg, transparent 360deg),
     linear-gradient(rgba(255,255,255,.09), rgba(255,255,255,.09)) !important;
   filter: none !important; }
+
+/* Noch weniger Weiß (2. Schritt): Reiter und VIP-Kästen fast ohne weiße Verläufe, Lichtstriche nur noch als leiser Hauch */
+body .tabs, body .subpop {
+  background: rgba(14,14,17,.7) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 14px 34px rgba(0,0,0,.55) !important;
+}
+body .tabs::before, body .subpop::before {
+  background:
+    conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .06)) 30deg, rgba(255,255,255,calc(var(--vg) * .28)) 62deg, transparent 70deg, transparent 360deg),
+    linear-gradient(rgba(220,224,230,.14), rgba(220,224,230,.14)) !important;
+}
+.backstage .slist, .backstage .bs-tile, .backstage .empty-card, .backstage .field.search, .backstage .btn.line, .backstage .btn.dark, .friend .slist, .friend .kv-c {
+  background: rgba(16,16,19,.65) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.5) !important;
+}
+.page.backstage .slist::before, .page.backstage .bs-tile:not(.glint)::before, .page.backstage .bs-tile.glint::before { background: none !important; }
+.page.backstage .slist::after, .page.backstage .bs-tile::after, .page.backstage .bs-tile.glint::after, .page.backstage .empty-card::after {
+  background: conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .06)) 40deg, rgba(255,255,255,calc(var(--vg) * .28)) 70deg, transparent 78deg, transparent 360deg),
+    linear-gradient(rgba(255,255,255,.07), rgba(255,255,255,.07)) !important; }

@@ -147,4 +147,4 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   „Bewegung in den Kästen“ aus: kein Dauerlicht, keine Drift (das Intro läuft trotzdem; nur prefers-reduced-motion macht es ruhig).
   Intro bei JEDEM Öffnen: beim Laden immer Play (außer ein Spiel läuft), voll beim allerersten Mal, sonst kurz; zusätzlich Kurzversion beim Zurückkehren nach ≥ 30 s im Hintergrund. Debug: `?intro=full|slow|off|reset`.
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
-  Weiße Verläufe gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkler, Lichtstriche nur noch halb so hell.
+  Weiße Verläufe stark gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkel ohne weißen Glanz, Lichtstriche nur als leiser Hauch (max. ~28 %), kein Lichtfleck im VIP.
