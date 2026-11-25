@@ -84,6 +84,14 @@ function checkoutTab(st, pid) {
     <div class="co-right">${rankList('Top 5 Checkouts', st.topCo, pid)}</div></div>`;
 }
 
+/** Doppel groß mit einem Punkt je Treffer – erscheint an Stelle der Heatmap-Scheibe (fertige Matches + laufendes Spiel) */
+function spotOverlay(st, key) {
+  const dn = /^D(\d+)$/.exec(key || '');
+  if (!dn || !st.doubles.fields[key]) return '';
+  const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
+  return `<div class="hb-spot" data-act="heat" data-v="${key}" title="Antippen schließt">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}</div>`;
+}
+
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
@@ -94,14 +102,11 @@ function dblInfo(st, key) {
   const sd = doubleSides(st.doubles, key);
   // Doppel groß mit einem Punkt für jeden Treffer an der Stelle, wo er saß (wird nach dem Checkout abgefragt)
   // fertige Matches + das laufende Spiel (sonst sähe man einen eben eingetragenen Treffer erst nach Spielende)
-  const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
-  const sp = [...(st.spots?.[key] || []), ...live], dn = /^D(\d+)$/.exec(key);
-  const spotBox = dn ? `<div class="di-spot">${spotSVG(Number(dn[1]), sp)}</div>` : '';
   if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
-  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
+  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
   // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
-  return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}
+  return `<div class="dbl-info"><span class="di-arrow"></span>${head}
     <h4>Wenn du nicht triffst, wirfst du</h4>
     <div class="io-wrap has-rv" data-keep title="Antippen für Details">
     <div class="io-line">
@@ -121,7 +126,7 @@ export function doublesBlock(st, sel, withList = true) {
   rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
   const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
-      <div class="heat-board">${heatBoard(fields, sel || null, rating)}</div>
+      <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}</div>
       ${withList && sel ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? `<div class="dbl-right">

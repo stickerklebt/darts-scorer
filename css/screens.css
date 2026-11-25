@@ -2651,3 +2651,11 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .tabs .tab.on > span::before { content: ""; position: absolute; left: calc(-1 * (var(--tic, 20px) + var(--tgap, 9px)) - 14px); right: -14px; bottom: -22px; height: 30px;
   background: radial-gradient(ellipse 50% 60% at 50% 70%, rgba(255,150,50,.22), rgba(247,117,31,.08) 55%, transparent 80%); filter: blur(4px); pointer-events: none; }
 .btn.red { background: linear-gradient(180deg, #ff9a3a 0%, #f7751f 48%, #d85e12 100%); }
+
+/* Statistik › Doppel: angetipptes Doppel erscheint groß an Stelle der Scheibe, die Scheibe blendet fast ganz aus */
+.heat-board { position: relative; }
+.heat-board .heatboard { transition: opacity .35s ease; }
+.heat-board.has-spot .heatboard { opacity: .08; }
+.hb-spot { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8%; cursor: pointer; animation: hbSpotIn .35s ease-out; }
+.hb-spot .dspot { max-width: 100%; max-height: 100%; }
+@keyframes hbSpotIn { from { opacity: 0; transform: scale(.85); } }
