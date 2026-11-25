@@ -2624,3 +2624,5 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .dspot-skip { all: unset; cursor: pointer; display: inline-block; margin-top: 14px; padding: 8px 18px; border-radius: 999px;
   font-family: var(--f-num); font-size: 15px; letter-spacing: .18em; text-transform: uppercase; color: rgba(242,239,231,.38); border: 1px solid rgba(242,239,231,.14); }
 .dspot-skip:hover, .dspot-skip:focus-visible { color: rgba(242,239,231,.7); }
+.dspot .ds-dot.blk { fill: #0b0a08; stroke: rgba(242,239,231,.55); stroke-width: 1; }
+.di-spot { max-width: 300px; }

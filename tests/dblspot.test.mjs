@@ -9,8 +9,8 @@ test('Doppel-Stelle: Mitte innen/außen liegt auf der Achse, Punkte werden gezei
   const [xl] = spotXY({ a: -1, r: 0.5 }), [xr] = spotXY({ a: 1, r: 0.5 });
   assert.ok(xl < 0 && xr > 0);
   const svg = spotSVG(16, [{ a: 0, r: 0.5 }, { a: 0.4, r: 0.2 }]);
-  assert.equal((svg.match(/class="ds-dot"/g) || []).length, 2);
-  assert.ok(svg.includes('D16'));
+  assert.equal((svg.match(/class="ds-dot blk"/g) || []).length, 2);
+  assert.ok(svg.includes('Doppel 16'));
 });
 
 test('Doppel-Stelle: Statistik sammelt throw.spot je Doppel', () => {
