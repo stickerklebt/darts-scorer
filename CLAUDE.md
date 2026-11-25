@@ -397,3 +397,4 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   halbe Breite, **spiegelsymmetrisch zur Mittellinie** (Flight wird voll, auch wenn eine Kante kaum Kontrast hat), geglättet, Krümel an den Enden weg;
   Flight nach links. Dann echter Dart in seinen Farben (Kontrast/Sättigung leicht verstärkt), Tisch transparent, Goldrand (`OUTLINE`), 1000 px PNG in `prefs.myDart`
   (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.
+- Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).

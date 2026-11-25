@@ -3,7 +3,7 @@
 import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
-import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
+import { icon, stars, fuse, sparkles, numRing } from './svg.js';
 import { heatBoard, tierColor } from './board.js';
 import { spotSVG } from './dblspot.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
@@ -66,7 +66,7 @@ function overviewTab(st, pid) {
   const rating = doubleRating(st.doubles);
   const favK = Object.keys(rating).find((k) => rating[k].top === 1);
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
-  return `<div class="hero-stat has-rv">${goldSmoke('gsS')}${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv('Modus 501')}</em></div>
+  return `<div class="hero-stat has-rv">${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv('Modus 501')}</em></div>
     ${cards([
       ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
