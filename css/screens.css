@@ -3060,9 +3060,3 @@ html.no-motion .glint::before, html.no-motion .hero::before, html.no-motion .mod
 .hero.hero-go .hero-num { animation: none !important; filter: none !important; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 8px 30px rgba(0,0,0,.55) !important; }
 .hero.hero-go .hero-line, .hero.hero-go .hl-txt { color: rgba(242,244,247,.72) !important; text-shadow: none !important; filter: none !important; }
 .hero.hero-go:hover .hero-num { transform: scaleX(var(--num-w, 1.16)) !important; }
-.modes .mode { border-radius: 14px !important; box-shadow: 0 0 0 1px rgba(255,255,255,.09) !important; background: #101013 !important; }
-.modes .mode::before, .modes .mode .mode-art::after { display: none !important; }
-.modes .mode:not(.mode-plus) .mode-art::before { display: none !important; }
-.modes .mode .mode-art { background: #101013 !important; background-image: none !important; }
-.modes .mode .badge-mode { transform: none !important; }
-.modes .mode:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.2) !important; }
