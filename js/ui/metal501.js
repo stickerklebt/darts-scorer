@@ -52,9 +52,9 @@ function setLight(x, y, s) {
   // dasselbe Licht auf den Linien neben der Zahl (Kachel-Koordinaten 1000 × 560): unter dem Finger/der Maus genau, sonst aus der Bahn der Zahl umgerechnet
   const ll = document.getElementById('slL');
   if (ll) {
-    const f = state.frac || { x: 0.11 + 0.78 * (x / 450), y: 0.12 + 0.72 * (y / 300) };
+    const f = state.frac || { x: x / 450, y: y / 300 }; // ohne Finger: Lichtbahn über die ganze Kachel (damit sie auch die Linien in den Ecken trifft)
     ll.setAttribute('cx', (f.x * 1000).toFixed(0)); ll.setAttribute('cy', (f.y * 560).toFixed(0));
-    ll.setAttribute('r', (150 + 60 * s).toFixed(0));
+    ll.setAttribute('r', (260 + 90 * s).toFixed(0));
   }
 }
 /** Glints: kurz an einer Kante aufblitzen, wenn das Licht vorbeizieht */
