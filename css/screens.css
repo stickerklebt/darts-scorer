@@ -2945,3 +2945,13 @@ body { background: radial-gradient(90% 50% at 50% 110%, rgba(122,20,48,.28), tra
 
 /* App-Hintergrund: fast schwarz, einfarbig – keine Verläufe, kein Schimmer dahinter */
 html, body { background: #0a0a0c !important; background-image: none !important; }
+
+/* Partyspiel-Kacheln: kein roter Verlauf mehr – neutrales Rauchglas; Bordeaux nur als kurzer Leuchtstrich unten (wie unter dem aktiven Reiter) */
+.mode { box-shadow: inset 0 1.5px 0 rgba(255,255,255,.3), 0 10px 26px rgba(0,0,0,.5) !important; }
+.mode .mode-art, .mode .mode-art[style] {
+  background: radial-gradient(110% 80% at 25% 0%, rgba(255,255,255,.14), transparent 55%), linear-gradient(170deg, #18181c, #0c0c0f 75%) !important;
+  background-image: radial-gradient(110% 80% at 25% 0%, rgba(255,255,255,.14), transparent 55%), linear-gradient(170deg, #18181c, #0c0c0f 75%) !important; }
+.mode:not(.mode-soon) .mode-art { box-shadow: inset 0 -2px 0 -0px transparent; }
+.mode:not(.mode-soon)::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: 34%; height: 2px; transform: translateX(-50%); border-radius: 2px; pointer-events: none; z-index: 4;
+  background: linear-gradient(90deg, transparent, #c42a4b 25%, #f2c7d1 50%, #c42a4b 75%, transparent); box-shadow: 0 0 8px rgba(196,42,75,.7); }
+.mode .mode-art::after { text-shadow: 0 0 6px #fff, 0 0 12px rgba(255,255,255,.6) !important; }
