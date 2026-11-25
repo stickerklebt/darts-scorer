@@ -260,7 +260,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
   Laufende Challenge in `S.bruch` (nur lokal).
 - **Partyspiele (Galerie, `js/partygames.js`, `ui/partybrowse.js`, Screen `partyBrowse`):** Auf Play stehen die Kacheln aus `prefs.partyTiles`
-  (Standard Cricket · Fußball · X01, Challenge nicht mehr standardmäßig), dahinter eine Plus-Kachel → Galerie: oben „Entdecken“ (alle Modi, die noch nicht
+  (Standard Cricket · Fußball; X01 und Challenge nur über die Galerie, X01 dort ganz oben; immer 3 Kacheln pro Reihe), dahinter eine Plus-Kachel → Galerie: oben „Entdecken“ (alle Modi, die noch nicht
   auf Play sind, mit Name + Kurzregel, Plus = hinzufügen), ganz unten „Auf deinem Play-Reiter“ mit Stift → Minus auf jeder Kachel. Spielbar: Cricket, Fußball,
   Challenge, X01, Shanghai, Halbieren, Around the Clock, Highscore (die `retired`-Modi sind spielbar, sobald sie auf Play stehen). 10 kommende Modi (`SOON`:
   Killer, Bob's 27, Baseball, Golf, Gotcha, Tic Tac Toe, Mickey Mouse, Scram, 121, Nine Lives) sind nur Kacheln: auf Play ausgegraut mit „Bald“, nicht antippbar.

@@ -2635,3 +2635,5 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .io-wrap { cursor: pointer; }
 .io-wrap .io-key, .io-wrap .di-n { max-height: 0; opacity: 0; overflow: hidden; margin-top: 0 !important; margin-bottom: 0 !important; transition: max-height .3s ease, opacity .3s ease, margin .3s ease; }
 .io-wrap.rv-on .io-key, .io-wrap.rv-on .di-n { max-height: 40px; opacity: 1; margin-top: 8px !important; }
+/* Partyspiel-Kacheln auf Play: immer drei pro Reihe */
+.modes, .modes.one { grid-template-columns: repeat(3, 1fr) !important; }

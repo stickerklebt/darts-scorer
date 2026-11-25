@@ -1371,6 +1371,8 @@ document.addEventListener('pointercancel', (e) => aimEnd(e, false));
 /* Einmalig: Anwurf wieder auf „wer oben steht“ (Ausbullen gibt es nur noch unter „Mehr Optionen“) */
 if (!S.anwurfV) { S.anwurf = 'list'; S.anwurfV = 1; }
 /* Einmalig: Einzeldarts standardmäßig über die neue Scheibe eingeben (Tastatur bleibt in den Einstellungen wählbar). */
+/* Einmalig: X01-Kachel von Play nehmen (steht jetzt ganz oben in der Partyspiel-Galerie) */
+if (!S.partyV) { if (Array.isArray(S.prefs.partyTiles)) S.prefs.partyTiles = S.prefs.partyTiles.filter((x) => x !== 'x01'); S.partyV = 1; }
 if (!S.aimV) { S.prefs.dartInput = 'board'; S.aimV = 1; }
 if (!S.cleanV) {
   S.matches = []; S.current = null;

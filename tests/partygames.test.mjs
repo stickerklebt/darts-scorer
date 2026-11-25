@@ -4,6 +4,7 @@ import { partyTiles, addTile, removeTile, DEFAULT_TILES, ALL_PARTY, SOON, partyI
 test('Partyspiele: Standard ohne Challenge, hinzufügen/entfernen, 10 kommende Modi', () => {
   const prefs = {};
   assert.deepEqual(partyTiles(prefs), DEFAULT_TILES);
+  assert.ok(!DEFAULT_TILES.includes('x01'));
   assert.ok(!partyTiles(prefs).includes('bruch'));
   addTile(prefs, 'killer'); addTile(prefs, 'killer'); addTile(prefs, 'gibtsnicht');
   assert.deepEqual(partyTiles(prefs), [...DEFAULT_TILES, 'killer']);

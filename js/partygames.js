@@ -3,7 +3,7 @@
    Die Modi in SOON sind nur Kacheln mit Namen und Kurzregel – noch nicht programmiert, auf Play ausgegraut („Bald“). */
 import { GAMES } from './games.js';
 
-export const DEFAULT_TILES = ['cricket', 'football', 'x01'];
+export const DEFAULT_TILES = ['cricket', 'football'];
 
 /** Bekannte Dart-Partyspiele, die es noch nicht gibt (Kurzregeln in eigenen Worten) */
 export const SOON = {
@@ -20,7 +20,7 @@ export const SOON = {
 };
 
 /** Alle Modi, die man in der Galerie findet: spielbare zuerst, dann die kommenden */
-export const PLAYABLE = ['cricket', 'football', 'bruch', 'x01', 'shanghai', 'halveit', 'atc', 'highscore'];
+export const PLAYABLE = ['x01', 'cricket', 'football', 'bruch', 'shanghai', 'halveit', 'atc', 'highscore']; // X01 (101 … 1001) steht in der Galerie ganz oben
 export const ALL_PARTY = [...PLAYABLE, ...Object.keys(SOON)];
 
 export const isPlayable = (id) => PLAYABLE.includes(id) && !!GAMES[id];
