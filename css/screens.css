@@ -3051,3 +3051,18 @@ body .subpop .subtabs.three button.on { opacity: 1 !important; color: #fff !impo
 html.no-motion #app *:not(.fx):not(.fx *), html.no-motion #app *:not(.fx):not(.fx *)::before, html.no-motion #app *:not(.fx):not(.fx *)::after { animation: none !important; }
 html.no-motion .fuse, html.no-motion .sparkles, html.no-motion .hero .tw, html.no-motion .hero .hero-num::after, html.no-motion .hero .hero-num::before { display: none !important; }
 html.no-motion .glint::before, html.no-motion .hero::before, html.no-motion .mode::before, html.no-motion .shimmer::after { opacity: 0 !important; }
+
+/* ===== Play-Seite entschlackt (nur Play): keine Lichtschweife, kein Funkeln, keine Glanzringe – ruhige Flächen, feine Haarlinien.
+   Bleibt: Blasen-Hintergrund, rotes Licht um die 501, seltener Silberschimmer, kurzes Rot im Logo der Kacheln. ===== */
+.hero.hero-go { border-radius: 16px !important; box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 20px 40px rgba(0,0,0,.45) !important; }
+.hero.hero-go::before { display: none !important; }
+.hero.hero-go::after { background: none !important; padding: 0 !important; -webkit-mask: none !important; mask: none !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+.hero.hero-go .hero-num { animation: none !important; filter: none !important; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 8px 30px rgba(0,0,0,.55) !important; }
+.hero.hero-go .hero-line, .hero.hero-go .hl-txt { color: rgba(242,244,247,.72) !important; text-shadow: none !important; filter: none !important; }
+.hero.hero-go:hover .hero-num { transform: scaleX(var(--num-w, 1.16)) !important; }
+.modes .mode { border-radius: 14px !important; box-shadow: 0 0 0 1px rgba(255,255,255,.09) !important; background: #101013 !important; }
+.modes .mode::before, .modes .mode .mode-art::after { display: none !important; }
+.modes .mode:not(.mode-plus) .mode-art::before { display: none !important; }
+.modes .mode .mode-art { background: #101013 !important; background-image: none !important; }
+.modes .mode .badge-mode { transform: none !important; }
+.modes .mode:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.2) !important; }

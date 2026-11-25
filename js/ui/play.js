@@ -45,7 +45,6 @@ export function camBlock() {
 
 export function playView() {
   const m = S.current, o = S.opts.x01;
-  const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
   const others = partyTiles(S.prefs);
   return `<main class="page">
@@ -53,10 +52,9 @@ export function playView() {
       <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
     <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">
       <div class="hero-art">${heroArt()}</div>
-      ${corners}${fuse(6, 11)}
-      <div class="hero-line"><span class="hl-txt shimmer" data-t="First to X Legs">First to X Legs</span></div>
+      <div class="hero-line"><span class="hl-txt">First to X Legs</span></div>
       <div class="hero-main">
-        <div class="hero-num">501${sparkles(5, 11)}</div>
+        <div class="hero-num">501</div>
       </div>
     </section>
     <h2 class="label">Partyspiele</h2>
