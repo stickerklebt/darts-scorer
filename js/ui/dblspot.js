@@ -36,20 +36,20 @@ export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
     const inner = band(R1 + 9, R2 - 9, th - HALF + 0.55, th + HALF - 0.55);
     s += `<defs><pattern id="dsDots" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2.2" cy="2.2" r="1.5" fill="#000" fill-opacity=".22"/><circle cx="6.7" cy="6.7" r="1.5" fill="#000" fill-opacity=".22"/></pattern>
       <linearGradient id="dsShine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>
-      <path d="${fld}" transform="translate(5 6)" fill="#0b0a08" opacity=".85"/>
+      <path d="${fld}" transform="translate(5 6)" fill="#08080a" opacity=".85"/>
       <path class="ds-field" d="${fld}" fill="${col(n)}"/><path d="${fld}" fill="url(#dsDots)"/><path d="${fld}" fill="url(#dsShine)"/>
-      <path d="${fld}" fill="none" stroke="#e3ae2b" stroke-width="4" filter="url(#rough-s)"/><path d="${inner}" fill="none" stroke="#f7d46a" stroke-width="1.4" stroke-opacity=".75"/>`;
+      <path d="${fld}" fill="none" stroke="#cfd3d9" stroke-width="4" filter="url(#rough-s)"/><path d="${inner}" fill="none" stroke="#f2f4f7" stroke-width="1.4" stroke-opacity=".75"/>`;
     if (last) { const [x, y] = spotXY(last, th); s += `<circle class="ds-dot last" cx="${f1(x)}" cy="${f1(y)}" r="9"/>`; }
     return `<svg class="dspot tap" viewBox="${box(R1, R2, th - HALF, th + HALF, 16)}" data-dspot="1" data-rot="${th}" role="img" aria-label="Doppel ${n}">${s}</svg>`;
   }
   // Statistik: nur das Doppel selbst, jeder Treffer ein schwarzer Punkt an seiner Stelle
-  s += `<path d="${fld}" transform="translate(4 5)" fill="#0b0a08" opacity=".8"/><path d="${fld}" fill="${col(n)}"/>`;
+  s += `<path d="${fld}" transform="translate(4 5)" fill="#08080a" opacity=".8"/><path d="${fld}" fill="${col(n)}"/>`;
   // Leuchten + Glitzern: Glanzverlauf, ein Lichtstreif zieht langsam übers Feld, Goldrand mit Schein (Funkeln als HTML drumherum)
   s += `<defs><linearGradient id="dsSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
-    <linearGradient id="dsSw" x1="0" y1="0" x2="1" y2=".35"><stop offset=".38" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff6d8" stop-opacity=".55"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/>
+    <linearGradient id="dsSw" x1="0" y1="0" x2="1" y2=".35"><stop offset=".38" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/>
     <animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.45;1" dur="4.5s" repeatCount="indefinite"/></linearGradient></defs>`;
   s += `<path d="${fld}" fill="url(#dsSh)"/><path d="${fld}" fill="url(#dsSw)"/>`;
-  s += `<path class="ds-rim" d="${fld}" fill="none" stroke="#f7d46a" stroke-width="4"/>`;
+  s += `<path class="ds-rim" d="${fld}" fill="none" stroke="#f2f4f7" stroke-width="4"/>`;
   for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="8"/>`; }
   return `<svg class="dspot" viewBox="${box(R1, R2, th - HALF, th + HALF, 14)}" role="img" aria-label="Doppel ${n}: ${spots.length} Treffer">${s}</svg>`;
 }
@@ -72,7 +72,7 @@ export function spotAskView(sp) {
   return `<div class="dspot-ask" role="dialog" aria-label="Wo genau getroffen?">
     <div class="ds-rays" aria-hidden="true"></div>
     <div class="dspot-in">${['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('')}
-      <div class="ds-crown" aria-hidden="true">${stars(5, '#e3ae2b', 14)}</div>
+      <div class="ds-crown" aria-hidden="true">${stars(5, '#cfd3d9', 14)}</div>
       <h2 class="ds-title" data-t="Wo hast du genau getroffen?">Wo hast du genau getroffen?</h2>
       <div class="ds-field-wrap">${sparkles(7, 5)}${spotSVG(sp.n, [], { tap: true, last: sp.picked || null })}</div>
       <button class="dspot-skip" data-act="spotSkip">Überspringen</button></div></div>`;

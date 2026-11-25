@@ -49,7 +49,7 @@ function paint(box) {
     if (!Number.isFinite(d.x)) return;
     const [px, py] = project(cal.toImage, d.x, d.y), x = f.x + (px / 1000) * f.w, y = f.y + (py / 1000) * f.h;
     // Feines Fadenkreuz + Punkt genau auf der Spitze, Farbe nach Sicherheit, Beschriftung „I · T12“
-    const big = box.classList.contains('big'), col = d.conf >= 0.85 ? '#4fd16a' : d.conf >= 0.6 ? '#ffd23f' : '#ff4d3a', L = big ? 14 : 7, gap = big ? 3 : 2;
+    const big = box.classList.contains('big'), col = d.conf >= 0.85 ? '#4fd16a' : d.conf >= 0.6 ? '#eef1f6' : '#ff4d3a', L = big ? 14 : 7, gap = big ? 3 : 2;
     g.strokeStyle = col; g.lineWidth = 1;
     g.beginPath(); g.moveTo(x - L, y); g.lineTo(x - gap, y); g.moveTo(x + gap, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y - gap); g.moveTo(x, y + gap); g.lineTo(x, y + L); g.stroke();
     g.fillStyle = col; g.beginPath(); g.arc(x, y, big ? 2 : 1.5, 0, Math.PI * 2); g.fill();

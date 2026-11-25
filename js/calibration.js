@@ -61,11 +61,11 @@ function drawTopView(canvas, video, pts) {
 }
 
 const SKETCH = `<svg class="cal-sketch" viewBox="0 0 220 120" aria-hidden="true">
-  <rect x="2" y="2" width="216" height="116" fill="none" stroke="#3a3229"/>
-  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#e3ae2b" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
-  <rect x="160" y="70" width="14" height="26" rx="2" fill="#0b0a08" stroke="#f3e9d2" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#f3e9d2"/>
-  <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#a89d87"/><text x="122" y="104" fill="#a89d87" font-size="9">40–80 cm</text>
-  <text x="140" y="24" fill="#a89d87" font-size="9">≥ 30 cm vom Rand</text></svg>`;
+  <rect x="2" y="2" width="216" height="116" fill="none" stroke="#303036"/>
+  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#cfd3d9" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
+  <rect x="160" y="70" width="14" height="26" rx="2" fill="#08080a" stroke="#eef0f3" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#eef0f3"/>
+  <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#9a9ea6"/><text x="122" y="104" fill="#9a9ea6" font-size="9">40–80 cm</text>
+  <text x="140" y="24" fill="#9a9ea6" font-size="9">≥ 30 cm vom Rand</text></svg>`;
 
 /**
  * Assistent öffnen. video: laufendes Kamera-Video. → Promise<{ pts } | null>
@@ -127,7 +127,7 @@ export function runCalibration(video, { skipPlacement = false } = {}) {
         lupe.style.left = `${e.clientX - f.r.left - L / 2}px`; lupe.style.top = `${e.clientY - f.r.top - L - 40}px`;
         const g = lupe.getContext('2d');
         g.drawImage(big, p[0] * vw - sw / 2, p[1] * vh - sh / 2, sw, sh, 0, 0, L, L);
-        g.strokeStyle = '#ffd23f'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(L / 2, L / 2 - 14); g.lineTo(L / 2, L / 2 + 14); g.moveTo(L / 2 - 14, L / 2); g.lineTo(L / 2 + 14, L / 2); g.stroke();
+        g.strokeStyle = '#eef1f6'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(L / 2, L / 2 - 14); g.lineTo(L / 2, L / 2 + 14); g.moveTo(L / 2 - 14, L / 2); g.lineTo(L / 2 + 14, L / 2); g.stroke();
       };
       box.addEventListener('pointerdown', (e) => {
         if (e.target.closest('.cal-lupe')) return;
@@ -147,9 +147,9 @@ export function runCalibration(video, { skipPlacement = false } = {}) {
       const f = fitOf(big), g = ov.getContext('2d');
       pts.forEach(([x, y], i) => {
         const sx = f.x + x * f.w, sy = f.y + y * f.h;
-        g.strokeStyle = '#ffd23f'; g.fillStyle = 'rgba(255,210,63,.25)'; g.lineWidth = 2;
+        g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(255,210,63,.25)'; g.lineWidth = 2;
         g.beginPath(); g.arc(sx, sy, 11, 0, Math.PI * 2); g.fill(); g.stroke();
-        g.fillStyle = '#f3e9d2'; g.font = '13px sans-serif'; g.textAlign = 'center'; g.fillText(String(i + 1), sx, sy - 16);
+        g.fillStyle = '#eef0f3'; g.font = '13px sans-serif'; g.textAlign = 'center'; g.fillText(String(i + 1), sx, sy - 16);
       });
     }
 

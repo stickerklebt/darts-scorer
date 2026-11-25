@@ -52,9 +52,9 @@ const r2 = (v) => Math.round(v * 100) / 100;
 /** Dart-Nummern in der ganzen App römisch */
 export const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 export const dartGlyph = (k = 1) => `<g class="adart" transform="scale(${k}) rotate(-45)">
-  <path d="M0 0H5" stroke="#f3e9d2" stroke-width=".9" stroke-linecap="round"/>
-  <rect x="5" y="-1.35" width="7.5" height="2.7" rx="1.1" fill="#f3e9d2"/><path d="M7 -1.35V1.35M9 -1.35V1.35" stroke="#0b0a08" stroke-width=".45" opacity=".55"/>
-  <path d="M12.5 0H16.5" stroke="#d9c9a3" stroke-width="1"/>
+  <path d="M0 0H5" stroke="#eef0f3" stroke-width=".9" stroke-linecap="round"/>
+  <rect x="5" y="-1.35" width="7.5" height="2.7" rx="1.1" fill="#eef0f3"/><path d="M7 -1.35V1.35M9 -1.35V1.35" stroke="#08080a" stroke-width=".45" opacity=".55"/>
+  <path d="M12.5 0H16.5" stroke="#c4c8cf" stroke-width="1"/>
   <path d="M15.6 0L18.4 -4.4H23L21.2 0Z" fill="#e5402c"/><path d="M15.6 0L18.4 4.4H23L21.2 0Z" fill="#a92a1b"/></g>`;
 const pt = (r, deg) => `${r2(r * Math.cos((deg * Math.PI) / 180))},${r2(r * Math.sin((deg * Math.PI) / 180))}`;
 const ring = (r0, r1, a0, a1) => `M${pt(r1, a0)} A${r1},${r1} 0 0,1 ${pt(r1, a1)} L${pt(r0, a1)} A${r0},${r0} 0 0,0 ${pt(r0, a0)} Z`;
@@ -62,7 +62,7 @@ const ring = (r0, r1, a0, a1) => `M${pt(r1, a0)} A${r1},${r1} 0 0,1 ${pt(r1, a1)
 /* Farben: warm-dunkle Felder, leicht getönte Ringe (nicht grell) */
 const F = {
   sA: '#221d16', sB: '#2f281d', rA: '#8a3326', rB: '#2a6b45', b25: '#2f7d4f', b50: '#c4452f',
-  wire: '#e3ae2b', num: '#f7d46a', rim: '#12100d',
+  wire: '#cfd3d9', num: '#f2f4f7', rim: '#0e0e11',
 };
 
 /**

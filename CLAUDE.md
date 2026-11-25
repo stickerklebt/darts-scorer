@@ -401,3 +401,11 @@ Offen: E-Mail-Bestätigung.
 - Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).
 
 - **Liquid Glass + flüssiges Gold** (seit 25.11.2026, Block „LIQUID GLASS“ am Ende von `screens.css`): Reiter-Leiste und Statistik-Pille aus klarem Glas (stark verwischt, Glanz oben, Lichtkante, warmes Licht von unten, unter dem aktiven Reiter farbiges Licht im Glas), Rand als Ring aus flüssigem Gold (`--gold-metal`, langsam fließend). Überschriften (`.label`), Doppel-Name, Average-Titel, Rekord-Titel in Metall-Gold (`--gold-metal-h`, Text-Clip). Karten mit Glasglanz oben + Lichtkante. VIP: Freundesliste, Suchfeld, Kacheln, Leer-Karten und Knöpfe als dickes Kristallglas (doppelte Kante, helle weiße Lichtkanten, prismatischer Rand `--prism` mit feinen Farbsäumen, Glanzlicht oben links, Lichtsaum unten), eigener Dart mit Lichtreflex wie hinter Glas. Gold soll wie geschmolzenes, spiegelndes Metall wirken (harte Hell/Dunkel-Wechsel), nicht flach.
+
+- **Kristall · Silber · Bordeaux (seit 25.11.2026, ersetzt Gold · Silber · Orange und die gezeichnete Queen-Anmutung):** Alles Glasige in Chrom-Silber
+  (`--gold-metal`/`--gold-metal-h`/`--prism` sind jetzt Chrom-Verläufe, `--gold` = Silber #cfd3d9, hell #f2f4f7), Akzent **Bordeaux** (`--red` #b3243f,
+  dunkel #6b1226; Knöpfe als getöntes Bordeaux-Glas). Neutrale, kühle Grundtöne (Schwarz #08080a, Text #eef0f3), kein Orange, kein Gold.
+  **Weniger gezeichnet, mehr glänzendes Kristall:** Filter `#rough`/`#rough-s`/`#ink` in `index.html` sind wirkungslos, keine Eck-Ornamente/Trenner,
+  kein Papier/Kupferstich, Label-Linie als feine Lichtlinie. 501-Karte: Glas-Stern (`chromeStar`, `heroArt` in `svg.js`) auf tiefem Schwarz mit
+  Chrom-Schlieren, Rand als Chrom-Ring. Start-Logo/Anmeldung (`crestLine`): nur kleiner Chrom-Stern + „DARTVADER“ clean (Systemschrift, dünn, weit gesperrt).
+  Dartscheiben behalten Rot/Grün.

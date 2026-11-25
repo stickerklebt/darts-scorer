@@ -10,7 +10,7 @@ export function tileArt(id, size = 52) {
   if (GAMES[id] && partyInfo(id)?.playable) return badge(id, size);
   return `<span class="soon-mark">${partyInfo(id)?.tile || '?'}</span>`;
 }
-const tileBg = (id) => (partyInfo(id)?.playable ? MODE_COLORS[id] : '#2a2620');
+const tileBg = (id) => (partyInfo(id)?.playable ? MODE_COLORS[id] : '#232328');
 
 function card(id, mode) {
   const p = partyInfo(id);

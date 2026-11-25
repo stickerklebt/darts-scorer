@@ -29,7 +29,7 @@ const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.l
  * fmt: Beschriftung der y-Achse, maxHint: feste Obergrenze (z. B. 1 für Quoten)
  */
 let gid = 0;
-const AVG_INK = [[0, '#f7751f'], [.18, '#d0661f'], [.33, '#ef8238'], [.5, '#c95f1c'], [.64, '#ea7a30'], [.8, '#b85618'], [1, '#e8792f']]
+const AVG_INK = [[0, '#b3243f'], [.18, '#d0661f'], [.33, '#ef8238'], [.5, '#c95f1c'], [.64, '#ea7a30'], [.8, '#b85618'], [1, '#e8792f']]
   .map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('');
 export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '', taps = null, key = null } = {}) {
   const pts = values.map((v, i) => ({ v, a: avg[i], i })).filter((p) => p.v !== null);

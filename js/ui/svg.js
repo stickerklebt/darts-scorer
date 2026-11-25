@@ -1,13 +1,13 @@
 /* Eigene SVG-Grafiken: Wappen, Ornamente, Badges, Comic-Elemente, Icons. Alles selbst entworfen. */
 
 export const COLORS = {
-  ink: '#0b0a08', cream: '#f3e9d2', cream2: '#d9c9a3', gold: '#e3ae2b', goldL: '#f7d46a',
-  red: '#f7751f', blue: '#c8ccd0', yellow: '#ffd23f', green: '#1f9a4c', violet: '#c8ccd0', teal: '#e3ae2b',
-  stone: '#5b4f3e', stoneD: '#3a3229', stoneL: '#a89d87',
-  pink: '#f7751f', cyan: '#c8ccd0', magic: '#c8ccd0', spark: '#ffd23f',
+  ink: '#08080a', cream: '#eef0f3', cream2: '#c4c8cf', gold: '#cfd3d9', goldL: '#f2f4f7',
+  red: '#b3243f', blue: '#c8ccd0', yellow: '#eef1f6', green: '#1f9a4c', violet: '#c8ccd0', teal: '#cfd3d9',
+  stone: '#4a4a52', stoneD: '#303036', stoneL: '#9a9ea6',
+  pink: '#b3243f', cyan: '#c8ccd0', magic: '#c8ccd0', spark: '#eef1f6',
 };
-export const PLAYER_COLORS = ['#f7751f', '#c8ccd0', '#e3ae2b', '#f3e9d2', '#a8743a', '#e8b07a']; // Orange · Silber · Gold · Creme · Bronze · Pfirsich
-export const PLAYER_INK = ['#f3e9d2', '#f3e9d2', '#0b0a08', '#f3e9d2', '#f3e9d2', '#0b0a08'];
+export const PLAYER_COLORS = ['#b3243f', '#c8ccd0', '#cfd3d9', '#eef0f3', '#a8743a', '#e8b07a']; // Orange · Silber · Gold · Creme · Bronze · Pfirsich
+export const PLAYER_INK = ['#eef0f3', '#eef0f3', '#08080a', '#eef0f3', '#eef0f3', '#08080a'];
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const polar = (cx, cy, r, deg) => [r2(cx + r * Math.cos((deg * Math.PI) / 180)), r2(cy + r * Math.sin((deg * Math.PI) / 180))];
@@ -35,7 +35,7 @@ function leaf(x, y, len, w, rot, color) {
   const h = len / 2;
   return `<g transform="translate(${x} ${y}) rotate(${r2(rot)})">
     <path d="M${-h},0 C${r2(-h * 0.4)},${r2(-w * 1.15)} ${r2(h * 0.45)},${r2(-w * 0.95)} ${h},${r2(w * 0.12)} C${r2(h * 0.35)},${r2(w * 0.95)} ${r2(-h * 0.45)},${r2(w * 1.05)} ${-h},0Z" fill="${color}"/>
-    <path d="M${r2(-h * 0.85)},0 Q0,${r2(-w * 0.18)} ${r2(h * 0.8)},${r2(w * 0.08)}" fill="none" stroke="#0b0a08" stroke-opacity=".55" stroke-width=".7"/>
+    <path d="M${r2(-h * 0.85)},0 Q0,${r2(-w * 0.18)} ${r2(h * 0.8)},${r2(w * 0.08)}" fill="none" stroke="#08080a" stroke-opacity=".55" stroke-width=".7"/>
   </g>`;
 }
 function laurelBranch(cx, cy, R, from, to, n, color) {
@@ -159,19 +159,12 @@ export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } 
  * Baut auf crest() auf und tauscht nur die Farben: Gold-Flächen werden dunkel mit Verlaufs-Kontur, Creme-Flächen gedämpft.
  */
 let lineN = 0;
+/** Start-Logo/Anmeldung: schlicht – kleiner Chrom-Stern, darunter der Name clean (Systemschrift, weit gesperrt) */
 export function crestLine(opts = {}) {
-  const C = COLORS, g = `crl${++lineN}`, dark = '#120f0c';
-  let s = crest({ lite: true, banner: 'DARTVADER', ...opts }); // schlichter: ohne Strahlen, Lorbeerkranz und Schraffur im Schild
-  s = s.split(`fill="${C.gold}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1.3"`)
-    .split(`stroke="${C.gold}"`).join(`stroke="url(#${g})"`)
-    .split(`fill="${C.cream2}"`).join(`fill="${dark}" stroke="url(#${g})" stroke-width="1"`)
-    .split(`fill="${C.cream}" stroke="${C.ink}"`).join(`fill="${dark}" stroke="url(#${g})"`)
-    .split(`fill="${C.cream}"`).join(`fill="rgba(247,212,106,.14)" stroke="url(#${g})" stroke-width=".5"`)
-    .split(`fill="${C.ink}">`).join(`fill="url(#${g})">`);
-  // DartVader: dunkler – Stahl oben, Glut-Rot unten (nur Farben, keine Film-Motive)
-  const defs = `<defs><linearGradient id="${g}" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="160" y2="240">
-    <stop offset="0" stop-color="#e9ecef"/><stop offset=".4" stop-color="#b9bcc2"/><stop offset=".72" stop-color="#f7751f"/><stop offset="1" stop-color="#8a4614"/></linearGradient></defs>`;
-  return s.replace('aria-hidden="true">', `aria-hidden="true">${defs}`);
+  const w = opts.size || 200;
+  return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader">
+    ${chromeStar(100, 58, 52, 34, 40, 34, { glow: 1 })}
+    <text x="104" y="134" text-anchor="middle" class="brand-name">DARTVADER</text></svg>`;
 }
 
 /* ---------- Ornamente ---------- */
@@ -213,20 +206,20 @@ const SYMBOLS = {
   cricket: '<path d="M5 4l14 16M19 4L5 20" stroke="currentColor" stroke-width="2.6" fill="none"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
   bruch: '<path d="M13.5 2.5 6 13.2h5l-1.5 8.3L18 10.6h-5.2z" fill="currentColor"/>',
   // Fußball: Fünfeck in der Mitte, Nähte zu den Sechsecken, angeschnittene Fünfecke am Rand
-  football: '<defs><clipPath id="fbclip"><circle cx="12" cy="12" r="9.6"/></clipPath></defs><circle cx="12" cy="12" r="9.6" fill="#f6f1e4"/><g clip-path="url(#fbclip)"><path d="M12.00,8.50L12.00,6.50M8.77,4.15L20.46,12.65M15.33,10.92L17.23,10.30M18.47,6.50L14.00,20.25M14.06,14.83L15.23,16.45M19.23,16.45L4.77,16.45M9.94,14.83L8.77,16.45M10.00,20.25L5.53,6.50M8.67,10.92L6.77,10.30M3.54,12.65L15.23,4.15" fill="none" stroke="#0b0a08" stroke-width=".7" stroke-opacity=".7"/><polygon points="12.00,6.50 8.77,4.15 10.00,0.35 14.00,0.35 15.23,4.15" fill="#0b0a08"/><polygon points="17.23,10.30 18.47,6.50 22.46,6.50 23.70,10.30 20.46,12.65" fill="#0b0a08"/><polygon points="15.23,16.45 19.23,16.45 20.46,20.25 17.23,22.60 14.00,20.25" fill="#0b0a08"/><polygon points="8.77,16.45 10.00,20.25 6.77,22.60 3.54,20.25 4.77,16.45" fill="#0b0a08"/><polygon points="6.77,10.30 3.54,12.65 0.30,10.30 1.54,6.50 5.53,6.50" fill="#0b0a08"/></g><polygon points="12.00,8.50 15.33,10.92 14.06,14.83 9.94,14.83 8.67,10.92" fill="#0b0a08"/><circle cx="12" cy="12" r="9.6" fill="none" stroke="#0b0a08" stroke-width="1.2"/>',
+  football: '<defs><clipPath id="fbclip"><circle cx="12" cy="12" r="9.6"/></clipPath></defs><circle cx="12" cy="12" r="9.6" fill="#f6f1e4"/><g clip-path="url(#fbclip)"><path d="M12.00,8.50L12.00,6.50M8.77,4.15L20.46,12.65M15.33,10.92L17.23,10.30M18.47,6.50L14.00,20.25M14.06,14.83L15.23,16.45M19.23,16.45L4.77,16.45M9.94,14.83L8.77,16.45M10.00,20.25L5.53,6.50M8.67,10.92L6.77,10.30M3.54,12.65L15.23,4.15" fill="none" stroke="#08080a" stroke-width=".7" stroke-opacity=".7"/><polygon points="12.00,6.50 8.77,4.15 10.00,0.35 14.00,0.35 15.23,4.15" fill="#08080a"/><polygon points="17.23,10.30 18.47,6.50 22.46,6.50 23.70,10.30 20.46,12.65" fill="#08080a"/><polygon points="15.23,16.45 19.23,16.45 20.46,20.25 17.23,22.60 14.00,20.25" fill="#08080a"/><polygon points="8.77,16.45 10.00,20.25 6.77,22.60 3.54,20.25 4.77,16.45" fill="#08080a"/><polygon points="6.77,10.30 3.54,12.65 0.30,10.30 1.54,6.50 5.53,6.50" fill="#08080a"/></g><polygon points="12.00,8.50 15.33,10.92 14.06,14.83 9.94,14.83 8.67,10.92" fill="#08080a"/><circle cx="12" cy="12" r="9.6" fill="none" stroke="#08080a" stroke-width="1.2"/>',
   atc: '<path d="M20 12a8 8 0 11-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19.5 2.5v4.5H15" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
 };
 /* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
    [Hintergrund des Abzeichens, Farbe des Symbols, Rand] – die Kachel auf „Spielen“ hat dazu ein eigenes Muster (screens.css). */
 const MODE_STYLE = {
   x01: [COLORS.red, COLORS.ink, COLORS.ink],
-  highscore: ['#0b0a08', '#f0c24a', '#f0c24a'],
-  shanghai: ['#f0c24a', '#0b0a08', '#0b0a08'],
-  halveit: ['#0b0a08', '#f07a24', '#f07a24'],
-  cricket: ['#f07a24', '#0b0a08', '#0b0a08'],
+  highscore: ['#08080a', '#f0c24a', '#f0c24a'],
+  shanghai: ['#f0c24a', '#08080a', '#08080a'],
+  halveit: ['#08080a', '#f07a24', '#f07a24'],
+  cricket: ['#f07a24', '#08080a', '#08080a'],
   atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
-  bruch: ['#0b0a08', '#ffd86b', '#e7b73c'],
-  football: ['#c8ccd0', '#0b0a08', '#0b0a08'],
+  bruch: ['#08080a', '#ffd86b', '#e7b73c'],
+  football: ['#c8ccd0', '#08080a', '#08080a'],
 };
 export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
 export const badge = (game, size = 44) => {
@@ -293,7 +286,7 @@ export const magicCorner = (c1 = COLORS.cyan, c2 = COLORS.pink, c3 = COLORS.spar
 
 /* ---------- Pokal (detailreich: Bänder, Lorbeer, Edelsteine, Sockel mit Plakette) ---------- */
 export const trophy = (C = COLORS) => {
-  const K = '#0b0a08', G = '#ffd23f', D = '#e3ae2b', L = '#fff4c4';
+  const K = '#08080a', G = '#eef1f6', D = '#cfd3d9', L = '#fff4c4';
   let beads = ''; for (let i = 0; i < 9; i++) beads += `<circle cx="${34 + i * 6.5}" cy="22" r="1.6" fill="${K}"/>`;
   return `<svg viewBox="0 0 120 150" aria-hidden="true">
   <path d="M30 26 H14 C8 26 6 32 7 38 C9 52 20 60 34 62 M90 26 H106 C112 26 114 32 113 38 C111 52 100 60 86 62" fill="none" stroke="${K}" stroke-width="9" stroke-linecap="round"/>
@@ -356,22 +349,49 @@ export const fuse = (inset = 6, secs = 24, rx = 3) => {
 
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 /** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
+/** Lang gezogener 4-Zack-Stern aus Chrom/Glas (konkave Flanken, spitze Enden) */
+export function chromeStarPath(cx, cy, up, right, down, left, w = 0.16) {
+  const P = (x, y) => `${r2(cx + x)} ${r2(cy + y)}`;
+  const k = (a, b) => Math.min(a, b) * w;
+  return `M${P(0, -up)} C${P(k(up, right) * .25, -k(up, right) * 1.2)} ${P(k(up, right) * 1.2, -k(up, right) * .25)} ${P(right, 0)}`
+    + ` C${P(k(down, right) * 1.2, k(down, right) * .25)} ${P(k(down, right) * .25, k(down, right) * 1.2)} ${P(0, down)}`
+    + ` C${P(-k(down, left) * .25, k(down, left) * 1.2)} ${P(-k(down, left) * 1.2, k(down, left) * .25)} ${P(-left, 0)}`
+    + ` C${P(-k(up, left) * 1.2, -k(up, left) * .25)} ${P(-k(up, left) * .25, -k(up, left) * 1.2)} ${P(0, -up)}Z`;
+}
+let starN = 0;
+/** Chrom-Stern als SVG-Gruppe: Glas-Körper mit Verlauf, helle Kante, Glühen (ids eindeutig) */
+export function chromeStar(cx, cy, up, right, down, left, { rot = 0, glow = 1 } = {}) {
+  const g = `cs${++starN}`, d = chromeStarPath(cx, cy, up, right, down, left);
+  return `<defs>
+    <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".28" stop-color="#d9dee6"/><stop offset=".46" stop-color="#5d626c"/><stop offset=".55" stop-color="#f4f6fa"/><stop offset=".7" stop-color="#8b9099"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    <radialGradient id="${g}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".25" stop-color="#e9edf3" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <filter id="${g}f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${6 * glow}"/></filter></defs>
+  <g transform="rotate(${rot} ${cx} ${cy})">
+    <path d="${d}" fill="#fff" opacity=".55" filter="url(#${g}f)"/>
+    <path d="${d}" fill="url(#${g}a)"/>
+    <path d="${d}" fill="none" stroke="#fff" stroke-width="1.4" stroke-opacity=".95"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="${Math.min(right, left) * .55}" ry="${Math.min(up, down) * .55}" fill="url(#${g}b)"/>
+  </g>`;
+}
+
+/** 501-Karte: Glas-Stern auf tiefem Schwarz mit fließenden Chrom-Schlieren (Vorlage „Glass Star“) */
 export function heroArt() {
-  const C = COLORS;
-  let rays = '';
-  for (let i = 0; i < 72; i++) {
-    const a = ((i * 5 + jit(i, 4) * 1.6) * Math.PI) / 180, r0 = (i % 2 ? 108 : 96) + jit(i, 6) * 5, r1 = (i % 6 === 0 ? 196 : i % 2 ? 170 : 184) + jit(i, 8) * 12;
-    rays += `<path d="M${r2(200 + r0 * Math.cos(a))} ${r2(200 + r0 * Math.sin(a))} L${r2(200 + r1 * Math.cos(a))} ${r2(200 + r1 * Math.sin(a))}"/>`;
-  }
-  let dots = '';
-  for (let i = 0; i < 36; i++) { const a = (i * 10 * Math.PI) / 180; dots += `<circle cx="${r2(200 + 90 * Math.cos(a))}" cy="${r2(200 + 90 * Math.sin(a))}" r="1.3"/>`; }
-  return `<svg viewBox="0 0 400 400" aria-hidden="true">
-    <g stroke="${C.gold}" stroke-width=".7" opacity=".32">${rays}</g>
-    <circle cx="200" cy="200" r="92" fill="none" stroke="${C.gold}" stroke-width=".8" opacity=".45"/>
-    <circle cx="200" cy="200" r="86" fill="none" stroke="${C.gold}" stroke-width=".5" opacity=".35" stroke-dasharray="2 3"/>
-    <g fill="${C.gold}" opacity=".45">${dots}</g>
-    <g opacity=".5">${laurelWreath(200, 214, 118, C.gold, 9)}</g>
-    <path d="${starPath(200, 62, 9, 3.8)}" fill="${C.gold}" opacity=".8"/>
-    <path d="${starPath(150, 74, 5, 2.1)}" fill="${C.gold}" opacity=".6"/><path d="${starPath(250, 74, 5, 2.1)}" fill="${C.gold}" opacity=".6"/>
+  let sw = '';
+  const swirls = [
+    'M-20 60 C80 10 160 90 260 40 S420 70 440 20', 'M-30 330 C60 270 150 360 240 300 S380 250 430 320',
+    'M300 -10 C260 60 360 110 320 180 S260 290 340 330', 'M20 180 C70 130 120 230 60 270', 'M360 200 C330 160 420 120 410 70',
+  ];
+  swirls.forEach((d, i) => {
+    sw += `<path d="${d}" fill="none" stroke="url(#hsw)" stroke-width="${[14, 18, 12, 9, 10][i]}" stroke-linecap="round" opacity="${[.22, .18, .2, .14, .16][i]}" filter="url(#hsb)"/>`;
+    sw += `<path d="${d}" fill="none" stroke="#e9edf3" stroke-width="1" opacity="${[.35, .28, .3, .22, .25][i]}"/>`;
+  });
+  return `<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="hsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a3d44"/><stop offset=".5" stop-color="#e6eaf0"/><stop offset="1" stop-color="#2a2c31"/></linearGradient>
+      <filter id="hsb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+      <radialGradient id="hsg" cx=".62" cy=".62" r=".45"><stop offset="0" stop-color="#cfd6e2" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
+    <rect width="400" height="400" fill="url(#hsg)"/>
+    <g class="hs-swirl">${sw}</g>
+    <path d="M160 400 L262 250" stroke="#fff" stroke-width=".6" opacity=".5"/>
+    <g class="hs-star">${chromeStar(262, 250, 230, 150, 120, 250, { rot: 8, glow: 1.4 })}</g>
   </svg>`;
 }

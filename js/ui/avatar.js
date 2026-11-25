@@ -31,16 +31,16 @@ function placeholder(b) {
 }
 
 /* Gezeichnete Avatare (eigene Comic-Figuren, flache Farben, Konturen, Queen-Rahmen) */
-const K = '#0b0a08', SKIN = '#f2c9a0';
+const K = '#08080a', SKIN = '#f2c9a0';
 const frame = (bg) => `<rect width="64" height="64" fill="${bg}"/>
   <g fill="${K}" opacity=".18">${Array.from({ length: 49 }, (_, i) => `<circle cx="${4.5 + (i % 7) * 9}" cy="${4.5 + Math.floor(i / 7) * 9}" r="1.6"/>`).join('')}</g>`;
 const border = `<rect x="2.5" y="2.5" width="59" height="59" fill="none" stroke="${COLORS.gold}" stroke-width="1.6"/>`;
 const ART = {
   // Schwarze Lederjacke, kurze graue Haare, Brille
   jensn: (b) => `${frame(b.color)}
-    <path d="M8 64 C9 50 18 45 32 45 C46 45 55 50 56 64 Z" fill="#141210" stroke="${K}" stroke-width="2"/>
+    <path d="M8 64 C9 50 18 45 32 45 C46 45 55 50 56 64 Z" fill="#111114" stroke="${K}" stroke-width="2"/>
     <path d="M32 46 L24 64 M32 46 L40 64" stroke="#3a342c" stroke-width="2"/>
-    <path d="M21 47 L30 58 L32 47 Z M43 47 L34 58 L32 47 Z" fill="#2a2620" stroke="${K}" stroke-width="1.5"/>
+    <path d="M21 47 L30 58 L32 47 Z M43 47 L34 58 L32 47 Z" fill="#232328" stroke="${K}" stroke-width="1.5"/>
     <path d="M28 46 L32 52 L36 46 Z" fill="#26221c"/>
     <rect x="27" y="38" width="10" height="9" fill="${SKIN}" stroke="${K}" stroke-width="1.5"/>
     <ellipse cx="32" cy="29" rx="12" ry="13" fill="${SKIN}" stroke="${K}" stroke-width="2"/>
@@ -53,22 +53,22 @@ const ART = {
   // Schwarzer Fedora, weißer Glitzerhandschuh, rot-schwarze Jacke
   mj: (b) => `${frame(b.color)}
     <path d="M10 64 C11 50 19 45 32 45 C45 45 53 50 54 64 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="2"/>
-    <path d="M27 45 L32 64 L37 45 Z" fill="#141210"/><path d="M15 54 H22 M15 58 H22 M42 54 H49 M42 58 H49" stroke="${COLORS.gold}" stroke-width="1.6"/>
+    <path d="M27 45 L32 64 L37 45 Z" fill="#111114"/><path d="M15 54 H22 M15 58 H22 M42 54 H49 M42 58 H49" stroke="${COLORS.gold}" stroke-width="1.6"/>
     <rect x="28" y="38" width="8" height="8" fill="#e8c09a" stroke="${K}" stroke-width="1.5"/>
     <path d="M22 26 C22 36 26 41 32 41 C38 41 42 36 42 26 Z" fill="#e8c09a" stroke="${K}" stroke-width="2"/>
     <path d="M21 30 C19 36 20 42 22 44 M43 30 C45 36 44 42 42 44" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/>
     <circle cx="28" cy="31" r="1.2" fill="${K}"/><circle cx="36" cy="31" r="1.2" fill="${K}"/>
     <path d="M29 36.5 C31 37.5 33 37.5 35 36.5" fill="none" stroke="${K}" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M13 27 C20 24.5 44 24.5 51 27 C47 29 17 29 13 27 Z" fill="#141210" stroke="${K}" stroke-width="1.6"/>
-    <path d="M21 26 C21 16 25 12 32 12 C39 12 43 16 43 26 Z" fill="#141210" stroke="${K}" stroke-width="1.8"/>
-    <path d="M21.5 22 H42.5" stroke="#f3e9d2" stroke-width="2"/>
+    <path d="M13 27 C20 24.5 44 24.5 51 27 C47 29 17 29 13 27 Z" fill="#111114" stroke="${K}" stroke-width="1.6"/>
+    <path d="M21 26 C21 16 25 12 32 12 C39 12 43 16 43 26 Z" fill="#111114" stroke="${K}" stroke-width="1.8"/>
+    <path d="M21.5 22 H42.5" stroke="#eef0f3" stroke-width="2"/>
     <g transform="translate(51 40) rotate(-14)"><path d="M-6 10 V-2 C-6 -5 -3 -5 -3 -2 V-8 C-3 -11 0 -11 0 -8 V-9 C0 -12 3 -12 3 -9 V-6 C3 -9 6 -9 6 -6 V4 C6 9 3 11 0 11 H-4 Z" fill="#f6f4ee" stroke="${K}" stroke-width="1.6"/>
       <path d="M-3 0 l1 1 M1 -4 l1 1 M3 3 l1 1 M-1 6 l1 1" stroke="#9fd8ff" stroke-width="1.4"/><path d="M-4 -6 l1 -1 M4 -2 l1 -1" stroke="${COLORS.gold}" stroke-width="1.4"/></g>`,
   // Darts-Spieler: kurze, zurückgekämmte Haare, Spieler-Trikot
   phil: (b) => `${frame(b.color)}
     <path d="M8 64 C9 50 18 45 32 45 C46 45 55 50 56 64 Z" fill="#2f6fe4" stroke="${K}" stroke-width="2"/>
     <path d="M12 56 L24 48 M52 56 L40 48" stroke="${COLORS.yellow}" stroke-width="3"/><path d="M14 62 L26 54 M50 62 L38 54" stroke="${COLORS.red}" stroke-width="2.4"/>
-    <path d="M26 45 L32 52 L38 45 Z" fill="#f3e9d2" stroke="${K}" stroke-width="1.5"/>
+    <path d="M26 45 L32 52 L38 45 Z" fill="#eef0f3" stroke="${K}" stroke-width="1.5"/>
     <circle cx="44" cy="55" r="3.2" fill="${COLORS.yellow}" stroke="${K}" stroke-width="1.2"/>
     <rect x="27" y="38" width="10" height="9" fill="${SKIN}" stroke="${K}" stroke-width="1.5"/>
     <path d="M19.5 30 C19.5 21 24 17 32 17 C40 17 44.5 21 44.5 30 C44.5 38 40 43 32 43 C24 43 19.5 38 19.5 30 Z" fill="${SKIN}" stroke="${K}" stroke-width="2"/>
@@ -87,7 +87,7 @@ const ART = {
     <circle cx="32" cy="13" r="2" fill="${COLORS.yellow}" stroke="${K}" stroke-width="1.2"/>
     <path d="${'M26 31 l1.2 2.4 2.6.4 -1.9 1.8.5 2.6 -2.4-1.2 -2.4 1.2.5-2.6 -1.9-1.8 2.6-.4z'}" fill="${K}" transform="translate(0 -3)"/>
     <path d="${'M38 31 l1.2 2.4 2.6.4 -1.9 1.8.5 2.6 -2.4-1.2 -2.4 1.2.5-2.6 -1.9-1.8 2.6-.4z'}" fill="${K}" transform="translate(0 -3)"/>
-    <path d="M23.5 37 C27 43.5 37 43.5 40.5 37 Z" fill="${K}"/><path d="M26.5 38.2 H37.5" stroke="#f3e9d2" stroke-width="1.6"/>
+    <path d="M23.5 37 C27 43.5 37 43.5 40.5 37 Z" fill="${K}"/><path d="M26.5 38.2 H37.5" stroke="#eef0f3" stroke-width="1.6"/>
     <circle cx="21" cy="35" r="2" fill="${COLORS.red}" opacity=".55"/><circle cx="43" cy="35" r="2" fill="${COLORS.red}" opacity=".55"/>`,
 };
 

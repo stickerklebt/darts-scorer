@@ -71,6 +71,6 @@ export function authView() {
       <div class="auth-steps"><span class="on">1 · Konto</span><i class="${a.step !== 'email' ? 'on' : ''}"></i><span class="${a.step !== 'email' ? 'on' : ''}">2 · ${s2}</span></div>
       ${body}
     </section>
-    <p class="auth-foot">${stars(3, '#e3ae2b', 9)}<span>Deine Spiele liegen sicher in deinem Konto – spielen geht auch offline.</span></p>
+    <p class="auth-foot">${stars(3, '#cfd3d9', 9)}<span>Deine Spiele liegen sicher in deinem Konto – spielen geht auch offline.</span></p>
   </div>`;
 }

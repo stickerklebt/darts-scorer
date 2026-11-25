@@ -61,11 +61,11 @@ function segOf(m) {
 }
 
 const SKETCH = `<svg class="cal-sketch" viewBox="0 0 220 120" aria-hidden="true">
-  <rect x="2" y="2" width="216" height="116" fill="none" stroke="#3a3229"/>
-  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#e3ae2b" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
-  <rect x="160" y="70" width="14" height="26" rx="2" fill="#0b0a08" stroke="#f3e9d2" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#f3e9d2"/>
-  <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#a89d87"/><text x="122" y="104" fill="#a89d87" font-size="9">40–80 cm</text>
-  <text x="140" y="24" fill="#a89d87" font-size="9">≥ 30 cm vom Rand</text></svg>`;
+  <rect x="2" y="2" width="216" height="116" fill="none" stroke="#303036"/>
+  <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#cfd3d9" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
+  <rect x="160" y="70" width="14" height="26" rx="2" fill="#08080a" stroke="#eef0f3" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#eef0f3"/>
+  <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#9a9ea6"/><text x="122" y="104" fill="#9a9ea6" font-size="9">40–80 cm</text>
+  <text x="140" y="24" fill="#9a9ea6" font-size="9">≥ 30 cm vom Rand</text></svg>`;
 
 /* ---------- Kalibrierung aus allen Punkten: 4 getippte, Zusatzpunkte (auf Linien gesetzt) und automatisch gefundene Kanten ---------- */
 const K = 1000; // Bildpunkte normiert (0–1) × 1000
@@ -190,7 +190,7 @@ function draw(box) {
     for (const deg of OVERLAY.spokes) { const a = (deg * Math.PI) / 180, [x0, y0] = toScr(RADII.outer * Math.sin(a), -RADII.outer * Math.cos(a)), [x1, y1] = toScr(RADII.dblOut * Math.sin(a), -RADII.dblOut * Math.cos(a)); g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
     if (S.step === 4) S.test.forEach((t, i) => {
       if (!Number.isFinite(t.x)) return;
-      const col = t.conf >= 0.85 ? '#4fd16a' : t.conf >= 0.6 ? '#ffd23f' : '#ff4d3a', [x, y] = toScr(t.x, t.y);
+      const col = t.conf >= 0.85 ? '#4fd16a' : t.conf >= 0.6 ? '#eef1f6' : '#ff4d3a', [x, y] = toScr(t.x, t.y);
       if (i === 0 && t.seg) { // getroffenes Feld halbtransparent
         const { r0, r1, a0, a1 } = t.seg; g.fillStyle = 'rgba(255,214,107,.22)'; g.beginPath();
         for (let k = 0; k <= 12; k++) { const a = ((a0 + (a1 - a0) * k / 12) * Math.PI) / 180, [px, py] = toScr(r1 * Math.sin(a), -r1 * Math.cos(a)); k ? g.lineTo(px, py) : g.moveTo(px, py); }
@@ -211,10 +211,10 @@ function draw(box) {
   });
   if (S.step === 2 || S.step === 3) S.pts.forEach(([x, y], i) => {
     const sx = f.x + x * f.w, sy = f.y + y * f.h;
-    g.strokeStyle = '#ffd23f'; g.fillStyle = 'rgba(255,210,63,.3)'; g.lineWidth = 2.5;
+    g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(255,210,63,.3)'; g.lineWidth = 2.5;
     g.beginPath(); g.arc(sx, sy, 13, 0, Math.PI * 2); g.fill(); g.stroke();
     g.beginPath(); g.moveTo(sx - 6, sy); g.lineTo(sx + 6, sy); g.moveTo(sx, sy - 6); g.lineTo(sx, sy + 6); g.stroke();
-    g.fillStyle = '#f3e9d2'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(FIELDS[i], sx, sy - 19);
+    g.fillStyle = '#eef0f3'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(FIELDS[i], sx, sy - 19);
   });
 }
 
@@ -242,7 +242,7 @@ function bind(box) {
     lupe.style.left = `${e.clientX - f.r.left - L / 2}px`; lupe.style.top = `${Math.max(4, e.clientY - f.r.top - L - 44)}px`;
     const g = lupe.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, L, L);
     g.drawImage(im, p[0] * nw - sw / 2, p[1] * nh - sh / 2, sw, sh, 0, 0, L, L);
-    g.strokeStyle = '#ffd23f'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(L / 2, L / 2 - 18); g.lineTo(L / 2, L / 2 + 18); g.moveTo(L / 2 - 18, L / 2); g.lineTo(L / 2 + 18, L / 2); g.stroke();
+    g.strokeStyle = '#eef1f6'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(L / 2, L / 2 - 18); g.lineTo(L / 2, L / 2 + 18); g.moveTo(L / 2 - 18, L / 2); g.lineTo(L / 2 + 18, L / 2); g.stroke();
   };
   box.addEventListener('dragstart', (e) => e.preventDefault());
   box.addEventListener('pointerdown', (e) => {

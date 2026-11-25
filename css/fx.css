@@ -245,17 +245,17 @@
 /* ================= Update 3: längere Abläufe, Queen-Comic, 180 = Pokal ================= */
 .fx { animation: fade .12s, fxEnd .45s ease-in calc(var(--dur) - .45s) forwards; }
 @keyframes fxEnd { to { opacity: 0; } }
-.fx-big { color: var(--cream); -webkit-text-stroke: 4px #0b0a08; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #0b0a08, 0 0 34px rgba(255,210,63,.55); }
-.fx-sub { background: #0b0a08; color: var(--yellow); box-shadow: 6px 6px 0 var(--gold); font-family: var(--f-display); font-weight: 900; letter-spacing: .08em; outline: 1px solid var(--gold); outline-offset: -5px; }
+.fx-big { color: var(--cream); -webkit-text-stroke: 4px #08080a; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #08080a, 0 0 34px rgba(255,210,63,.55); }
+.fx-sub { background: #08080a; color: var(--yellow); box-shadow: 6px 6px 0 var(--gold); font-family: var(--f-display); font-weight: 900; letter-spacing: .08em; outline: 1px solid var(--gold); outline-offset: -5px; }
 /* Stempel und Comic-Wörter */
-.fx-stamp { left: 50%; top: 20%; z-index: 7; transform: translateX(-50%) rotate(-10deg); padding: 8px 20px; border: 5px double var(--red); color: var(--red); background: rgba(243,233,210,.92);
+.fx-stamp { left: 50%; top: 20%; z-index: 7; transform: translateX(-50%) rotate(-10deg); padding: 8px 20px; border: 5px double var(--red); color: var(--red); background: rgba(238,240,243,.92);
   font-family: var(--f-display); font-weight: 900; font-size: clamp(26px, 8vmin, 54px); letter-spacing: .08em; text-transform: uppercase; animation: stamp .35s cubic-bezier(.3,1.6,.5,1) both; text-align: center; line-height: 1; }
 .fx-stamp small { display: block; font-size: .35em; letter-spacing: .2em; margin-top: 4px; }
 .fx-stamp.grade { top: auto; bottom: 14%; left: auto; right: 8%; transform: rotate(8deg); }
 @keyframes stamp { from { transform: translateX(-50%) rotate(-10deg) scale(3); opacity: 0; } }
 .fx-stamp.grade { animation-name: stampR; } @keyframes stampR { from { transform: rotate(8deg) scale(3); opacity: 0; } }
 .fx-pow { left: 50%; top: 24%; z-index: 7; transform: translateX(-50%) rotate(-8deg); animation: fxPopS .35s cubic-bezier(.2,1.6,.4,1) both; }
-.fx-pow b { display: inline-block; padding: 6px 18px; background: var(--yellow); color: #0b0a08; border: 4px solid #0b0a08; box-shadow: 6px 6px 0 var(--red);
+.fx-pow b { display: inline-block; padding: 6px 18px; background: var(--yellow); color: #08080a; border: 4px solid #08080a; box-shadow: 6px 6px 0 var(--red);
   font-family: var(--f-display); font-weight: 900; font-size: clamp(30px, 9vmin, 70px); }
 .fx-pow.small { transform: rotate(-6deg); } .fx-pow.small b { font-size: clamp(20px, 6vmin, 40px); }
 /* Breakfast */
@@ -289,10 +289,10 @@
 @keyframes klPulse { 50% { transform: rotate(-2deg) scale(1.08); } }
 /* Atomrakete: längerer Flug, dritte Welle, Pilzwolke */
 .nk-rocket { animation-duration: 1.65s; }
-.nk-wave.w3 { animation-delay: .4s; border-color: rgba(247,117,31,.7); }
+.nk-wave.w3 { animation-delay: .4s; border-color: rgba(179,36,63,.7); }
 .nk-mush { left: 50%; bottom: 0; width: min(60vmin, 360px); height: 70vh; margin-left: calc(min(60vmin, 360px) / -2); z-index: 2; animation: mushUp 2.3s cubic-bezier(.2,.8,.3,1) both; }
-.nk-mush .cap { position: absolute; left: 0; right: 0; top: 0; height: 42%; border-radius: 50% 50% 40% 40%; background: #8a4a1f; background-image: var(--tex-halftone-lg); border: 4px solid #0b0a08; }
-.nk-mush .stem { position: absolute; left: 36%; right: 36%; top: 36%; bottom: 0; background: #6a3a18; background-image: var(--tex-halftone); border: 4px solid #0b0a08; border-bottom: 0; }
+.nk-mush .cap { position: absolute; left: 0; right: 0; top: 0; height: 42%; border-radius: 50% 50% 40% 40%; background: #8a4a1f; background-image: var(--tex-halftone-lg); border: 4px solid #08080a; }
+.nk-mush .stem { position: absolute; left: 36%; right: 36%; top: 36%; bottom: 0; background: #6a3a18; background-image: var(--tex-halftone); border: 4px solid #08080a; border-bottom: 0; }
 @keyframes mushUp { from { transform: translateY(70%) scale(.4); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(0) scale(1); opacity: .9; } }
 /* Big Fish: Zeitachse auf 8 s gestreckt, Titel nach dem Platsch */
 .bf-water, .bf-fish { animation-duration: var(--dur); }
@@ -319,10 +319,10 @@
 .tr-shine { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.85) 48%, transparent 60%); mix-blend-mode: overlay; opacity: 0; pointer-events: none; }
 .tr-cup.gleam .tr-shine { opacity: 1; animation: shineSweep 1.4s ease-in-out infinite; }
 @keyframes shineSweep { from { transform: translateX(-80%); } to { transform: translateX(80%); } }
-.tr-plinth { left: 50%; bottom: -30px; width: 70vmin; height: 26px; margin-left: -35vmin; background: var(--gold); border: 3px solid #0b0a08; opacity: 0; }
+.tr-plinth { left: 50%; bottom: -30px; width: 70vmin; height: 26px; margin-left: -35vmin; background: var(--gold); border: 3px solid #08080a; opacity: 0; }
 .fx-trophy.burst .tr-plinth { animation: fxRise .6s .2s forwards; opacity: 1; bottom: 6%; }
 .fx-trophy .lb-title { top: 80%; }
-.fx-trophy .lb-title .fx-big { color: #ffe9a8; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #0b0a08, 0 0 50px #ffd23f, 0 0 90px #ff7a3d; }
+.fx-trophy .lb-title .fx-big { color: #ffe9a8; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #08080a, 0 0 50px #eef1f6, 0 0 90px #ff7a3d; }
 .tr-corner { width: 16vmin; height: 16vmin; z-index: 6; animation: fxPopS .4s both; }
 .tr-corner.tl { left: 3%; top: 3%; } .tr-corner.tr { right: 3%; top: 3%; transform: scaleX(-1); }
 .tr-corner.bl { left: 3%; bottom: 3%; transform: scaleY(-1); } .tr-corner.br { right: 3%; bottom: 3%; transform: scale(-1); }

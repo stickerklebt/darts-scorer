@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="DartVader">
-<meta name="theme-color" content="#0b0a08">
+<meta name="theme-color" content="#08080a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -24,9 +24,9 @@
 <div id="app"></div>
 <!-- Handgemacht: Filter für gezeichnete Linien (Feder wackelt leicht) und gedruckte Schrift (Bleisatz-Rauheit) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="rough" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.8" xChannelSelector="R" yChannelSelector="G"/></filter>
-  <filter id="rough-s" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter>
-  <filter id="ink" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="rough"><feOffset dx="0" dy="0"/></filter>
+  <filter id="rough-s"><feOffset dx="0" dy="0"/></filter>
+  <filter id="ink"><feOffset dx="0" dy="0"/></filter>
 </svg>
 <script src="js/errlog.js"></script>
 <script type="module" src="js/main.js"></script>

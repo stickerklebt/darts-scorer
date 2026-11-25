@@ -225,7 +225,7 @@ export function straighten(img, mask) {
 
 /** Rand um den Dart (px im ausgerichteten Bild) und Goldton */
 export const OUTLINE = 3;
-const GOLD = [227,174,43], GOLD_L = [240, 217, 140];
+const GOLD = [207,211,217], GOLD_L = [240, 217, 140];
 
 /**
  * Im Stil der App: der echte Dart (Farben leicht kräftiger, Kontrast gestreckt), außen ein feiner Goldrand (innen hell, außen weich),

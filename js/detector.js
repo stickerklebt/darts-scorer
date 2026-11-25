@@ -127,9 +127,9 @@ export class CamDetector {
     const g = c.getContext('2d');
     g.drawImage(this.video, vx - S / 2, vy - S * 0.375, S, S * 0.75, 0, 0, c.width, c.height);
     const cx = c.width / 2, cy = c.height / 2;
-    g.strokeStyle = '#ffd23f'; g.lineWidth = 1;
+    g.strokeStyle = '#eef1f6'; g.lineWidth = 1;
     g.beginPath(); g.moveTo(cx - 14, cy); g.lineTo(cx - 3, cy); g.moveTo(cx + 3, cy); g.lineTo(cx + 14, cy); g.moveTo(cx, cy - 14); g.lineTo(cx, cy - 3); g.moveTo(cx, cy + 3); g.lineTo(cx, cy + 14); g.stroke();
-    g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(cx, cy, 2, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#eef1f6'; g.beginPath(); g.arc(cx, cy, 2, 0, Math.PI * 2); g.fill();
     try { return c.toDataURL('image/jpeg', 0.7); } catch { return null; }
   }
 }

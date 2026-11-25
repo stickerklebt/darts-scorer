@@ -13,14 +13,14 @@
 
 :root {
   /* Grundtöne */
-  --ink: #0b0a08; --coal: #12100d; --panel: #1a1713; --panel2: #231f19; --panel3: #2e2820;
-  --line: #3a3229; --line2: #5b4f3e;
-  --cream: #f3e9d2; --cream2: #d9c9a3; --muted: #a89d87; --dim: #6f6656;
+  --ink: #08080a; --coal: #0e0e11; --panel: #16161a; --panel2: #1e1e23; --panel3: #27272d;
+  --line: #303036; --line2: #4a4a52;
+  --cream: #eef0f3; --cream2: #c4c8cf; --muted: #9a9ea6; --dim: #686b72;
   /* Pop-Art-Palette */
-  --red: #f7751f; --red-d: #b5480b; --gold: #e3ae2b; --gold-l: #f7d46a;
-  --blue: #c8ccd0; --blue-d: #8e959c; --yellow: #ffd23f; --green: #1f9a4c; --violet: #c8ccd0;
+  --red: #b3243f; --red-d: #6b1226; --gold: #cfd3d9; --gold-l: #f2f4f7;
+  --blue: #c8ccd0; --blue-d: #8e959c; --yellow: #eef1f6; --green: #1f9a4c; --violet: #c8ccd0;
   /* Spielerfarben */
-  --p0: #f7751f; --p1: #c8ccd0; --p2: #e3ae2b; --p3: var(--cream); --p4: #a8743a; --p5: #e8b07a;
+  --p0: #b3243f; --p1: #c8ccd0; --p2: #cfd3d9; --p3: var(--cream); --p4: #a8743a; --p5: #e8b07a;
   /* Schrift */
   --f-num: 'League Gothic', 'Arial Narrow', 'Helvetica Neue', sans-serif;
   --f-display: 'Fell Digits', 'Cinzel', 'Iowan Old Style', 'Times New Roman', serif;
@@ -39,9 +39,9 @@
   --tex-grain: none; --tex-stone: none; --tex-cracks: none;
   /* Feine Goldlinie mit Punkten statt Zebra */
   --tex-zebra: repeating-linear-gradient(90deg, var(--gold) 0 2px, transparent 2px 8px);
-  --teal: var(--gold); --teal-d: #8d6b1f;
+  --teal: var(--gold); --teal-d: #8a8e96;
   /* Comic-Farben für Momente (Queen-Pop-Art statt Neon) */
-  --mg-pink: #f7751f; --mg-cyan: #c8ccd0; --mg-violet: #c8ccd0; --mg-gold: #ffd23f;
+  --mg-pink: #b3243f; --mg-cyan: #c8ccd0; --mg-violet: #c8ccd0; --mg-gold: #eef1f6;
   --tex-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 0L7 7M7 0L0 7' stroke='%23d4a63a' stroke-opacity='.18' stroke-width='.8'/%3E%3C/svg%3E");
   /* Handgezogene Linie (für Labels, Trenner) und gealtertes Papier (nur auf Elementen) */
   --hand-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8'%3E%3Cpath d='M1 4.4 C18 3.1 34 5.3 52 4 S88 2.9 106 4.6 S140 5.2 159 3.7' fill='none' stroke='%23d4a63a' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M8 6.6 C40 5.9 70 7.1 120 6.2' fill='none' stroke='%23d4a63a' stroke-opacity='.45' stroke-width='.6'/%3E%3C/svg%3E");

@@ -269,7 +269,7 @@ function drawDebug(e) {
   if (e.axis && e.tip) {
     const [cx, cy] = e.axis.center, [ux, uy] = e.axis.dir, L = e.axis.length / 2;
     g.strokeStyle = '#2f6fe4'; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - ux * L, cy - uy * L); g.lineTo(cx + ux * L, cy + uy * L); g.stroke();
-    g.strokeStyle = '#ffd23f'; g.beginPath(); g.arc(e.tip[0], e.tip[1], 6, 0, Math.PI * 2); g.stroke();
+    g.strokeStyle = '#eef1f6'; g.beginPath(); g.arc(e.tip[0], e.tip[1], 6, 0, Math.PI * 2); g.stroke();
   }
 }
 

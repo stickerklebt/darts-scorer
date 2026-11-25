@@ -62,9 +62,9 @@ export function playView() {
     <h2 class="label">Partyspiele</h2>
     <div class="modes">${others.map((id, i) => {
       const p = partyInfo(id), soon = !p.playable;
-      return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#2a2620' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">
+      return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#232328' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">
       <span class="mode-art">${tileArt(id, 52)}</span>${soon ? `<span class="mode-soon"><b>${p.title}</b><small>Bald</small></span>` : ''}</button>`;
     }).join('')}
-      <button class="mode mode-plus" data-act="partyBrowse" style="--mc:#0b0a08;--bi:${others.length}" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art"><span class="badge-mode" style="--badge-bg:#e3ae2b;--badge-ink:#0b0a08;--badge-line:#0b0a08;width:52px;height:52px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></span></button></div>
+      <button class="mode mode-plus" data-act="partyBrowse" style="--mc:#08080a;--bi:${others.length}" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art"><span class="badge-mode" style="--badge-bg:#cfd3d9;--badge-ink:#08080a;--badge-line:#08080a;width:52px;height:52px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></span></button></div>
   </main>`;
 }
