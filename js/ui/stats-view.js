@@ -184,7 +184,6 @@ function cachedInsights(pid) {
   return inCache.r;
 }
 const sgn = (d) => `${d >= 0 ? '+' : '−'}${fmt(Math.abs(d), 1)}`;
-const DAYPART_LINE = { morgens: 'Frühaufsteher!', nachmittags: 'Der Kaffee wirkt.', abends: 'Feierabend-Form.', nachts: 'Nachteule!' };
 function insightsBlock(r) {
   const few = 'Noch zu wenig Daten';
   const items = [];
@@ -204,12 +203,10 @@ function insightsBlock(r) {
   items.push(['Erster Versuch', ft ? pct(ft.first) : '–', ft
     ? `beim ersten Dart aufs Doppel · Nachwerfen ${pct(ft.retry)}. ${ft.first >= ft.retry ? 'Der erste sitzt.' : 'Du brauchst Anlauf.'}`
     : few]);
-  const dt = r.daytime;
-  const night = dt?.night, nightD = night ? night.avg - dt.base : null;
-  items.push(['Tageszeit', dt ? dt.best.k : '–', !dt ? few
-    : night && Math.abs(nightD) >= 1
-      ? `Nach 22 Uhr ${nightD >= 0 ? 'steigt' : 'fällt'} dein Average um ${fmt(Math.abs(nightD), 0)} Punkte. ${nightD >= 0 ? 'Nachteule!' : 'Ab ins Bett.'}`
-      : `Am besten wirfst du ${dt.best.k} (${sgn(dt.best.avg - dt.base)}). ${DAYPART_LINE[dt.best.k]}`]);
+  const hf = r.highFinish;
+  items.push(['High Finish', hf ? pct(hf.hi) : '–', hf
+    ? `aufs Doppel nach Rest ab 100 · sonst ${pct(hf.lo)}. ${hf.hi < hf.lo * 0.8 ? 'Nach dem langen Weg wackelt das Doppel.' : hf.hi > hf.lo * 1.2 ? 'Wenn du schon mal da bist, sitzt er.' : 'Egal wie du hinkommst.'}`
+    : few]);
   const wd = r.weekday;
   items.push(['Wochentag', wd ? wd.best.k.slice(0, 2) : '–', wd
     ? `Bester Tag ${wd.best.k} (Ø ${fmt(wd.best.avg, 1)}) · schwächster ${wd.worst.k} (Ø ${fmt(wd.worst.avg, 1)}).`

@@ -292,13 +292,13 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
-  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
-  beste gold) · Doppelquote pro Match · Verteilung der Aufnahmen – sonst nichts („Wann du gut wirfst“ entfernt). Checkout steht im Überblick. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match · First 9 Average pro Match · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
+  beste gold) · Doppelquote gesamt (kumuliert: Gesamtquote nach jedem Match, Kurve erst ab 100 Doppelversuchen, `cumulativeDoubles`/`DBL_MIN` in `stats-extra.js`) · Verteilung der Aufnahmen – sonst nichts („Wann du gut wirfst“ entfernt). Checkout steht im Überblick. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
   (Bestes Leg steht im Überblick). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern durch langes Drücken auf den Reiter „Stats“ → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
-  Heatmap-Scheibe im Stil der Eingabe-Scheibe; keine Hervorhebung der 3 besten mehr (kein Silber-Rand, keine Ringe in der Liste). Liste immer „beste zuerst“ (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus; rechts oben darüber groß die Gesamt-Doppelquote (füllt den Platz neben der Scheibe), Tabelle unten, Rest per Scrollen in der Box. Keine Farblegende.
+  Heatmap-Scheibe im Stil der Eingabe-Scheibe; keine Hervorhebung der 3 besten mehr (kein Silber-Rand, keine Ringe in der Liste). Liste immer „beste zuerst“ (ganz unten gescrollt bleibt ein leichter Verlauf) (bewertet erst ab 10 Versuchen), ohne Sortier-Umschalter; Box zeigt die ersten 4, die 5. läuft aus; rechts oben darüber groß die Gesamt-Doppelquote (füllt den Platz neben der Scheibe), Tabelle unten, Rest per Scrollen in der Box. Keine Farblegende.
   Verlaufsdiagramme: y-Achse passt sich den Werten an (`axisRange` in `ui/charts.js`), Quoten nie über 100 %.
   Gleiche Logik im Vergleich (jede Scheibe relativ zum eigenen Spieler).
   Doppel antippen (Scheibe oder Liste) → Fenster mit Trefferquote und – bei Fehlwürfen – inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) als geteilte Linie
@@ -339,7 +339,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   (`SUB_ICONS` in `stats-view.js`). Die App startet immer im Reiter Spielen; in der Statistik ist beim Start und beim Öffnen des Reiters immer Doppel (Mitte) gewählt. Wechsel auch per Wischen links/rechts
   (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste). Statistik-Kopf ohne Namen; anderer Zeitraum erscheint als Chip.
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme und Top-5-Listen leichter (1 px gedämpft). Gleitender Schnitt im Diagramm durchgezogen, aber handgemacht: Rot leicht ungleich (Verlauf `AVG_INK` in `charts.js`), dunkler versetzter Druck darunter, `#rough`.
-- Reihenfolge im Statistik-Reiter Scoring: Average pro Match · Aufnahmen im Leg · Doppelquote pro Match · Verteilung der Aufnahmen.
+- Reihenfolge im Statistik-Reiter Scoring: Average pro Match · First 9 Average pro Match · Aufnahmen im Leg · Doppelquote gesamt · Verteilung der Aufnahmen.
 - Reiter Spielen ohne Namen/Ø-Kopf oben (Kennzahlen nur im Reiter Statistik, Name in den Einstellungen).
 - Die Bruchchallenge heißt in der App nur noch **„Challenge“** (`GAMES.bruch.title`, Screen-Titel, Ergebnis); intern bleibt der Schlüssel `bruch`.
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
@@ -359,7 +359,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   die Statistik wird zwischengespeichert (`cachedStats`) und nur bei geänderten Matches/Zeitraum neu berechnet. Seiten-Scrollbalken-Platz ist reserviert (`scrollbar-gutter: stable`).
 - **Auffällig** (Statistik › Zahlen ganz unten, `js/insights.js`, 501-Matches im Zeitraum): Matchdart-Nerven (Doppelquote bei Matchdarts vs. sonst),
   Entscheidungsleg (Ø im letzten möglichen Leg vs. Schnitt), Bust-Schock (Ø der Aufnahme direkt nach einem Bust), Erster Versuch oder Nachwerfen
-  (Doppelquote erster Doppel-Dart der Aufnahme vs. nach Fehlwurf), Tageszeit (bester Abschnitt bzw. „Nach 22 Uhr …“), Wochentag (bester/schwächster).
+  (Doppelquote erster Doppel-Dart der Aufnahme vs. nach Fehlwurf), High Finish (Doppelquote, wenn die Aufnahme bei Rest ≥ 100 begann, vs. sonst), Wochentag (bester/schwächster). Tageszeit wird nicht mehr angezeigt.
   Je Karte Zahl + ein Satz; Mindestmengen (10 Aufnahmen / 6 Doppelversuche), sonst „Noch zu wenig Daten“.
 - „Spiel fortsetzen“ (Reiter Play) hat rechts einen Mülleimer (`discardCurrent`): löscht das laufende Spiel nach einer Nachfrage (online: beendet es für beide).
 - Kacheln unter „Partyspiel“ nur mit Symbol (kein Name); der Name steht nach dem Antippen im Setup unter der Leiste, mittig, mit Logo links daneben (`.su-title`, bei der großen Karte „501“).
@@ -375,13 +375,16 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - **Bot-Bilder nur in der Bot-Auswahl** (Spieler hinzufügen › Bot). Sonst überall nur der Name: Setup-Liste (Zusatz wie „Bot · Ø 42“ erst nach Antippen der Zeile),
   Spielerkarte im Spiel, VS-Intro, Ausbullen, Ergebnis-Sprüche – keine Avatare.
 - Höchstes Checkout (Rekord-Karte): Antippen zeigt, wie es geworfen wurde („Single 3 · Doppel 16“, `checkoutHow`); ohne Einzeldarts ein Hinweis.
+- **Lieblingsdoppel** (Einstellungen, `prefs.favDbl` 16 · 18 · 20, Standard 20): `setFavDouble` in `checkout.js` (bei jedem `render()` gesetzt). Bei D16/D18 bevorzugt `route()` Wege mit gleich vielen Darts, die auf dem Lieblingsdoppel enden (Vorbereitung Single > 25 > Triple > Bull; Bull-Finishes bleiben); Setup-Würfe lassen bevorzugt das Lieblingsdoppel stehen. D20 = feste Tabelle.
+- Fußball-Abzeichen/Kachel silbern (nicht grün).
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).
 - **Profil** (VIP › oben der Name in Gold (ohne Kasten/Orange) mit goldenem Stift `.bs-namebox`, antippen → Fenster `profile` im Look der Reiter-Leiste `.vipsheet`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).
 - **Farbwelt Gold · Silber · Orange (seit 25.11.2026, gilt vor älteren Farbangaben; Gitarre/Blau und Gold-Silber ohne Orange wurden verworfen):**
   warmes Schwarz (`--ink #0b0a08`), Creme-Text, Gold für Rahmen/Akzente, Silber (`--silver #c8ccd0`) für Linien/Kanten, Akzent Orange statt Rot
   (`--red` ist jetzt #e8742a, `--red-d` #a84d17), orangefarbenes Glühen. Kein Blau. Dartscheiben behalten ihre echten Rot/Grün-Felder.
-- **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
-  `js/dartscan.js`: Hintergrund = Median der Randpixel, Maske (nur Schließen, damit die Spitze bleibt) → größte Fläche → PCA-Achse →
-  waagerecht drehen, breiteste Stelle (Flight) nach links → im App-Stil nachzeichnen (Helligkeit in 4 App-Tönen Schwarz/Stahl/Silber/Gold-Hell,
-  Goldkontur), 600 px PNG als data-URL in `prefs.myDart` (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.
+- **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, groß, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
+  `js/dartscan.js`: Hintergrund = Ebene durch die Randpixel (gleicht Licht-Verläufe aus) → Maske → Lücken schließen → Fläche, die am ehesten ein Dart ist
+  (groß × länglich, nicht am Bildrand) → Löcher füllen → PCA-Achse → waagerecht drehen (bilinear), breiteste Stelle (Flight) nach links →
+  **echter Dart in seinen Farben** (Kontrast/Sättigung leicht verstärkt), Tisch transparent, feiner Goldrand (`OUTLINE`), 1000 px PNG als data-URL in `prefs.myDart`
+  (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.

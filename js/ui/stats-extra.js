@@ -33,17 +33,29 @@ function legsDetail(m) {
 
 const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {});
 
-/** Verlauf: Average pro Match, darunter optional weiterer Inhalt (Verteilung) */
+/** Verlauf: Average pro Match und First 9 Average pro Match, dazwischen optional weiterer Inhalt */
 export function historyCharts(st, pid = '', middle = '') {
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
-  const avgs = st.series.map((s) => s.avg);
-  return chartBox('Average pro Match', '', lineChart(avgs, movingAvg(avgs), { ...ends(st), taps })) + middle;
+  const avgs = st.series.map((s) => s.avg), f9 = st.series.map((s) => s.f9 ?? null);
+  return chartBox('Average pro Match', '', lineChart(avgs, movingAvg(avgs), { ...ends(st), taps }))
+    + chartBox('First 9 Average pro Match', 'Ø der ersten drei Aufnahmen jedes Legs', lineChart(f9, movingAvg(f9), { ...ends(st), taps })) + middle;
 }
-/** Verlauf der Doppelquote pro Match (steht im Reiter Doppel ganz unten) */
+/** Doppelquote insgesamt im Verlauf: nach jedem Match die Gesamtquote bis dahin (kumuliert, nicht pro Match).
+    Die Kurve beginnt erst ab DBL_MIN Doppelversuchen – vorher springt sie zu stark (100 % … 0 %). */
+export const DBL_MIN = 100;
+export function cumulativeDoubles(series, min = DBL_MIN) {
+  let h = 0, a = 0;
+  const vals = series.map((s) => { h += s.dh || 0; a += s.da || 0; return a >= min ? (h / a) * 100 : null; });
+  return { vals, attempts: a, first: vals.findIndex((v) => v !== null) };
+}
 export function doubleChart(st, pid = '') {
-  const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
-  const dbl = st.series.map((s) => (s.dbl === null ? null : s.dbl * 100));
-  return chartBox('Doppelquote pro Match', '', lineChart(dbl, movingAvg(dbl), { ...ends(st), taps, maxHint: 100, fmt: (v) => `${Math.round(v)}%` }));
+  const { vals, attempts, first } = cumulativeDoubles(st.series);
+  const title = 'Doppelquote gesamt';
+  if (first < 0) return chartBox(title, '', `<p class="chart-empty">Die Kurve startet ab ${DBL_MIN} Doppelversuchen – bisher ${attempts}.</p>`);
+  const ser = st.series.slice(first), v = vals.slice(first);
+  const taps = pid ? ser.map((s) => recAttrs({ mid: s.id }, pid)) : null;
+  return chartBox(title, `Gesamtquote nach jedem Match · ab ${DBL_MIN} Versuchen`, lineChart(v, v, { ...ends({ series: ser }), taps, maxHint: 100, fmt: (x) => `${Math.round(x)}%`,
+    key: `<span><i style="background:var(--red)"></i>Doppelquote insgesamt bis zu diesem Match</span>${taps ? '<span class="ck-tap">Punkt antippen = Match</span>' : ''}` }));
 }
 /** Scoring: Verteilung der Aufnahmen */
 export const distChart = (st) => chartBox('Verteilung der Aufnahmen', 'nur Scoring – Rest über 170', barChart(BUCKETS.map(([, lo, hi], i) => [lo === hi ? String(lo) : `${lo}+`, st.buckets[i]])));

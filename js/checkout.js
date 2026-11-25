@@ -63,9 +63,38 @@ const T1 = parseTable(RAW1);
 const T2 = new Map([...T3].filter(([, r]) => r.length <= 2));
 export const TABLE = { 1: T1, 2: T2, 3: T3 };
 
+/* Lieblingsdoppel (Einstellungen: D16 · D18 · D20, Standard D20). Bei D16/D18 werden Wege mit gleich vielen Darts bevorzugt,
+   die auf dem Lieblingsdoppel enden (Vorbereitung lieber Single als Triple, nie über ein Doppel). */
+let FAV = 20;
+export function setFavDouble(n) { const v = [16, 18, 20].includes(Number(n)) ? Number(n) : 20; if (v !== FAV) { FAV = v; favCache.clear(); } }
+export const favDouble = () => FAV;
+const favCache = new Map();
+const ONE_SETUP = [ // ein Dart, der genau x Punkte bringt – Single zuerst, dann 25, Triple, Bull
+  (x) => (x >= 1 && x <= 20 ? { n: x, m: 1 } : null),
+  (x) => (x === 25 ? { n: 25, m: 1 } : null),
+  (x) => (x % 3 === 0 && x / 3 >= 1 && x / 3 <= 20 ? { n: x / 3, m: 3 } : null),
+  (x) => (x === 50 ? { n: 25, m: 2 } : null),
+];
+const oneSetup = (x) => { for (const f of ONE_SETUP) { const d = f(x); if (d) return d; } return null; };
+const FIRST = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10].map((n) => ({ n, m: 3 })).concat([{ n: 25, m: 1 }, { n: 25, m: 2 }]);
+function favRoute(rem, base) {
+  const k = base.length, last = base[k - 1];
+  if (last.m === 2 && last.n === FAV) return base;
+  if (last.n === 25) return base; // Bull-Finish (170, 110 …) bleibt
+  const x = rem - FAV * 2;
+  if (x < 0) return base;
+  if (k === 1) return base;
+  if (k === 2) { const a = oneSetup(x); return a ? Object.freeze([a, { n: FAV, m: 2 }]) : base; }
+  for (const a of FIRST) { const b = oneSetup(x - val(a)); if (b) return Object.freeze([a, b, { n: FAV, m: 2 }]); }
+  return base;
+}
 /** Empfohlener Checkout-Weg für Rest `rem` mit `left` übrigen Darts, oder null. */
 export function route(rem, left) {
-  return TABLE[left]?.get(rem) || null;
+  const base = TABLE[left]?.get(rem) || null;
+  if (!base || FAV === 20) return base;
+  const key = rem * 4 + left;
+  if (!favCache.has(key)) favCache.set(key, favRoute(rem, base));
+  return favCache.get(key);
 }
 
 /* ---- Setup-Wurf, wenn kein Checkout möglich ist ---- */
@@ -73,7 +102,7 @@ const SETUP_CANDIDATES = ['T20', 'T19', 'T18', 'T17', 'T16', 'T15', '25',
   ...Array.from({ length: 20 }, (_, i) => 'S' + (20 - i))].map(parseDart);
 function leaveScore(r) {
   if (r < 2) return -1;
-  if (T1.has(r)) return 300 - DPREF.indexOf(T1.get(r)[0].n) * 5;
+  if (T1.has(r)) { const n = T1.get(r)[0].n; return n === FAV ? 400 : 300 - DPREF.indexOf(n) * 5; }
   if (T2.has(r)) return 200;
   if (T3.has(r)) return 100;
   return 0;

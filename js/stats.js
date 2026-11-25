@@ -84,7 +84,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     const solo = m.sides.length === 1; // gegen sich selbst = Training: zählt weder als Sieg noch als Niederlage
     const s = sideOf(m, pid), won = !solo && !!m.winners?.includes(s), date = when(m);
     const opp = m.sides.filter((_, i) => i !== s).flat();
-    let mp = 0, md = 0;
+    let mp = 0, md = 0, m9p = 0, m9d = 0;
     for (const [li, l] of m.legs.entries()) {
       if (l.winner !== undefined) {
         legsTotal++;
@@ -99,7 +99,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
       for (const [ti, t] of l.turns.entries()) {
         if (t.pid !== pid) continue;
         turns++; pts += t.score; darts += t.darts; mp += t.score; md += t.darts;
-        if (n < 3) { f9p += t.score; f9d += t.darts; }
+        if (n < 3) { f9p += t.score; f9d += t.darts; m9p += t.score; m9d += t.darts; }
         n++;
         if (t.bust) busts++;
         const sc = t.score;
@@ -121,7 +121,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     const mAvg = md ? (mp / md) * 3 : null;
     if (mAvg !== null && (bestMatchAvg === null || mAvg > bestMatchAvg)) { bestMatchAvg = mAvg; bestAvgRef = { mid: m.id }; }
     const dbl = doubleAttempts([m], pid);
-    series.push({ id: m.id, date, avg: mAvg, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, won, solo });
+    series.push({ id: m.id, date, avg: mAvg, f9: m9d ? (m9p / m9d) * 3 : null, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, dh: dbl.hits, da: dbl.attempts, won, solo });
     if (!solo) { versus++; if (won) { wins++; streak++; bestStreak = Math.max(bestStreak, streak); } else streak = 0; }
     const result = m.opts.mode === 'sets'
       ? m.sides.map((_, i) => setsOf(m, i)).join(' : ') + ' Sets'

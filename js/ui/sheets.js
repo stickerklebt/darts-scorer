@@ -59,7 +59,7 @@ export function sheetView() {
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
-      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App zeichnet ihn nach.</small></span>
+      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App schneidet ihn aus, der Tisch verschwindet.</small></span>
         <div class="dart-btns"><label class="btn dark dart-cam" ${ui.dartBusy ? 'aria-disabled="true"' : ''}>${ui.dartBusy ? 'Erkenne Dart …' : S.prefs.myDart ? 'Neues Foto' : 'Dart fotografieren'}<input id="dartFile" type="file" accept="image/*" capture="environment" hidden></label>
         ${S.prefs.myDart ? '<button class="btn line" data-act="dartRemove">Entfernen</button>' : ''}</div></div></div>
       <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>
@@ -68,6 +68,7 @@ export function sheetView() {
     const u = auth.user;
     inner = `<h3>Einstellungen</h3><p>${S.profiles.length} Spieler · ${S.matches.length} gespeicherte Spiele</p>
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}
+        <div class="srow col"><span class="lbl">Lieblingsdoppel<small>Checkout-Vorschläge enden, wenn möglich, auf diesem Doppel</small></span>${seg('favDbl', 'v', [[16, 'D16'], [18, 'D18'], [20, 'D20']], S.prefs.favDbl || 20)}</div>
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
       <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>

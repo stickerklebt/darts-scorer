@@ -1,5 +1,5 @@
 /* „Auffällig“ (Statistik › Zahlen): kleine Auswertungen aus den 501-Matches. Reine Funktionen ohne DOM.
-   Matchdart-Nerven · Entscheidungsleg · Bust-Schock · Erster Versuch oder Nachwerfen · Tageszeit · Wochentag */
+   Matchdart-Nerven · Entscheidungsleg · Bust-Schock · Erster Versuch oder Nachwerfen · Doppelquote bei High Finish · Wochentag (Tageszeit wird berechnet, aber nicht mehr angezeigt) */
 import { isDoubleAttempt, attemptField, hitsField } from './checkout.js';
 
 const LEGS_PER_SET = 3;
@@ -12,6 +12,8 @@ export const daypart = (ts) => { const h = new Date(ts).getHours(), x = h < 5 ? 
 export const WEEKDAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 /** Mindestmenge, damit ein Wert zählt (Aufnahmen bzw. Doppelversuche) */
 export const MIN_TURNS = 10, MIN_DBL = 6;
+/** Ab diesem Rest zu Beginn der Aufnahme gilt ein Finish als High Finish */
+export const HIGH_FINISH = 100;
 
 /** Legs vor diesem Leg (für Matchdarts/Entscheidungsleg) – je Seite gewonnene Legs im Match bzw. im laufenden Set */
 function legsBefore(m, li) {
@@ -37,7 +39,7 @@ function deciderLeg(m, li) {
 
 export function insights(matches, pid) {
   const all = acc(), decider = acc(), afterBust = acc();
-  const md = { a: 0, h: 0 }, other = { a: 0, h: 0 }, first = { a: 0, h: 0 }, retry = { a: 0, h: 0 };
+  const md = { a: 0, h: 0 }, other = { a: 0, h: 0 }, first = { a: 0, h: 0 }, retry = { a: 0, h: 0 }, hi = { a: 0, h: 0 }, lo = { a: 0, h: 0 };
   const parts = Object.fromEntries(DAYPARTS.map(([k]) => [k, acc()]));
   const days = WEEKDAYS.map(() => acc());
   for (const m of matches) {
@@ -61,6 +63,7 @@ export function insights(matches, pid) {
           const hit = hitsField(th, attemptField(th.before));
           const g = isMatchLeg ? md : other; g.a++; if (hit) g.h++;
           const f = missed ? retry : first; f.a++; if (hit) f.h++;
+          const z = t.startRem >= HIGH_FINISH ? hi : lo; z.a++; if (hit) z.h++; // vom High Finish (≥ 100 Rest) bis aufs Doppel gekommen
           if (!hit) missed = true;
         }
       }
@@ -78,6 +81,7 @@ export function insights(matches, pid) {
     bust: afterBust.n >= 5 && base !== null ? { avg: avgOf(afterBust), delta: avgOf(afterBust) - base, n: afterBust.n } : null,
     firstTry: first.a >= MIN_DBL && retry.a >= MIN_DBL ? { first: rate(first), retry: rate(retry), firstA: first.a, retryA: retry.a } : null,
     daytime: partList.length >= 2 && base !== null ? { best: by(partList)[0], worst: by(partList).at(-1), night: partList.find((p) => p.k === 'nachts') || null, base } : null,
+    highFinish: hi.a >= MIN_DBL && lo.a >= MIN_DBL ? { hi: rate(hi), lo: rate(lo), hiA: hi.a, loA: lo.a } : null,
     weekday: dayList.length >= 2 ? { best: by(dayList)[0], worst: by(dayList).at(-1) } : null,
   };
 }

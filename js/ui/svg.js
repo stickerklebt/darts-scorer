@@ -226,7 +226,7 @@ const MODE_STYLE = {
   cricket: ['#f07a24', '#0b0a08', '#0b0a08'],
   atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
   bruch: ['#0b0a08', '#ffd86b', '#e7b73c'],
-  football: ['#2f9e57', '#0b0a08', '#0b0a08'],
+  football: ['#c8ccd0', '#0b0a08', '#0b0a08'],
 };
 export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
 export const badge = (game, size = 44) => {

@@ -42,7 +42,7 @@ import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crestLine } from './ui/svg.js';
-import { entryDone, entryPossible, label } from './checkout.js';
+import { entryDone, entryPossible, label, setFavDouble } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim, aimCenter } from './ui/aimboard.js';
@@ -91,6 +91,7 @@ function fitDblList() {
 }
 addEventListener('resize', () => fitDblList());
 function render() {
+  setFavDouble(S.prefs.favDbl);
   if (auth.user) ensureMainProfile();
   save();
   const m = S.current;
@@ -988,6 +989,7 @@ const actions = {
     handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
   },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
   /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
   ckHit(el) { handle(C.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
   ckMiss() { handle(C.throwDart(S.current, 0, 1)); },

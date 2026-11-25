@@ -1986,7 +1986,7 @@ svg.ckm .ring2 { fill: none; stroke: #e7b73c; stroke-width: .8; stroke-linecap: 
 .sbtable-wrap.dbl-scroll { max-height: 250px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
   -webkit-mask-image: linear-gradient(#000 calc(100% - 70px), transparent); mask-image: linear-gradient(#000 calc(100% - 70px), transparent); }
 .sbtable-wrap.dbl-scroll { transition: -webkit-mask-image .2s; }
-.sbtable-wrap.dbl-scroll.end { -webkit-mask-image: none; mask-image: none; } /* ganz unten: kein Ausblenden, kein Leerraum */
+.sbtable-wrap.dbl-scroll.end { -webkit-mask-image: linear-gradient(#000 calc(100% - 44px), rgba(0,0,0,.5)); mask-image: linear-gradient(#000 calc(100% - 44px), rgba(0,0,0,.5)); } /* ganz unten: leichter Verlauf bleibt, letzte Zeile noch gut lesbar */
 .sbtable-wrap.dbl-scroll th { position: sticky; top: 0; z-index: 1; }
 
 /* Erklärung der Farben unter der Doppel-Scheibe: eingeklappt nur ein kleiner Knopf */
@@ -2524,3 +2524,10 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .dart-btns .btn { flex: 1; }
 .dart-cam { cursor: pointer; text-align: center; }
 .dart-cam[aria-disabled="true"] { opacity: .6; pointer-events: none; }
+
+/* Höchstes Checkout: „wie geworfen“ nimmt verborgen keinen Platz ein – die Zahl steht normal; Antippen klappt die Zeile weich auf */
+.record .rec-how { max-height: 0; margin-top: 0 !important; overflow: hidden; transition: max-height .35s ease, margin-top .35s ease; }
+.record.rv-on .rec-how { max-height: 40px; margin-top: 4px !important; }
+/* Eigener Dart: groß und lang, nur der freigestellte Dart (Goldrand steckt im Bild) */
+.vip-dart { margin: 10px -6px 0; width: calc(100% + 12px); }
+.vip-dart img { max-height: 180px; filter: drop-shadow(0 8px 16px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(212,166,58,.22)); }
