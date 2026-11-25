@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, tierColor } from './board.js';
@@ -93,7 +93,9 @@ function dblInfo(st, key) {
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
   const sd = doubleSides(st.doubles, key);
   // Doppel groß mit einem Punkt für jeden Treffer an der Stelle, wo er saß (wird nach dem Checkout abgefragt)
-  const sp = st.spots?.[key] || [], dn = /^D(\d+)$/.exec(key);
+  // fertige Matches + das laufende Spiel (sonst sähe man einen eben eingetragenen Treffer erst nach Spielende)
+  const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
+  const sp = [...(st.spots?.[key] || []), ...live], dn = /^D(\d+)$/.exec(key);
   const spotBox = dn ? `<div class="di-spot">${spotSVG(Number(dn[1]), sp)}</div>` : '';
   if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
   if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;

@@ -65,6 +65,6 @@ export function playView() {
       return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#2a2620' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">
       <span class="mode-art">${tileArt(id, 52)}</span>${soon ? `<span class="mode-soon"><b>${p.title}</b><small>Bald</small></span>` : ''}</button>`;
     }).join('')}
-      <button class="mode mode-plus" data-act="partyBrowse" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art">${icon('plus', 2.4, 40)}</span></button></div>
+      <button class="mode mode-plus" data-act="partyBrowse" style="--mc:#0b0a08;--bi:${others.length}" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art"><span class="badge-mode" style="--badge-bg:#d4a63a;--badge-ink:#0b0a08;--badge-line:#0b0a08;width:52px;height:52px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></span></button></div>
   </main>`;
 }

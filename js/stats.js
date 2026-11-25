@@ -169,6 +169,19 @@ export function doubleTier(hits, attempts, overall) {
 }
 /** Für jedes Feld: { tier, top } – top = Platz 1–3 der besten Doppel (nur mit genug Versuchen und mind. einem Treffer). */
 /** Fehlwürfe auf ein Doppel: „inside“ = irgendwo ins Board (nur nicht das Doppel), „outside“ = daneben (0). Anteile an den Fehlwürfen. */
+/** Genaue Trefferstellen (throw.spot) der Checkout-Darts eines Spielers in beliebigen Matches – z. B. auch im laufenden Spiel */
+export function spotsIn(matches, pid) {
+  const out = {};
+  for (const m of matches) {
+    if (!m || m.game !== 'x01') continue;
+    for (const l of m.legs || []) for (const t of l.turns) {
+      const last = t.pid === pid && t.out ? t.throws?.[t.throws.length - 1] : null;
+      if (last?.spot) (out[label(last)] ||= []).push(last.spot);
+    }
+  }
+  return out;
+}
+
 export function doubleSides(doubles, key) {
   const f = doubles.fields[key], o = doubles.outcomes?.[key] || {};
   if (!f) return null;

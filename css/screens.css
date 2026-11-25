@@ -2572,10 +2572,7 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .dspot-in p::after { content: ""; display: block; width: 120px; height: 8px; margin: 6px auto 0; background: var(--hand-line) center / 100% 100% no-repeat; opacity: .8; }
 
 /* Partyspiele: Plus-Kachel, kommende Modi ausgegraut, Galerie zum Hinzufügen/Entfernen */
-.mode-plus .mode-art { background: linear-gradient(180deg, #1a1713, #0b0a08); color: var(--gold-l); }
-.mode-plus .mode-art::after, .mode-plus .mode-art::before { display: none; }
-.mode-plus { outline: 1.5px dashed rgba(212,166,58,.55); border-color: transparent; }
-.mode-plus svg { filter: drop-shadow(0 0 10px rgba(255,138,76,.35)); }
+/* Plus-Kachel: gleicher Stil wie die Modus-Kacheln (Rahmen, Stern, Abzeichen in Gold mit Plus) */
 .mode.soon { opacity: .55; cursor: default; filter: grayscale(.4); }
 .mode.soon .mode-art { height: 70px; }
 .mode-soon { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 6px 10px; background: var(--ink); }
@@ -2624,7 +2621,7 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .dspot-skip { all: unset; cursor: pointer; display: inline-block; margin-top: 14px; padding: 8px 18px; border-radius: 999px;
   font-family: var(--f-num); font-size: 15px; letter-spacing: .18em; text-transform: uppercase; color: rgba(242,239,231,.38); border: 1px solid rgba(242,239,231,.14); }
 .dspot-skip:hover, .dspot-skip:focus-visible { color: rgba(242,239,231,.7); }
-.dspot .ds-dot.blk { fill: #0b0a08; stroke: rgba(242,239,231,.55); stroke-width: 1; }
+.dspot .ds-dot.blk { fill: #0b0a08; stroke: rgba(242,239,231,.85); stroke-width: 2.5; }
 .di-spot { max-width: 300px; }
 /* Galerie: links dieselbe Kachel wie auf Play, rechts Name + Erklärung (immer linksbündig) */
 .pb-card { align-items: stretch; gap: 14px; }

@@ -45,7 +45,7 @@ export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
   // Statistik: nur das Doppel selbst, jeder Treffer ein schwarzer Punkt an seiner Stelle
   s += `<path d="${fld}" transform="translate(4 5)" fill="#0b0a08" opacity=".8"/><path d="${fld}" fill="${col(n)}"/>`;
   s += `<path d="${fld}" fill="none" stroke="#d4a63a" stroke-width="3"/>`;
-  for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="5"/>`; }
+  for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="8"/>`; }
   return `<svg class="dspot" viewBox="${box(R1, R2, th - HALF, th + HALF, 14)}" role="img" aria-label="Doppel ${n}: ${spots.length} Treffer">${s}</svg>`;
 }
 
