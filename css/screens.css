@@ -920,7 +920,7 @@
 .heatboard .hmed-g { fill: none; stroke-width: 7; stroke-opacity: .8; pointer-events: none; animation: medglow 3.2s ease-in-out infinite; }
 @keyframes medglow { 50% { stroke-opacity: .35; } }
 .heatboard .hn { fill: #f2f4f7; font-family: var(--f-num); font-weight: 400; font-size: 13px; pointer-events: none; }
-.heatboard .hn.t1 { fill: #d4d6db; } .heatboard .hn.t2 { fill: #dfe4ea; } .heatboard .hn.t3 { fill: #d9925a; }
+.heatboard .hn.t1 { fill: #d4d6db; } .heatboard .hn.t2 { fill: #dfe4ea; } .heatboard .hn.t3 { fill: #c42a4b; }
 .heat-sel { border-radius: var(--r-panel); }
 .dbl-head { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
 .dbl-head .label { flex: 1; margin: 0; }
@@ -986,7 +986,7 @@
   border: 1px solid rgba(207,211,217,.38); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,240,210,.06); }
 .me-mono { flex: none; width: 60px; height: 60px; border-radius: 50%; padding: 3px; background: conic-gradient(from 210deg, #d4d6db, #8a8e96, #f2f4f7, #8a8e96, #d4d6db);
   box-shadow: 0 0 18px rgba(207,211,217,.25); }
-.me-mono span { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 35% 30%, #f05a42, #6b1226);
+.me-mono span { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 35% 30%, #c42a4b, #6b1226);
   font-family: var(--f-display); font-size: 30px; color: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); }
 .me-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .me-txt b { font-family: var(--f-display); font-weight: 400; font-size: 27px; letter-spacing: .03em; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1283,7 +1283,7 @@
 @keyframes smoke-gust3 { 0%, 100% { opacity: .35; } 15% { opacity: .4; } 38% { opacity: .75; } 55% { opacity: .65; } 75% { opacity: .35; } }
 /* kräftiges Gold direkt hinter der Zahl */
 .hero-stat .glitter::before { content: ""; position: absolute; left: -18%; right: -18%; top: 8%; bottom: 4%; z-index: -1; pointer-events: none; border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(207,209,214,.55), rgba(212,150,40,.22) 45%, transparent 72%); filter: blur(10px); animation: gold-breathe 4s ease-in-out infinite; }
+  background: radial-gradient(ellipse at center, rgba(207,209,214,.55), rgba(200,204,210,.22) 45%, transparent 72%); filter: blur(10px); animation: gold-breathe 4s ease-in-out infinite; }
 @keyframes gold-breathe { 50% { opacity: .7; transform: scale(1.06); } }
 /* Lichtstrich um die Zahl – nur ab und zu */
 .num-ring { position: absolute; left: -16px; right: -16px; top: 4px; bottom: -2px; pointer-events: none; z-index: 1; border-radius: 16px;
@@ -1753,7 +1753,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 .br-timer b { display: inline-block; font-family: var(--f-num); font-weight: 400; font-size: clamp(64px, 20vw, 110px); line-height: 1; color: var(--cream);
   transform: scaleX(var(--num-w)); text-shadow: 3px 3px 0 var(--red), 6px 6px 0 var(--ink); font-variant-numeric: tabular-nums; }
 .br-timer em { display: block; font-style: normal; color: var(--muted); margin-top: 6px; }
-.br-timer.late b { color: #ff9a6a; animation: br-late 1s ease-in-out infinite; }
+.br-timer.late b { color: #e0607c; animation: br-late 1s ease-in-out infinite; }
 @keyframes br-late { 50% { opacity: .55; } }
 .br-list { display: flex; flex-direction: column; gap: 10px; }
 .br-c { display: grid; grid-template-columns: 36px 1fr 54px; align-items: center; gap: 12px; padding: 14px 12px; border-radius: var(--r-panel);
@@ -1775,7 +1775,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 .cam-btn.on { color: var(--ink); background: var(--gold); border-color: var(--gold); }
 .campill { position: fixed; z-index: 70; right: 10px; top: calc(var(--sat, 0px) + 6px); height: 26px; padding: 0 10px; border-radius: 4px;
   background: #08080a; border: 1px solid var(--line2); font-family: var(--f-num); font-size: 13px; letter-spacing: .06em; color: var(--cream2); }
-.campill.ok { color: #6fd17f; border-color: #2f6b38; } .campill.wait { color: #eef1f6; border-color: #6b5a1c; } .campill.bad { color: #ff6b5a; border-color: #7a2a1b; }
+.campill.ok { color: #6fd17f; border-color: #2f6b38; } .campill.wait { color: #eef1f6; border-color: #6b5a1c; } .campill.bad { color: #d9405f; border-color: #7a2a1b; }
 .cam-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin: 12px 0 4px; }
 .cam-row .btn { height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; }
 .cam-opt { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px; margin: 14px 0 4px; border-radius: 6px; text-align: left;
@@ -1806,7 +1806,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 /* Kamera-Gerät: ganzer Bildschirm */
 .camstation { position: fixed; inset: 0; z-index: 85; display: flex; flex-direction: column; gap: 8px; padding: calc(var(--sat, 0px) + 8px) 10px 10px; background: #050403; color: var(--cream); }
 .cs-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.cs-link { font-family: var(--f-num); font-size: 15px; letter-spacing: .06em; } .cs-link.ok { color: #6fd17f; } .cs-link.wait { color: #eef1f6; } .cs-link.bad { color: #ff6b5a; }
+.cs-link { font-family: var(--f-num); font-size: 15px; letter-spacing: .06em; } .cs-link.ok { color: #6fd17f; } .cs-link.wait { color: #eef1f6; } .cs-link.bad { color: #d9405f; }
 .cs-code { text-align: right; } .cs-code small { display: block; color: var(--muted); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; }
 .cs-code b { font-family: var(--f-num); font-weight: 400; font-size: 44px; line-height: 1; letter-spacing: .08em; color: var(--gold-l); }
 .cs-vid { position: relative; flex: 1; min-height: 0; background: #000; border: 1px solid var(--line2); }
@@ -1815,7 +1815,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 .cs-dbg { object-fit: contain; opacity: .8; }
 .cs-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .cs-st { font-family: var(--f-num); font-weight: 400; font-size: 30px; letter-spacing: .03em; color: var(--cream); }
-.cs-st.alarm { color: #ff6b5a; }
+.cs-st.alarm { color: #d9405f; }
 .cs-pl { color: var(--gold-l); font-size: 17px; }
 .cs-b { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .cs-b button, .cs-cam { height: 44px; border-radius: 4px; border: 1px solid var(--line2); background: var(--panel2); color: var(--cream); font-family: var(--f-num); font-size: 14px; letter-spacing: .04em; }
@@ -1957,7 +1957,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
   height: 44px; padding: 0 14px 0 12px; border-radius: 22px; background: #14110d; border: 1px solid var(--line2); color: var(--muted); font-family: var(--f-num); font-size: 15px; max-width: 60vw; }
 .mic-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mic-btn.on { border-color: #c8241a; color: var(--cream); box-shadow: 0 0 0 2px rgba(200,36,26,.25); }
-.mic-btn.on .ic { color: #ff4d3a; animation: cs-rec 1.6s ease-in-out infinite; }
+.mic-btn.on .ic { color: #d9304f; animation: cs-rec 1.6s ease-in-out infinite; }
 
 /* Doppel antippen: Fehlwürfe als geteilte Linie – links inside (ins Board), rechts outside (daneben) */
 .io-line { display: flex; height: 54px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line2); }
@@ -2032,9 +2032,9 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 .sit-bar::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--line2); }
 .sit-bar i { position: absolute; top: 0; bottom: 0; border-radius: 5px; }
 .sit-bar i.up { background: #5fae6a; box-shadow: 0 0 8px rgba(95,174,106,.35); }
-.sit-bar i.dn { background: #c8503c; box-shadow: 0 0 8px rgba(200,80,60,.35); }
+.sit-bar i.dn { background: #a3203d; box-shadow: 0 0 8px rgba(179,36,63,.35); }
 .sit-num { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--f-num); font-size: 18px; white-space: nowrap; line-height: 1; }
-.sit-num.up { color: #7cc487; } .sit-num.dn { color: #e07a62; }
+.sit-num.up { color: #7cc487; } .sit-num.dn { color: #d2465f; }
 .sit-num small { font-size: 13px; color: var(--muted); }
 .sit-few { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: var(--f-text); font-size: 12px; color: var(--muted); white-space: nowrap; }
 .sit-r.off { opacity: .45; }
@@ -2194,7 +2194,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 /* Haupt-Reiter: Leuchtstrich direkt unter Symbol + Wort des aktiven Reiters (mittig darunter, gleiche Breite), Verlauf etwas sanfter */
 .tabs .tabline { display: none; }
 .tabs .tab.on::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: min(78%, 150px); height: 3px; border-radius: 2px; transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(179,36,63,0), #f08a3c 20%, #ff9a5c 50%, #f08a3c 80%, rgba(179,36,63,0));
+  background: linear-gradient(90deg, rgba(179,36,63,0), #c42a4b 20%, #d2465f 50%, #c42a4b 80%, rgba(179,36,63,0));
   box-shadow: 0 0 8px rgba(190,40,70,.7), 0 0 18px rgba(179,36,63,.45);
   animation: tabline-in .4s cubic-bezier(.2,.9,.3,1.1), tabline-soft 3.6s ease-in-out .4s infinite; }
 .tabs .tab.on::before { content: ""; position: absolute; left: 50%; bottom: -2px; width: min(90%, 180px); height: 24px; transform: translateX(-50%); pointer-events: none;
@@ -2215,7 +2215,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 
 /* Haupt-Reiter: Strich kürzer, der Schein läuft dafür weiter zu den Seiten aus */
 .tabs .tab.on::after { width: min(52%, 100px);
-  background: linear-gradient(90deg, rgba(179,36,63,0), #f08a3c 30%, #ff9a5c 50%, #f08a3c 70%, rgba(179,36,63,0)); }
+  background: linear-gradient(90deg, rgba(179,36,63,0), #c42a4b 30%, #d2465f 50%, #c42a4b 70%, rgba(179,36,63,0)); }
 .tabs .tab.on::before { width: min(100%, 230px); height: 22px; bottom: -1px;
   background: radial-gradient(ellipse 50% 60% at 50% 72%, rgba(190,44,72,.26), rgba(179,36,63,.11) 50%, transparent 100%); }
 
@@ -2331,7 +2331,7 @@ svg.ckm .ring2 { fill: none; stroke: #c8ccd0; stroke-width: .8; stroke-linecap: 
 .resume-wrap { display: flex; gap: 10px; align-items: stretch; margin-top: 12px; }
 .resume-wrap .resume { flex: 1; margin-top: 0; }
 .resume-del { flex: none; width: 58px; display: flex; align-items: center; justify-content: center; border-radius: var(--r-panel);
-  border: 1px solid rgba(179,36,63,.6); color: #ff8a6a; background: var(--panel); transition: background .2s, color .2s, box-shadow .2s; }
+  border: 1px solid rgba(179,36,63,.6); color: #e0607c; background: var(--panel); transition: background .2s, color .2s, box-shadow .2s; }
 .resume-del:hover { box-shadow: 0 0 14px rgba(179,36,63,.3); }
 .resume-del:active { background: rgba(179,36,63,.18); color: #fff; }
 
@@ -2646,7 +2646,7 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 /* Orange wie „Cosmic Orange“, Gold goldiger (25.11.2026): leuchtendes Orange mit weichem, natürlichem Verlauf dahinter
    (heller Kern → Orange → tiefes Bernstein, darunter ein flacher, unscharfer Schein – kein harter Rand) */
 .tabs .tab.on > span::after, .subpop .subtabs.three .sub-line::before {
-  background: linear-gradient(90deg, rgba(181,72,11,.0), #b3243f 18%, #ec98a8 50%, #b3243f 82%, rgba(181,72,11,0)) !important;
+  background: linear-gradient(90deg, rgba(122,20,48,.0), #b3243f 18%, #ec98a8 50%, #b3243f 82%, rgba(122,20,48,0)) !important;
   box-shadow: 0 0 6px rgba(200,50,80,.6), 0 0 18px rgba(179,36,63,.35) !important; }
 .tabs .tab.on > span::before { content: ""; position: absolute; left: calc(-1 * (var(--tic, 20px) + var(--tgap, 9px)) - 14px); right: -14px; bottom: -22px; height: 30px;
   background: radial-gradient(ellipse 50% 60% at 50% 70%, rgba(205,60,88,.22), rgba(179,36,63,.08) 55%, transparent 80%); filter: blur(4px); pointer-events: none; }
@@ -2685,8 +2685,8 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
    Reiter-Leisten wie dickes, klares Glas: stark verwischt, Glanz oben, Lichtkante, farbiges Licht unter dem aktiven Reiter.
    Gold wie geschmolzenes Metall: harter Wechsel hell/dunkel (Spiegelungen) statt flacher Farbe. */
 :root {
-  --gold-metal: linear-gradient(135deg, #6e3f06 0%, #919398 12%, #e8eaef 24%, #fff8dc 29%, #bec0c5 38%, #6b6d72 52%, #a4a6ab 64%, #e0e2e7 76%, #f2f4f9 81%, #c98a1d 90%, #505257 100%);
-  --gold-metal-h: linear-gradient(90deg, #606267, #c3c5ca 20%, #f0f2f7 32%, #a4a6ab 48%, #717378 60%, #e0e2e7 78%, #c98a1d 92%, #606267);
+  --gold-metal: linear-gradient(135deg, #6e3f06 0%, #919398 12%, #e8eaef 24%, #fff8dc 29%, #bec0c5 38%, #6b6d72 52%, #a4a6ab 64%, #e0e2e7 76%, #f2f4f9 81%, #9aa0aa 90%, #505257 100%);
+  --gold-metal-h: linear-gradient(90deg, #606267, #c3c5ca 20%, #f0f2f7 32%, #a4a6ab 48%, #717378 60%, #e0e2e7 78%, #9aa0aa 92%, #606267);
 }
 /* Glas-Körper */
 body .tabs, body .subpop {

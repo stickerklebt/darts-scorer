@@ -37,7 +37,7 @@ export function inputBoard() {
 
 /* ---------- Doppelfelder-Heatmap im Kupferstich-Stil ---------- */
 /** Farben je Stufe (relativ zur eigenen Gesamt-Doppelquote, siehe stats.js → TIERS) */
-export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', weak: '#d27a3a', bad: '#c4452f' };
+export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', weak: '#a3203d', bad: '#c4452f' };
 export const tierColor = (t) => (t ? TIER_COLORS[t] : null);
 /** Durchgehender Verlauf statt Stufen: schlecht = dunkles Bordeaux → Rot → Rosé → glänzend Weiß = am besten.
     ratio = Quote / eigene Gesamtquote (0,4 und weniger = ganz dunkel, 1,7 und mehr = ganz weiß). */

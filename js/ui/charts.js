@@ -29,7 +29,7 @@ const niceMax = (v) => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.l
  * fmt: Beschriftung der y-Achse, maxHint: feste Obergrenze (z. B. 1 für Quoten)
  */
 let gid = 0;
-const AVG_INK = [[0, '#b3243f'], [.18, '#d0661f'], [.33, '#ef8238'], [.5, '#c95f1c'], [.64, '#ea7a30'], [.8, '#b85618'], [1, '#e8792f']]
+const AVG_INK = [[0, '#9c1c37'], [.18, '#c42a4b'], [.33, '#d9405f'], [.5, '#b3243f'], [.64, '#d2465f'], [.8, '#a3203d'], [1, '#c42a4b']]
   .map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('');
 export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = null, labelL = '', labelR = '', taps = null, key = null } = {}) {
   const pts = values.map((v, i) => ({ v, a: avg[i], i })).filter((p) => p.v !== null);
@@ -58,7 +58,7 @@ export function lineChart(values, avg, { fmt = (v) => Math.round(v), maxHint = n
     ${g}
     <path class="ln" pathLength="1" d="${raw}" fill="none" stroke="${COLORS.cream}" stroke-opacity=".5" stroke-width="1"/>
     ${mv.length > 1 ? `<defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
-      <path class="ln avg-under" pathLength="1" d="M${mv.join('L')}" transform="translate(.8 1)" fill="none" stroke="#6e3a12" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
+      <path class="ln avg-under" pathLength="1" d="M${mv.join('L')}" transform="translate(.8 1)" fill="none" stroke="#3a0a18" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
       <path class="ln avg" pathLength="1" d="M${mv.join('L')}" fill="none" stroke="url(#avgInk${gid})" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
     ${dots}
     <text x="${PAD.l}" y="${H - 6}" class="ax">${labelL}</text><text x="${W - PAD.r}" y="${H - 6}" class="ax" text-anchor="end">${labelR}</text>
@@ -114,7 +114,7 @@ export function legCurveChart(points) {
   return `<svg class="chart" viewBox="${crop}" data-crop="${crop}" data-full="12 0 ${W - 12} ${H2}" role="img">
     ${g}
     <defs><linearGradient id="avgInk${++gid}" x1="0" x2="1" y1="0" y2="0">${AVG_INK}</linearGradient></defs>
-    <path class="ln avg-under" pathLength="1" d="${d}" transform="translate(.8 1)" fill="none" stroke="#6e3a12" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
+    <path class="ln avg-under" pathLength="1" d="${d}" transform="translate(.8 1)" fill="none" stroke="#3a0a18" stroke-opacity=".7" stroke-width="2.6" stroke-linejoin="round"/>
     <path class="ln avg" pathLength="1" d="${d}" fill="none" stroke="url(#avgInk${gid})" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
     ${dots}
     <text x="${pad.l}" y="${H2 - 6}" class="ax dim">501</text>

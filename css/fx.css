@@ -203,7 +203,7 @@
 .nk-boom svg { animation: spin 8s linear infinite; }
 @keyframes boomIn { from { transform: scale(.05); } }
 .nk-wave { left: 50%; top: 50%; width: 30vmin; height: 30vmin; margin: -15vmin 0 0 -15vmin; border-radius: 50%; border: 14px solid rgba(242,244,249,.9); z-index: 4; animation: wave 1s ease-out forwards; }
-.nk-wave.w2 { animation-delay: .18s; border-color: rgba(255,122,61,.8); }
+.nk-wave.w2 { animation-delay: .18s; border-color: rgba(196,42,75,.8); }
 @keyframes wave { from { transform: scale(.3); } to { transform: scale(7); opacity: 0; } }
 .nk-title { z-index: 7; }
 
