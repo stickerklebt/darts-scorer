@@ -1,8 +1,10 @@
 /* Eingaben prüfen und normalisieren. Fehlermeldungen auf Deutsch, direkt für die App. */
 import { bad } from './http.js';
 import { BOTS } from '../../js/bots.js';
+import { USERNAME_MIN, USERNAME_MAX } from '../../js/limits.js';
 
-export const USERNAME_MIN = 3, USERNAME_MAX = 20, PASSWORD_MIN = 8, PASSWORD_MAX = 128;
+export { USERNAME_MIN, USERNAME_MAX };
+export const PASSWORD_MIN = 8, PASSWORD_MAX = 128;
 const RESERVED = new Set(['admin', 'administrator', 'root', 'system', 'support', 'darts', 'bot', 'gast', 'guest', 'null', 'undefined',
   ...BOTS.map((b) => b.name.toLowerCase().replace(/\s+/g, ''))]);
 
@@ -18,7 +20,7 @@ export const usernameKey = (u) => u.normalize('NFC').toLowerCase();
 export function checkUsername(v) {
   const name = typeof v === 'string' ? v.trim().normalize('NFC') : '';
   if (name.length < USERNAME_MIN) throw bad('username_short', `Der Name braucht mindestens ${USERNAME_MIN} Zeichen.`);
-  if (name.length > USERNAME_MAX) throw bad('username_long', `Der Name darf höchstens ${USERNAME_MAX} Zeichen haben.`);
+  if (name.length > USERNAME_MAX) throw bad('username_long', `Benutzername zu lang – höchstens ${USERNAME_MAX} Zeichen.`);
   if (!/^[\p{L}\p{N}][\p{L}\p{N}_.-]*$/u.test(name)) throw bad('username_chars', 'Erlaubt sind Buchstaben, Ziffern sowie _ . - (ohne Leerzeichen, Anfang mit Buchstabe oder Ziffer).');
   const key = usernameKey(name);
   if (RESERVED.has(key)) throw bad('username_reserved', `„${name}“ ist reserviert.`);

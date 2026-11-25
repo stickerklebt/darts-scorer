@@ -61,19 +61,32 @@ const silkLines = () => `<svg class="silk-lines" viewBox="0 0 1000 560" preserve
   <radialGradient id="slL" data-live="1" gradientUnits="userSpaceOnUse" cx="500" cy="-100" r="190"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".35" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
   ${LINES.map((d, i) => `<path class="sl-sh" d="${d}"/><path class="sl" d="${d}"/><path class="sl-hi" d="${d}"/><path class="sl-lit" d="${d}"/><path class="sl-run" d="${d}" pathLength="100" style="animation-delay:-${i * 6}s"/>`).join('')}</svg>`;
 
+/** Kurzer Stand eines offenen Spiels (X01: Reste, sonst Spielstand) */
+function openState(m) {
+  try {
+    if (m.game === 'x01') { const l = m.legs[m.legs.length - 1]; return `Leg ${m.legs.length} · ${m.sides.map((_, s) => l.turns.reduce((r, t) => (t.s === s ? r - t.score : r), m.opts.start)).join(' : ')}`; }
+  } catch { /* */ }
+  return '';
+}
+/** Eine Zeile „Spiel fortsetzen“: Text antippen oder Pfeil = weiterspielen, Mülleimer links neben dem Pfeil (mit Nachfrage) */
+const resumeRow = (m) => `<div class="resume-wrap" data-key="r-${m.id}"><button class="resume" data-act="resume" data-v="${m.id}"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}${openState(m) ? ` · ${openState(m)}` : ''}</small></span></button>
+  <button class="resume-del" data-act="discardCurrent" data-v="${m.id}" aria-label="Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 21)}</button>
+  <button class="resume-go" data-act="resume" data-v="${m.id}" aria-label="Weiterspielen">${icon('chevR', 2.4, 22)}</button></div>`;
+
 export function playView() {
-  const m = S.current, o = S.opts.x01;
+  // Bis zu 3 offene Spiele untereinander (das zuletzt gespielte zuerst)
+  const open = [...(S.current && !S.current.done ? [S.current] : []), ...(S.parked || []).filter((x) => x && !x.done)];
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
   const others = partyTiles(S.prefs);
   return `<main class="page">
-    ${m && !m.done ? `<div class="resume-wrap"><button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>
-      <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
+    ${open.length ? `<div class="resume-list">${open.map(resumeRow).join('')}</div>` : ''}
+    <h2 class="label center play-lbl">The Game</h2>
     <section class="hero hero-go silk-hero" data-live="1" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
       <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
       ${silkLines()}
       ${metal501()}
     </section>
-    <h2 class="label">Partyspiele</h2>
+    <h2 class="label center play-lbl party-lbl">Partyspiele</h2>
     <div class="modes">${others.map((id, i) => {
       const p = partyInfo(id), soon = !p.playable;
       return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#232328' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">

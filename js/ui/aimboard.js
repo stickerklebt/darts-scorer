@@ -77,7 +77,28 @@ function outlines(d, c) {
   return out;
 }
 
-export function aimBoard(hits = []) {
+/** Umriss eines Feldes { n, m, z } auf dieser Scheibe (für die Bot-Treffer) */
+function fieldPath(f) {
+  if (f.n === 25) return f.m === 2 ? circ(AR.bull) : `${circ(AR.outer)} ${circ(AR.bull)}`;
+  const i = ORDER.indexOf(f.n), a0 = -99 + i * 18, a1 = -81 + i * 18;
+  const [r0, r1] = f.m === 3 ? [AR.triIn, AR.triOut] : f.m === 2 ? [AR.dblIn, AR.dblOut] : f.z === 'i' ? [AR.outer, AR.triIn] : [AR.triOut, AR.dblIn];
+  return ring(r0, r1, a0, a1);
+}
+/** Darts eines Bots auf der Eingabe-Scheibe: Feld blendet weich ein (heller Schein + Rand), an der Wurfstelle ein heller Punkt;
+    daneben: eine kleine weiße Welle stößt außerhalb des Spielfelds nach außen (nur bis etwa ein Viertel der Scheibe, nicht ins Feld). */
+function botMarks(list) {
+  return list.map((h, i) => {
+    const key = `bd${i}-${r2(h.x)}-${r2(h.y)}`;
+    const dot = `<circle class="bdot-glow" cx="${r2(h.x)}" cy="${r2(h.y)}" r="6"/><circle class="bdot" cx="${r2(h.x)}" cy="${r2(h.y)}" r="2.6"/>`;
+    if (!h.n) {
+      return `<g class="bhit miss" data-key="${key}"><g mask="url(#aOut)"><circle class="bwave" cx="${r2(h.x)}" cy="${r2(h.y)}" r="${AR.edge / 4}"/><circle class="bwave w2" cx="${r2(h.x)}" cy="${r2(h.y)}" r="${AR.edge / 4}"/></g>${dot}</g>`;
+    }
+    const d = fieldPath(h);
+    return `<g class="bhit" data-key="${key}"><path class="bglow" d="${d}" fill-rule="evenodd"/><path class="bedge" d="${d}" fill-rule="evenodd"/>${dot}</g>`;
+  }).join('');
+}
+
+export function aimBoard(hits = [], opts = {}) {
   // Getroffene Felder: Anzahl je Feld (inneres/äußeres Single getrennt – aus der Position, falls bekannt)
   const lit = new Map();
   hits.forEach((h) => {
@@ -111,9 +132,10 @@ export function aimBoard(hits = []) {
   // Steckende Darts an der Wurfstelle (mit kleiner Nummer)
   const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<text class="anr" x="13.2" y="-12.6" text-anchor="middle" dominant-baseline="central">${ROMAN[i] || i + 1}</text></g>`)).join(''); // Nummer (römisch) steht auf der Flight
   return `<svg class="aimboard" viewBox="-${AR.edge} -${AR.edge} ${AR.edge * 2} ${AR.edge * 2}" role="img" aria-label="Dartscheibe – Finger auf die Stelle, wo der Dart steckt">
-    <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
+    <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter>
+      ${opts.bot ? `<mask id="aOut" maskUnits="userSpaceOnUse" x="-${AR.edge}" y="-${AR.edge}" width="${AR.edge * 2}" height="${AR.edge * 2}"><rect x="-${AR.edge}" y="-${AR.edge}" width="${AR.edge * 2}" height="${AR.edge * 2}" fill="#fff"/><circle r="${AR.dblOut}" fill="#000"/></mask>` : ''}</defs>
     <circle r="${AR.edge}" class="arim"/><circle r="${AR.dblOut + 1}" fill="${F.rim}"/>
-    ${segs}${wires}<g class="aglows" filter="url(#aGlow)">${glow}</g><g class="alines">${lines}</g><g class="aedges">${glow.replace(/aglow/g, 'aedge')}</g>${nums}${marks}
+    ${segs}${wires}<g class="aglows" filter="url(#aGlow)">${glow}</g><g class="alines">${lines}</g><g class="aedges">${glow.replace(/aglow/g, 'aedge')}</g>${nums}${marks}${opts.bot ? `<g class="bhits">${botMarks(opts.bot)}</g>` : ''}
   </svg>`;
 }
 

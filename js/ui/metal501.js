@@ -30,12 +30,12 @@ const FILTER = `<filter id="mtlF" x="-8%" y="-8%" width="116%" height="116%" col
 
 const digit = (ch, i) => `<svg class="m501-d" viewBox="${i * W} 0 ${W} ${H}" aria-hidden="true"><text x="${i * W + W / 2}" y="${H - 34}" text-anchor="middle" fill="url(#mtlG)" filter="url(#mtlF)">${ch}</text></svg>`;
 
-/** Markup der Titan-501 (für die 501-Kachel) */
-export function metal501() {
-  return `<div class="m501" role="img" aria-label="501 Double Out">
+/** Markup der Titan-501 (501-Kachel; im Setup kleiner mit dem gewählten Check-Out als Untertitel) */
+export function metal501(sub = 'Double Out', cls = '') {
+  return `<div class="m501 ${cls}" role="img" aria-label="501 ${sub}">
     <svg class="m501-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>${grad('mtlG', 20, H - 20)}${grad('mtlS', SUB_Y, SUB_Y + SUB_H)}${FILTER}</defs></svg>
     <div class="m501-digits">${['5', '0', '1'].map(digit).join('')}</div>
-    <svg class="m501-sub" viewBox="0 ${SUB_Y} ${3 * W} ${SUB_H}" aria-hidden="true"><text x="${1.5 * W}" y="${SUB_Y + 42}" text-anchor="middle" fill="url(#mtlS)" filter="url(#mtlF)">Double Out</text></svg>
+    <svg class="m501-sub" viewBox="0 ${SUB_Y} ${3 * W} ${SUB_H}" aria-hidden="true"><text x="${1.5 * W}" y="${SUB_Y + 42}" text-anchor="middle" fill="url(#mtlS)" filter="url(#mtlF)">${sub}</text></svg>
     <i class="m501-glint g1" aria-hidden="true"></i><i class="m501-glint g2" aria-hidden="true"></i>
   </div>`;
 }

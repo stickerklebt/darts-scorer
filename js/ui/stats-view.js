@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel, finishOdds, finishWindow } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, numRing } from './svg.js';
 import { heatBoard, ratingColor } from './board.js';
@@ -74,6 +74,7 @@ function overviewTab(st, pid) {
       ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], 'three', pid)}
     <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
+    ${hfCard(pid)}
     ${checkoutTab(st, pid)}
     ${insightsBlock(cachedInsights(pid))}`;
 }
@@ -87,11 +88,13 @@ function checkoutTab(st, pid) {
 
 /** Doppel groß mit einem Punkt je Treffer – erscheint an Stelle der Heatmap-Scheibe (fertige Matches + laufendes Spiel) */
 function spotOverlay(st, key) {
-  const dn = /^D(\d+)$/.exec(key || '');
-  if (!dn || !st.doubles.fields[key]) return '';
+  const dn = /^D(\d+)$/.exec(key || ''), n = dn ? Number(dn[1]) : key === 'Bull' ? 25 : null;
+  if (!n || !st.doubles.fields[key]) return '';
   const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
+  // Farbe wie in Heatmap und Liste: wie gut du dieses Doppel im Vergleich zu deiner Gesamtquote triffst
+  const color = ratingColor(doubleRating(st.doubles)[key]);
   // Doppel + Info-Fenster liegen beide genau über der Scheibe – darunter wird nichts länger
-  return `<div class="hb-spot"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}${sparkles(10, 4)}</span></div>${dblInfo(st, key)}</div>`;
+  return `<div class="hb-spot ${n === 25 ? 'is-bull' : ''}"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(n, [...(st.spots?.[key] || []), ...live], { color })}${sparkles(10, 4)}</span></div>${dblInfo(st, key)}</div>`;
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
@@ -193,6 +196,25 @@ export function profilePicker() {
       <span class="pc sm" style="${pcVars(i)}">${esc(p.name.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(p.name)}</span>
       ${p.id === cur ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
+}
+
+/* High Finish: wie oft sitzt der 1., 2., 3. Dart, wenn die Aufnahme bei Rest 101–170 beginnt? Regler von 101 (links) bis 170 (rechts) –
+   welcher Bereich genau gilt, steht absichtlich nirgends. Kompakt (nicht so groß wie die Diagramme im Reiter Scoring). */
+let hfCache = { key: '', by: null };
+export function hfCard(pid) {
+  const last = S.matches[S.matches.length - 1];
+  const key = `${pid}|${S.statsPeriod}|${statsModes().join(',')}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
+  if (hfCache.key !== key) hfCache = { key, by: finishOdds(matchesOf(S.matches, pid, S.statsPeriod), pid) };
+  const pos = Number.isFinite(ui.hfPos) ? ui.hfPos : 0;
+  const w = finishWindow(hfCache.by, pos / 100);
+  const bar = (d, i) => {
+    const p = d.rate === null ? null : Math.round(d.rate * 100);
+    return `<div class="hf-col"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small></div>`;
+  };
+  return `<div class="hf-card"><small class="hf-t">High Finish · Treffer je Dart</small>
+    <div class="hf-cols">${w.darts.map(bar).join('')}</div>
+    <input id="hfRange" class="hf-range" type="range" min="0" max="100" step="1" value="${pos}" aria-label="Bereich zwischen 101 und 170">
+    <div class="hf-ends"><span>101</span><span>170</span></div></div>`;
 }
 
 /* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */

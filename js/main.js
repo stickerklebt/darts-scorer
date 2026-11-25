@@ -3,7 +3,7 @@ import { S, ui, save, flushSave, resetAll, ensureProfile, findProfile, profile, 
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
 import { overview, setStatsModes } from './stats.js';
-import { vsView, onlineWaitView } from './ui/versus.js';
+import { onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
 import { link, onLink, joinAsController, disconnect as camUnlink, resumeLink, send as camSend, readyCams } from './camera-link.js';
@@ -37,7 +37,7 @@ import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
 import { resultView } from './ui/result.js';
 import { momentView } from './ui/moments.js';
-import { fxForTurn, fxRunning, stopFx } from './ui/fx.js';
+import { fxRunning, stopFx } from './ui/fx.js';
 import { isBot, bot, BOTS, planLines } from './bots.js';
 import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt, sigmaFor } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
@@ -48,6 +48,7 @@ import { translate } from './i18n.js';
 import { introPrepare, runIntro, heroLeave, introBusy, introMode } from './intro.js';
 import { metalLight } from './ui/metal501.js';
 import { entryDone, entryPossible, label, setFavDouble } from './checkout.js';
+import { USERNAME_MAX } from './limits.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim, aimCenter } from './ui/aimboard.js';
@@ -117,7 +118,6 @@ function render() {
   else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   ui.camLive = camLiveFor(m);
-  if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
   html += sheetView() + camPill() + spotAskView(ui.dblSpot);
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   // Einstellungen: Sprache (nur Oberfläche, per Übersetzung des fertigen HTML) und Bewegung in den Kästen
@@ -202,10 +202,9 @@ function handle(res, spotAsked = false) {
   const t = res.turn;
   // Checkout auf ein Doppel: zuerst groß „Wo hast du genau getroffen?“, erst danach Animation, Ansage, Leg-Info/Ergebnis
   if (!spotAsked) { const sp = spotNeeded(m, t, res); if (sp) { askSpot(sp, () => handle(res, true)); return; } }
-  // Animation (nur Menschen, nur wenn eingeschaltet). Bots bekommen nur eine kleine Andeutung in ihrer Karte.
-  let anim = null;
-  if (t && S.prefs.anim && !isBot(t.pid)) anim = fxForTurn(m.game, t, { score: m.game === 'x01' ? t.score : t.v, name: nameOf(t.pid) });
-  if (t && isBot(t.pid)) { botHint(m, t); if (bot(t.pid).random) randomLine(m, t.pid); else if (good(m, t)) speak(m, t.pid, 'good', 0.7); }
+  // Keine Wurf-Animationen mehr (auf Wunsch entfernt – dort kommt später etwas anderes hin)
+  const anim = null;
+  if (t && isBot(t.pid)) { if (bot(t.pid).random) randomLine(m, t.pid); else if (good(m, t)) speak(m, t.pid, 'good', 0.7); }
   if (t && !isBot(t.pid)) {
     const opp = botsInMatch(m).filter((id) => sideOfId(m, id) !== t.s && !bot(id).random);
     if (t.bust) opp.forEach((id) => speak(m, id, 'oppBust', 0.6));
@@ -236,12 +235,12 @@ function handle(res, spotAsked = false) {
   render();
 }
 
-/** Braucht dieser Checkout die Abfrage „wo genau im Doppel“? Nur Menschen, X01 Double Out, letzter Dart einzeln erfasst auf D1–D20. */
+/** Braucht dieser Checkout die Abfrage „wo genau im Doppel“? Nur Menschen, X01 Double Out, letzter Dart einzeln erfasst auf D1–D20 oder Bull. */
 function spotNeeded(m, t, res) {
   if (!t || m.game !== 'x01' || !t.out || isBot(t.pid) || m.opts.out !== 'double') return null;
   if (!['leg', 'set', 'match'].includes(res.type) || (m.online && t.pid !== S.mainId)) return null;
   const last = t.throws?.[t.throws.length - 1];
-  return last && last.m === 2 && last.n >= 1 && last.n <= 20 ? { n: last.n, dart: last } : null;
+  return last && last.m === 2 && ((last.n >= 1 && last.n <= 20) || last.n === 25) ? { n: last.n, dart: last } : null;
 }
 let spotNext = null;
 function askSpot(sp, next) { spotNext = next; ui.dblSpot = { n: sp.n, dart: sp.dart, picked: null }; render(); }
@@ -254,13 +253,6 @@ document.addEventListener('pointerup', (e) => {
   navigator.vibrate?.(10); render();
   setTimeout(spotDone, 550);
 });
-
-/** Bot: kleine Andeutung in der eigenen Karte bei starken Würfen (keine Vollbild-Animation). */
-function botHint(m, t) {
-  const v = m.game === 'x01' ? t.score : t.v;
-  if (t.bust || !(v >= 100 || (t.out && v >= 60))) return;
-  ui.botHint = { s: t.s, text: t.out ? `${v}!` : v === 180 ? '180!' : `${v}!`, at: Date.now() };
-}
 
 /** Wer hat die letzte Eingabe gemacht? (für Undo mit Bots) */
 function lastEntryPid(m) {
@@ -503,11 +495,8 @@ function addBanners(m) {
   m.banners = b;
 }
 
-/** VS-Intro mit den Bannern aller Seiten (sobald es einen Gegner gibt). Weiter nur durch Antippen – kein Zeitlimit. */
-function showVs(m) {
-  if (!m?.banners || m.sides.length < 2) return;
-  ui.vs = m.id;
-}
+/** VS-Intro mit Bannern gibt es nicht mehr (auf Wunsch komplett entfernt) – das Spiel beginnt sofort. */
+function showVs() { ui.vs = null; }
 
 function addToLineup(id) {
   if (!id) return;
@@ -557,7 +546,9 @@ function checkAuthName(v) {
   clearTimeout(nameTimer);
   if (!a || !hint) return;
   const n = v.trim();
-  if (!n) { a.nameOk = false; a.nameHint = ''; hint.textContent = 'Freunde finden dich darüber · 3–20 Zeichen, ohne Leerzeichen'; hint.className = 'name-hint'; return; }
+  if (!n) { a.nameOk = false; a.nameHint = ''; hint.textContent = 'Freunde finden dich darüber · ohne Leerzeichen'; hint.className = 'name-hint'; return; }
+  // Zu lang: sofort melden (ohne Server-Anfrage) – die Grenze steht nur hier, nicht schon vorher im Hinweis
+  if (n.length > USERNAME_MAX) { a.nameOk = false; a.nameHint = `Benutzername zu lang – höchstens ${USERNAME_MAX} Zeichen.`; hint.textContent = a.nameHint; hint.className = 'name-hint bad'; return; }
   nameTimer = setTimeout(async () => {
     try {
       const r = await api('GET', `api/auth/username?name=${encodeURIComponent(n)}`);
@@ -592,6 +583,7 @@ document.addEventListener('input', (e) => {
   if (e.target.id === 'authName') checkAuthName(e.target.value);
   if (e.target.id === 'friendSearch') searchFriends(e.target.value.trim().replace(/^@/, ''));
   if (e.target.id === 'newPlayer') checkName();
+  if (e.target.id === 'hfRange') { ui.hfPos = Number(e.target.value); render(); } // High-Finish-Regler (Statistik › Überblick)
   if (e.target.id === 'pSearch') {
     const q = e.target.value.trim().toLowerCase();
     let n = 0;
@@ -601,6 +593,18 @@ document.addEventListener('input', (e) => {
 });
 
 const throwOne = (m, n, mult) => (m.game === 'cricket' ? C.throwDart(m, n, mult) : X.throwDart(m, n, mult));
+
+/* ---------------- Offene Spiele (bis zu 3) ---------------- */
+const MAX_OPEN = 3;
+/** Alle offenen Spiele: das aktuelle (falls nicht fertig) und die geparkten */
+const openGames = () => [...(S.current && !S.current.done ? [S.current] : []), ...(S.parked || []).filter((x) => x && !x.done)];
+/** Laufendes Spiel zur Seite legen (ganz vorn in die Liste), damit ein anderes starten kann */
+function parkCurrent() {
+  const m = S.current;
+  if (!m || m.done || m.online) return;
+  S.parked = [m, ...(S.parked || []).filter((x) => x.id !== m.id)].slice(0, MAX_OPEN - 1);
+  S.current = null; ui.botMarks = {}; ui.botTurn = null; ui.aimPos = null;
+}
 
 /* ---------------- Aktionen ---------------- */
 const field = (id) => ($(`#${id}`)?.value || '').trim();
@@ -859,7 +863,18 @@ const actions = {
   bruchCancelForce() { S.bruch = null; ui.modal = null; releaseWakeLock(); toast('Challenge abgebrochen'); render(); }, // nichts gespeichert
   more() { ui.moreOpen = !ui.moreOpen; render(); },
   anwurf(el) { S.anwurf = el.dataset.v; render(); },
-  resume() { S.screen = 'game'; requestWakeLock(); render(); },
+  resume(el) {
+    const id = el?.dataset?.v;
+    if (id && S.current?.id !== id) { // ein geparktes Spiel holen, das laufende parken
+      const i = (S.parked || []).findIndex((x) => x.id === id);
+      if (i < 0) return render();
+      const [m] = S.parked.splice(i, 1);
+      parkCurrent();
+      S.current = m; ui.entry = ''; ui.modal = null; ui.moment = null; ui.mult = 1; ui.botMarks = {}; ui.botTurn = null; ui.swapKey = undefined; ui.aimPos = null;
+    }
+    if (!S.current || S.current.done) return render();
+    S.screen = 'game'; requestWakeLock(); render();
+  },
   opt(el) {
     const o = S.opts[S.game], k = el.dataset.k, v = el.dataset.v;
     o[k] = /^\d+$/.test(v) ? Number(v) : v;
@@ -900,6 +915,7 @@ const actions = {
   },
   async inviteYes(el) {
     ui.modal = null; (ui.inviteSeen ??= new Set()).add(el.dataset.v);
+    if (S.current && !S.current.done && !S.current.online && (S.parked || []).length < MAX_OPEN - 1) parkCurrent(); // eigenes Spiel nicht verlieren
     try {
       await acceptInvite(el.dataset.v);
       S.screen = 'game'; ui.entry = ''; ui.moment = null; ui.mult = 1;
@@ -1000,7 +1016,14 @@ const actions = {
   pdel(el) { S.lineup.splice(Number(el.dataset.v), 1); ui.prowSel = null; render(); },
   pup(el) { const i = Number(el.dataset.v), L = S.lineup; [L[i - 1], L[i]] = [L[i], L[i - 1]]; ui.prowSel = i - 1; render(); },
   pshuffle() { const L = S.lineup; for (let i = L.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L[i], L[j]] = [L[j], L[i]]; } render(); },
-  start() { if (S.current && !S.current.done) { ui.modal = { type: 'confirmNew' }; render(); } else startGame(); },
+  /* Bis zu 3 offene Spiele: ein laufendes wird beim Start eines neuen geparkt (S.parked). Erst beim 4. kommt der Hinweis.
+     Online-Spiele lassen sich nicht parken (der Freund wartet) – dafür bleibt die Nachfrage „Neues Spiel?“. */
+  start() {
+    const cur = S.current && !S.current.done ? S.current : null;
+    if (cur?.online) { ui.modal = { type: 'confirmNew' }; return render(); }
+    if (openGames().length >= MAX_OPEN) { ui.modal = { type: 'tooMany' }; return render(); }
+    parkCurrent(); startGame();
+  },
   startForce() { startGame(); },
   key(el) {
     const next = (ui.entry + el.dataset.v).replace(/^0+(?=\d)/, '');
@@ -1083,8 +1106,18 @@ const actions = {
   pref(el) { const k = el.dataset.k; S.prefs[k] = !S.prefs[k]; if (k === 'camDebug') { stationHooks.debug = S.prefs.camDebug; stationDebug(S.prefs.camDebug); } if (k === 'voice' && !S.prefs.voice) try { speechSynthesis.cancel(); } catch (e) { /* */ } render(); },
   abort() { ui.modal = { type: 'abort' }; render(); },
   // Laufendes Spiel vom Startbildschirm löschen (Mülleimer auf „Spiel fortsetzen“) – mit Nachfrage
-  discardCurrent() { if (!S.current || S.current.done) return; ui.modal = { type: 'discard' }; render(); },
-  discardForce() { ui.modal = null; if (!S.current || S.current.done) return render(); if (S.current.online) abortOnline(); S.current = null; ui.moment = null; toast('Spiel gelöscht'); render(); },
+  discardCurrent(el) {
+    const id = el?.dataset?.v || S.current?.id, m = openGames().find((x) => x.id === id);
+    if (!m) return;
+    ui.modal = { type: 'discard', id }; render();
+  },
+  discardForce() {
+    const id = ui.modal?.id; ui.modal = null;
+    if (S.current && !S.current.done && (!id || S.current.id === id)) { if (S.current.online) abortOnline(); S.current = null; ui.moment = null; }
+    else if (id && S.parked?.some((x) => x.id === id)) S.parked = S.parked.filter((x) => x.id !== id);
+    else return render();
+    toast('Spiel gelöscht'); render();
+  },
   abortForce() { if (S.current?.online) abortOnline(); S.current = null; ui.modal = null; ui.moment = null; S.screen = 'home'; releaseWakeLock(); render(); },
   closeModal() { ui.modal = null; render(); },
   scrim() { ui.modal = null; render(); },
@@ -1107,6 +1140,11 @@ document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]');
   if (!el || el.disabled) return;
   if (INPUT_ACTS.has(el.dataset.act) && notMyTurn()) { toast(`${nameOf(curThrowerOf(S.current))} ist dran`); render(); return; }
+  // Bot am Zug: Eingabe bleibt sichtbar, ist aber gesperrt – nur „Rückgängig“ (nimmt die letzte eigene Eingabe zurück) geht
+  if (INPUT_ACTS.has(el.dataset.act) && S.screen === 'game' && S.current && !S.current.done && !inBulloff() && isBot(curThrowerOf(S.current))) {
+    if (el.dataset.act === 'back') undo();
+    return;
+  }
   if (el.dataset.act === 'scrim' && e.target !== el) return;
   actions[el.dataset.act]?.(el);
 });

@@ -44,8 +44,8 @@ export function authView() {
       <h1 class="display">Neues Konto</h1>
       ${mail}
       <label class="auth-lbl" for="authName">Dein Name</label>
-      <input id="authName" class="field name" placeholder="Eindeutiger Name" maxlength="20" autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next">
-      <p id="authNameHint" class="name-hint ${a.nameOk ? 'ok' : ''}" aria-live="polite">${esc(a.nameHint || 'Freunde finden dich darüber · 3–20 Zeichen, ohne Leerzeichen')}</p>
+      <input id="authName" class="field name" placeholder="Eindeutiger Name" maxlength="40" autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="next">
+      <p id="authNameHint" class="name-hint ${a.nameOk ? 'ok' : ''}" aria-live="polite">${esc(a.nameHint || 'Freunde finden dich darüber · ohne Leerzeichen')}</p>
       <div class="auth-row"><label class="auth-lbl" for="authPw">Passwort festlegen</label>${showBtn}</div>
       <input id="authPw" class="field plain" type="${type}" placeholder="Mindestens 8 Zeichen" autocomplete="new-password" enterkeyhint="next">
       <input id="authPw2" class="field plain" type="${type}" placeholder="Passwort wiederholen" autocomplete="new-password" enterkeyhint="go">

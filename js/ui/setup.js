@@ -10,6 +10,7 @@ import { esc, pcVars, seg, optRow } from './common.js';
 import { badge, divider, icon, fuse } from './svg.js';
 import { camReady } from './camstation.js';
 import { wheelHTML } from './wheel.js';
+import { metal501 } from './metal501.js';
 
 const TEAM_LETTERS = 'ABCDEF';
 
@@ -39,8 +40,9 @@ function mainOptions(id) {
 function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
   const x01 = id === 'x01' ? (ui.x01Var === 'other' ? optRow('Check-In', seg('opt', 'in', [['single', 'Single In'], ['double', 'Double In']], o.in === 'double' ? 'double' : 'single')) : '')
-    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
-    + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
+    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out)) : '';
+  // Legs/Sets steht beim Aufklappen immer an zweiter Stelle
+  const setMode = id === 'x01' ? optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   // Teams erst ab 2 Spielern (im Team spielen sie zusammen eine Punktzahl herunter) – vorher ausgegraut
   if (L.length < 2 && S.teamMode) S.teamMode = false;
   // Anwurf: Standard „wer oben steht, fängt an“; Ausbullen nur hier unter „Mehr Optionen“ (ab zwei Seiten, nicht online)
@@ -52,7 +54,7 @@ function moreOptions(id) {
   return `<div class="more ${ui.moreOpen ? 'open' : ''}">
     <button class="more-h" data-act="more"><span>Mehr Optionen</span>${icon('chevR', 2.4, 18)}</button>
     ${ui.moreOpen ? `<div class="more-b">
-      <div class="opts">${anwurf}${team}${x01}</div>
+      <div class="opts">${anwurf ? `${anwurf}${setMode}${team}` : `${team}${setMode}`}${x01}</div>
       ${S.teamMode ? '<p class="foot">Tippe bei den Spielern auf „Team“, um sie zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge der Liste.</p>' : ''}
       ${id === 'x01' && o.mode === 'sets' ? `<p class="foot">Ein Set gewinnt, wer zuerst ${X.LEGS_PER_SET} Legs holt.</p>` : ''}
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
@@ -90,7 +92,9 @@ export function setupView() {
   const remote = L.find((e) => e.friend?.mode === 'remote');
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
-    <div class="su-title">${badge(id, 44)}<h1>${id === 'x01' ? (ui.x01Var !== 'other' ? '501' : 'X01 / Double In') : g.title}</h1></div>
+    ${id === 'x01' && ui.x01Var !== 'other'
+    ? `<div class="su-title su-501"><div class="su-sheen" aria-hidden="true"></div>${metal501(S.opts.x01.out === 'single' ? 'Single Out' : 'Double Out', 'small')}</div>`
+    : `<div class="su-title">${badge(id, 44)}<h1>${id === 'x01' ? 'X01 / Double In' : g.title}</h1></div>`}
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     ${remote ? `<p class="foot"><b class="solo-hint">Online gegen ${esc(remote.name)}:</b> jeder an seinem Gerät, der Anwurf wird ausgelost.</p>` : ''}
@@ -98,5 +102,5 @@ export function setupView() {
     ${camRow(id)}
     ${moreOptions(id)}
   </main>
-  <div class="dock su-dock"><div><button class="start-pill" data-act="start"><span>${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</span></button></div></div>`;
+  <div class="dock su-dock"><div><button class="start-go" data-act="start"><span>${remote ? `${esc(remote.name)} einladen` : !S.teamMode && L.length === 1 ? 'Solo starten' : 'Start'}</span><i aria-hidden="true">${icon('chevR', 2.6, 22)}</i></button></div></div>`;
 }

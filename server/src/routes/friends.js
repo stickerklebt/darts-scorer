@@ -33,16 +33,24 @@ export function friendRoutes(r, { db, limits }) {
   function statsFor(userId) {
     const row = q.stateRow.get(userId);
     if (!row) return null;
+    return entryFor(userId, row).stats;
+  }
+  function entryFor(userId, row = q.stateRow.get(userId)) {
+    if (!row) return null;
     const hit = cache.get(userId);
-    if (hit && hit.rev === row.rev) return hit.stats;
+    if (hit && hit.rev === row.rev) return hit;
     const matches = q.matchData.all(userId).map((x) => { try { return JSON.parse(x.data); } catch { return null; } }).filter(Boolean);
     let state = null;
     try { state = row.state ? JSON.parse(row.state) : null; } catch { /* */ }
     const stats = friendStats(state, matches);
+    // Eigener Dart (VIP › Profil › Dart fotografieren): PNG als data-URL in prefs.myDart – nur die Bytes werden gemerkt
+    const m = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(typeof state?.prefs?.myDart === 'string' ? state.prefs.myDart : '');
+    const dart = m ? Buffer.from(m[1], 'base64') : null;
+    const e = { rev: row.rev, stats, dart: dart && dart.length > 8 && dart.length < 3e6 ? dart : null };
     cache.delete(userId);
-    cache.set(userId, { rev: row.rev, stats });
+    cache.set(userId, e);
     if (cache.size > 500) cache.delete(cache.keys().next().value);
-    return stats;
+    return e;
   }
 
   const relation = (me, other) => {
@@ -62,8 +70,8 @@ export function friendRoutes(r, { db, limits }) {
   r.get('/api/friends', (c) => {
     const me = c.user.id;
     const friends = q.friends.all(me, me, me).map((f) => {
-      const s = statsFor(f.id);
-      return { id: f.id, username: f.username, since: f.since, pid: s?.pid ?? null, avg: s?.x501?.avg ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null };
+      const e = entryFor(f.id), s = e?.stats;
+      return { id: f.id, username: f.username, since: f.since, pid: s?.pid ?? null, avg: s?.x501?.avg ?? null, matches: s?.total ?? 0, lastPlayed: s?.lastPlayed ?? null, dart: e?.dart ? e.rev : null };
     });
     return { friends, incoming: q.incoming.all(me), outgoing: q.outgoing.all(me) };
   });
@@ -111,6 +119,18 @@ export function friendRoutes(r, { db, limits }) {
     const u = target(c);
     const row = q.rel.get(c.user.id, u.id, u.id, c.user.id);
     if (!row || row.status !== 'accepted') throw new HttpError(403, 'not_friends', 'Nur Freunde können die Statistik sehen.');
-    return { user: { id: u.id, username: u.username, friendsSince: row.responded_at }, stats: statsFor(u.id) };
+    const e = entryFor(u.id);
+    return { user: { id: u.id, username: u.username, friendsSince: row.responded_at, dart: e?.dart ? e.rev : null }, stats: e?.stats ?? null };
+  });
+
+  /** Eingescannter Dart eines Freundes als Bild (nur für Freunde). ?v=rev im Link sorgt für frisches Bild nach einer Änderung. */
+  r.get('/api/friends/:id/dart', (c) => {
+    const u = target(c);
+    const row = q.rel.get(c.user.id, u.id, u.id, c.user.id);
+    if (!row || row.status !== 'accepted') throw new HttpError(403, 'not_friends', 'Nur Freunde können den Dart sehen.');
+    const e = entryFor(u.id);
+    if (!e?.dart) throw new HttpError(404, 'not_found', 'Kein eigener Dart.');
+    c.res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': e.dart.length, 'Cache-Control': 'private, max-age=86400', ETag: `"${e.rev}"` });
+    c.res.end(e.dart);
   });
 }

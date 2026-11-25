@@ -10,6 +10,7 @@ const DEF = () => ({
   profiles: [],                 // { id, name, createdAt }
   matches: [],                  // abgeschlossene Matches
   current: null,                // laufendes Match
+  parked: [],                   // weitere offene Matches (bis zu 2 – zusammen mit current höchstens 3), nur lokal
   lineup: [],                   // [{ id, team }]
   teamMode: false,
   demoSeeded: false,            // Testdaten wurden schon einmal eingefügt
@@ -23,7 +24,7 @@ const DEF = () => ({
     cricket: { mode: 'points', rounds: 20 },
     football: { goal: 16, target: 3 },
   },
-  prefs: { voice: false, hints: true, dartInput: 'board', anim: true, ownCalls: true, showAvg: true, showDarts: true, camAuto: true, camPlay: true, camDebug: false, motion: true, lang: 'de' },
+  prefs: { voice: false, hints: true, dartInput: 'board', anim: true, ownCalls: true, showAvg: true, showDbl: true, quick: true, camAuto: true, camPlay: true, camDebug: false, motion: true, lang: 'de' },
   screen: 'home',
   tab: 'play',
   statsPid: null,
@@ -119,6 +120,7 @@ let namesIdx = { n: -1, map: new Map() };
 function friendName(id) {
   const e = S.lineup.find((x) => x.id === id && x.name); if (e) return e.name;
   if (S.current?.names?.[id]) return S.current.names[id];
+  for (const m of S.parked || []) if (m?.names?.[id]) return m.names[id];
   if (namesIdx.n !== S.matches.length) {
     const map = new Map();
     for (const m of S.matches) if (m.names) for (const [k, v] of Object.entries(m.names)) map.set(k, v);

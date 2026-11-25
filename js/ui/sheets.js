@@ -12,6 +12,7 @@ import { esc, seg, matchSummary } from './common.js';
 import { profilePicker } from './stats-view.js';
 import { comparePicker } from './compare.js';
 import { auth, sync } from '../sync.js';
+import { USERNAME_MIN, USERNAME_MAX } from '../limits.js';
 import { dateStr } from './stats-view.js';
 import { legSheet } from './legdetail.js';
 import { bruchResult } from './bruch.js';
@@ -46,7 +47,7 @@ export function sheetView() {
     inner = `<h3>Einstellungen</h3><p>${matchSummary(m)}</p>
       <div class="slist">
         ${m.game === 'x01' ? `<div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>` : ''}
-        ${tog('voice', 'Ansage')}${m.game === 'x01' ? tog('hints', 'Checkout-Hilfe') : ''}${tog('showAvg', 'Average anzeigen')}${m.game === 'x01' ? tog('showDarts', 'Darts im Leg anzeigen') : ''}${tog('anim', 'Animationen')}
+        ${tog('voice', 'Ansage')}${m.game === 'x01' ? tog('hints', 'Checkout-Hilfe') : ''}${tog('showAvg', 'Average anzeigen')}${m.game === 'x01' && m.opts.out === 'double' ? tog('showDbl', 'Doppelquote anzeigen', 'in diesem Spiel – neben Letzte und Average') : ''}${m.game === 'x01' || m.game === 'highscore' ? tog('quick', 'Zahl-Vorschläge', 'deine häufigsten Aufnahmen über der Tastatur') : ''}
       </div>
       <div class="slist">${info.map(([a, b]) => `<div class="srow"><span class="lbl">${a}</span><span class="val">${b}</span></div>`).join('')}</div>
       <div class="sbtns"><button class="btn line" data-act="abort" style="color:var(--red);border-color:var(--red)">Spiel beenden</button><button class="btn red" data-act="closeModal">Fertig</button></div>`;
@@ -68,7 +69,7 @@ export function sheetView() {
   } else if (md.type === 'settings') {
     const u = auth.user;
     inner = `<h3>Einstellungen</h3><p>${S.profiles.length} Spieler · ${S.matches.length} gespeicherte Spiele</p>
-      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}${tog('motion', 'Bewegung in den Kästen', 'Lichter, Glanz und Funkeln an Karten, Kacheln und Leisten')}
+      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDbl', 'Doppelquote im Spiel anzeigen')}${tog('quick', 'Zahl-Vorschläge im Spiel', 'deine häufigsten Aufnahmen über der Tastatur')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('motion', 'Bewegung in den Kästen', 'Lichter, Glanz und Funkeln an Karten, Kacheln und Leisten')}
         <div class="srow col"><span class="lbl">Sprache</span>${seg('lang', 'v', [['de', 'Deutsch'], ['en', 'English']], S.prefs.lang === 'en' ? 'en' : 'de')}</div>
         <div class="srow col"><span class="lbl">Lieblingsdoppel<small>Checkout-Vorschläge enden, wenn möglich, auf diesem Doppel</small></span>${seg('favDbl', 'v', [[16, 'D16'], [18, 'D18'], [20, 'D20']], S.prefs.favDbl || 20)}</div>
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
@@ -87,8 +88,8 @@ export function sheetView() {
     inner = `<h3>Alle Daten löschen?</h3><p>Alle Spieler, Spiele und Statistiken werden endgültig gelöscht – auch in deinem Konto auf allen Geräten. Dein Konto und deine Freunde bleiben. Das lässt sich nicht rückgängig machen.</p>
       <div class="sbtns"><button class="btn line" data-act="settings">Abbrechen</button><button class="btn red" data-act="wipeForce">Löschen</button></div>`;
   } else if (md.type === 'rename') {
-    inner = `<h3>Dein Name</h3><p>Eindeutig – Freunde finden dich darüber. 3–20 Zeichen, ohne Leerzeichen.</p>
-      <input id="nameField" class="field name" value="${esc(auth.user?.username || nameOf(S.mainId))}" maxlength="20" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    inner = `<h3>Dein Name</h3><p>Eindeutig – Freunde finden dich darüber. ${USERNAME_MIN}–${USERNAME_MAX} Zeichen, ohne Leerzeichen.</p>
+      <input id="nameField" class="field name" value="${esc(auth.user?.username || nameOf(S.mainId))}" maxlength="40" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done">
       <p id="nameHint" class="name-hint" aria-live="polite">${esc(md.error || '')}</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="saveName">Sichern</button></div>`;
   } else if (md.type === 'confirmNew') {
@@ -181,8 +182,12 @@ export function sheetView() {
       <p>${esc(what)} · jeder an seinem Gerät</p>
       <div class="sbtns"><button class="btn line" data-act="inviteNo" data-v="${esc(v.id)}">Ablehnen</button><button class="btn red" data-act="inviteYes" data-v="${esc(v.id)}">Annehmen</button></div>`;
   } else if (md.type === 'discard') {
-    inner = `<h3>Spiel löschen?</h3><p>${m ? matchSummary(m) : ''}<br>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
+    const dm = [m, ...(S.parked || [])].find((x) => x && x.id === md.id) || m;
+    inner = `<h3>Spiel wirklich löschen?</h3><p>${dm ? matchSummary(dm) : ''}<br>Der Spielstand geht verloren und zählt nicht für die Statistik. Das lässt sich nicht rückgängig machen.${dm?.online ? ` Das Spiel endet auch bei ${esc(dm.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Abbrechen</button><button class="btn red" data-act="discardForce">Löschen</button></div>`;
+  } else if (md.type === 'tooMany') {
+    inner = `<h3>Du hast noch 3 Spiele offen</h3><p>Spiel eins davon zu Ende oder lösche eins auf der Play-Seite (Mülleimer) – dann kannst du ein neues starten.</p>
+      <div class="sbtns"><button class="btn red" data-act="home">Zu den offenen Spielen</button><button class="btn line" data-act="closeModal">Abbrechen</button></div>`;
   } else if (md.type === 'abort') {
     inner = `<h3>Spiel beenden?</h3><p>Der Spielstand geht verloren und zählt nicht für die Statistik.${m?.online ? ` Das Spiel endet auch bei ${esc(m.online.other || 'deinem Freund')}.` : ''}</p>
       <div class="sbtns"><button class="btn line" data-act="gear">Abbrechen</button><button class="btn red" data-act="abortForce">Beenden</button></div>`;

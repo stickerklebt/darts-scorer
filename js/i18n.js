@@ -4,6 +4,12 @@
    dann Muster mit Zahlen/Namen (PATTERNS). Was fehlt, bleibt Deutsch – neue Texte hier eintragen. */
 
 export const DICT = {
+  'The Game': 'The Game', 'High Finish · Treffer je Dart': 'High finish · hits per dart', '1. Dart': '1st dart', '2. Dart': '2nd dart', '3. Dart': '3rd dart',
+  'Doppel': 'Doubles', 'Doppelquote anzeigen': 'Show double rate', 'Doppelquote im Spiel anzeigen': 'Show double rate in game',
+  'in diesem Spiel – neben Letzte und Average': 'in this game – next to last and average', 'Zahl-Vorschläge': 'Score suggestions', 'Zahl-Vorschläge im Spiel': 'Score suggestions in game',
+  'deine häufigsten Aufnahmen über der Tastatur': 'your most frequent scores above the keypad', 'Spiel wirklich löschen?': 'Really delete game?',
+  'Du hast noch 3 Spiele offen': 'You still have 3 open games', 'Zu den offenen Spielen': 'To your open games', 'Weiterspielen': 'Continue',
+  'Spiel eins davon zu Ende oder lösche eins auf der Play-Seite (Mülleimer) – dann kannst du ein neues starten.': 'Finish one of them or delete one on the Play page (bin) – then you can start a new one.',
   // Reiter, Navigation, Allgemeines
   'Spielen': 'Play', 'Statistik': 'Stats', 'Zurück': 'Back', 'Weiter': 'Next', 'Fertig': 'Done', 'Abbrechen': 'Cancel', 'Schließen': 'Close',
   'Bestätigen': 'Confirm', 'Löschen': 'Delete', 'Entfernen': 'Remove', 'Hinzufügen': 'Add', 'Speichern': 'Save', 'Sichern': 'Save', 'Starten': 'Start',
@@ -25,7 +31,7 @@ export const DICT = {
   'Deine Spiele liegen sicher in deinem Konto – spielen geht auch offline.': 'Your games are safe in your account – you can also play offline.',
   'Dein Passwort': 'Your password', 'Mindestens 8 Zeichen': 'At least 8 characters', 'Passwort wiederholen': 'Repeat password', 'Eindeutiger Name': 'Unique name',
   'name@beispiel.de oder Name': 'name@example.com or name', 'Anmelden': 'Sign in', 'Konto anlegen': 'Create account', 'Moment …': 'One moment …',
-  'Passwort speichern': 'Save password', 'Freunde finden dich darüber · 3–20 Zeichen, ohne Leerzeichen': 'Friends find you by it · 3–20 characters, no spaces',
+  'Passwort speichern': 'Save password', 'Freunde finden dich darüber · ohne Leerzeichen': 'Friends find you by it · no spaces',
   'Die beiden Passwörter sind nicht gleich.': 'The two passwords do not match.', 'Neues Passwort gespeichert': 'New password saved',
 
   // Play
@@ -138,7 +144,7 @@ export const DICT = {
   'Name': 'Name', 'Freunde finden dich darüber': 'Friends find you by it', 'E-Mail': 'Email', 'Daten': 'Data', 'Passwort ändern': 'Change password', 'Abmelden': 'Sign out',
   'Dein Dart': 'Your dart', 'Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App schneidet ihn aus, der Tisch verschwindet.': 'Put it on a calm, single-coloured table and photograph it from above – the app cuts it out, the table disappears.',
   'Dart fotografieren': 'Photograph dart', 'Neues Foto': 'New photo', 'Erkenne Dart …': 'Detecting dart …', 'Konto löschen': 'Delete account', 'Konto löschen?': 'Delete account?',
-  'Eindeutig – Freunde finden dich darüber. 3–20 Zeichen, ohne Leerzeichen.': 'Unique – friends find you by it. 3–20 characters, no spaces.',
+  'Eindeutig – Freunde finden dich darüber. 3–16 Zeichen, ohne Leerzeichen.': 'Unique – friends find you by it. 3–16 characters, no spaces.',
   'Aktuelles Passwort': 'Current password', 'Neues Passwort (mind. 8 Zeichen)': 'New password (min. 8 characters)', 'Andere Geräte werden danach abgemeldet.': 'Other devices will be signed out.',
   'Nicht gesichert': 'Not saved', 'Trotzdem abmelden': 'Sign out anyway', 'Endgültig löschen': 'Delete permanently', 'Passwort geändert': 'Password changed',
   'Konto gelöscht': 'Account deleted', 'Name geändert': 'Name changed',

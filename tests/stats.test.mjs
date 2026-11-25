@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createMatch } from '../js/match.js';
 import * as X from '../js/x01.js';
-import { overview, doubleAttempts, matchesOf, legDetail, doubleMisses } from '../js/stats.js';
+import { overview, doubleAttempts, matchesOf, legDetail, doubleMisses, finishOdds, finishWindow } from '../js/stats.js';
 
 const dart = (m, n, mult) => X.throwDart(m, n, mult);
 
@@ -204,4 +204,22 @@ test('Statistik-Modi: Standard nur 501, weitere X01-Modi zuschaltbar', async () 
   assert.equal(S.matchesOf(ms, 'p').length, 2);
   assert.equal(S.modeLabel('301-di'), '301 · Double In');
   S.setStatsModes(null);
+});
+
+test('High Finish: Treffer je Dart aus Rest 101–170 (Ziel = Feld des Checkout-Wegs)', () => {
+  const m = createMatch('x01', [['a']], { start: 141, out: 'double', mode: 'legs', target: 2 });
+  dart(m, 20, 3); dart(m, 19, 3); dart(m, 12, 2);         // 141: T20 T19 D12 – alle drei sitzen, Leg gewonnen
+  dart(m, 20, 1); dart(m, 20, 3); dart(m, 0, 1);          // 141: S20 (Ziel T20, daneben), dann weiter
+  const by = finishOdds([m], 'a');
+  assert.deepEqual(by[141].tries, [2, 2, 2]);
+  assert.equal(by[141].hits[0], 1);                        // erster Dart: 1 von 2
+  assert.equal(by[141].hits[2], 1);                        // D12 saß, der Fehlwurf nicht
+  const w = finishWindow(by, (141 - 101) / 69);
+  assert.ok(w.from <= 141 && w.to >= 141);
+  assert.equal(w.darts[0].rate, 0.5);
+  assert.equal(finishWindow(by, 0).darts[0].tries, 0);     // 101–110: nichts geworfen
+  // Summen-Eingaben und Reste ohne 3-Dart-Finish zählen nicht
+  const s = createMatch('x01', [['a']], { start: 169, out: 'double', mode: 'legs', target: 1 });
+  dart(s, 20, 3); dart(s, 20, 3); dart(s, 20, 3);
+  assert.equal(finishOdds([s], 'a')[169], undefined);
 });

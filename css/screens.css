@@ -3194,3 +3194,236 @@ html.no-motion .silk-lines .sl-run { display: none; }
 .silk-lines .sl-run { display: none !important; }
 .silk-lines .sl { opacity: .75; }
 .silk-lines .sl-lit { stroke-width: 6; filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 12px rgba(255,255,255,.8)) !important; }
+
+/* ================= UPDATE 26.11.2026 – Play, Setup, Spiel-Screen, Bot-Würfe, Doppel, High Finish, Freunde =================
+   Steht ganz am Ende und gewinnt deshalb gegen die älteren Schichten darüber. */
+
+/* ---- Play: „The Game“ über der 501-Kachel, „Partyspiele“ mittig, etwas mehr Luft dazwischen ---- */
+.label.center { justify-content: center; }
+.label.center::before { content: ""; flex: 1; height: 1px; background: linear-gradient(270deg, rgba(196,42,75,.6), rgba(196,42,75,.15) 35%, rgba(200,204,210,.15) 65%, transparent); }
+.label.center::after { background: linear-gradient(90deg, rgba(196,42,75,.6), rgba(196,42,75,.15) 35%, rgba(200,204,210,.15) 65%, transparent) !important; height: 1px !important; }
+.page > .play-lbl:first-child { margin-top: 10px; }
+.play-lbl + .hero { margin-top: 0 !important; }
+.play-lbl.party-lbl { margin-top: 38px; }
+/* Kacheln: Symbol mittig in der Kachel (die Glasfläche war nur so breit wie das Symbol) */
+.modes .mode { align-items: stretch; }
+.modes .mode .mode-art { width: 100%; align-self: stretch; }
+.mode .mode-art .badge-mode { margin: 0 auto; }
+
+/* 501-Kachel: etwas kräftigerer, glänzender Chrom-Rand (nur ein wenig) */
+.silk-hero { border: 1.6px solid transparent !important;
+  background: linear-gradient(#070104, #070104) padding-box, linear-gradient(135deg, #f7f8fa 0%, #8d939b 18%, #e9ecf0 34%, #4a4e55 52%, #f2f4f7 70%, #7d838d 86%, #dfe3e8 100%) border-box !important;
+  box-shadow: 0 0 0 .5px rgba(0,0,0,.8), 0 0 14px rgba(255,255,255,.08), 0 14px 34px rgba(0,0,0,.5) !important; }
+
+/* Offene Spiele (bis zu 3): Zeile mit Text, Mülleimer links neben dem Pfeil – ohne eigene Box */
+.resume-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.resume-list .resume-wrap { margin: 0; gap: 0; align-items: center; border: 1px solid rgba(200,204,210,.35); border-radius: var(--r-panel); background: rgba(16,16,19,.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
+.resume-list .resume { border: 0 !important; background: transparent !important; box-shadow: none !important; padding: 11px 6px 11px 14px; }
+.resume-list .resume::before, .resume-list .resume::after { display: none !important; }
+.resume-list .resume-del, .resume-list .resume-go { all: unset; flex: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 48px; cursor: pointer;
+  color: rgba(238,240,243,.62); border-radius: 8px; -webkit-tap-highlight-color: transparent; }
+.resume-list .resume-del { width: 36px; }
+.resume-list .resume-go { color: rgba(238,240,243,.85); margin-right: 4px; }
+.resume-list .resume-del:hover, .resume-list .resume-del:active { color: #e0516f; }
+.resume-list .resume-go:hover, .resume-list .resume-go:active { color: #fff; }
+
+/* ---- Setup: oben die Titan-501 wie auf der Kachel, Check-Out darunter; dahinter glänzender Bordeaux-/Silber-Schein ---- */
+.su-title.su-501 { position: relative; display: flex; justify-content: center; margin: 8px 0 14px; padding: 10px 0 6px; }
+.su-title.su-501::before { display: none !important; }
+.su-501 .su-sheen { position: absolute; left: 50%; top: 50%; width: min(460px, 96%); height: 125%; transform: translate(-50%, -50%); pointer-events: none; border-radius: 50%;
+  background: radial-gradient(ellipse 50% 42% at 50% 46%, rgba(226,70,104,.55), rgba(150,22,52,.32) 45%, transparent 72%),
+    radial-gradient(ellipse 30% 22% at 38% 34%, rgba(255,255,255,.22), transparent 70%),
+    radial-gradient(ellipse 34% 20% at 64% 62%, rgba(214,220,228,.16), transparent 70%); filter: blur(6px); }
+.su-501 .m501.small { width: min(62%, 300px); position: relative; z-index: 1; }
+.su-501 .m501.small .m501-glint { display: none; }
+
+/* Start-Knopf im Setup: nicht mehr wie die Reiter-Leiste – flache Bordeaux-Taste mit Silberkante und Pfeil */
+.start-go { all: unset; box-sizing: border-box; position: relative; width: min(560px, 100%); height: 60px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 12px;
+  border-radius: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; color: #fff;
+  font-family: var(--f-num); font-size: 26px; letter-spacing: .22em; text-transform: uppercase;
+  background: linear-gradient(180deg, #a3213d 0%, #7c1530 55%, #5c0c1f 100%);
+  border: 1px solid rgba(232,236,241,.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -10px 18px rgba(40,0,10,.35), 0 10px 26px rgba(0,0,0,.55), 0 0 26px rgba(179,36,63,.3); }
+.start-go span { padding-left: .22em; }
+.start-go i { display: flex; opacity: .85; }
+.start-go:active { transform: translateY(1px) scale(.99); filter: brightness(1.1); }
+
+/* ---- Spiel: Kopf in einer Zeile (Spiel · Leg nebeneinander), Mikrofon oben in der Leiste ---- */
+.gtitle.one { display: flex; align-items: baseline; justify-content: center; gap: 10px; min-width: 0; white-space: nowrap; }
+.gtitle.one b, .gtitle.one span { display: inline; overflow: hidden; text-overflow: ellipsis; }
+.gtitle.one b { flex: 0 1 auto; }
+.gtitle.one span { flex: 0 1 auto; }
+.gtitle.one i { flex: none; width: 4px; height: 4px; border-radius: 50%; background: rgba(200,204,210,.55); align-self: center; }
+@media (max-width: 600px) { .gtitle.one { gap: 7px; } .gtitle.one b { font-size: 13px; letter-spacing: .1em; } .gtitle.one span { font-size: 11px; letter-spacing: .1em; } }
+.mic-btn { display: none !important; }
+.mic-sq.on { border-color: #c8241a !important; color: #fff !important; box-shadow: 0 0 0 2px rgba(200,36,26,.25); }
+.mic-sq.on .ic { color: #e0516f; }
+.mic-heard { position: fixed; z-index: 40; left: 50%; top: calc(var(--sat) + 64px); transform: translateX(-50%); max-width: 80vw; padding: 6px 14px; border-radius: 999px;
+  background: rgba(14,14,17,.92); border: 1px solid rgba(200,36,26,.6); color: #eef0f3; font-family: var(--f-num); font-size: 15px; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+
+/* Spielerkarten: beide Namen gleich (Schrift, Größe), kein Karo, Bot-Scheibe rechts neben seinem Namen, Silberrand um beide Karten */
+.duo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.duo.solo { grid-template-columns: minmax(0, 1fr); }
+.game .sbp { border: 1px solid rgba(206,210,216,.55) !important; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 28%), #0e0e11 !important; background-image: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 28%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(0,0,0,.6), 0 10px 24px rgba(0,0,0,.45) !important; filter: none !important; opacity: 1 !important; }
+.game .sbp-head::before { display: none !important; }
+.game .sbp-head { gap: 8px; }
+.game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { flex: 0 1 auto; font-family: var(--f-display) !important; font-weight: 700 !important; font-size: 20px !important;
+  letter-spacing: .06em !important; text-transform: uppercase; color: #eef0f3 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: none !important; }
+.game .sbp-gap { flex: 1 1 0; min-width: 0; }
+.game .sbp-head .botbox { position: relative; flex: none; padding: 0; gap: 0; }
+.game .sbp-head .minib { display: block !important; width: 40px; height: 40px; }
+.game .sbp-head .speech { left: auto; right: -6px; top: 44px; width: min(64vw, 260px); }
+.game .sbp.on::after { inset: 4px; border: 1px solid rgba(255,255,255,.14) !important; filter: none !important; border-radius: 8px; }
+.game .sbp.off .sbp-rem { color: rgba(222,226,231,.62) !important; opacity: 1 !important; }
+
+/* Aktive Karte (Mensch): edles Bordeaux mit weichem, verschwommenem Licht – steht still */
+.game:not(.botturn) .sbp.on {
+  background:
+    radial-gradient(70% 55% at 22% 18%, rgba(255,140,165,.32), transparent 62%),
+    radial-gradient(55% 45% at 78% 34%, rgba(232,70,105,.34), transparent 70%),
+    radial-gradient(80% 70% at 70% 100%, rgba(40,0,10,.75), transparent 70%),
+    radial-gradient(60% 50% at 10% 90%, rgba(120,10,36,.6), transparent 70%),
+    linear-gradient(160deg, #9b1c38 0%, #7a1430 45%, #4f0a1b 100%) !important;
+  border-color: rgba(236,239,243,.85) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 0 0 1px rgba(255,255,255,.06), 0 0 0 1px rgba(0,0,0,.7), 0 12px 30px rgba(0,0,0,.5), 0 0 34px rgba(179,36,63,.28) !important; }
+.game:not(.botturn) .sbp.on .sbp-stats { background: rgba(30,0,8,.28) !important; border-top-color: rgba(255,255,255,.12) !important; }
+/* Ganz selten ein leiser Lichtschimmer über die Karte (nur wer genau hinsieht) – nie während man eintippt auffällig */
+.game .sbp::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.07) 47%, rgba(255,255,255,.11) 50%, rgba(255,255,255,.07) 53%, transparent 62%) no-repeat;
+  background-size: 260% 100%; background-position: 160% 0; animation: sbpSheen 34s ease-in-out infinite; }
+.game .duo .sbp:nth-child(2)::before { animation-delay: -17s; }
+@keyframes sbpSheen { 0%, 93% { background-position: 160% 0; } 100% { background-position: -60% 0; } }
+html.no-motion .game .sbp::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .game .sbp::before { display: none; } }
+
+/* Rest: hebt sich ab – breiter, heller Metallglanz, Bordeaux-Druck dahinter, weicher Schein. Andere Zahlen bleiben ruhig. */
+.game .sbp-rem > span { display: inline-block; transform: scaleX(1.16); transform-origin: center; }
+.game .sbp.on .sbp-rem > span {
+  background: linear-gradient(180deg, #ffffff 0%, #f6f7f9 40%, #c9ced5 52%, #ffffff 64%, #eef0f3 100%); -webkit-background-clip: text; background-clip: text; color: transparent !important; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(2px 3px 0 #5c0c1f) drop-shadow(4px 6px 0 rgba(40,4,12,.7)) drop-shadow(0 0 16px rgba(255,120,150,.45)); }
+.game.botturn .sbp.on .sbp-rem > span { filter: drop-shadow(0 0 10px rgba(255,255,255,.12)); }
+.game .sbp-stats b, .game .sbp-stats small { color: rgba(238,240,243,.82); }
+.game .sbp-stats b { filter: none !important; text-shadow: none !important; }
+
+/* Gewonnene Legs: größer und deutlicher (bei vielen Legs klein) */
+.game .pips { gap: 5px; }
+.game .pips i { width: 17px; height: 17px; border: 1.5px solid rgba(226,230,235,.85) !important; border-radius: 4px; background: rgba(0,0,0,.28); opacity: 1 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14); }
+.game .pips i.w { background: linear-gradient(180deg, #ffffff, #c9ced5) !important; border-color: #fff !important; box-shadow: 0 0 10px rgba(255,255,255,.55), inset 0 -2px 0 rgba(0,0,0,.18); }
+.game .pips.many { gap: 3px; } .game .pips.many i { width: 11px; height: 11px; border-width: 1.2px !important; border-radius: 3px; }
+
+/* Tastatur: gleiche Silberkante wie die Karten, OK nur Bordeaux, Vorschläge leise */
+.game .key, .game .dk { background: linear-gradient(180deg, #18181c, #0f0f12) !important; border: 1px solid rgba(206,210,216,.42) !important; color: #eef0f3;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 2px 8px rgba(0,0,0,.35) !important; }
+.game .key:active, .game .dk:active { background: linear-gradient(180deg, #24242a, #16161a) !important; }
+.game .key.back { color: rgba(222,226,231,.7); }
+.game .key.ok { background: linear-gradient(180deg, #8e1832, #6b1226) !important; border-color: rgba(179,36,63,.9) !important; color: #fff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 8px rgba(0,0,0,.35) !important; }
+.game .key.ok::after, .game .key.ok::before { display: none !important; }
+.game .keys.locked .key:not(.back), .game .dgrid.locked .dk { opacity: .38; }
+.game .key:disabled, .game .dk:disabled { cursor: default; }
+.game .quick { gap: 5px; }
+.game .quick button { height: 30px !important; font-size: 15px !important; background: transparent !important; border: 1px solid rgba(206,210,216,.16) !important; color: rgba(238,240,243,.55) !important; box-shadow: none !important; }
+
+/* Eingegebene Zahl: Hintergrund wie dunkles Tuch (feine Webstruktur über der Seide), ruhig */
+.game .pad .entry.cloth { position: relative; border-radius: 12px; border: 1px solid rgba(206,210,216,.32); padding: 4px 14px; overflow: hidden;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.25) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, rgba(8,6,8,.78), rgba(8,6,8,.88)),
+    url(../assets/intro/silk.webp) center / cover;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 30px rgba(0,0,0,.6); }
+.game .pad .entry.cloth .val { position: relative; color: #fff; }
+.game .pad .entry.cloth.locked .val { opacity: .35; }
+
+/* Handy hoch: Karten nur so hoch wie nötig (oben kleiner), Zahl beim Eintippen groß in der Mitte, Letzte klein in der Karte */
+@media (max-width: 600px) and (orientation: portrait) {
+  .game .gleft { flex: none !important; }
+  .game .duo { flex: none !important; }
+  .game .sbp-head { min-height: 34px; padding: 4px 10px 0; }
+  .game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { font-size: 15px !important; }
+  .game .sbp-head .minib { width: 28px; height: 28px; }
+  .game .sbp-rem { font-size: 66px !important; padding: 2px 0 4px; }
+  .game .sbp-co { font-size: .9rem; margin-top: 2px; }
+  .game .pips i { width: 13px; height: 13px; border-radius: 3px; }
+  .game .pips.many i { width: 9px; height: 9px; }
+  .game .sbp-stats span { padding: 2px 8px 4px !important; gap: 5px !important; }
+  .game .sbp-stats small { font-size: 9px !important; letter-spacing: .1em; }
+  .game .sbp-stats b { font-size: 17px !important; }
+  .game .pad:not(.board) { flex: 1 1 auto !important; min-height: 0; justify-content: flex-end; }
+  .game .pad .entry.cloth { flex: 1 1 auto; min-height: 84px; display: flex; align-items: center !important; justify-content: center !important; }
+  .game .pad .entry .who { display: none; }
+  .game .pad .entry.cloth .val { font-size: clamp(64px, 12dvh, 104px) !important; transform: scaleX(1.12); }
+}
+/* Tablet / MacBook: „Letzte“ etwas größer */
+@media (min-width: 601px) {
+  .game .sbp-stats b { font-size: 28px !important; }
+  .game .sbp-stats small { font-size: 12px !important; }
+  .game .sbp-head .minib { width: 54px; height: 54px; }
+}
+
+/* Bot wirft im Checkout-Bereich: dieselbe Scheibe, Feld blendet weich ein, heller Punkt, daneben = kleine Welle außen */
+.aimbox.botaim .aimboard { cursor: default; }
+.bhits { pointer-events: none; }
+.bhit .bglow { fill: rgba(255,255,255,.42); animation: bFade .55s ease-out both; }
+.bhit .bedge { fill: none; stroke: #fff; stroke-width: 1.8; animation: bFade .55s ease-out both; filter: drop-shadow(0 0 3px rgba(255,255,255,.9)); }
+.bhit .bdot { fill: #fff; animation: bDot .45s ease-out both; }
+.bhit .bdot-glow { fill: rgba(255,255,255,.55); filter: url(#aGlow); animation: bDot .45s ease-out both; }
+.bhit .bwave { fill: none; stroke: #fff; stroke-width: 2.2; transform-box: fill-box; transform-origin: center; animation: bWave 1.1s cubic-bezier(.15,.7,.3,1) both; }
+.bhit .bwave.w2 { stroke-width: 1.4; animation-delay: .22s; }
+@keyframes bFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bDot { 0% { opacity: 0; transform: scale(.2); } 60% { opacity: 1; transform: scale(1.4); } 100% { opacity: 1; transform: scale(1); } }
+.bhit .bdot, .bhit .bdot-glow { transform-box: fill-box; transform-origin: center; }
+@keyframes bWave { 0% { transform: scale(.06); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bhit * { animation: none !important; } .bhit .bwave { display: none; } }
+.game.botturn .ahits .ahit.now b { opacity: .5; }
+
+/* ---- Doppel groß: echte Proportionen (schmales Feld), Bull als Kreis ---- */
+.dspot-ask .dspot.tap { width: min(560px, 100%); }
+.dspot-ask .dspot.tap.bull { width: min(260px, 70%); }
+.dspot.bull .ds-dot.blk { stroke-width: .7; }
+.dspot.bull .ds-dot.last { stroke-width: 1.2; }
+.hb-spot .hb-fld .dspot { width: 100%; height: auto; max-width: 96%; max-height: 100%; }
+.hb-spot .hb-glow { width: 100%; max-width: 100%; }
+.hb-spot.is-bull .hb-fld .dspot { width: auto; height: 100%; max-height: 100%; }
+.hb-spot.is-bull .hb-glow { width: auto; }
+
+/* ---- Statistik › Überblick: High Finish – Treffer je Dart, Regler 101 … 170 (kompakt) ---- */
+.hf-card { margin: 12px 0 0; padding: 12px 14px 10px; border: 1px solid rgba(206,210,216,.28); border-radius: var(--r-panel); background: rgba(14,14,17,.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
+.hf-t { display: block; font-family: var(--f-num); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #e6c3cb; margin-bottom: 8px; }
+.hf-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; height: 108px; }
+.hf-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 0; }
+.hf-col b { font-family: var(--f-num); font-weight: 400; font-size: 22px; color: #fff; line-height: 1; transition: color .2s; }
+.hf-bar { flex: 1; width: 26px; display: flex; align-items: flex-end; border-radius: 6px; background: rgba(255,255,255,.05); border: 1px solid rgba(206,210,216,.18); overflow: hidden; }
+.hf-bar i { display: block; width: 100%; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #ffffff, #d2465f 30%, #7a1430); box-shadow: 0 0 10px rgba(210,70,95,.45); transition: height .25s ease; }
+.hf-col small { font-family: var(--f-num); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(222,226,231,.6); }
+.hf-range { -webkit-appearance: none; appearance: none; width: 100%; height: 26px; margin: 10px 0 0; background: transparent; touch-action: pan-y; cursor: pointer; }
+.hf-range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(206,210,216,.25), rgba(196,42,75,.7)); }
+.hf-range::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(206,210,216,.25), rgba(196,42,75,.7)); }
+.hf-range::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c9ced5 60%, #8d939b);
+  border: 1px solid rgba(0,0,0,.5); box-shadow: 0 2px 8px rgba(0,0,0,.6), 0 0 10px rgba(255,255,255,.25); }
+.hf-range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c9ced5 60%, #8d939b); border: 1px solid rgba(0,0,0,.5); }
+.hf-ends { display: flex; justify-content: space-between; font-family: var(--f-num); font-size: 13px; letter-spacing: .08em; color: rgba(222,226,231,.6); margin-top: 2px; }
+@media (min-width: 900px) { .hf-card { max-width: 520px; } }
+
+/* ---- VIP: Freunde ohne Profilbild – Name links, rechts daneben sein Dart ---- */
+.flist .fl-row { gap: 12px; }
+.flist .fl-row .lbl { flex: 0 1 auto; min-width: 0; max-width: 42%; }
+.fl-dart { flex: 1 1 0; min-width: 0; height: 30px; display: flex; align-items: center; justify-content: center; }
+.fl-dart img, .fl-dart svg { display: block; width: 100%; max-width: 190px; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,.6)); }
+.ddart { overflow: visible; }
+/* Freundesprofil: Name groß, darunter sein Dart (statt Banner) */
+.fr-head { margin: 10px 0 4px; text-align: center; }
+.fr-name { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 8vw, 46px); letter-spacing: .06em; color: #eef0f3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fr-dart { width: 100%; max-width: 560px; margin: 8px auto 0; height: clamp(60px, 16vw, 110px); display: flex; align-items: center; justify-content: center; }
+.fr-dart img, .fr-dart svg { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(207,211,217,.18)); }
+.gtitle.one em { font-style: normal; }
+@media (max-width: 600px) {
+  .gtitle.one em { display: none; }
+  .gtitle.one b { font-size: 15px; } .gtitle.one span { font-size: 12px; }
+  .game .sbp-name, .game .sbp.on .sbp-name, .game.botturn .sbp.on .sbp-name { font-size: 14px !important; letter-spacing: .02em !important; }
+  .game .sbp-head { gap: 5px; padding: 4px 8px 0; }
+}

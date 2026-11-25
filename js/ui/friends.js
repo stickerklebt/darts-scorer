@@ -4,7 +4,6 @@ import { S, ui, profile } from '../store.js';
 import { rv } from './reveal.js';
 import { auth } from '../sync.js';
 import { movingAvg, overview } from '../stats.js';
-import { playerBanner } from './banner.js';
 import { camBlock } from './play.js';
 import { resultText } from '../history.js';
 import { GAMES } from '../games.js';
@@ -13,9 +12,28 @@ import { icon, fuse, stars, sparkles, goldSmoke, numRing, COLORS } from './svg.j
 import { lineChart } from './charts.js';
 import { pct, dateStr } from './stats-view.js';
 
-/** Farbe je Freund stabil aus dem Namen (gleiche Palette wie Spieler) */
-const colorIdx = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.codePointAt(0)) >>> 0; return h % 5; };
-const chip = (name, cls = 'sm') => `<span class="pc ${cls}" style="${pcVars(colorIdx(name))}">${esc(name.slice(0, 1).toUpperCase())}</span>`;
+/** Keine Profilbilder bei Freunden: statt Initialen-Kreis steht nur der Name (chip bleibt als leerer Platzhalter) */
+const chip = () => '';
+/** Standard-Dart (Flight links, Spitze rechts) für alle, die ihren Dart noch nicht fotografiert haben: Titan-Barrel mit Griffringen,
+    dunkler Schaft, Bordeaux-Flight mit heller Kante – deutlich, aber im App-Stil. */
+let ddN = 0;
+export function defaultDart() {
+  const k = `dd${++ddN}`;
+  return `<svg class="ddart" viewBox="0 0 600 90" aria-label="Dart">
+  <defs><linearGradient id="${k}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c7078"/><stop offset=".22" stop-color="#f2f4f7"/><stop offset=".45" stop-color="#9da3ab"/><stop offset=".6" stop-color="#3a3d43"/><stop offset=".82" stop-color="#c9ced5"/><stop offset="1" stop-color="#5d6168"/></linearGradient>
+    <linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0516f"/><stop offset=".5" stop-color="#b3243f"/><stop offset="1" stop-color="#5a0f20"/></linearGradient>
+    <linearGradient id="${k}t" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9da3ab"/><stop offset="1" stop-color="#f2f4f7"/></linearGradient></defs>
+  <path d="M8 6 L132 38 L132 52 L8 84 L40 45 Z" fill="url(#${k}f)" stroke="#f2a3b3" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="M40 45 L132 45" stroke="#2a0a12" stroke-opacity=".6" stroke-width="2"/>
+  <rect x="128" y="38" width="118" height="14" rx="4" fill="#1b1c20" stroke="#4a4d55" stroke-width="1"/>
+  <rect x="246" y="30" width="182" height="30" rx="13" fill="url(#${k}b)"/>
+  ${Array.from({ length: 14 }, (_, i) => `<path d="M${282 + i * 8} 31.5V58.5" stroke="#1b1c20" stroke-opacity=".55" stroke-width="2.4"/>`).join('')}
+  <path d="M256 36 H418" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/>
+  <path d="M428 38 L578 44 L594 45 L578 46 L428 52 Z" fill="url(#${k}t)"/>
+</svg>`;
+}
+/** Dart eines Freundes: eingescanntes Bild vom Server oder der Standard-Dart */
+const friendDart = (id, v) => (v ? `<img src="api/friends/${encodeURIComponent(id)}/dart?v=${encodeURIComponent(v)}" alt="Dart" loading="lazy">` : defaultDart());
 const ago = (t) => {
   if (!t) return null;
   const d = Math.floor((Date.now() - t) / 864e5);
@@ -84,8 +102,9 @@ export function friendsView() {
   const list = !f
     ? `<p class="foot">${err ? esc(err) : 'Lade Freunde …'}</p>${err ? '<button class="btn dark" data-act="friendsReload">Erneut versuchen</button>' : ''}`
     : friends.length
-      ? `<div class="slist flist ${friends.length > 3 ? 'fl-scroll' : ''}">${friends.map((x) => `<button class="srow" data-act="friendOpen" data-v="${esc(x.id)}">${chip(x.username)}
+      ? `<div class="slist flist ${friends.length > 3 ? 'fl-scroll' : ''}">${friends.map((x) => `<button class="srow fl-row" data-act="friendOpen" data-v="${esc(x.id)}">
           <span class="lbl">${esc(x.username)}<small>${x.matches ? `${x.matches} ${x.matches === 1 ? 'Spiel' : 'Spiele'}${x.lastPlayed ? ` · zuletzt ${ago(x.lastPlayed)}` : ''}` : 'Noch keine Spiele'}</small></span>
+          <span class="fl-dart ${x.dart ? 'mine' : 'plain'}">${friendDart(x.id, x.dart)}</span>
           <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<div class="empty-card"><div>${stars(3, '#08080a', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
@@ -120,7 +139,9 @@ const cards = (items) => `<div class="kv">${items.map(([k, v, sub], i) => `<div 
 export function friendView() {
   const fr = ui.friend, d = fr?.data, name = d?.user?.username || fr?.name || '';
   const head = `<header class="bar"><button class="sq" data-act="backFriends" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title">Freund</span><span class="sq ghost"></span></header>`;
-  const top = `${playerBanner({ name, avg: d?.stats?.x501?.avg ?? null })}
+  // Kein Banner mehr: Name groß, darunter sein Dart (eingescannt oder Standard)
+  const top = `<div class="fr-head"><h1 class="fr-name">${esc(name)}</h1>
+    ${d ? `<div class="fr-dart ${d.user?.dart ? 'mine' : 'plain'}">${friendDart(fr.id, d.user?.dart)}</div>` : ''}</div>
     ${d?.user?.friendsSince ? `<p class="foot pb-since">Freunde seit ${dateStr(d.user.friendsSince)}</p>` : ''}`;
   if (!d) return `${head}<main class="page">${top}<p class="foot">${fr?.error ? esc(fr.error) : 'Lade Statistik …'}</p></main>`;
   const st = d.stats || { total: 0, games: {} }, x = st.x501;

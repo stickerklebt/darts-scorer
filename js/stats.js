@@ -294,3 +294,38 @@ export function legDetail(m, li, pid) {
   });
   return { li, no: li + 1, set: l.set, winner: l.winner, starter: l.starter, finished: l.winner !== undefined, mine, sides };
 }
+
+/* ---------------- High Finish: wie oft sitzt der 1., 2., 3. Dart? ----------------
+   Aufnahmen, die bei Rest 101–170 mit einem möglichen 3-Dart-Finish beginnen (Double Out, Dart für Dart erfasst).
+   Ein Dart „trifft“, wenn er genau das Feld trifft, das der Checkout-Weg in diesem Moment vorsah (throw.target).
+   Ergebnis je Startrest: tries/hits für Dart 1–3. Zusammengefasst wird im Bereich um den Regler (finishWindow). */
+export const HF_MIN = 101, HF_MAX = 170;
+export function finishOdds(matches, pid) {
+  const by = {};
+  for (const m of matches) {
+    if (!m || m.game !== 'x01' || m.opts?.out !== 'double') continue;
+    for (const l of m.legs || []) for (const t of l.turns) {
+      if (t.pid !== pid || !t.throws?.length || t.input !== 'darts') continue;
+      const r0 = t.startRem;
+      if (!(r0 >= HF_MIN && r0 <= HF_MAX) || !route(r0, 3)) continue;
+      const e = (by[r0] ||= { tries: [0, 0, 0], hits: [0, 0, 0] });
+      t.throws.slice(0, 3).forEach((d, k) => {
+        if (!d.target || d.x) return;
+        e.tries[k]++;
+        if (d.n !== 0 && label(d) === d.target) e.hits[k]++;
+      });
+    }
+  }
+  return by;
+}
+/** Bereich um den Regler: pos 0 … 1 → Mitte zwischen 101 und 170, ± span. Gibt { from, to, darts: [{ tries, hits, rate }] } */
+export function finishWindow(by, pos, span = 9) {
+  const c = HF_MIN + Math.max(0, Math.min(1, pos)) * (HF_MAX - HF_MIN);
+  const from = Math.max(HF_MIN, Math.round(c - span)), to = Math.min(HF_MAX, Math.round(c + span));
+  const darts = [0, 1, 2].map((k) => {
+    let tries = 0, hits = 0;
+    for (let r = from; r <= to; r++) { const e = by[r]; if (e) { tries += e.tries[k]; hits += e.hits[k]; } }
+    return { tries, hits, rate: tries ? hits / tries : null };
+  });
+  return { from, to, darts };
+}
