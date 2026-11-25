@@ -3028,3 +3028,12 @@ body .subpop::before { animation-duration: 12s, 4.8s !important; animation-delay
 @keyframes bbFloat { from { transform: translate(0, 0) scale(1); } to { transform: translate(var(--mx), var(--my)) scale(var(--s)); } }
 .hero { background: #070104 !important; }
 @media (prefers-reduced-motion: reduce) { .hero .bb { animation: none !important; } }
+
+/* Reiter-Schrift heller und leuchtender: inaktive fast weiß mit leichtem Schein, aktive weiß mit kräftigem Leuchten */
+body .tabs .tab, body .tabs .tab > span { color: #dfe2e7 !important; opacity: 1 !important; }
+body .tabs .tab > span { text-shadow: 0 0 6px rgba(255,255,255,.28), 0 0 14px rgba(255,255,255,.12); }
+body .tabs .tab .ic, body .tabs .tab svg { filter: drop-shadow(0 0 4px rgba(255,255,255,.3)); }
+body .tabs .tab.on, body .tabs .tab.on > span { color: #fff !important; }
+body .tabs .tab.on > span { text-shadow: 0 0 4px #fff, 0 0 12px rgba(255,255,255,.65), 0 0 24px rgba(255,255,255,.3) !important; }
+body .subpop .subtabs.three button { opacity: .8 !important; color: #e6e9ee !important; filter: drop-shadow(0 0 4px rgba(255,255,255,.25)); }
+body .subpop .subtabs.three button.on { opacity: 1 !important; color: #fff !important; filter: drop-shadow(0 0 6px rgba(255,255,255,.6)); }
