@@ -2750,3 +2750,31 @@ body .subpop .subtabs.three button.on { background: radial-gradient(ellipse 60% 
 .backstage .vip-dart::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
   background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.10) 44%, rgba(255,255,255,.02) 52%, transparent 60%); }
 .page.backstage .bs-tile.glint::after { opacity: .75 !important; }
+
+/* VIP „Kristallglas“ (Vorlage: dicke Glasmappe): dickes, klares Glas mit doppelter Kante, sehr hellen weißen Lichtkanten,
+   prismatischer Rand (Lichtbrechung: Weiß/Silber mit feinen warmen und kühlen Farbsäumen), heller Schein am unteren Rand. */
+:root { --prism: conic-gradient(from 210deg, rgba(255,255,255,.95), #ffd9a8 7%, rgba(255,255,255,.55) 13%, #c8ccd0 20%, rgba(255,255,255,.95) 27%, #ffb38a 33%, #e9c6ff 38%, rgba(255,255,255,.4) 46%, #c8ccd0 56%, rgba(255,255,255,.9) 64%, #bfe9ff 70%, #fff 75%, #ffcf7a 83%, rgba(255,255,255,.5) 91%, rgba(255,255,255,.95)); }
+.backstage .slist, .backstage .bs-tile, .backstage .empty-card, .backstage .field.search, .backstage .btn.line, .backstage .btn.dark, .friend .slist, .friend .kv-c {
+  background:
+    radial-gradient(120% 60% at 30% 0%, rgba(255,255,255,.20), rgba(255,255,255,0) 60%),
+    linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.02) 45%, rgba(255,255,255,0) 70%, rgba(255,255,255,.08) 100%),
+    rgba(18,17,16,.50) !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(0,0,0,.45),                 /* Glasdicke: dunkle Fuge … */
+    inset 0 0 0 3px rgba(255,255,255,.16),           /* … und innere zweite Kante */
+    inset 0 2px 0 3px rgba(255,255,255,.12),
+    inset 0 -3px 6px -2px rgba(255,255,255,.28),     /* heller Lichtsaum unten im Glas */
+    inset 0 14px 22px -16px rgba(255,255,255,.35),   /* Wölbung oben */
+    0 0 18px rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.55), 0 8px 18px -10px rgba(255,220,180,.18) !important;
+}
+.backstage .bs-tile::after, .backstage .slist::after, .page.backstage .bs-tile.glint::after {
+  background: var(--prism) !important; padding: 1.5px !important; opacity: 1 !important;
+  filter: drop-shadow(0 0 3px rgba(255,255,255,.55)) drop-shadow(0 -1px 6px rgba(255,255,255,.25));
+}
+/* Glanzlicht: helle Kante oben links, wie Licht auf der Glaskante */
+.backstage .slist::before, .backstage .bs-tile:not(.glint)::before, .page.backstage .bs-tile.glint::before {
+  content: ""; position: absolute; left: 8%; right: 40%; top: 0; height: 2px; border-radius: 2px; pointer-events: none; opacity: 1 !important; padding: 0 !important; inset: 0 40% auto 8% !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0), #fff 30%, rgba(255,255,255,.9) 70%, rgba(255,255,255,0)) !important;
+  box-shadow: 0 0 8px 1px rgba(255,255,255,.6); -webkit-mask: none !important; mask: none !important;
+}
