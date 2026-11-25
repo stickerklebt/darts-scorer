@@ -292,7 +292,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   Doppelquote (Treffer/Versuche, nur Double Out), Bestes Leg – keine Gesamt-Darts. Statistik › Scoring: „60+ / 100+ / 140+“ und „180er“ nebeneinander
   je eine Karte; die Verteilung der Aufnahmen zählt nur das Scoring (Rest vor der Aufnahme über 170).
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
-  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match · First 9 Average pro Match · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
+  treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match (lange auf den Titel drücken → kleines Menü oben links: Average · First 9 Average, `ui.avgKind`, Standard Average) · Verteilung der Aufnahmen · Doppelquote gesamt · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
   beste gold) · Doppelquote gesamt (kumuliert: Gesamtquote nach jedem Match, Kurve erst ab 100 Doppelversuchen, `cumulativeDoubles`/`DBL_MIN` in `stats-extra.js`) · Verteilung der Aufnahmen – sonst nichts („Wann du gut wirfst“ entfernt). Checkout steht im Überblick. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
   (Bestes Leg steht im Überblick). Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern durch langes Drücken auf den Reiter „Stats“ → Auswahlfenster; ein anderer
@@ -339,7 +339,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   (`SUB_ICONS` in `stats-view.js`). Die App startet immer im Reiter Spielen; in der Statistik ist beim Start und beim Öffnen des Reiters immer Doppel (Mitte) gewählt. Wechsel auch per Wischen links/rechts
   (`touchstart/touchend` in `main.js`, nicht auf Scheibe/Diagramm/Liste). Statistik-Kopf ohne Namen; anderer Zeitraum erscheint als Chip.
 - **Kein knallweißer Hintergrund:** Rekord-Karten, Top-5-Listen, Leer-Karten, Regeln sind dunkel (schwarz, Goldrahmen + Innenlinie, Creme-Schrift) – Block am Ende von `screens.css`. Keine neuen Cremeflächen. Rahmen-Rangfolge: Rekord-Karten kräftig (2 px Gold + Innenlinie), Diagramme und Top-5-Listen leichter (1 px gedämpft). Gleitender Schnitt im Diagramm durchgezogen, aber handgemacht: Rot leicht ungleich (Verlauf `AVG_INK` in `charts.js`), dunkler versetzter Druck darunter, `#rough`.
-- Reihenfolge im Statistik-Reiter Scoring: Average pro Match · First 9 Average pro Match · Aufnahmen im Leg · Doppelquote gesamt · Verteilung der Aufnahmen.
+- Reihenfolge im Statistik-Reiter Scoring: Average pro Match (umschaltbar auf First 9 per langem Drücken auf den Titel) · Verteilung der Aufnahmen · Doppelquote gesamt · Aufnahmen im Leg.
 - Reiter Spielen ohne Namen/Ø-Kopf oben (Kennzahlen nur im Reiter Statistik, Name in den Einstellungen).
 - Die Bruchchallenge heißt in der App nur noch **„Challenge“** (`GAMES.bruch.title`, Screen-Titel, Ergebnis); intern bleibt der Schlüssel `bruch`.
 - Freundesliste im Backstage: ab 4 Freunden eigene Scroll-Box (3 sichtbar, der 4. läuft aus, `.fl-scroll`).
@@ -384,7 +384,9 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
   warmes Schwarz (`--ink #0b0a08`), Creme-Text, Gold für Rahmen/Akzente, Silber (`--silver #c8ccd0`) für Linien/Kanten, Akzent Orange statt Rot
   (`--red` ist jetzt #e8742a, `--red-d` #a84d17), orangefarbenes Glühen. Kein Blau. Dartscheiben behalten ihre echten Rot/Grün-Felder.
 - **Eigener Dart** (VIP oben unter dem Namen, über die ganze Breite, groß, Flight links/Spitze rechts): Profil › „Dart fotografieren“ (Kamera/Datei).
-  `js/dartscan.js`: Hintergrund = Ebene durch die Randpixel (gleicht Licht-Verläufe aus) → Maske → Lücken schließen → Fläche, die am ehesten ein Dart ist
-  (groß × länglich, nicht am Bildrand) → Löcher füllen → PCA-Achse → waagerecht drehen (bilinear), breiteste Stelle (Flight) nach links →
-  **echter Dart in seinen Farben** (Kontrast/Sättigung leicht verstärkt), Tisch transparent, feiner Goldrand (`OUTLINE`), 1000 px PNG als data-URL in `prefs.myDart`
+  `js/dartscan.js` (auch für gemaserte Holztische): Bandpass = leicht geglättet minus stark geglättet (Maserung und Lichtverlauf fallen weg) →
+  Schwelle aus der Bildverteilung → Teile über einen Saum verbinden, Dart-Fläche wählen (groß × länglich) + Teile auf der Achsen-Verlängerung (Flight) →
+  Hysterese für Spitze/Ränder → Kanten gegen die Tischfarbe ohne Dart nachschärfen → Löcher füllen. `straighten`: je Spalte entlang der Achse die
+  halbe Breite, **spiegelsymmetrisch zur Mittellinie** (Flight wird voll, auch wenn eine Kante kaum Kontrast hat), geglättet, Krümel an den Enden weg;
+  Flight nach links. Dann echter Dart in seinen Farben (Kontrast/Sättigung leicht verstärkt), Tisch transparent, Goldrand (`OUTLINE`), 1000 px PNG in `prefs.myDart`
   (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.

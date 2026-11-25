@@ -130,7 +130,7 @@ function moreTab(st, pid) {
   // Average-Verlauf, Aufnahmen im Leg, Doppelquote-Verlauf, Verteilung der Aufnahmen. Checkout steht im Reiter Doppel.
   const lc = legCurve(matchesOf(S.matches, pid, S.statsPeriod), pid);
   const lcBox = chartBox('Aufnahmen im Leg', `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points));
-  return block('', historyCharts(st, pid, lcBox) + doubleChart(st, pid) + distChart(st));
+  return block('', historyCharts(st, pid) + distChart(st) + doubleChart(st, pid) + lcBox);
 }
 
 export function emptyState(pid, any) {

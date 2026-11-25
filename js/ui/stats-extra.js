@@ -33,12 +33,16 @@ function legsDetail(m) {
 
 const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), labelR: dateStr(st.series[st.series.length - 1].date) } : {});
 
-/** Verlauf: Average pro Match und First 9 Average pro Match, dazwischen optional weiterer Inhalt */
-export function historyCharts(st, pid = '', middle = '') {
+/** Verlauf: ein Kasten „Average pro Match“ – lange auf den Titel drücken → kleines Menü oben links: Average · First 9 Average (Standard: Average) */
+export const AVG_KINDS = [['avg', 'Average pro Match'], ['f9', 'First 9 Average pro Match']];
+export function historyCharts(st, pid = '') {
+  const kind = ui.avgKind === 'f9' ? 'f9' : 'avg';
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
-  const avgs = st.series.map((s) => s.avg), f9 = st.series.map((s) => s.f9 ?? null);
-  return chartBox('Average pro Match', '', lineChart(avgs, movingAvg(avgs), { ...ends(st), taps }))
-    + chartBox('First 9 Average pro Match', 'Ø der ersten drei Aufnahmen jedes Legs', lineChart(f9, movingAvg(f9), { ...ends(st), taps })) + middle;
+  const vals = st.series.map((s) => (kind === 'f9' ? s.f9 ?? null : s.avg));
+  const label = AVG_KINDS.find(([k]) => k === kind)[1];
+  const menu = ui.avgMenu ? `<span class="ch-menu" role="menu">${AVG_KINDS.map(([k, l]) => `<button role="menuitemradio" aria-checked="${k === kind}" class="${k === kind ? 'on' : ''}" data-act="avgKind" data-v="${k}">${l}</button>`).join('')}</span>` : '';
+  return chartBox(`<span class="ch-pick" title="Lange drücken zum Umschalten">${label}<i aria-hidden="true">▾</i></span>${menu}`, kind === 'f9' ? 'Ø der ersten drei Aufnahmen jedes Legs' : '',
+    lineChart(vals, movingAvg(vals), { ...ends(st), taps }));
 }
 /** Doppelquote insgesamt im Verlauf: nach jedem Match die Gesamtquote bis dahin (kumuliert, nicht pro Match).
     Die Kurve beginnt erst ab DBL_MIN Doppelversuchen – vorher springt sie zu stark (100 % … 0 %). */

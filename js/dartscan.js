@@ -6,51 +6,70 @@
 
 const lum = (d, i) => 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
 
-/** Lineares Löse-System 3×3 (Cramer) */
-function solve3(A, v) {
-  const det = (m) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
-  const D = det(A);
-  if (Math.abs(D) < 1e-9) return null;
-  return [0, 1, 2].map((k) => det(A.map((row, r) => row.map((x, c) => (c === k ? v[r] : x)))) / D);
+/** Kastenfilter über ein Integralbild (r = Radius) */
+function boxBlur(ch, w, h, r) {
+  const W1 = w + 1, I = new Float64Array(W1 * (h + 1));
+  for (let y = 0; y < h; y++) { let s = 0; for (let x = 0; x < w; x++) { s += ch[y * w + x]; I[(y + 1) * W1 + x + 1] = I[y * W1 + x + 1] + s; } }
+  const o = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) {
+    const y0 = Math.max(0, y - r), y1 = Math.min(h, y + r + 1);
+    for (let x = 0; x < w; x++) {
+      const x0 = Math.max(0, x - r), x1 = Math.min(w, x + r + 1);
+      o[y * w + x] = (I[y1 * W1 + x1] - I[y0 * W1 + x1] - I[y1 * W1 + x0] + I[y0 * W1 + x0]) / ((x1 - x0) * (y1 - y0));
+    }
+  }
+  return o;
 }
 
 /**
- * Hintergrund = Ebene durch die Randpixel (je Farbkanal a + b·x + c·y, gleicht Licht-Verläufe auf dem Tisch aus);
- * Maske = Pixel, die deutlich davon abweichen → Lücken schließen → passende Fläche (groß und länglich) → Löcher füllen.
+ * Dart vom Tisch trennen – auch auf gemasertem Holz und bei ungleichem Licht:
+ * leicht geglättet (Maserung/Rauschen weg) minus stark geglättet (Tisch + Lichtverlauf) = was sich vom Untergrund in seiner Umgebung abhebt.
+ * Schwelle aus der Verteilung im ganzen Bild (der Dart ist nur ein kleiner Teil). Starke Pixel → Dart-Fläche (groß und länglich),
+ * schwächere direkt daran (Hysterese) holen die dünne Spitze und Ränder dazu → Lücken schließen → Löcher füllen.
  */
 export function segment(img) {
-  const { width: w, height: h, data: d } = img;
-  const m = Math.max(2, Math.round(Math.min(w, h) * 0.03));
-  const pts = [];
-  const step = Math.max(1, Math.round((w + h) / 1500));
-  for (let y = 0; y < h; y += step) for (let x = 0; x < w; x += step) {
-    if (x >= m && y >= m && x < w - m && y < h - m) { x = w - m - 1; continue; }
-    pts.push(x, y, (y * w + x) * 4);
-  }
-  // Ebene per kleinster Quadrate, dann ein zweiter Durchgang ohne Ausreißer (z. B. Dart berührt den Rand)
-  const fit = (use) => {
-    const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], B = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    for (let k = 0; k < pts.length; k += 3) {
-      if (use && !use[k / 3]) continue;
-      const x = pts[k] / w, y = pts[k + 1] / h, i = pts[k + 2], r = [1, x, y];
-      for (let a = 0; a < 3; a++) { for (let b = 0; b < 3; b++) A[a][b] += r[a] * r[b]; for (let c = 0; c < 3; c++) B[c][a] += r[a] * d[i + c]; }
+  const { width: w, height: h, data: d } = img, n = w * h, md = Math.min(w, h);
+  const rs = Math.max(1, Math.round(md * 0.008)), R = Math.max(6, Math.round(md * 0.1));
+  const small = [0, 1, 2].map((c) => { const a = new Float32Array(n); for (let p = 0; p < n; p++) a[p] = d[p * 4 + c]; return boxBlur(a, w, h, rs); });
+  const big = small.map((a) => boxBlur(boxBlur(a, w, h, R), w, h, R));
+  const dist = new Float32Array(n);
+  for (let p = 0; p < n; p++) dist[p] = Math.hypot(small[0][p] - big[0][p], small[1][p] - big[1][p], small[2][p] - big[2][p]);
+  const s = Array.from(dist).sort((a, b) => a - b);
+  const med = s[n >> 1], mad = s[Math.floor(n * 0.75)] - med;
+  const thr = Math.max(24, Math.min(med + 6 * mad, s[Math.floor(n * 0.985)]));
+  const strong = new Uint8Array(n);
+  for (let p = 0; p < n; p++) strong[p] = dist[p] > thr ? 1 : 0;
+  // Zusammengehöriges (Flight · Schaft · Barrel · Spitze) erst über einen breiteren Saum verbinden, dann die Dart-Fläche wählen
+  let dil = clean(strong, w, h); const k = Math.max(2, Math.round(md * 0.02));
+  for (let i = 0; i < k; i++) dil = morph(dil, w, h, true);
+  const grp = pick(dil, w, h, true), core = new Uint8Array(n);
+  for (let p = 0; p < n; p++) core[p] = grp[p] && strong[p] ? 1 : 0;
+  // Hysterese: schwächere Pixel, die an der Dart-Fläche hängen (begrenzt auf einen schmalen Saum)
+  const weak = thr * 0.45, out = core.slice(), reach = Math.max(3, Math.round(md * 0.03));
+  let front = []; for (let p = 0; p < n; p++) if (core[p]) front.push(p);
+  for (let step = 0; step < reach && front.length; step++) {
+    const next = [];
+    for (const q of front) {
+      const x = q % w, y = (q / w) | 0;
+      for (const r of [x > 0 ? q - 1 : -1, x < w - 1 ? q + 1 : -1, y > 0 ? q - w : -1, y < h - 1 ? q + w : -1]) {
+        if (r >= 0 && !out[r] && dist[r] > weak) { out[r] = 1; next.push(r); }
+      }
     }
-    return [0, 1, 2].map((c) => solve3(A, B[c]) || [d[pts[2] + c], 0, 0]);
-  };
-  const bgAt = (P, x, y, c) => P[c][0] + P[c][1] * (x / w) + P[c][2] * (y / h);
-  const resid = (P) => { const r = []; for (let k = 0; k < pts.length; k += 3) { const i = pts[k + 2]; r.push(Math.hypot(d[i] - bgAt(P, pts[k], pts[k + 1], 0), d[i + 1] - bgAt(P, pts[k], pts[k + 1], 1), d[i + 2] - bgAt(P, pts[k], pts[k + 1], 2))); } return r; };
-  let P = fit(null);
-  let r = resid(P);
-  const med = r.slice().sort((a, b) => a - b)[r.length >> 1];
-  P = fit(r.map((x) => x <= Math.max(12, med * 3)));
-  r = resid(P).sort((a, b) => a - b);
-  const thr = Math.max(30, r[Math.floor(r.length * 0.95)] * 1.8);
-  const mask = new Uint8Array(w * h);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const p = y * w + x, i = p * 4;
-    mask[p] = Math.hypot(d[i] - bgAt(P, x, y, 0), d[i + 1] - bgAt(P, x, y, 1), d[i + 2] - bgAt(P, x, y, 2)) > thr ? 1 : 0;
+    front = next;
   }
-  return { mask: fillHoles(pick(clean(mask, w, h), w, h), w, h), bg: [0, 1, 2].map((c) => Math.round(bgAt(P, w / 2, h / 2, c))) };
+  // Kanten nachschärfen: am Rand nur Pixel behalten, die auch ungeglättet vom Tisch abweichen (der Weichzeichner macht den Saum sonst breiter)
+  // Tisch-Farbe ohne den Dart schätzen (geglättet nur über Pixel außerhalb der Fläche, etwas Abstand), damit der Saum nicht dunkler/heller gerechnet wird
+  const filled = fillHoles(clean(out, w, h), w, h), sharp = new Uint8Array(n);
+  let away = filled; for (let i = 0; i < Math.max(2, rs * 2); i++) away = morph(away, w, h, true);
+  const wgt = new Float32Array(n); for (let p = 0; p < n; p++) wgt[p] = away[p] ? 0 : 1;
+  const Rb = Math.max(4, Math.round(md * 0.05)), wb = boxBlur(boxBlur(wgt, w, h, Rb), w, h, Rb);
+  const bg = [0, 1, 2].map((c) => { const a = new Float32Array(n); for (let p = 0; p < n; p++) a[p] = d[p * 4 + c] * wgt[p]; return boxBlur(boxBlur(a, w, h, Rb), w, h, Rb); });
+  for (let p = 0; p < n; p++) if (filled[p]) {
+    const i = p * 4, ww = wb[p] > 0.02 ? wb[p] : 0;
+    const bR = ww ? bg[0][p] / ww : big[0][p], bG = ww ? bg[1][p] / ww : big[1][p], bB = ww ? bg[2][p] / ww : big[2][p];
+    sharp[p] = Math.hypot(d[i] - bR, d[i + 1] - bG, d[i + 2] - bB) > thr * 0.4 ? 1 : 0;
+  }
+  return { mask: fillHoles(pick(clean(sharp, w, h), w, h, true), w, h), thr };
 }
 
 /** Löcher in der Fläche füllen (Glanzlichter auf dem Barrel, helle Flight-Muster in Tischfarbe) */
@@ -84,8 +103,8 @@ function morph(mask, w, h, grow) {
 const clean = (m, w, h) => morph(morph(m, w, h, true), w, h, false);
 
 /** Zusammenhängende Flächen; gewählt wird die, die am ehesten ein Dart ist: groß und länglich, nicht am Bildrand entlang (Tischkante) */
-function pick(mask, w, h) {
-  const lab = new Int32Array(w * h); let id = 0, best = 0, bestS = -1;
+function pick(mask, w, h, merge = false) {
+  const lab = new Int32Array(w * h); let id = 0, best = 0, bestS = -1; const comps = [];
   const stack = [];
   for (let p = 0; p < w * h; p++) {
     if (!mask[p] || lab[p]) continue;
@@ -105,10 +124,25 @@ function pick(mask, w, h) {
     const tr = a + c, dt = Math.sqrt(Math.max(0, (a - c) ** 2 / 4 + b * b)), l1 = tr / 2 + dt, l2 = Math.max(1, tr / 2 - dt);
     const elong = Math.min(8, Math.sqrt(l1 / l2));
     const score = n * elong / (1 + edge / 20);
+    comps.push({ id, n, mx, my });
     if (score > bestS) { bestS = score; best = id; }
   }
+  const keep = new Set([best]);
+  // Teile auf der Verlängerung der Dart-Achse dazunehmen (z. B. die Flight, wenn der Übergang zum Schaft kaum Kontrast hat)
+  if (merge && best) {
+    const out0 = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) out0[p] = lab[p] === best ? 1 : 0;
+    const ax = axis(out0, w), c = Math.cos(ax.angle), s = Math.sin(ax.angle);
+    let u0 = Infinity, u1 = -Infinity;
+    for (let p = 0; p < w * h; p++) if (out0[p]) { const u = (p % w - ax.cx) * c + (((p / w) | 0) - ax.cy) * s; if (u < u0) u0 = u; if (u > u1) u1 = u; }
+    const L = u1 - u0;
+    for (const k of comps) {
+      if (k.id === best || k.n < ax.n * 0.03) continue;
+      const u = (k.mx - ax.cx) * c + (k.my - ax.cy) * s, v = -(k.mx - ax.cx) * s + (k.my - ax.cy) * c;
+      if (Math.abs(v) < L * 0.15 && u > u0 - L * 0.4 && u < u1 + L * 0.4) keep.add(k.id);
+    }
+  }
   const out = new Uint8Array(w * h);
-  for (let p = 0; p < w * h; p++) out[p] = lab[p] === best ? 1 : 0;
+  for (let p = 0; p < w * h; p++) out[p] = keep.has(lab[p]) ? 1 : 0;
   return out;
 }
 
@@ -132,17 +166,41 @@ export function straighten(img, mask) {
   const ax = axis(mask, w);
   if (!ax || ax.n < 60) return null;
   const c = Math.cos(ax.angle), s = Math.sin(ax.angle);
-  let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
+  let u0 = Infinity, u1 = -Infinity;
   for (let p = 0; p < mask.length; p++) if (mask[p]) {
-    const x = p % w - ax.cx, y = ((p / w) | 0) - ax.cy, u = x * c + y * s, v = -x * s + y * c;
-    if (u < u0) u0 = u; if (u > u1) u1 = u; if (v < v0) v0 = v; if (v > v1) v1 = v;
+    const x = p % w - ax.cx, y = ((p / w) | 0) - ax.cy, u = x * c + y * s;
+    if (u < u0) u0 = u; if (u > u1) u1 = u;
   }
-  const pad = 2, W = Math.ceil(u1 - u0) + pad * 2, H = Math.ceil(v1 - v0) + pad * 2;
+  // Je Spalte entlang der Achse: oberste/unterste Dart-Kante
+  const Wc = Math.ceil(u1 - u0) + 1, top = new Float64Array(Wc).fill(Infinity), bot = new Float64Array(Wc).fill(-Infinity);
+  for (let p = 0; p < mask.length; p++) if (mask[p]) {
+    const x = p % w - ax.cx, y = ((p / w) | 0) - ax.cy, X = Math.round(x * c + y * s - u0), v = -x * s + y * c;
+    if (v < top[X]) top[X] = v; if (v > bot[X]) bot[X] = v;
+  }
+  // Mittellinie = Median der Spaltenmitten im schmalen Teil (Barrel/Schaft); ein Dart ist zur Achse symmetrisch →
+  // halbe Breite je Spalte = weitere Kante; so wird die Flight auch voll, wenn eine Kante im Foto kaum Kontrast hat
+  const cols = [...Array(Wc).keys()].filter((X) => top[X] <= bot[X]);
+  const thk = cols.map((X) => bot[X] - top[X]).sort((a, b) => a - b), mt = thk[thk.length >> 1] || 1;
+  const mids = cols.filter((X) => bot[X] - top[X] <= mt * 1.5).map((X) => (top[X] + bot[X]) / 2).sort((a, b) => a - b);
+  const vc = mids.length ? mids[mids.length >> 1] : 0;
+  let hw = new Float64Array(Wc);
+  for (const X of cols) hw[X] = Math.max(vc - top[X], bot[X] - vc, 0.5);
+  // glätten (Median über ein kleines Fenster) und kleine abgetrennte Stücke an den Enden weglassen (Krümel vom Tisch)
+  const win = Math.max(1, Math.round(Wc * 0.008));
+  hw = hw.map((_, X) => { const a = []; for (let k = X - win; k <= X + win; k++) if (k >= 0 && k < Wc) a.push(hw[k]); a.sort((p, q) => p - q); return a[a.length >> 1]; });
+  const runs = []; for (let X = 0; X < Wc;) { if (!hw[X]) { X++; continue; } let E = X; while (E < Wc && hw[E]) E++; runs.push([X, E]); X = E; }
+  const longest = runs.reduce((m, r) => (r[1] - r[0] > m[1] - m[0] ? r : m), [0, 0]);
+  for (const [A, E] of runs) if (E - A < Wc * 0.06 && A !== longest[0]) for (let X = A; X < E; X++) hw[X] = 0;
+  let Xa = 0, Xe = Wc - 1; while (Xa < Wc && !hw[Xa]) Xa++; while (Xe > Xa && !hw[Xe]) Xe--;
+  const maxHw = Math.max(1, ...hw);
+  const pad = 2, W = Xe - Xa + 1 + pad * 2, H = Math.ceil(maxHw * 2) + 1 + pad * 2, cy = (H - 1) / 2;
   const out = new Uint8ClampedArray(W * H * 4), alpha = new Uint8Array(W * H), thick = new Float64Array(W);
   for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
-    const u = X - pad + u0, v = Y - pad + v0;
-    const fx = ax.cx + u * c - v * s, fy = ax.cy + u * s + v * c, x = Math.round(fx), y = Math.round(fy);
-    if (x < 0 || y < 0 || x >= w || y >= h || !mask[y * w + x]) continue;
+    const Xc = X - pad + Xa, dv = Y - cy;
+    if (Xc < 0 || Xc >= Wc || Math.abs(dv) > hw[Xc]) continue;
+    const u = Xc + u0, v = vc + dv;
+    const fx = ax.cx + u * c - v * s, fy = ax.cy + u * s + v * c;
+    if (fx < 0 || fy < 0 || fx > w - 1 || fy > h - 1) continue;
     const o = (Y * W + X) * 4;
     // bilinear abtasten – schärfer und ohne Treppen
     const x0 = Math.max(0, Math.min(w - 2, Math.floor(fx))), y0 = Math.max(0, Math.min(h - 2, Math.floor(fy))), ax_ = fx - x0, ay = fy - y0;
@@ -220,7 +278,7 @@ export async function dartFromFile(file) {
   catch {
     bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error('Foto konnte nicht gelesen werden')); im.src = URL.createObjectURL(file); });
   }
-  const scale = Math.min(1, 1400 / Math.max(bmp.width, bmp.height)); // genug Auflösung für Barrel-Rillen
+  const scale = Math.min(1, 1200 / Math.max(bmp.width, bmp.height)); // genug Auflösung für Barrel-Rillen
   const cw = Math.round(bmp.width * scale), ch = Math.round(bmp.height * scale);
   const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
   const cx = cv.getContext('2d'); cx.drawImage(bmp, 0, 0, cw, ch);

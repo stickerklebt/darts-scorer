@@ -989,6 +989,7 @@ const actions = {
     handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
   },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  avgKind(el) { ui.avgKind = el.dataset.v; ui.avgMenu = false; render(); },
   favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
   /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
   ckHit(el) { handle(C.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
@@ -1048,6 +1049,20 @@ document.addEventListener('pointerdown', (e) => {
 for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEventListener(ev, () => clearTimeout(lpTimer));
 document.addEventListener('click', (e) => { if (lpFired && e.target.closest('.tab[data-v="stats"]')) { lpFired = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 document.addEventListener('contextmenu', (e) => { if (e.target.closest('.tab[data-v="stats"]')) e.preventDefault(); });
+
+/* Scoring: lange auf „Average pro Match“ drücken → Menü oben links (Average · First 9); Klick danach verschluckt, Tippen daneben schließt */
+let apTimer = null, apFired = false;
+document.addEventListener('pointerdown', (e) => {
+  if (!e.target.closest('.ch-pick')) return;
+  apFired = false; clearTimeout(apTimer);
+  apTimer = setTimeout(() => { apFired = true; navigator.vibrate?.(12); ui.avgMenu = true; render(); }, 500);
+});
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEventListener(ev, () => clearTimeout(apTimer));
+document.addEventListener('click', (e) => {
+  if (apFired && e.target.closest('.ch-pick')) { apFired = false; e.stopImmediatePropagation(); e.preventDefault(); return; }
+  if (ui.avgMenu && !e.target.closest('.ch-menu')) { ui.avgMenu = false; e.stopImmediatePropagation(); e.preventDefault(); render(); }
+}, true);
+document.addEventListener('contextmenu', (e) => { if (e.target.closest('.ch-pick')) e.preventDefault(); });
 
 /* Statistik: zwischen Überblick · Doppel · Scoring wischen (waagerecht, deutlich mehr als senkrecht) */
 let swipe0 = null;
