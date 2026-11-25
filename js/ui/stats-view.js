@@ -94,7 +94,7 @@ function dblInfo(st, key) {
   const sd = doubleSides(st.doubles, key);
   // Doppel groß mit einem Punkt für jeden Treffer an der Stelle, wo er saß (wird nach dem Checkout abgefragt)
   const sp = st.spots?.[key] || [], dn = /^D(\d+)$/.exec(key);
-  const spotBox = dn ? `<div class="di-spot">${spotSVG(Number(dn[1]), sp)}<p class="di-n">${sp.length ? `${sp.length} Treffer mit genauer Stelle` : 'Noch keine genaue Trefferstelle – sie wird nach einem Checkout abgefragt.'}</p></div>` : '';
+  const spotBox = dn ? `<div class="di-spot">${spotSVG(Number(dn[1]), sp)}</div>` : '';
   if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
   if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
