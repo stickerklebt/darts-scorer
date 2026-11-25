@@ -3060,3 +3060,45 @@ html.no-motion .glint::before, html.no-motion .hero::before, html.no-motion .mod
 .hero.hero-go .hero-num { animation: none !important; filter: none !important; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 8px 30px rgba(0,0,0,.55) !important; }
 .hero.hero-go .hero-line, .hero.hero-go .hl-txt { color: rgba(242,244,247,.72) !important; text-shadow: none !important; filter: none !important; }
 .hero.hero-go:hover .hero-num { transform: scaleX(var(--num-w, 1.16)) !important; }
+
+/* ================= 501-KACHEL „SEIDE & TITAN“ + INTRO (js/intro.js, js/silkgl.js, js/ui/metal501.js) =================
+   Stoff = nur das echte Bild (assets/intro/silk.*), in der Kachel als cover-Hintergrund – exakt wie der Shader ihn am Ende zeigt.
+   Vignette hier und im Shader identisch (TUNE.vignette: ab 35 % des Ellipsen-Radius bis 72 % Schwarz). */
+.silk-hero { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(230px, 56vw, 400px); padding: 0 !important;
+  background: #070104 !important; border-radius: 18px !important; overflow: hidden; isolation: isolate; transition: transform .25s cubic-bezier(.2,.8,.2,1); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.silk-hero::before, .silk-hero::after { display: none !important; }
+.silk-hero .silk { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.silk-hero .silk-img { position: absolute; inset: 0; background: url(../assets/intro/silk.webp) center / cover no-repeat; transform-origin: 50% 50%; will-change: transform; }
+.silk-hero.silk-live .silk-img { animation: silkDrift 20s ease-in-out infinite alternate; }
+@keyframes silkDrift { 0% { transform: none; } 50% { transform: scale(1.02) translate(-1.2%, .8%); } 100% { transform: scale(1.03) translate(.8%, -1%); } }
+.silk-hero .silk-vig { position: absolute; inset: 0; background: radial-gradient(farthest-corner at 50% 50%, rgba(0,0,0,0) 35%, rgba(0,0,0,.72) 100%); }
+.silk-hero.pressing { transform: scale(.97); }
+.silk-hero:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 3px; }
+
+/* Titan-501: Bodoni Moda, viel Luft; Schatten weich und weit (beim Aufsetzen erst hart und nah – siehe Intro) */
+.m501 { position: relative; z-index: 1; width: min(78%, 520px); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.m501-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.m501-digits { display: flex; width: 100%; }
+.m501-d { flex: 1 1 0; width: 33.333%; height: auto; overflow: visible; filter: drop-shadow(0 12px 16px rgba(0,0,0,.55)); transition: filter .25s; }
+.m501-d text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Times New Roman', serif; font-weight: 500; font-size: 214px; font-variation-settings: 'opsz' 96; letter-spacing: 0; }
+.m501-sub { width: 100%; height: auto; margin-top: -2%; overflow: visible; filter: drop-shadow(0 6px 8px rgba(0,0,0,.55)); }
+.m501-sub text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, serif; font-weight: 500; font-size: 30px; letter-spacing: .32em; font-variation-settings: 'opsz' 28; text-transform: uppercase; }
+.silk-hero.pressing .m501-d { filter: drop-shadow(0 5px 6px rgba(0,0,0,.6)); }
+/* Glint: kurzer, feiner Lichtstern an einer Kante (zwei dünne, auslaufende Linien), nur wenn das Licht vorbeizieht */
+.m501-glint { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; opacity: 0; pointer-events: none; }
+.m501-glint::before, .m501-glint::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 1.2px; margin: -.6px 0 0 -13px; border-radius: 1px;
+  background: linear-gradient(90deg, transparent, #fff 50%, transparent); box-shadow: 0 0 6px rgba(255,255,255,.9); }
+.m501-glint::after { transform: rotate(90deg); width: 18px; margin-left: -9px; }
+.m501-glint.g1 { left: 11%; top: 12%; } .m501-glint.g2 { left: 80%; top: 70%; }
+
+/* Intro: Layout ist gezeichnet, aber unsichtbar; Blocker schluckt Taps; Canvas liegt über allem */
+html.intro-pre #app { visibility: hidden; }
+html.intro-pre .splash { display: none; }
+.intro-block { position: fixed; inset: 0; z-index: 9998; background: transparent; touch-action: none; }
+.silk-gl { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none; }
+.silk-gl.leave { pointer-events: auto; }
+.silk-css { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
+.silk-css-l { position: absolute; inset: -10%; background: url(../assets/intro/silk.webp) center / cover no-repeat; mix-blend-mode: screen; }
+.silk-css-l:first-child { mix-blend-mode: normal; }
+@media (prefers-reduced-motion: reduce) { .silk-hero.silk-live .silk-img { animation: none; } .silk-hero { transition: none; } }
+html.no-motion .silk-hero.silk-live .silk-img { animation: none !important; }

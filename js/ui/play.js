@@ -6,6 +6,7 @@ import { incomingCount } from './friends.js';
 import { link } from '../camera-link.js';
 import { partyTiles, partyInfo } from '../partygames.js';
 import { tileArt } from './partybrowse.js';
+import { metal501 } from './metal501.js';
 import { cornerOrnament, badge, stars, icon, heroArt, fuse, sparkles, MODE_COLORS } from './svg.js';
 
 export const TABS = ['play', 'stats', 'friends'];
@@ -50,12 +51,9 @@ export function playView() {
   return `<main class="page">
     ${m && !m.done ? `<div class="resume-wrap"><button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>
       <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
-    <section class="hero hero-go" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="X01 spielen">
-      <div class="hero-art">${heroArt()}</div>
-      <div class="hero-line"><span class="hl-txt">First to X Legs</span></div>
-      <div class="hero-main">
-        <div class="hero-num">501</div>
-      </div>
+    <section class="hero hero-go silk-hero" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
+      <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
+      ${metal501()}
     </section>
     <h2 class="label">Partyspiele</h2>
     <div class="modes">${others.map((id, i) => {

@@ -8,6 +8,8 @@
 /* Cinzel (OFL): römische Versalien mit Keilserifen wie auf alten Rock-Plakaten; Kleinbuchstaben als Kapitälchen. Nur der fette Schnitt,
    als 400 eingetragen, damit alle Überschriften ihn ohne künstliches Fett nutzen. */
 @font-face { font-family: 'Cinzel'; src: url(../fonts/cinzel.woff2) format('woff2'); font-weight: 400; font-display: swap; }
+/* Bodoni Moda (OFL, variabel mit opsz-Achse): nur für die Titan-501 auf der 501-Kachel */
+@font-face { font-family: 'Bodoni Moda'; src: url(../fonts/bodoni-moda.woff2) format('woff2'); font-weight: 400 900; font-display: block; }
 @font-face { font-family: 'IM Fell English'; src: url(../fonts/fell.woff2) format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: 'IM Fell English'; src: url(../fonts/fell-i.woff2) format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
 

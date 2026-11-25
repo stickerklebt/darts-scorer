@@ -45,6 +45,8 @@ import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crestLine } from './ui/svg.js';
 import { translate } from './i18n.js';
+import { introPrepare, runIntro, heroLeave, introBusy, introMode } from './intro.js';
+import { metalLight } from './ui/metal501.js';
 import { entryDone, entryPossible, label, setFavDouble } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
@@ -122,6 +124,7 @@ function render() {
   html = translate(html, lang);
   const app = $('#app');
   morph(app, html);
+  metalLight(S.prefs.motion === false || matchMedia('(prefers-reduced-motion: reduce)').matches); // Licht auf der Titan-501 (pausiert, wenn unsichtbar)
   const key = `${S.screen}:${S.tab}`;
   if (ui.lastKey && ui.lastKey !== key) { app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter'); }
   ui.lastKey = key;
@@ -816,6 +819,13 @@ const actions = {
     S.screen = 'home'; S.tab = 'play'; releaseWakeLock(); render();
   },
   pick(el) {
+    // 501-Kachel: Stoff dehnt sich aus der Kachel auf Vollbild, dann wie bisher ins Setup
+    if (el.classList?.contains('silk-hero') && !el.dataset.leaving) {
+      if (introBusy()) return;
+      el.dataset.leaving = '1';
+      heroLeave(el, () => { delete el.dataset.leaving; actions.pick({ dataset: { v: 'x01' }, classList: null }); }, { still: S.prefs.motion === false });
+      return;
+    }
     if (el.dataset.v === 'bruch') { S.screen = 'bruch'; render(); window.scrollTo(0, 0); return; }
     S.game = el.dataset.v; S.screen = 'setup'; ui.moreOpen = false;
     // X01: die große Karte ist immer 501; die Kachel unter Partyspiel spielt alle anderen Startpunkte (101 · 301 · 701 · 1001)
@@ -1432,7 +1442,11 @@ startOnlineLoops();
   const reset = new URLSearchParams(location.search).get('reset');
   if (reset) { history.replaceState(null, '', location.pathname); ui.auth = { step: 'reset', token: reset, email: '' }; }
 }
-bootAuth().then(async () => {
+const bootP = bootAuth(); // setzt auth.user sofort aus dem gespeicherten Stand
+// Intro (Seide & Titan) beim Öffnen auf dem Reiter Play: voll beim ersten Mal, danach kurz; nicht überspringbar
+const introOn = !!auth.user && S.screen === 'home' && S.tab === 'play' && !ui.auth && introMode().kind !== 'off';
+if (introOn) { introPrepare(); render(); requestAnimationFrame(() => runIntro({ still: S.prefs.motion === false })); }
+bootP.then(async () => {
   if (!auth.user) return;
   loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox();
   // QR/Link vom Kamera-Gerät: ?join=CODE → als Steuer-Gerät verbinden
@@ -1470,8 +1484,10 @@ probeBotImages(() => render());
 const splash = document.createElement('div');
 splash.className = 'splash';
 splash.innerHTML = crestLine({ size: 220 });
-document.body.appendChild(splash);
-setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
+if (!introOn) {
+  document.body.appendChild(splash);
+  setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 500); }, 900);
+}
 if (S.screen === 'game') requestWakeLock();
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   // Neue Version übernommen → einmal neu laden, damit nicht der alte Stand weiterläuft. Nie mitten im Spiel:

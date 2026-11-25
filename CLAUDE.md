@@ -426,3 +426,17 @@ Offen: E-Mail-Bestätigung.
   VIP lebendig (ersetzt „Backstage ohne Bewegung“ für die Glasfelder): Rand dunkel/ruhig, nur einzelne Lichtstriche (Verlauf 0 → 100 %) gleiten um Freundesliste und Kacheln,
   hin und her, mit eigenem Tempo je Feld (`--va`), Helligkeit schwankt (`--vg`) – nie alle gleich hell; dazu ein wandernder, auf- und abblendender silberner Lichtfleck im Hintergrund. Im VIP kein Rot in Lichtverläufen – Bordeaux nur in Texten (Überschriften rot, Ø-Zahlen mit rotem Schatten).
   **Play-Seite entschlackt** (nur Play): keine Eck-Ornamente, keine Lichtlinie, kein Funkeln in der 501, kein Schimmer auf „First to X Legs“; 501-Karte mit feiner Haarlinie und ruhiger Fläche. Partyspiel-Kacheln bleiben wie zuvor (Glas, Chrom-Ring, Funkel-Stern, Lichtschweif). Bleibt: Blasen-Hintergrund, rotes Licht um die 501, seltener Silberschimmer, kurzes Rot im Kachel-Logo, gestrichelte Plus-Kachel.
+
+- **Intro + 501-Kachel „Seide & Titan“** (seit 25.11.2026; ersetzt Blasen, Stern, rotes Licht und Schimmer der 501-Karte):
+  Dateien: `js/intro-config.js` (**alle Timings, Verzerrung, Licht an einer Stelle**, `TUNE`), `js/silkgl.js` (WebGL-Shader, nur das echte Bild
+  `assets/intro/silk.webp` – verzerrt per Simplex-Flow-Noise, verschoben, gespiegelt, gedreht, Bewegungsunschärfe, abgerundete SDF-Maske,
+  Abbildung = CSS `cover`, dieselbe Vignette wie `.silk-vig`), `js/ui/metal501.js` (Titan-501 als SVG-Text: Verlauf mit vielen Stops,
+  gebürstet per feTurbulence „0.002 0.9“, helle Innenkante oben, dunkle Kante unten, feSpecularLighting + fePointLight `#mtlLight`;
+  Licht: ~10-s-Bahn, folgt dem Finger, Taschenlampen-Sweep alle 6–8 s, Glints an zwei Kanten, pausiert unsichtbar/Tab versteckt),
+  `js/intro.js` (Ablauf). Schrift Bodoni Moda (`fonts/bodoni-moda.woff2`, OFL), Untertitel fest „Double Out“.
+  Volles Intro (~3,6 s) nur beim allerersten Öffnen (`localStorage['darts.introSeen']`), danach Kurzversion (~1,5 s); nur wenn die App auf Play öffnet
+  und angemeldet ist. Nicht überspringbar (`.intro-block`). Layout steht von Anfang an (`html.intro-pre` = unsichtbar), Elemente per Web-Animation
+  mit `fill: backwards`. Tippen auf die Kachel: nachgeben (scale .97, Licht unter den Finger), dann Lichtblitz + Stoff dehnt sich per Shader auf
+  Vollbild (`heroLeave`, 0,6 s) → Setup wie bisher. Ohne WebGL: CSS-Ersatz (Bild-Layer + clip-path). prefers-reduced-motion oder
+  „Bewegung in den Kästen“ aus: nur weiches Einblenden, kein Dauerlicht, keine Drift. Debug: `?intro=full|slow|off|reset`.
+  Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
