@@ -44,7 +44,12 @@ export function spotSVG(n, spots = [], { tap = false, last = null } = {}) {
   }
   // Statistik: nur das Doppel selbst, jeder Treffer ein schwarzer Punkt an seiner Stelle
   s += `<path d="${fld}" transform="translate(4 5)" fill="#0b0a08" opacity=".8"/><path d="${fld}" fill="${col(n)}"/>`;
-  s += `<path d="${fld}" fill="none" stroke="#e3ae2b" stroke-width="3"/>`;
+  // Leuchten + Glitzern: Glanzverlauf, ein Lichtstreif zieht langsam übers Feld, Goldrand mit Schein (Funkeln als HTML drumherum)
+  s += `<defs><linearGradient id="dsSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+    <linearGradient id="dsSw" x1="0" y1="0" x2="1" y2=".35"><stop offset=".38" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff6d8" stop-opacity=".55"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/>
+    <animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.45;1" dur="4.5s" repeatCount="indefinite"/></linearGradient></defs>`;
+  s += `<path d="${fld}" fill="url(#dsSh)"/><path d="${fld}" fill="url(#dsSw)"/>`;
+  s += `<path class="ds-rim" d="${fld}" fill="none" stroke="#f7d46a" stroke-width="4"/>`;
   for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="8"/>`; }
   return `<svg class="dspot" viewBox="${box(R1, R2, th - HALF, th + HALF, 14)}" role="img" aria-label="Doppel ${n}: ${spots.length} Treffer">${s}</svg>`;
 }

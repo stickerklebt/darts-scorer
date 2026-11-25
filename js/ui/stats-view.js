@@ -90,7 +90,7 @@ function spotOverlay(st, key) {
   if (!dn || !st.doubles.fields[key]) return '';
   const live = S.current && !S.current.done && !S.matches.some((x) => x.id === S.current.id) ? spotsIn([S.current], statsPid())[key] || [] : [];
   // Doppel + Info-Fenster liegen beide genau über der Scheibe – darunter wird nichts länger
-  return `<div class="hb-spot"><div class="hb-fld" data-act="heat" data-v="${key}">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}</div>${dblInfo(st, key)}</div>`;
+  return `<div class="hb-spot"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(Number(dn[1]), [...(st.spots?.[key] || []), ...live])}${sparkles(10, 4)}</span></div>${dblInfo(st, key)}</div>`;
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
