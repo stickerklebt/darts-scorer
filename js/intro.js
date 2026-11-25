@@ -32,7 +32,7 @@ export function introPrepare() {
   for (const ev of ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend']) b.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); }, { passive: false });
   document.body.appendChild(b);
 }
-function introFinish() {
+export function introFinish() {
   busy = false;
   document.documentElement.classList.remove('intro-pre');
   document.querySelector('.intro-block')?.remove();
@@ -52,7 +52,13 @@ const anim = (el, kf, delay, dur, easing = 'cubic-bezier(.2,.8,.2,1)') => el?.an
 
 /** Das Intro abspielen (nach dem ersten Zeichnen des Play-Reiters). Läuft bei JEDEM Öffnen (voll beim ersten Mal, sonst kurz);
     ruhig nur bei prefers-reduced-motion (die Einstellung „Bewegung in den Kästen“ betrifft das Intro nicht). kind: Variante erzwingen */
-export async function runIntro({ still = false, kind = null } = {}) {
+export async function runIntro(opts = {}) {
+  // Sicherheitsnetz: ein Fehler im Intro darf die App nie schwarz lassen
+  const guard = setTimeout(() => { document.querySelector('.silk-gl')?.remove(); document.querySelector('.silk-css')?.remove(); introFinish(); }, 8000);
+  try { await runIntroInner(opts); } catch (e) { console.error('Intro', e); document.querySelector('.silk-gl')?.remove(); document.querySelector('.silk-css')?.remove(); introFinish(); }
+  clearTimeout(guard);
+}
+async function runIntroInner({ still = false, kind = null } = {}) {
   const mode = introMode();
   if (kind && mode.kind !== 'off') mode.kind = kind;
   const hero = document.querySelector('.silk-hero');
