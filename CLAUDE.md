@@ -440,4 +440,4 @@ Offen: E-Mail-Bestätigung.
   Intro bei JEDEM Öffnen: beim Laden immer Play (außer ein Spiel läuft), voll beim allerersten Mal, sonst kurz; zusätzlich Kurzversion beim Zurückkehren nach ≥ 30 s im Hintergrund. Debug: `?intro=full|slow|off|reset`.
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
   Weiße Verläufe stark gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkel ohne weißen Glanz, Lichtstriche nur als leiser Hauch (max. ~28 %), kein Lichtfleck im VIP.
-  Hintergrund-Linien: die Linienzeichnung (6 geschwungene Striche) als feine silberne Linien hinter allem (`.bg-lines` in index.html, Deckkraft ~16 %), je ein Lichtpunkt gleitet langsam entlang (aus bei „Bewegung in den Kästen“). Farbe des Hintergrunds trägt `html`, `body` ist transparent. Lade-Bildschirm ohne roten Schein.
+  Linien aus der Linienzeichnung: nur ZWEI metallische Striche in der 501-Kachel zwischen Seide und Zahl (`silkLines` in play.js: Titan-Verlauf, Glanzkante, weicher Schatten, ein Lichtpunkt gleitet entlang) – nicht mehr im App-Hintergrund. Farbe des Hintergrunds trägt `html`, `body` ist transparent. Lade-Bildschirm ohne roten Schein.

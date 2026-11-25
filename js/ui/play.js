@@ -44,6 +44,13 @@ export function camBlock() {
   return ''; // kein extra Kamera-Knopf – dafür gibt es die Kachel „Kamera“
 }
 
+/** Zwei metallische Linien hinter der 501 (nach der Linienzeichnung): Titan-Verlauf, feine Glanzkante, ein Lichtpunkt gleitet entlang */
+const LINES = ['M640 -20 C560 60 480 150 460 230 C440 310 470 380 450 440 C425 520 320 535 250 545 C150 560 60 575 -20 590',
+  'M560 -20 C550 60 565 110 640 125 C700 138 745 120 765 150 C790 190 765 290 755 340 C745 395 760 430 810 455 C860 480 960 490 1040 505'];
+const silkLines = () => `<svg class="silk-lines" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+  <linearGradient id="slG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="560"><stop offset="0" stop-color="#5d6168"/><stop offset=".18" stop-color="#e9edf1"/><stop offset=".3" stop-color="#8a9098"/><stop offset=".42" stop-color="#2e2a2d"/><stop offset=".55" stop-color="#c9ced5"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".8" stop-color="#7d838d"/><stop offset="1" stop-color="#d6dae0"/></linearGradient></defs>
+  ${LINES.map((d, i) => `<path class="sl-sh" d="${d}"/><path class="sl" d="${d}"/><path class="sl-hi" d="${d}"/><path class="sl-run" d="${d}" pathLength="100" style="animation-delay:-${i * 6}s"/>`).join('')}</svg>`;
+
 export function playView() {
   const m = S.current, o = S.opts.x01;
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
@@ -53,6 +60,7 @@ export function playView() {
       <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
     <section class="hero hero-go silk-hero" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
       <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
+      ${silkLines()}
       ${metal501()}
     </section>
     <h2 class="label">Partyspiele</h2>
