@@ -50,9 +50,11 @@ async function ready() {
 
 const anim = (el, kf, delay, dur, easing = 'cubic-bezier(.2,.8,.2,1)') => el?.animate(kf, { delay: delay * 1000, duration: Math.max(1, dur * 1000), easing, fill: 'backwards' });
 
-/** Das Intro abspielen (nach dem ersten Zeichnen des Play-Reiters). still: ohne Bewegung (Einstellung) */
-export async function runIntro({ still = false } = {}) {
+/** Das Intro abspielen (nach dem ersten Zeichnen des Play-Reiters). Läuft bei JEDEM Öffnen (voll beim ersten Mal, sonst kurz);
+    ruhig nur bei prefers-reduced-motion (die Einstellung „Bewegung in den Kästen“ betrifft das Intro nicht). kind: Variante erzwingen */
+export async function runIntro({ still = false, kind = null } = {}) {
   const mode = introMode();
+  if (kind && mode.kind !== 'off') mode.kind = kind;
   const hero = document.querySelector('.silk-hero');
   if (mode.kind === 'off' || !hero) { introFinish(); return; }
   const img = await ready();

@@ -438,6 +438,7 @@ Offen: E-Mail-Bestätigung.
   und angemeldet ist. Nicht überspringbar (`.intro-block`). Layout steht von Anfang an (`html.intro-pre` = unsichtbar), Elemente per Web-Animation
   mit `fill: backwards`. Tippen auf die Kachel: nachgeben (scale .97, Licht unter den Finger), dann Lichtblitz + Stoff dehnt sich per Shader auf
   Vollbild (`heroLeave`, 0,6 s) → Setup wie bisher. Ohne WebGL: CSS-Ersatz (Bild-Layer + clip-path). prefers-reduced-motion oder
-  „Bewegung in den Kästen“ aus: nur weiches Einblenden, kein Dauerlicht, keine Drift. Debug: `?intro=full|slow|off|reset`.
+  „Bewegung in den Kästen“ aus: kein Dauerlicht, keine Drift (das Intro läuft trotzdem; nur prefers-reduced-motion macht es ruhig).
+  Intro bei JEDEM Öffnen: beim Laden immer Play (außer ein Spiel läuft), voll beim allerersten Mal, sonst kurz; zusätzlich Kurzversion beim Zurückkehren nach ≥ 30 s im Hintergrund. Debug: `?intro=full|slow|off|reset`.
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
   Weiße Verläufe gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkler, Lichtstriche nur noch halb so hell.

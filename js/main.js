@@ -830,7 +830,7 @@ const actions = {
     if (el.classList?.contains('silk-hero') && !el.dataset.leaving) {
       if (introBusy()) return;
       el.dataset.leaving = '1';
-      heroLeave(el, () => { delete el.dataset.leaving; actions.pick({ dataset: { v: 'x01' }, classList: null }); }, { still: S.prefs.motion === false });
+      heroLeave(el, () => { delete el.dataset.leaving; actions.pick({ dataset: { v: 'x01' }, classList: null }); });
       return;
     }
     if (el.dataset.v === 'bruch') { S.screen = 'bruch'; render(); window.scrollTo(0, 0); return; }
@@ -1451,8 +1451,18 @@ startOnlineLoops();
 }
 const bootP = bootAuth(); // setzt auth.user sofort aus dem gespeicherten Stand
 // Intro (Seide & Titan) beim Öffnen auf dem Reiter Play: voll beim ersten Mal, danach kurz; nicht überspringbar
+// Beim Öffnen immer auf Play (außer ein Spiel läuft gerade) – sonst blieb z. B. das Setup vom letzten Mal offen und das Intro fiel aus
+if (!(S.screen === 'game' && S.current && !S.current.done) && !ui.auth) { S.screen = 'home'; S.tab = 'play'; }
 const introOn = !!auth.user && S.screen === 'home' && S.tab === 'play' && !ui.auth && introMode().kind !== 'off';
-if (introOn) { introPrepare(); render(); requestAnimationFrame(() => runIntro({ still: S.prefs.motion === false })); }
+if (introOn) { introPrepare(); render(); requestAnimationFrame(() => runIntro()); }
+// Zurück in die App nach ≥ 30 s im Hintergrund (Home-Screen-App wird oft nicht neu geladen) → Kurzversion erneut
+let hiddenAt = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (!hiddenAt || Date.now() - hiddenAt < 30000 || introBusy()) return;
+  if (!auth.user || S.screen !== 'home' || S.tab !== 'play' || ui.modal || introMode().kind === 'off') return;
+  introPrepare(); render(); requestAnimationFrame(() => runIntro({ kind: 'short' }));
+});
 bootP.then(async () => {
   if (!auth.user) return;
   loadFriends(); loadCalls(auth.user.id); loadConfirms(); flushOutbox();
