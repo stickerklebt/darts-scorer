@@ -64,7 +64,7 @@ const SKETCH = `<svg class="cal-sketch" viewBox="0 0 220 120" aria-hidden="true"
   <rect x="2" y="2" width="216" height="116" fill="none" stroke="#303036"/>
   <circle cx="70" cy="60" r="40" fill="#1d1913" stroke="#cfd3d9" stroke-width="2"/><circle cx="70" cy="60" r="4" fill="#e5402c"/>
   <rect x="160" y="70" width="14" height="26" rx="2" fill="#08080a" stroke="#eef0f3" stroke-width="1.5"/><circle cx="167" cy="76" r="2" fill="#eef0f3"/>
-  <path d="M160 80 L112 64" stroke="#ffd86b" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#9a9ea6"/><text x="122" y="104" fill="#9a9ea6" font-size="9">40–80 cm</text>
+  <path d="M160 80 L112 64" stroke="#eef1f6" stroke-dasharray="3 3"/><path d="M118 108 H160" stroke="#9a9ea6"/><text x="122" y="104" fill="#9a9ea6" font-size="9">40–80 cm</text>
   <text x="140" y="24" fill="#9a9ea6" font-size="9">≥ 30 cm vom Rand</text></svg>`;
 
 /**

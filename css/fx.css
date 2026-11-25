@@ -170,9 +170,9 @@
 .lb-cup.rise { animation: cupRise 1s cubic-bezier(.2,1.2,.4,1) forwards; z-index: 5; }
 @keyframes cupRise { from { opacity: 1; transform: translateY(10%) scale(.3); } to { opacity: 1; transform: translateY(-62%) scale(1); } }
 .lb-title { top: 74%; animation: lbTitle .6s cubic-bezier(.2,1.6,.4,1) both; }
-.lb-title .fx-big { font-size: clamp(120px, 30vmin, 280px); color: #ffe9a8; text-shadow: -5px 0 0 var(--mg-cyan), 5px 0 0 var(--mg-pink), 0 0 50px #ffd45c, 0 0 90px #ff7a3d; animation: glowPulse .6s ease-in-out infinite alternate .6s; }
+.lb-title .fx-big { font-size: clamp(120px, 30vmin, 280px); color: #ffe9a8; text-shadow: -5px 0 0 var(--mg-cyan), 5px 0 0 var(--mg-pink), 0 0 50px #ffd45c, 0 0 90px #c42a4b; animation: glowPulse .6s ease-in-out infinite alternate .6s; }
 @keyframes lbTitle { from { transform: translateY(-50%) scale(3); opacity: 0; } }
-@keyframes glowPulse { to { text-shadow: -5px 0 0 var(--mg-cyan), 5px 0 0 var(--mg-pink), 0 0 80px #ffd45c, 0 0 140px #ff7a3d; } }
+@keyframes glowPulse { to { text-shadow: -5px 0 0 var(--mg-cyan), 5px 0 0 var(--mg-pink), 0 0 80px #ffd45c, 0 0 140px #c42a4b; } }
 .lb-magic { width: 34vmin; height: 24vmin; z-index: 6; animation: fxPopS .4s both; }
 .lb-magic.tl { left: 2%; top: 4%; } .lb-magic.br { right: 2%; top: 4%; transform: scaleX(-1); }
 .lb-magic svg path { animation: flicker 1s infinite steps(1); }
@@ -322,7 +322,7 @@
 .tr-plinth { left: 50%; bottom: -30px; width: 70vmin; height: 26px; margin-left: -35vmin; background: var(--gold); border: 3px solid #08080a; opacity: 0; }
 .fx-trophy.burst .tr-plinth { animation: fxRise .6s .2s forwards; opacity: 1; bottom: 6%; }
 .fx-trophy .lb-title { top: 80%; }
-.fx-trophy .lb-title .fx-big { color: #ffe9a8; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #08080a, 0 0 50px #eef1f6, 0 0 90px #ff7a3d; }
+.fx-trophy .lb-title .fx-big { color: #ffe9a8; text-shadow: 5px 5px 0 var(--red), 9px 9px 0 #08080a, 0 0 50px #eef1f6, 0 0 90px #c42a4b; }
 .tr-corner { width: 16vmin; height: 16vmin; z-index: 6; animation: fxPopS .4s both; }
 .tr-corner.tl { left: 3%; top: 3%; } .tr-corner.tr { right: 3%; top: 3%; transform: scaleX(-1); }
 .tr-corner.bl { left: 3%; bottom: 3%; transform: scaleY(-1); } .tr-corner.br { right: 3%; bottom: 3%; transform: scale(-1); }

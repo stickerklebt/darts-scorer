@@ -30,12 +30,12 @@ const leaf = (x, y, s, rot) => `<g transform="translate(${x} ${y}) rotate(${rot}
   <path d="M0 0 C3 -4 9 -5 14 -1 L12.6 -.4 L13.4 .6 L11.6 1 L12 2 C7 4.5 2.5 3 0 0Z" fill="#4f8f34" stroke="#1d3a14" stroke-width=".6"/>
   <path d="M0 0 C5 -.4 9 .2 12.5 .3 M4 .1 L6.5 -2.2 M7.5 .2 L10 -1.8 M5 .2 L7 2 M8.5 .3 L10.5 1.6" stroke="#2a5a1c" stroke-width=".5" fill="none"/></g>`;
 /** Gold-Schnörkel (Filigran) */
-const scroll = (x, y, s, flip = false) => `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" fill="none" stroke="#e7b73c" stroke-width="1.6" stroke-linecap="round">
+const scroll = (x, y, s, flip = false) => `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" fill="none" stroke="#c8ccd0" stroke-width="1.6" stroke-linecap="round">
   <path d="M0 0 C8 -10 22 -10 26 -2 C29 4 22 9 17 5 C13 2 16 -3 20 -1"/>
   <path d="M0 0 C10 6 20 14 34 10 C40 8 42 2 38 0 C35 -1 33 2 35 4" stroke-width="1.3"/>
-  <path d="M8 -6 C6 -10 8 -14 12 -14" stroke-width="1"/><circle cx="12" cy="-14" r="1.4" fill="#ffd86b" stroke="none"/>
-  <path d="M30 13 C33 17 31 21 27 21" stroke-width="1"/><circle cx="27" cy="21" r="1.2" fill="#ffd86b" stroke="none"/></g>`;
-const star = (x, y, r) => `<path d="${starPath(x, y, r, r * 0.42, 5, -90, 0.06)}" fill="#ffd86b" stroke="#6e4a0c" stroke-width=".5"/>`;
+  <path d="M8 -6 C6 -10 8 -14 12 -14" stroke-width="1"/><circle cx="12" cy="-14" r="1.4" fill="#eef1f6" stroke="none"/>
+  <path d="M30 13 C33 17 31 21 27 21" stroke-width="1"/><circle cx="27" cy="21" r="1.2" fill="#eef1f6" stroke="none"/></g>`;
+const star = (x, y, r) => `<path d="${starPath(x, y, r, r * 0.42, 5, -90, 0.06)}" fill="#eef1f6" stroke="#6e4a0c" stroke-width=".5"/>`;
 
 /** Rosenstrauß am linken Ende: zwei Rosen, Knospen, Blätter, Dornenstiele, Schnörkel nach oben und unten */
 function bouquetLeft() {

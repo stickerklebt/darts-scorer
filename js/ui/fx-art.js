@@ -7,7 +7,7 @@ const sv = (vb, body, cls = '') => `<svg class="${cls}" viewBox="${vb}" aria-hid
 export const egg = () => sv('0 0 120 100', `
   <path d="M14 52 C6 30 30 10 52 16 C66 4 96 10 100 30 C118 38 116 66 98 74 C92 94 60 96 46 86 C24 92 4 76 14 52 Z" fill="#f8f5ea" stroke="${K}" stroke-width="4"/>
   <path d="M24 56 C22 44 30 34 40 32" fill="none" stroke="#d9d3c0" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="60" cy="50" r="20" fill="#ffb31a" stroke="${K}" stroke-width="4"/>
+  <circle cx="60" cy="50" r="20" fill="#e6e9ee" stroke="${K}" stroke-width="4"/>
   <ellipse cx="53" cy="43" rx="6" ry="4" fill="#fff4c4" transform="rotate(-30 53 43)"/>`);
 
 export const toast = () => sv('0 0 100 100', `
@@ -69,7 +69,7 @@ export const camera = (flash = true) => sv('0 0 160 140', `
 
 /** Atomrakete, Spitze rechts */
 export const nukeRocket = () => sv('-130 -50 260 100', `
-  <path d="M-128 0 L-98 -22 L-104 0 L-98 22 Z" fill="#ffb31a" class="flame"/>
+  <path d="M-128 0 L-98 -22 L-104 0 L-98 22 Z" fill="#e6e9ee" class="flame"/>
   <path d="M-114 0 L-96 -12 L-98 0 L-96 12 Z" fill="#fff4c4" class="flame"/>
   <path d="M-92 -26 L-60 -20 L-60 20 L-92 26 L-80 0 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
   <path d="M-80 -22 H70 C100 -22 122 -10 130 0 C122 10 100 22 70 22 H-80 Z" fill="#c9cdc2" stroke="${K}" stroke-width="5"/>

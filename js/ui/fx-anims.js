@@ -266,7 +266,7 @@ export function nuke(el, ctx) {
   const p = particles(el);
   p.every((ps, t) => {
     const k = Math.min(1, t / 1600), x = -0.15 * W() + k * 0.65 * W(), y = H() * (0.1 + k * 0.4);
-    ps.add({ x: x - 60, y: y + rand(-6, 6), vx: -rand(40, 120), vy: rand(-20, 20), shape: 'circle', size: rand(6, 14), grow: 20, color: pick(['rgba(200,200,200,.5)', 'rgba(255,180,60,.6)']), life: 700 });
+    ps.add({ x: x - 60, y: y + rand(-6, 6), vx: -rand(40, 120), vy: rand(-20, 20), shape: 'circle', size: rand(6, 14), grow: 20, color: pick(['rgba(200,200,200,.5)', 'rgba(236,239,244,.6)']), life: 700 });
   }, 0, 1600);
   at(1650, () => {
     el.classList.add('exploded');
@@ -275,7 +275,7 @@ export function nuke(el, ctx) {
     add(el, '', 'nk-wave'); add(el, '', 'nk-wave w2'); add(el, '', 'nk-wave w3');
     const w = add(el, '', 'fx-white'); setTimeout(() => w.remove(), 600);
     const cx = W() / 2, cy = H() * 0.5;
-    p.burst(160, () => { const a = rand(0, 6.283), v = rand(150, 820); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 2, ay: 80, shape: 'circle', size: rand(5, 18), grow: -4, color: pick(['#eef1f6', '#ff7a3d', '#e5402c', '#fff3c0', '#5c5c5c']), life: 1700 }; });
+    p.burst(160, () => { const a = rand(0, 6.283), v = rand(150, 820); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 2, ay: 80, shape: 'circle', size: rand(5, 18), grow: -4, color: pick(['#eef1f6', '#c42a4b', '#e5402c', '#fff3c0', '#5c5c5c']), life: 1700 }; });
     add(el, `<div class="fx-big">${ctx.score}</div><div class="fx-sub">Boom! Checkout${who(ctx)}</div>`, 'fx-title nk-title');
   });
   at(2500, () => add(el, '<i class="cap"></i><i class="stem"></i>', 'nk-mush'));

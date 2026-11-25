@@ -211,14 +211,14 @@ const SYMBOLS = {
 };
 /* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
    [Hintergrund des Abzeichens, Farbe des Symbols, Rand] – die Kachel auf „Spielen“ hat dazu ein eigenes Muster (screens.css). */
-const MODE_STYLE = {
-  x01: [COLORS.red, COLORS.ink, COLORS.ink],
-  highscore: ['#08080a', '#f0c24a', '#f0c24a'],
-  shanghai: ['#f0c24a', '#08080a', '#08080a'],
-  halveit: ['#08080a', '#f07a24', '#f07a24'],
-  cricket: ['#f07a24', '#08080a', '#08080a'],
-  atc: ['#5a3a10', '#ffd86b', '#ffd86b'],
-  bruch: ['#08080a', '#ffd86b', '#e7b73c'],
+const MODE_STYLE = { // Kristall · Silber · Bordeaux
+  x01: ['#7a1430', '#f2f4f7', '#f2f4f7'],
+  highscore: ['#0c0c0f', '#e6e9ee', '#e6e9ee'],
+  shanghai: ['#c8ccd0', '#08080a', '#08080a'],
+  halveit: ['#0c0c0f', '#c42a4b', '#c42a4b'],
+  cricket: ['#7a1430', '#f2f4f7', '#f2f4f7'],
+  atc: ['#3a0a18', '#f2f4f7', '#f2f4f7'],
+  bruch: ['#0c0c0f', '#e6e9ee', '#c42a4b'],
   football: ['#c8ccd0', '#08080a', '#08080a'],
 };
 export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k, v]) => [k, v[0]]));
@@ -374,24 +374,52 @@ export function chromeStar(cx, cy, up, right, down, left, { rot = 0, glow = 1 } 
   </g>`;
 }
 
-/** 501-Karte: Glas-Stern auf tiefem Schwarz mit fließenden Chrom-Schlieren (Vorlage „Glass Star“) */
+/** 501-Karte: Glas-Stern rechts, Bordeaux-Nebel, Chrom-Schlieren, Funkeln und Lichtpunkte; die Mitte bleibt dunkel für die 501 */
 export function heroArt() {
+  const rnd = (k) => { const v = Math.sin(k * 12.9898 + 4.1) * 43758.5453; return v - Math.floor(v); };
   let sw = '';
   const swirls = [
-    'M-20 60 C80 10 160 90 260 40 S420 70 440 20', 'M-30 330 C60 270 150 360 240 300 S380 250 430 320',
-    'M300 -10 C260 60 360 110 320 180 S260 290 340 330', 'M20 180 C70 130 120 230 60 270', 'M360 200 C330 160 420 120 410 70',
+    ['M-30 70 C90 10 190 110 300 50 S520 80 640 20', 16, .2, 'hswB'], ['M-40 360 C70 290 180 400 300 330 S480 270 640 350', 20, .22, 'hswB'],
+    ['M450 -20 C400 70 540 130 490 220 S420 340 520 420', 13, .18, 'hsw'], ['M10 200 C60 140 130 250 60 300', 10, .16, 'hsw'],
+    ['M560 230 C520 180 640 130 620 70', 10, .18, 'hsw'], ['M120 -10 C160 60 80 110 140 170', 8, .14, 'hswB'],
   ];
-  swirls.forEach((d, i) => {
-    sw += `<path d="${d}" fill="none" stroke="url(#hsw)" stroke-width="${[14, 18, 12, 9, 10][i]}" stroke-linecap="round" opacity="${[.22, .18, .2, .14, .16][i]}" filter="url(#hsb)"/>`;
-    sw += `<path d="${d}" fill="none" stroke="#e9edf3" stroke-width="1" opacity="${[.35, .28, .3, .22, .25][i]}"/>`;
-  });
-  return `<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <defs><linearGradient id="hsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a3d44"/><stop offset=".5" stop-color="#e6eaf0"/><stop offset="1" stop-color="#2a2c31"/></linearGradient>
-      <filter id="hsb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
-      <radialGradient id="hsg" cx=".62" cy=".62" r=".45"><stop offset="0" stop-color="#cfd6e2" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
-    <rect width="400" height="400" fill="url(#hsg)"/>
+  for (const [d, w, o, g] of swirls) {
+    sw += `<path d="${d}" fill="none" stroke="url(#${g})" stroke-width="${w}" stroke-linecap="round" opacity="${o}" filter="url(#hsb)"/>`;
+    sw += `<path d="${d}" fill="none" stroke="#f2f4f7" stroke-width=".9" opacity="${o + .12}"/>`;
+  }
+  // Bokeh-Lichtpunkte (unscharf, Silber und Bordeaux)
+  let bk = '';
+  for (let k = 0; k < 22; k++) {
+    const x = rnd(k) * 600, y = rnd(k + 50) * 400, r = 2 + rnd(k + 9) * 7, c = k % 3 ? '#e9edf3' : '#c42a4b';
+    if (x > 190 && x < 410 && y > 110 && y < 300) continue; // Mitte frei für die 501
+    bk += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${c}" opacity="${(0.08 + rnd(k + 3) * 0.2).toFixed(2)}" filter="url(#hsk)"/>`;
+  }
+  // Funkeln: kleine 4-Zack-Sterne, die nacheinander aufblitzen
+  let tw = '';
+  const twp = (x, y, r) => `M${x} ${y - r}Q${x + r * .12} ${y - r * .12} ${x + r} ${y}Q${x + r * .12} ${y + r * .12} ${x} ${y + r}Q${x - r * .12} ${y + r * .12} ${x - r} ${y}Q${x - r * .12} ${y - r * .12} ${x} ${y - r}Z`;
+  for (let k = 0; k < 26; k++) {
+    const x = Math.round(rnd(k + 100) * 600), y = Math.round(rnd(k + 200) * 400), r = 3 + Math.round(rnd(k + 300) * 9);
+    if (x > 200 && x < 400 && y > 120 && y < 290) continue;
+    tw += `<path class="tw" d="${twp(x, y, r)}" fill="#fff" style="animation-delay:-${(rnd(k + 400) * 5).toFixed(2)}s;animation-duration:${(2.6 + rnd(k + 500) * 3).toFixed(2)}s"/>`;
+  }
+  return `<svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="hsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c2e34"/><stop offset=".5" stop-color="#eef1f5"/><stop offset="1" stop-color="#22242a"/></linearGradient>
+      <linearGradient id="hswB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a0a18"/><stop offset=".45" stop-color="#c42a4b"/><stop offset=".55" stop-color="#f3dbe1"/><stop offset="1" stop-color="#4f0b1e"/></linearGradient>
+      <filter id="hsb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+      <filter id="hsk" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2.2"/></filter>
+      <radialGradient id="hsn1" cx=".12" cy=".85" r=".6"><stop offset="0" stop-color="#7a1430" stop-opacity=".75"/><stop offset=".5" stop-color="#4f0b1e" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+      <radialGradient id="hsn2" cx=".86" cy=".35" r=".55"><stop offset="0" stop-color="#a3203d" stop-opacity=".55"/><stop offset=".55" stop-color="#3a0a18" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+      <radialGradient id="hsv" cx=".5" cy=".52" r=".5"><stop offset="0" stop-color="#050507" stop-opacity=".92"/><stop offset=".55" stop-color="#050507" stop-opacity=".55"/><stop offset="1" stop-color="#050507" stop-opacity="0"/></radialGradient>
+    </defs>
+    <rect width="600" height="400" fill="url(#hsn1)"/><rect width="600" height="400" fill="url(#hsn2)"/>
     <g class="hs-swirl">${sw}</g>
-    <path d="M160 400 L262 250" stroke="#fff" stroke-width=".6" opacity=".5"/>
-    <g class="hs-star">${chromeStar(262, 250, 230, 150, 120, 250, { rot: 8, glow: 1.4 })}</g>
+    <g>${bk}</g>
+    <path d="M330 420 L520 205" stroke="#fff" stroke-width=".7" opacity=".45"/>
+    <path d="M0 330 L600 250" stroke="url(#hswB)" stroke-width=".8" opacity=".5"/>
+    <g class="hs-star">${chromeStar(505, 205, 215, 95, 105, 110, { rot: 10, glow: 1.5 })}</g>
+    <g class="hs-star2">${chromeStar(78, 78, 46, 26, 30, 26, { rot: -8, glow: 1 })}</g>
+    <ellipse cx="300" cy="212" rx="190" ry="130" fill="url(#hsv)"/>
+    <g class="hs-tw">${tw}</g>
   </svg>`;
 }
