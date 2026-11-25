@@ -8,7 +8,7 @@ export const egg = () => sv('0 0 120 100', `
   <path d="M14 52 C6 30 30 10 52 16 C66 4 96 10 100 30 C118 38 116 66 98 74 C92 94 60 96 46 86 C24 92 4 76 14 52 Z" fill="#f8f5ea" stroke="${K}" stroke-width="4"/>
   <path d="M24 56 C22 44 30 34 40 32" fill="none" stroke="#d9d3c0" stroke-width="4" stroke-linecap="round"/>
   <circle cx="60" cy="50" r="20" fill="#e6e9ee" stroke="${K}" stroke-width="4"/>
-  <ellipse cx="53" cy="43" rx="6" ry="4" fill="#fff4c4" transform="rotate(-30 53 43)"/>`);
+  <ellipse cx="53" cy="43" rx="6" ry="4" fill="#f2f4f9" transform="rotate(-30 53 43)"/>`);
 
 export const toast = () => sv('0 0 100 100', `
   <path d="M14 40 C4 14 34 2 50 12 C66 2 96 14 86 40 L84 92 L16 92 Z" fill="#c98a3a" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
@@ -70,11 +70,11 @@ export const camera = (flash = true) => sv('0 0 160 140', `
 /** Atomrakete, Spitze rechts */
 export const nukeRocket = () => sv('-130 -50 260 100', `
   <path d="M-128 0 L-98 -22 L-104 0 L-98 22 Z" fill="#e6e9ee" class="flame"/>
-  <path d="M-114 0 L-96 -12 L-98 0 L-96 12 Z" fill="#fff4c4" class="flame"/>
+  <path d="M-114 0 L-96 -12 L-98 0 L-96 12 Z" fill="#f2f4f9" class="flame"/>
   <path d="M-92 -26 L-60 -20 L-60 20 L-92 26 L-80 0 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
   <path d="M-80 -22 H70 C100 -22 122 -10 130 0 C122 10 100 22 70 22 H-80 Z" fill="#c9cdc2" stroke="${K}" stroke-width="5"/>
   <path d="M86 -20 C108 -16 122 -8 130 0 C122 8 108 16 86 20 Z" fill="${COLORS.red}" stroke="${K}" stroke-width="4"/>
-  <circle cx="20" cy="0" r="17" fill="#ffd45c" stroke="${K}" stroke-width="4"/>
+  <circle cx="20" cy="0" r="17" fill="#d4d6db" stroke="${K}" stroke-width="4"/>
   <circle cx="20" cy="0" r="4" fill="${K}"/>
   ${[0, 120, 240].map((a) => `<path d="M20 0 L${20 + 15 * Math.cos(((a - 30) * Math.PI) / 180)} ${15 * Math.sin(((a - 30) * Math.PI) / 180)} A15 15 0 0 1 ${20 + 15 * Math.cos(((a + 30) * Math.PI) / 180)} ${15 * Math.sin(((a + 30) * Math.PI) / 180)} Z" fill="${K}"/>`).join('')}
   <path d="M-60 -22 V22 M-40 -22 V22" stroke="${K}" stroke-width="3"/>
@@ -84,16 +84,16 @@ export const nukeRocket = () => sv('-130 -50 260 100', `
 export const chestBase = () => sv('0 0 240 150', `
   <rect x="10" y="10" width="220" height="132" rx="8" fill="#7a4a22" stroke="${K}" stroke-width="6"/>
   ${[44, 84, 124].map((y) => `<path d="M12 ${y} H228" stroke="#5a3415" stroke-width="5"/>`).join('')}
-  <rect x="10" y="10" width="30" height="132" fill="#c9a34e" stroke="${K}" stroke-width="5"/><rect x="200" y="10" width="30" height="132" fill="#c9a34e" stroke="${K}" stroke-width="5"/>
-  <rect x="96" y="4" width="48" height="56" rx="6" fill="#e2c47e" stroke="${K}" stroke-width="5"/>
+  <rect x="10" y="10" width="30" height="132" fill="#a5a7ac" stroke="${K}" stroke-width="5"/><rect x="200" y="10" width="30" height="132" fill="#a5a7ac" stroke="${K}" stroke-width="5"/>
+  <rect x="96" y="4" width="48" height="56" rx="6" fill="#c5c7cc" stroke="${K}" stroke-width="5"/>
   <path d="M120 22 a7 7 0 1 1 0.1 0 M116 34 h8 v12 h-8 z" fill="${K}"/>
   ${[24, 216].map((x) => [30, 74, 118].map((y) => `<circle cx="${x}" cy="${y}" r="3.5" fill="${K}"/>`).join('')).join('')}`, 'chest-base');
 export const chestLid = () => sv('0 0 240 110', `
   <path d="M10 100 V52 C10 18 50 6 120 6 C190 6 230 18 230 52 V100 Z" fill="#8a5528" stroke="${K}" stroke-width="6"/>
   <path d="M12 70 C60 60 180 60 228 70" fill="none" stroke="#5a3415" stroke-width="5"/>
-  <path d="M10 100 V52 C10 26 24 14 40 10 V100 Z M230 100 V52 C230 26 216 14 200 10 V100 Z" fill="#c9a34e" stroke="${K}" stroke-width="5"/>
-  <path d="M100 100 V84 H140 V100" fill="#e2c47e" stroke="${K}" stroke-width="5"/>
-  <path d="${sparkPath(70, 36, 9)}" fill="#ffd45c"/>`, 'chest-lid');
+  <path d="M10 100 V52 C10 26 24 14 40 10 V100 Z M230 100 V52 C230 26 216 14 200 10 V100 Z" fill="#a5a7ac" stroke="${K}" stroke-width="5"/>
+  <path d="M100 100 V84 H140 V100" fill="#c5c7cc" stroke="${K}" stroke-width="5"/>
+  <path d="${sparkPath(70, 36, 9)}" fill="#d4d6db"/>`, 'chest-lid');
 
 /** Großer Fisch, Maul rechts */
 export const bigFish = () => {
@@ -122,7 +122,7 @@ export const target = () => sv('-60 -60 120 120', `
   <circle r="58" fill="${K}"/><circle r="50" fill="#e8e4d4"/><circle r="40" fill="${COLORS.red}"/><circle r="30" fill="#e8e4d4"/><circle r="20" fill="${COLORS.green}"/><circle r="10" fill="${COLORS.red}"/>`);
 
 /** Strahlen (harte Kanten) */
-export const rays = (n = 18, c1 = 'rgba(255,212,92,.35)') => {
+export const rays = (n = 18, c1 = 'rgba(212,214,219,.35)') => {
   let p = '';
   for (let i = 0; i < n; i++) {
     const a0 = (i * 360) / n, a1 = a0 + 360 / n / 2.2;
@@ -133,12 +133,12 @@ export const rays = (n = 18, c1 = 'rgba(255,212,92,.35)') => {
 };
 
 /** Comic-Explosion (Zacken) */
-export const boom = (fill = '#ffd45c', fill2 = COLORS.red) => {
+export const boom = (fill = '#d4d6db', fill2 = COLORS.red) => {
   const pts = (R, r, n) => { let d = ''; for (let i = 0; i < n * 2; i++) { const rr = i % 2 ? r : R * (i % 4 ? 0.86 : 1); const a = (i * Math.PI) / n; d += `${i ? 'L' : 'M'}${(rr * Math.cos(a)).toFixed(1)},${(rr * Math.sin(a)).toFixed(1)}`; } return `${d}Z`; };
   return sv('-210 -210 420 420', `<path d="${pts(204, 120, 16)}" fill="${fill2}" stroke="${K}" stroke-width="8" stroke-linejoin="round"/><path d="${pts(160, 96, 16)}" fill="${fill}"/>`);
 };
 
-export const star = (c = '#ffd45c') => sv('0 0 40 40', `<path d="${starPath(20, 20, 19, 8)}" fill="${c}" stroke="${K}" stroke-width="2.5"/>`);
+export const star = (c = '#d4d6db') => sv('0 0 40 40', `<path d="${starPath(20, 20, 19, 8)}" fill="${c}" stroke="${K}" stroke-width="2.5"/>`);
 
 /** Eiskristall-Rand (Frost) */
 export const frost = () => {

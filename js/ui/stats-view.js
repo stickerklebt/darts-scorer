@@ -4,7 +4,7 @@ import { S, ui, nameOf, profile } from '../store.js';
 import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, numRing } from './svg.js';
-import { heatBoard, tierColor } from './board.js';
+import { heatBoard, ratingColor } from './board.js';
 import { spotSVG } from './dblspot.js';
 import { historyCharts, distChart, doubleChart, pickTitle } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
@@ -125,7 +125,7 @@ export function doublesBlock(st, sel, withList = true) {
   const rows = Object.entries(fields).map(([k, v]) => ({ k, ...v, rate: v.hits / v.attempts }));
   const rated = (r) => (r.attempts >= MIN_ATTEMPTS ? 1 : 0);
   rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
-  const dot = (k) => { const c = tierColor(rating[k]?.tier); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
+  const dot = (k) => { const c = ratingColor(rating[k]); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}</div>
       ${withList && sel && !spotOverlay(st, sel) ? dblInfo(st, sel) : ''}

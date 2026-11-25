@@ -185,14 +185,14 @@ function draw(box) {
   const C = cal();
   const toScr = (mx, my) => { const [px, py] = project(C.toImage, mx, my); return [f.x + (px / K) * f.w, f.y + (py / K) * f.h]; };
   if (C) {
-    g.strokeStyle = 'rgba(255,214,107,.95)'; g.lineWidth = 1.5;
+    g.strokeStyle = 'rgba(215,217,222,.95)'; g.lineWidth = 1.5;
     for (const R of OVERLAY.rings) { g.beginPath(); for (let i = 0; i <= 120; i++) { const a = (i / 120) * Math.PI * 2, [x, y] = toScr(R * Math.sin(a), -R * Math.cos(a)); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
     for (const deg of OVERLAY.spokes) { const a = (deg * Math.PI) / 180, [x0, y0] = toScr(RADII.outer * Math.sin(a), -RADII.outer * Math.cos(a)), [x1, y1] = toScr(RADII.dblOut * Math.sin(a), -RADII.dblOut * Math.cos(a)); g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
     if (S.step === 4) S.test.forEach((t, i) => {
       if (!Number.isFinite(t.x)) return;
       const col = t.conf >= 0.85 ? '#4fd16a' : t.conf >= 0.6 ? '#eef1f6' : '#ff4d3a', [x, y] = toScr(t.x, t.y);
       if (i === 0 && t.seg) { // getroffenes Feld halbtransparent
-        const { r0, r1, a0, a1 } = t.seg; g.fillStyle = 'rgba(255,214,107,.22)'; g.beginPath();
+        const { r0, r1, a0, a1 } = t.seg; g.fillStyle = 'rgba(215,217,222,.22)'; g.beginPath();
         for (let k = 0; k <= 12; k++) { const a = ((a0 + (a1 - a0) * k / 12) * Math.PI) / 180, [px, py] = toScr(r1 * Math.sin(a), -r1 * Math.cos(a)); k ? g.lineTo(px, py) : g.moveTo(px, py); }
         for (let k = 12; k >= 0; k--) { const a = ((a0 + (a1 - a0) * k / 12) * Math.PI) / 180, [px, py] = toScr(r0 * Math.sin(a), -r0 * Math.cos(a)); g.lineTo(px, py); }
         g.fill();
@@ -211,7 +211,7 @@ function draw(box) {
   });
   if (S.step === 2 || S.step === 3) S.pts.forEach(([x, y], i) => {
     const sx = f.x + x * f.w, sy = f.y + y * f.h;
-    g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(255,210,63,.3)'; g.lineWidth = 2.5;
+    g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(207,209,214,.3)'; g.lineWidth = 2.5;
     g.beginPath(); g.arc(sx, sy, 13, 0, Math.PI * 2); g.fill(); g.stroke();
     g.beginPath(); g.moveTo(sx - 6, sy); g.lineTo(sx + 6, sy); g.moveTo(sx, sy - 6); g.lineTo(sx, sy + 6); g.stroke();
     g.fillStyle = '#eef0f3'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(FIELDS[i], sx, sy - 19);

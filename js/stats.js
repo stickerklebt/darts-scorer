@@ -203,7 +203,12 @@ export function doubleRating(doubles) {
   const ok = Object.entries(doubles.fields).filter(([, f]) => f.attempts >= MIN_ATTEMPTS && f.hits > 0)
     .sort((a, b) => b[1].hits / b[1].attempts - a[1].hits / a[1].attempts || b[1].attempts - a[1].attempts);
   const top = new Map(ok.slice(0, 3).map(([k], i) => [k, i + 1]));
-  for (const [k, f] of Object.entries(doubles.fields)) out[k] = { tier: doubleTier(f.hits, f.attempts, doubles.rate), top: top.get(k) ?? null };
+  const ov = doubles.rate;
+  for (const [k, f] of Object.entries(doubles.fields)) {
+    const ok = f.attempts >= MIN_ATTEMPTS && ov !== null && ov !== undefined;
+    const ratio = ok ? (ov > 0 ? f.hits / f.attempts / ov : f.hits ? 3 : 1) : null; // Quote relativ zur eigenen Gesamtquote (Farbverlauf)
+    out[k] = { tier: doubleTier(f.hits, f.attempts, doubles.rate), top: top.get(k) ?? null, ratio };
+  }
   return out;
 }
 

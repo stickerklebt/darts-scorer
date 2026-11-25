@@ -28,7 +28,7 @@ export function fitOf(v) {
 }
 
 /** Ringe und Segmentlinien über das Video zeichnen (canvas liegt genau über dem Video-Element) */
-export function drawOverlay(canvas, video, pts, color = 'rgba(255,214,107,.85)') {
+export function drawOverlay(canvas, video, pts, color = 'rgba(215,217,222,.85)') {
   const f = fitOf(video), dpr = window.devicePixelRatio || 1;
   canvas.width = f.r.width * dpr; canvas.height = f.r.height * dpr;
   const g = canvas.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, f.r.width, f.r.height);
@@ -56,7 +56,7 @@ function drawTopView(canvas, video, pts) {
     out.data[o + 3] = 255;
   }
   g.putImageData(out, 0, 0);
-  g.strokeStyle = 'rgba(255,214,107,.8)'; g.lineWidth = 1;
+  g.strokeStyle = 'rgba(215,217,222,.8)'; g.lineWidth = 1;
   for (const R of OVERLAY.rings) { g.beginPath(); g.arc(N / 2, N / 2, (R / 380) * N, 0, Math.PI * 2); g.stroke(); }
 }
 
@@ -147,7 +147,7 @@ export function runCalibration(video, { skipPlacement = false } = {}) {
       const f = fitOf(big), g = ov.getContext('2d');
       pts.forEach(([x, y], i) => {
         const sx = f.x + x * f.w, sy = f.y + y * f.h;
-        g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(255,210,63,.25)'; g.lineWidth = 2;
+        g.strokeStyle = '#eef1f6'; g.fillStyle = 'rgba(207,209,214,.25)'; g.lineWidth = 2;
         g.beginPath(); g.arc(sx, sy, 11, 0, Math.PI * 2); g.fill(); g.stroke();
         g.fillStyle = '#eef0f3'; g.font = '13px sans-serif'; g.textAlign = 'center'; g.fillText(String(i + 1), sx, sy - 16);
       });

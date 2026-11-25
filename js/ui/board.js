@@ -39,6 +39,17 @@ export function inputBoard() {
 /** Farben je Stufe (relativ zur eigenen Gesamt-Doppelquote, siehe stats.js → TIERS) */
 export const TIER_COLORS = { great: '#3f9a52', good: '#93b04a', avg: '#c9a34e', weak: '#d27a3a', bad: '#c4452f' };
 export const tierColor = (t) => (t ? TIER_COLORS[t] : null);
+/** Durchgehender Verlauf statt Stufen: schlecht = dunkles Bordeaux → Rot → Rosé → glänzend Weiß = am besten.
+    ratio = Quote / eigene Gesamtquote (0,4 und weniger = ganz dunkel, 1,7 und mehr = ganz weiß). */
+const RAMP = [[0, [58, 6, 20]], [0.3, [122, 20, 48]], [0.5, [179, 36, 63]], [0.7, [214, 110, 134]], [0.86, [238, 210, 218]], [1, [255, 255, 255]]];
+export function ratioColor(ratio) {
+  if (ratio === null || ratio === undefined) return null;
+  const t = Math.max(0, Math.min(1, (ratio - 0.4) / 1.3));
+  let i = 1; while (i < RAMP.length - 1 && RAMP[i][0] < t) i++;
+  const [t0, c0] = RAMP[i - 1], [t1, c1] = RAMP[i], f = (t - t0) / (t1 - t0 || 1);
+  return `rgb(${c0.map((v, k) => Math.round(v + (c1[k] - v) * f)).join(',')})`;
+}
+export const ratingColor = (r) => ratioColor(r?.ratio);
 
 /** Medaillen-Farben für die drei besten Doppel */
 export const MEDALS = ['#dfe4ea', '#dfe4ea', '#dfe4ea']; // Top 3 einheitlich in Silber
@@ -49,10 +60,10 @@ export const MEDALS = ['#dfe4ea', '#dfe4ea', '#dfe4ea']; // Top 3 einheitlich in
  * rating: { feld: { tier, top } } aus doubleRating()
  */
 export function heatBoard(fields, sel, rating = {}) {
-  const dark = ['#1d1913', '#28221a'], tri = ['#2c251c', '#352d22'];
-  const fillFor = (key) => tierColor(rating[key]?.tier) || (fields[key]?.attempts ? '#5b5140' : '#15120e');
+  const dark = ['#141417', '#1b1b1f'], tri = ['#202025', '#26262b'];
+  const fillFor = (key) => ratingColor(rating[key]) || (fields[key]?.attempts ? '#3a3a40' : '#121215');
   let s = `<defs><filter id="hGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6"/></filter></defs>
-    <circle r="${R.edge}" class="hrim"/><circle r="${R.dblOut + 1}" fill="#0f0d0a"/>`;
+    <circle r="${R.edge}" class="hrim"/><circle r="${R.dblOut + 1}" fill="#0b0b0e"/>`;
   let medals = '', glow = '', nums = '';
   ORDER.forEach((n, i) => {
     const [a0, a1] = segAngles(i), k = i % 2;
@@ -60,12 +71,13 @@ export function heatBoard(fields, sel, rating = {}) {
     s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${dark[k]}"/>`;
     const key = `D${n}`, d = ringPath(R.dblIn, R.dblOut, a0, a1);
     s += `<path class="hd ${sel === key ? 'sel' : ''}" d="${d}" fill="${fillFor(key)}" data-act="heat" data-v="${key}"/>`;
+    if ((rating[key]?.ratio ?? 0) >= 1.25) glow += `<path class="hshine" d="${d}" fill="#fff" opacity="${Math.min(0.9, (rating[key].ratio - 1.1) * 1.2).toFixed(2)}"/>`; // sehr gute glänzen
     // Nur das beste Doppel: hell weiß leuchtender Rand
     if (rating[key]?.top === 1) { glow += `<path class="hmed-g" d="${d}" stroke="#ffffff"/>`; medals += `<path class="hmed best" d="${d}" stroke="#ffffff"/>`; }
     const [x, y] = pt(125, (a0 + a1) / 2).split(',');
     nums += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central">${n}</text>`;
   });
-  s += `<circle r="${R.outerBull}" fill="#2c251c"/>`;
+  s += `<circle r="${R.outerBull}" fill="#202025"/>`;
   s += `<circle class="hd ${sel === 'Bull' ? 'sel' : ''}" r="${R.bull + 3}" fill="${fillFor('Bull')}" data-act="heat" data-v="Bull"/>`;
   if (rating.Bull?.top === 1) { glow += `<circle class="hmed-g" r="${R.bull + 3}" stroke="#ffffff"/>`; medals += `<circle class="hmed best" r="${R.bull + 3}" stroke="#ffffff"/>`; }
   s += `<g class="hwire">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}

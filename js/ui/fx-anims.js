@@ -107,7 +107,7 @@ export function fireworks(el, ctx) {
   const p = particles(el);
   const rocket = (x, delay, color, big = false) => at(delay, () => {
     const y = rand(H() * 0.12, H() * 0.42), t = 520;
-    p.add({ x, y: H(), vx: 0, vy: -(H() - y) / (t / 1000), shape: 'circle', size: 3, color: '#fff3c0', life: t, fade: false });
+    p.add({ x, y: H(), vx: 0, vy: -(H() - y) / (t / 1000), shape: 'circle', size: 3, color: '#f1f3f8', life: t, fade: false });
     at(t, () => {
       const n = big ? 120 : 70;
       p.burst(n, (i) => { const a = (i / n) * 6.283, v = rand(140, big ? 420 : 330); return { x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, ay: 120, drag: 1.4, shape: 'circle', size: rand(2, 3.6), color, life: 1400 }; });
@@ -205,7 +205,7 @@ export function freeze(el, ctx) {
 export function trophy(el, ctx) {
   add(el, '', 'lb-black');
   add(el, '<i class="sp l"></i><i class="sp r"></i>', 'tr-spots');
-  const raysEl = add(el, rays(32, 'rgba(255,210,63,.26)'), 'lb-rays');
+  const raysEl = add(el, rays(32, 'rgba(207,209,214,.26)'), 'lb-rays');
   add(el, '', 'tr-glow');
   const cup = add(el, `<div class="tr-cup-in">${trophy_()}</div><i class="tr-shine"></i>`, 'tr-cup');
   add(el, '', 'tr-plinth');
@@ -226,11 +226,11 @@ export function trophy(el, ctx) {
     const w = add(el, '', 'fx-white long'); setTimeout(() => w.remove(), 1100);
     cup.classList.add('rise');
     const cx = W() / 2, cy = H() * 0.5;
-    p.burst(180, () => { const a = rand(0, 6.283), v = rand(200, 950); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 500, drag: 1.2, shape: pick(['spark', 'circle', 'streak']), rot: a, size: rand(3, 9), color: pick(['#eef1f6', '#fff3c0', '#ffffff', '#cfd3d9', '#e5402c']), life: 2000 }; });
+    p.burst(180, () => { const a = rand(0, 6.283), v = rand(200, 950); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 500, drag: 1.2, shape: pick(['spark', 'circle', 'streak']), rot: a, size: rand(3, 9), color: pick(['#eef1f6', '#f1f3f8', '#ffffff', '#cfd3d9', '#e5402c']), life: 2000 }; });
   });
   at(3300, () => {
     add(el, `<div class="fx-big">180</div><div class="fx-sub">Maximum!${who(ctx)}</div>`, 'fx-title lb-title');
-    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#eef1f6', '#f2f4f7', '#fff3c0', '#e5402c', '#2f6fe4', '#eef0f3']), life: 2600, fade: false }); }, 3300, 6800);
+    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#eef1f6', '#f2f4f7', '#f1f3f8', '#e5402c', '#2f6fe4', '#eef0f3']), life: 2600, fade: false }); }, 3300, 6800);
   });
   at(4200, () => { cup.classList.add('gleam'); shake(6, 200); });
   [['tl', 3500], ['tr', 3600], ['bl', 3700], ['br', 3800]].forEach(([c, t]) => at(t, () => add(el, cornerOrnament(), `tr-corner ${c}`)));
@@ -275,7 +275,7 @@ export function nuke(el, ctx) {
     add(el, '', 'nk-wave'); add(el, '', 'nk-wave w2'); add(el, '', 'nk-wave w3');
     const w = add(el, '', 'fx-white'); setTimeout(() => w.remove(), 600);
     const cx = W() / 2, cy = H() * 0.5;
-    p.burst(160, () => { const a = rand(0, 6.283), v = rand(150, 820); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 2, ay: 80, shape: 'circle', size: rand(5, 18), grow: -4, color: pick(['#eef1f6', '#c42a4b', '#e5402c', '#fff3c0', '#5c5c5c']), life: 1700 }; });
+    p.burst(160, () => { const a = rand(0, 6.283), v = rand(150, 820); return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 2, ay: 80, shape: 'circle', size: rand(5, 18), grow: -4, color: pick(['#eef1f6', '#c42a4b', '#e5402c', '#f1f3f8', '#5c5c5c']), life: 1700 }; });
     add(el, `<div class="fx-big">${ctx.score}</div><div class="fx-sub">Boom! Checkout${who(ctx)}</div>`, 'fx-title nk-title');
   });
   at(2500, () => add(el, '<i class="cap"></i><i class="stem"></i>', 'nk-mush'));
