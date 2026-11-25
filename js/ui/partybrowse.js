@@ -18,8 +18,9 @@ function card(id, mode) {
   const btn = mode === 'add'
     ? `<button class="pb-add" data-act="partyAdd" data-v="${id}" aria-label="${name} hinzufügen">${icon('plus', 2.6, 18)}</button>`
     : ui.partyEdit ? `<button class="pb-del" data-act="partyDel" data-v="${id}" aria-label="${name} entfernen">${icon('minus', 2.8, 18)}</button>` : '';
-  return `<div class="pb-card ${p.playable ? '' : 'soon'}">
-    <span class="pb-art" style="--mc:${tileBg(id)}">${tileArt(id, 46)}</span>
+  // Kachel genau wie auf dem Play-Reiter (Farbblock mit Raster, Rahmen, Stern), daneben Name und Erklärung
+  return `<div class="pb-card ${p.playable ? '' : 'pb-soon'}">
+    <span class="mode pb-tile" style="--mc:${tileBg(id)}"><span class="mode-art">${tileArt(id, 52)}</span></span>
     <span class="pb-txt"><b>${name}</b>${p.playable ? '' : '<em>Bald spielbar</em>'}<small>${p.desc}</small></span>${btn}</div>`;
 }
 
