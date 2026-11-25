@@ -8,7 +8,8 @@ document.addEventListener('click', (e) => {
   if (!box) return;
   clearTimeout(timers.get(box));
   // nochmal tippen blendet sofort wieder aus
-  if (box.classList.toggle('rv-on')) timers.set(box, setTimeout(() => box.classList.remove('rv-on'), 6000));
+  // data-keep: bleibt offen, bis man nochmal tippt (z. B. Details unter dem Inside/Outside-Balken)
+  if (box.classList.toggle('rv-on') && !box.hasAttribute('data-keep')) timers.set(box, setTimeout(() => box.classList.remove('rv-on'), 6000));
 });
 
 /* Diagramme (`.has-tg`): Antippen blendet Zahlen, Achsen, Legende und Erklärung für 5 s ein; nochmal tippen blendet sie aus.

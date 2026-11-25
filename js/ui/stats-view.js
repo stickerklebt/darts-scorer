@@ -101,12 +101,13 @@ function dblInfo(st, key) {
   // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
   return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}
     <h4>Wenn du nicht triffst, wirfst du</h4>
+    <div class="io-wrap has-rv" data-keep title="Antippen für Details">
     <div class="io-line">
       ${ip > 0 ? `<span class="io-side in ${op === 0 ? 'full' : ''}" style="flex:${ip}"><b>${ip} %</b><small>Inside</small></span>` : ''}
       ${op > 0 ? `<span class="io-side out ${ip === 0 ? 'full' : ''}" style="flex:${op}"><b>${op} %</b><small>Outside</small></span>` : ''}
     </div>
     <div class="io-key"><span>← ins Board (alles außer ${key})</span><span>daneben (0) →</span></div>
-    <p class="di-n">${sd.misses} Fehlwürfe · ${sd.inside}× inside · ${sd.outside}× outside</p></div>`;
+    <p class="di-n">${sd.misses} Fehlwürfe · ${sd.inside}× inside · ${sd.outside}× outside</p></div></div>`;
 }
 
 /** Heatmap + Doppelliste. Farben relativ zur eigenen Gesamtquote, Top 3 mit Gold-/Silber-/Bronze-Rand.
