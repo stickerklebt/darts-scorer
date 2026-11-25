@@ -163,7 +163,7 @@ let lineN = 0;
 export function crestLine(opts = {}) {
   const w = opts.size || 200;
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader">
-    ${chromeStar(100, 58, 52, 34, 40, 34, { glow: 1 })}
+    ${chromeStar(100, 58, 48, 34, 48, 34, { glow: 1 }) }
     <text x="104" y="134" text-anchor="middle" class="brand-name">DARTVADER</text></svg>`;
 }
 
