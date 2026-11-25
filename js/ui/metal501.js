@@ -42,13 +42,20 @@ export function metal501() {
 
 /* ---------- Licht: langsame Bahn (~10 s), folgt dem Finger, Taschenlampen-Sweep alle 6–8 s; pausiert, wenn unsichtbar ---------- */
 const L = TUNE.light;
-const state = { raf: 0, t0: 0, visible: true, follow: null, press: false, sweep: null, nextSweep: 0, cur: { x: 225, y: -40, s: L.spec }, still: false, io: null, el: null };
+const state = { frac: null, raf: 0, t0: 0, visible: true, follow: null, press: false, sweep: null, nextSweep: 0, cur: { x: 225, y: -40, s: L.spec }, still: false, io: null, el: null };
 
 function setLight(x, y, s) {
   const li = document.getElementById('mtlLight'), sp = document.getElementById('mtlSpec');
   if (!li) return;
   li.setAttribute('x', x.toFixed(1)); li.setAttribute('y', y.toFixed(1));
   sp?.setAttribute('specularConstant', s.toFixed(2));
+  // dasselbe Licht auf den Linien neben der Zahl (Kachel-Koordinaten 1000 × 560): unter dem Finger/der Maus genau, sonst aus der Bahn der Zahl umgerechnet
+  const ll = document.getElementById('slL');
+  if (ll) {
+    const f = state.frac || { x: 0.11 + 0.78 * (x / 450), y: 0.12 + 0.72 * (y / 300) };
+    ll.setAttribute('cx', (f.x * 1000).toFixed(0)); ll.setAttribute('cy', (f.y * 560).toFixed(0));
+    ll.setAttribute('r', (150 + 60 * s).toFixed(0));
+  }
 }
 /** Glints: kurz an einer Kante aufblitzen, wenn das Licht vorbeizieht */
 function glint(which) {
@@ -108,16 +115,18 @@ export function metalLight(still = false) {
     state.io = new IntersectionObserver((es) => { state.visible = es.some((e) => e.isIntersecting); kick(); });
     state.io.observe(el);
   }
-  let rect = null;
+  let rect = null, hrect = null;
+  const frac = (e) => { const r = hrect || (hrect = el.getBoundingClientRect()); return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height }; };
   const toSvg = (e) => { // Finger → Koordinaten der Zahl (0–450 × 0–300); Rechteck nur beim Aufsetzen gemessen
     const r = rect || (rect = el.querySelector('.m501').getBoundingClientRect());
     return { x: ((e.clientX - r.left) / r.width) * 450, y: ((e.clientY - r.top) / r.height) * 300 };
   };
-  el.addEventListener('pointerdown', (e) => { rect = null; state.press = true; state.follow = toSvg(e); state.cur.x = state.follow.x; state.cur.y = state.follow.y; el.classList.add('pressing'); kick(); });
-  el.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' || state.press) { state.follow = toSvg(e); kick(); } });
+  el.addEventListener('pointerdown', (e) => { rect = null; hrect = null; state.frac = frac(e); state.press = true; state.follow = toSvg(e); state.cur.x = state.follow.x; state.cur.y = state.follow.y; el.classList.add('pressing'); kick(); });
+  el.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' || state.press) { state.follow = toSvg(e); state.frac = frac(e); kick(); } });
+  el.addEventListener('pointerenter', () => { rect = null; hrect = null; });
   const up = () => { state.press = false; el.classList.remove('pressing'); };
-  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', () => { up(); state.follow = null; });
-  el.addEventListener('pointerleave', () => { up(); state.follow = null; });
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', () => { up(); state.follow = null; state.frac = null; });
+  el.addEventListener('pointerleave', () => { up(); state.follow = null; state.frac = null; });
   kick();
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
