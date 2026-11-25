@@ -35,6 +35,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 - **Zahlen:** League Gothic ist sehr schmal → große Zahlen außerhalb des Spiels werden mit `scaleX(var(--num-w))` (1,16)
   leicht verbreitert. Plakat-Stil `.pop` (rot versetzter Schatten + `#ink`) nur für ausgewählte Zahlen: Ø auf der
   Spielerkarte, Overall-Average, Rekord-Karten, Ø in der Freundesliste. Kleine Karten (`.kv-c`) mit Goldrand ringsum.
+- **`data-live`**: Elemente, deren Attribute JS laufend selbst setzt (Licht `#mtlLight`/`#mtlSpec`/`#slL`, die 501-Kachel mit `silk-live`/`pressing`), behalten beim `morph` ihre Attribute (nur Kinder werden abgeglichen) – sonst springt Licht/Drift bei jedem Neuzeichnen.
 - **Rendering ohne Flackern:** `render()` setzt nicht mehr `innerHTML`, sondern gleicht den Bildschirm per `morph()` an
   (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.

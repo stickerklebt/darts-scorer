@@ -21,8 +21,8 @@ const FILTER = `<filter id="mtlF" x="-8%" y="-8%" width="116%" height="116%" col
   <feOffset in="SourceAlpha" dy="1.6" result="dn"/><feComposite in="SourceAlpha" in2="dn" operator="out" result="topE"/>
   <feFlood flood-color="#ffffff" flood-opacity=".9"/><feComposite in2="topE" operator="in" result="lite"/>
   <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="bl"/>
-  <feSpecularLighting id="mtlSpec" in="bl" surfaceScale="4.5" specularConstant="${TUNE.light.spec}" specularExponent="${TUNE.light.exp}" lighting-color="#ffffff" result="spec">
-    <fePointLight id="mtlLight" x="225" y="-40" z="${TUNE.light.z}"/></feSpecularLighting>
+  <feSpecularLighting id="mtlSpec" data-live="1" in="bl" surfaceScale="4.5" specularConstant="${TUNE.light.spec}" specularExponent="${TUNE.light.exp}" lighting-color="#ffffff" result="spec">
+    <fePointLight id="mtlLight" data-live="1" x="225" y="-40" z="${TUNE.light.z}"/></feSpecularLighting>
   <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
   <feMerge result="base"><feMergeNode in="brushed"/><feMergeNode in="dark"/><feMergeNode in="lite"/></feMerge>
   <feComposite in="specIn" in2="base" operator="arithmetic" k2=".85" k3="1" result="out"/>
@@ -53,7 +53,9 @@ function setLight(x, y, s) {
   const ll = document.getElementById('slL');
   if (ll) {
     const f = state.frac || { x: x / 450, y: y / 300 }; // ohne Finger: Lichtbahn über die ganze Kachel (damit sie auch die Linien in den Ecken trifft)
-    ll.setAttribute('cx', (f.x * 1000).toFixed(0)); ll.setAttribute('cy', (f.y * 560).toFixed(0));
+    const lc = state.lc || (state.lc = { x: f.x, y: f.y });
+    lc.x += (f.x - lc.x) * 0.14; lc.y += (f.y - lc.y) * 0.14; // weich nachziehen – kein Springen beim Wechsel Maus ↔ Lichtbahn
+    ll.setAttribute('cx', (lc.x * 1000).toFixed(1)); ll.setAttribute('cy', (lc.y * 560).toFixed(1));
     ll.setAttribute('r', (260 + 90 * s).toFixed(0));
   }
 }

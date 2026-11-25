@@ -58,7 +58,7 @@ function cornerCurve(c) {
 const LINES = CORNERS.map(cornerCurve);
 const silkLines = () => `<svg class="silk-lines" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><defs>
   <linearGradient id="slG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="560"><stop offset="0" stop-color="#5d6168"/><stop offset=".18" stop-color="#e9edf1"/><stop offset=".3" stop-color="#8a9098"/><stop offset=".42" stop-color="#2e2a2d"/><stop offset=".55" stop-color="#c9ced5"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".8" stop-color="#7d838d"/><stop offset="1" stop-color="#d6dae0"/></linearGradient>
-  <radialGradient id="slL" gradientUnits="userSpaceOnUse" cx="500" cy="-100" r="190"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".35" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+  <radialGradient id="slL" data-live="1" gradientUnits="userSpaceOnUse" cx="500" cy="-100" r="190"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".35" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
   ${LINES.map((d, i) => `<path class="sl-sh" d="${d}"/><path class="sl" d="${d}"/><path class="sl-hi" d="${d}"/><path class="sl-lit" d="${d}"/><path class="sl-run" d="${d}" pathLength="100" style="animation-delay:-${i * 6}s"/>`).join('')}</svg>`;
 
 export function playView() {
@@ -68,7 +68,7 @@ export function playView() {
   return `<main class="page">
     ${m && !m.done ? `<div class="resume-wrap"><button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>
       <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
-    <section class="hero hero-go silk-hero" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
+    <section class="hero hero-go silk-hero" data-live="1" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
       <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
       ${silkLines()}
       ${metal501()}
