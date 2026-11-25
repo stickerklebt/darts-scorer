@@ -259,8 +259,11 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
   von 100 Herausforderungen (25 je Level, selbst geschrieben, selbst prüfbar), Countdown 1 Stunde. Abhaken mit ✓; alle drei = Sieg.
   „Abbrechen“ verwirft sie ohne Spur. Ende (alle geschafft, Zeit um, Aufgeben) → als Match `game: 'bruch'` in `S.matches` (Historie „Party“, Sync, nicht in 501-Statistik).
   Laufende Challenge in `S.bruch` (nur lokal).
-- **Partyspiele:** wählbar sind **Cricket**, **Fußball** und die Challenge (Bruchchallenge). Highscore, Shanghai, Halbieren, Around the Clock sind `retired` in `games.js`
-  (nicht mehr im Menü, Engines bleiben für alte Spiele in Historie/Statistik).
+- **Partyspiele (Galerie, `js/partygames.js`, `ui/partybrowse.js`, Screen `partyBrowse`):** Auf Play stehen die Kacheln aus `prefs.partyTiles`
+  (Standard Cricket · Fußball · X01, Challenge nicht mehr standardmäßig), dahinter eine Plus-Kachel → Galerie: oben „Entdecken“ (alle Modi, die noch nicht
+  auf Play sind, mit Name + Kurzregel, Plus = hinzufügen), ganz unten „Auf deinem Play-Reiter“ mit Stift → Minus auf jeder Kachel. Spielbar: Cricket, Fußball,
+  Challenge, X01, Shanghai, Halbieren, Around the Clock, Highscore (die `retired`-Modi sind spielbar, sobald sie auf Play stehen). 10 kommende Modi (`SOON`:
+  Killer, Bob's 27, Baseball, Golf, Gotcha, Tic Tac Toe, Mickey Mouse, Scram, 121, Nine Lives) sind nur Kacheln: auf Play ausgegraut mit „Bald“, nicht antippbar.
 - **Ausbullen** (nur Matchbeginn, alle Modi, ab 2 Seiten): Finger halten → Lupe, loslassen setzt, dann Rückgängig/Bestätigen.
   Nächster am Mittelpunkt gewinnt; mehrere im Bull bzw. (ohne Bull) mehrere im 25er oder exakt gleich weit → nur diese nochmal.
 - **Animationen** (`js/fx.js`):  26, 60 (4 s) · 100–120 Topf (4 s) · 121–179 Topf (5 s) · 180 Pokal (7 s) ·
@@ -378,7 +381,7 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - **Lieblingsdoppel** (Einstellungen, `prefs.favDbl` 16 · 18 · 20, Standard 20): `setFavDouble` in `checkout.js` (bei jedem `render()` gesetzt). Bei D16/D18 bevorzugt `route()` Wege mit gleich vielen Darts, die auf dem Lieblingsdoppel enden (Vorbereitung Single > 25 > Triple > Bull; Bull-Finishes bleiben); Setup-Würfe lassen bevorzugt das Lieblingsdoppel stehen. D20 = feste Tabelle.
 - Fußball-Abzeichen/Kachel silbern (nicht grün).
 - **Trefferstelle im Doppel** (`ui/dblspot.js`): Checkt ein Mensch in X01 (Double Out) mit einem einzeln erfassten D1–D20 ein Leg/Match, kommt danach
-  sofort (vor Animation, Ansage, Leg-Info/Ergebnis) Vollbild „Wo hast du genau getroffen?“ (Schrift League Gothic, Versalien) mit nur dem Doppelfeld groß,
+  sofort (vor Animation, Ansage, Leg-Info/Ergebnis) Vollbild „Wo hast du genau getroffen?“ im Queen-Plakat-Stil (Strahlenkranz, Eck-Ornamente, Sterne, Titel mit versetztem Druck, Feld mit Raster + Goldrahmen; „Überspringen“ nur blass) mit nur dem Doppelfeld groß,
   **immer so schräg wie auf der Scheibe** (`rotOf`). In der Statistik zusätzlich Nachbarfelder blass, „Outside“/„Inside“. Antippen speichert `throw.spot = { a: −1…1 quer, r: 0 innen … 1 außen }` am Checkout-Dart, „Überspringen“ geht weiter.
   Bots pausieren solange (`ui.dblSpot`). Statistik › Doppel: Doppel antippen → im Fenster das Doppel groß mit einem Punkt je Treffer (`fullStats().spots`).
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).

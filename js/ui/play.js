@@ -4,6 +4,8 @@ import { GAMES } from '../games.js';
 import { esc, fmt, pcVars, matchSummary } from './common.js';
 import { incomingCount } from './friends.js';
 import { link } from '../camera-link.js';
+import { partyTiles, partyInfo } from '../partygames.js';
+import { tileArt } from './partybrowse.js';
 import { cornerOrnament, badge, stars, icon, heroArt, fuse, sparkles, MODE_COLORS } from './svg.js';
 
 export const TABS = ['play', 'stats', 'friends'];
@@ -45,7 +47,7 @@ export function playView() {
   const m = S.current, o = S.opts.x01;
   const corners = ['tl', 'tr', 'bl', 'br'].map((c) => `<span class="corner ${c}">${cornerOrnament()}</span>`).join('');
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
-  const others = [...Object.keys(GAMES).filter((id) => id !== 'x01' && !GAMES[id].retired), 'x01'];
+  const others = partyTiles(S.prefs);
   return `<main class="page">
     ${m && !m.done ? `<div class="resume-wrap"><button class="resume" data-act="resume"><span class="live">Live</span><span class="ct"><b>Spiel fortsetzen</b><small>${matchSummary(m)}</small></span>${icon('chevR')}</button>
       <button class="resume-del" data-act="discardCurrent" aria-label="Laufendes Spiel löschen" title="Spiel löschen">${icon('trash', 1.8, 22)}</button></div>` : ''}
@@ -58,7 +60,11 @@ export function playView() {
       </div>
     </section>
     <h2 class="label">Partyspiele</h2>
-    <div class="modes ${others.length === 1 ? 'one' : ''}">${others.map((id, i) => `<button class="mode" data-act="pick" data-v="${id}" ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${MODE_COLORS[id]};--bi:${i}" aria-label="${GAMES[id].title}" title="${GAMES[id].title}">
-      <span class="mode-art">${badge(id, 52)}</span></button>`).join('')}</div>
+    <div class="modes">${others.map((id, i) => {
+      const p = partyInfo(id), soon = !p.playable;
+      return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#2a2620' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">
+      <span class="mode-art">${tileArt(id, 52)}</span>${soon ? `<span class="mode-soon"><b>${p.title}</b><small>Bald</small></span>` : ''}</button>`;
+    }).join('')}
+      <button class="mode mode-plus" data-act="partyBrowse" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art">${icon('plus', 2.4, 40)}</span></button></div>
   </main>`;
 }

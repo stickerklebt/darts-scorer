@@ -2570,3 +2570,57 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
   text-shadow: 2px 2px 0 rgba(232,116,42,.55), 0 0 22px rgba(255,138,76,.25); transform: scaleX(var(--num-w, 1.16)); margin: 0 0 6px; }
 .dspot-in p { font-family: var(--f-num); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin: 0 0 16px; }
 .dspot-in p::after { content: ""; display: block; width: 120px; height: 8px; margin: 6px auto 0; background: var(--hand-line) center / 100% 100% no-repeat; opacity: .8; }
+
+/* Partyspiele: Plus-Kachel, kommende Modi ausgegraut, Galerie zum Hinzufügen/Entfernen */
+.mode-plus .mode-art { background: linear-gradient(180deg, #1a1713, #0b0a08); color: var(--gold-l); }
+.mode-plus .mode-art::after, .mode-plus .mode-art::before { display: none; }
+.mode-plus { outline: 1.5px dashed rgba(212,166,58,.55); border-color: transparent; }
+.mode-plus svg { filter: drop-shadow(0 0 10px rgba(255,138,76,.35)); }
+.mode.soon { opacity: .55; cursor: default; filter: grayscale(.4); }
+.mode.soon .mode-art { height: 70px; }
+.mode-soon { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 6px 10px; background: var(--ink); }
+.mode-soon b { font-family: var(--f-num); font-weight: 400; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mode-soon small { font-family: var(--f-num); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+.soon-mark { display: inline-flex; align-items: center; justify-content: center; min-width: 52px; height: 52px; padding: 0 8px; border: 2px solid var(--gold); border-radius: 3px;
+  font-family: var(--f-num); font-size: 22px; letter-spacing: .04em; color: var(--gold-l); background: #0b0a08; box-shadow: 3px 3px 0 #000; }
+.pbrowse .label { margin-top: 18px; }
+.pb-list { display: flex; flex-direction: column; gap: 10px; }
+.pb-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--r-panel); border: 1px solid rgba(212,166,58,.45);
+  background: linear-gradient(180deg, #17130f, #0d0b09); box-shadow: inset 0 0 0 3px rgba(11,10,8,.9), inset 0 0 0 4px rgba(200,204,208,.14); }
+.pb-art { flex: none; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background-color: var(--mc); background-image: var(--tex-halftone); }
+.pb-art .soon-mark { min-width: 46px; height: 46px; font-size: 18px; }
+.pb-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pb-txt b { font-family: var(--f-num); font-weight: 400; font-size: 20px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); }
+.pb-txt em { font-style: normal; font-family: var(--f-num); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+.pb-txt small { font-size: 13px; line-height: 1.35; color: var(--cream2); }
+.pb-card.soon .pb-art { filter: grayscale(.3); }
+.pb-add, .pb-del { flex: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  border: 1.5px solid var(--gold); background: #0b0a08; color: var(--gold-l); box-shadow: 0 0 14px rgba(255,138,76,.2); }
+.pb-del { border-color: var(--red); color: var(--red); animation: chMenuIn .2s ease-out; }
+.pb-mine-h { display: flex; align-items: center; justify-content: space-between; margin-top: 30px; }
+.pb-mine-h .label { margin: 0; }
+.pb-pen { color: var(--gold-l); }
+.pb-pen.on { border-color: var(--gold); box-shadow: 0 0 14px rgba(212,166,58,.35); }
+
+/* Doppel-Abfrage im Queen-Plakat-Stil: Strahlenkranz dahinter, Eck-Ornamente, Sterne, Titel mit versetztem Druck, Feld mit Raster + Goldrahmen */
+.dspot-ask { overflow: hidden; }
+.ds-rays { position: absolute; left: 50%; top: 55%; width: 170vmax; height: 170vmax; transform: translate(-50%, -50%); pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, rgba(212,166,58,.10) 0deg 6deg, transparent 6deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 8%, transparent 46%); mask-image: radial-gradient(circle, #000 8%, transparent 46%);
+  animation: dsSpin 90s linear infinite; }
+@keyframes dsSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.dspot-in { position: relative; padding: 26px 22px 18px; border: 2px solid rgba(212,166,58,.8); outline: 1px solid rgba(212,166,58,.45); outline-offset: 5px; border-radius: 6px;
+  background: radial-gradient(120% 90% at 50% 40%, rgba(60,36,16,.55), rgba(11,10,8,.85)); box-shadow: 0 0 60px rgba(255,138,76,.16), inset 0 0 40px rgba(0,0,0,.6); }
+.dspot-in .corner { position: absolute; width: 34px; height: 34px; }
+.dspot-in .corner.tl { left: 4px; top: 4px; } .dspot-in .corner.tr { right: 4px; top: 4px; transform: scaleX(-1); }
+.dspot-in .corner.bl { left: 4px; bottom: 4px; transform: scaleY(-1); } .dspot-in .corner.br { right: 4px; bottom: 4px; transform: scale(-1); }
+.ds-crown { display: flex; justify-content: center; margin-bottom: 4px; opacity: .9; }
+.dspot-in h2.ds-title { font-size: clamp(22px, 6.4vw, 38px); margin: 0 0 10px; filter: url(#ink); text-shadow: 3px 3px 0 var(--red), 0 0 26px rgba(255,138,76,.35); }
+.dspot-in p { display: none; }
+.ds-field-wrap { position: relative; }
+.ds-field-wrap .sparkles, .ds-field-wrap > svg:not(.dspot) { position: absolute; inset: 0; pointer-events: none; }
+.dspot-ask .dspot.tap { filter: drop-shadow(0 0 26px rgba(255,138,76,.4)); animation: dsField .5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes dsField { from { transform: scale(.6) rotate(-6deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.dspot-skip { all: unset; cursor: pointer; display: inline-block; margin-top: 14px; padding: 8px 18px; border-radius: 999px;
+  font-family: var(--f-num); font-size: 15px; letter-spacing: .18em; text-transform: uppercase; color: rgba(242,239,231,.38); border: 1px solid rgba(242,239,231,.14); }
+.dspot-skip:hover, .dspot-skip:focus-visible { color: rgba(242,239,231,.7); }

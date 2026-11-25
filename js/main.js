@@ -21,6 +21,8 @@ import * as F from './football.js';
 import { GAMES, MAX_PLAYERS } from './games.js';
 import { esc } from './ui/common.js';
 import { tabsBar, playView, tabIndex } from './ui/play.js';
+import { partyBrowseView } from './ui/partybrowse.js';
+import { addTile, removeTile, partyTiles } from './partygames.js';
 import { authView } from './ui/auth.js';
 import { friendsView, friendView } from './ui/friends.js';
 import { historyView } from './ui/history.js';
@@ -100,7 +102,8 @@ function render() {
   if (!auth.user) html = authView();
   else if (S.screen === 'game' && m && !m.done) html = m.online && m.online.status !== 'active' ? onlineWaitView(m) : inBulloff() ? bulloffView() : gameView() + momentView();
   else if (S.screen === 'result' && m && m.done) html = tabsBar() + resultView();
-  else if (S.screen === 'setup' && GAMES[S.game] && !GAMES[S.game].retired) html = setupView();
+  else if (S.screen === 'setup' && GAMES[S.game] && (!GAMES[S.game].retired || partyTiles(S.prefs).includes(S.game))) html = setupView();
+  else if (S.screen === 'partyBrowse') html = partyBrowseView();
   else if (S.screen === 'compare' && S.profiles.length) html = compareView();
   else if (S.screen === 'friend' && ui.friend) html = friendView();
   else if (S.screen === 'history') html = historyView();
@@ -1011,6 +1014,10 @@ const actions = {
     handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
   },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  partyBrowse() { S.screen = 'partyBrowse'; ui.partyEdit = false; render(); window.scrollTo(0, 0); },
+  partyAdd(el) { addTile(S.prefs, el.dataset.v); toast('Auf deinem Play-Reiter'); render(); },
+  partyDel(el) { removeTile(S.prefs, el.dataset.v); render(); },
+  partyEdit() { ui.partyEdit = !ui.partyEdit; render(); },
   spotSkip() { if (ui.dblSpot) spotDone(); },
   avgKind(el) { ui.avgKind = el.dataset.v; ui.avgMenu = false; render(); },
   favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
