@@ -3186,3 +3186,4 @@ html.no-motion .silk-lines .sl-run { display: none; }
 .page.backstage .label::after { background: linear-gradient(90deg, rgba(196,42,75,.35), rgba(200,204,210,.18) 12%, transparent) !important; }
 .page.backstage .pop, .page.backstage .favg b { text-shadow: 1px 1px 0 #7a1430, 0 3px 8px rgba(0,0,0,.6) !important; }
 .silk-lines path { vector-effect: non-scaling-stroke; }
+.brand .brand-name { font-weight: 400; }

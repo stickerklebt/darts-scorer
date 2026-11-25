@@ -407,7 +407,7 @@ Offen: E-Mail-Bestätigung.
   dunkel #6b1226; Knöpfe als getöntes Bordeaux-Glas). Neutrale, kühle Grundtöne (Schwarz #08080a, Text #eef0f3), kein Orange, kein Gold.
   **Weniger gezeichnet, mehr glänzendes Kristall:** Filter `#rough`/`#rough-s`/`#ink` in `index.html` sind wirkungslos, keine Eck-Ornamente/Trenner,
   kein Papier/Kupferstich, Label-Linie als feine Lichtlinie. 501-Karte: Glas-Stern (`chromeStar`, `heroArt` in `svg.js`) auf tiefem Schwarz mit
-  Chrom-Schlieren, Rand als Chrom-Ring. Start-Logo/Anmeldung (`crestLine`): nur kleiner Chrom-Stern (symmetrisch: oben = unten 48, links = rechts 34) + „DARTVADER“ clean (Systemschrift, dünn, weit gesperrt).
+  Chrom-Schlieren, Rand als Chrom-Ring. Start-Logo/Anmeldung (`crestLine`): Stern aus Titan wie ein iPhone-Rahmen (feine gestrahlte Körnung, grauer Metallverlauf, polierte Fase hell/dunkel, Glanz per feSpecularLighting; symmetrisch: oben = unten 48, links = rechts 34), Name im selben Titan-Verlauf + „DARTVADER“ clean (Systemschrift, dünn, weit gesperrt).
   Dartscheiben behalten Rot/Grün.
   501-Karte (neu, ersetzt den Glas-Stern): Bordeaux-Flüssigkeit aus großen glasigen Blasen – Körper in einer Goo-Ebene (Blasen verschmelzen beim Treiben über flüssige Brücken), darüber Glas (helle Lichtkante, dunkles Brechungsband, Glanzfleck, Spiegelbogen, feines Raster); treiben und atmen (`.bb`, `bbFloat`). Der seltene Schimmer über der 501 ist Silber (nicht Gold).
   (Alt:) Mehr Glitzer + Bordeaux: 501-Karte mit Bordeaux-Nebel, Bordeaux-/Chrom-Schlieren, Bokeh-Lichtpunkten, aufblitzenden Funkel-Sternen (`.tw`),

@@ -159,12 +159,31 @@ export function crest({ size = 200, banner = 'DARTS', bg = null, lite = false } 
  * Baut auf crest() auf und tauscht nur die Farben: Gold-Flächen werden dunkel mit Verlaufs-Kontur, Creme-Flächen gedämpft.
  */
 let lineN = 0;
-/** Start-Logo/Anmeldung: schlicht – kleiner Chrom-Stern, darunter der Name clean (Systemschrift, weit gesperrt) */
+/** Start-Logo/Anmeldung: Stern aus Titan wie ein iPhone-Rahmen – feine, gestrahlte Körnung (feTurbulence, sehr hohe Frequenz),
+    mehrstufiger grauer Metallverlauf, polierte Fase (helle Außenkante, dunkle Innenkante, Glanz per feSpecularLighting),
+    darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
-  const w = opts.size || 200;
-  return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader">
-    ${chromeStar(100, 58, 48, 34, 48, 34, { glow: 1 }) }
-    <text x="104" y="134" text-anchor="middle" class="brand-name">DARTVADER</text></svg>`;
+  const w = opts.size || 200, g = `ti${++starN}`;
+  const d = chromeStarPath(100, 58, 48, 34, 48, 34);
+  return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
+    <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f5f7"/><stop offset=".18" stop-color="#b9bcc2"/><stop offset=".34" stop-color="#6d7178"/><stop offset=".46" stop-color="#3d4045"/><stop offset=".56" stop-color="#8e9299"/><stop offset=".68" stop-color="#e3e5e9"/><stop offset=".82" stop-color="#9a9ea5"/><stop offset="1" stop-color="#55585e"/></linearGradient>
+    <linearGradient id="${g}t" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a9ea5"/><stop offset=".3" stop-color="#f1f2f4"/><stop offset=".5" stop-color="#7d8188"/><stop offset=".72" stop-color="#e6e8eb"/><stop offset="1" stop-color="#8a8e95"/></linearGradient>
+    <filter id="${g}f" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="11" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  .9 .9 .9 0 -1.1" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="g2"/>
+      <feBlend in="g2" in2="SourceGraphic" mode="overlay" result="textured"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.1" result="bl"/>
+      <feSpecularLighting in="bl" surfaceScale="2.6" specularConstant="1.05" specularExponent="34" lighting-color="#ffffff" result="sp"><feDistantLight azimuth="235" elevation="38"/></feSpecularLighting>
+      <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+      <feComposite in="sp2" in2="textured" operator="arithmetic" k2=".7" k3="1"/>
+    </filter>
+    <filter id="${g}s" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+    <path d="${d}" fill="#fff" opacity=".22" filter="url(#${g}s)"/>
+    <path d="${d}" fill="url(#${g}a)" filter="url(#${g}f)"/>
+    <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
+    <path d="${d}" transform="translate(100 58) scale(.9) translate(-100 -58)" fill="none" stroke="#1d1f23" stroke-opacity=".55" stroke-width=".8"/>
+    <text x="104" y="134" text-anchor="middle" class="brand-name" style="fill:url(#${g}t)">DARTVADER</text></svg>`;
 }
 
 /* ---------- Ornamente ---------- */
