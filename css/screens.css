@@ -2637,3 +2637,6 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .io-wrap.rv-on .io-key, .io-wrap.rv-on .di-n { max-height: 40px; opacity: 1; margin-top: 8px !important; }
 /* Partyspiel-Kacheln auf Play: immer drei pro Reihe */
 .modes, .modes.one { grid-template-columns: repeat(3, 1fr) !important; }
+/* Plus-Kachel erkennbar anders: gestrichelter Rahmen außen und innen, sonst wie die Modus-Kacheln */
+.mode.mode-plus { outline: 1.5px dashed rgba(212,166,58,.7); outline-offset: 0; border-color: transparent; }
+.mode-plus .mode-art::before { border: 1px dashed rgba(212,166,58,.5); }
