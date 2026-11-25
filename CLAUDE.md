@@ -39,9 +39,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests. `syntax.test.mjs` parst jede App-Datei (`node --check`) – ein Syntaxfehler in einem Modul macht sonst die ganze App schwarz (25.11.2026 passiert). Das Intro hat ein Sicherheitsnetz: nach spätestens 8 s oder bei Fehler wird die App freigegeben.
-- App-Icon: bewusst schlicht (Zielscheibe: Goldring, Rot, Schwarz, Creme, rotes Bull auf dunklem Grund) aus
-  `tools/mkicon.mjs` → `node tools/mkicon.mjs icon.svg && qlmanage -t -s 1024 icon.svg`, dann mit `sips -Z 512/180`
-  zu `icon-512.png` / `icon-180.png`. Das Wappen bleibt nur in der App (Splash, Anmeldung).
+- App-Icon (Tab, Home-Bildschirm, Favicon) = Start-Logo: symmetrischer Chrom-Stern auf fast Schwarz mit leichtem Schein. Erzeugt ohne Grafikprogramm mit `node tools/mkstar-icon.mjs` → `icon-180.png`, `icon-512.png`, `favicon.svg` (danach Version in sw.js hochzählen). Das alte `tools/mkicon.mjs` (Zielscheibe) wird nicht mehr benutzt.
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen. `/api/` wird nie gecacht.
   Neue Version (`controllerchange`) → App lädt sich einmal selbst neu, aber nie mitten im laufenden Spiel; beim Zurückholen
   der App (`visibilitychange`) wird nach Updates gesucht.
