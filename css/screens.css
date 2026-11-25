@@ -2727,3 +2727,26 @@ body .subpop .subtabs.three button.on { background: radial-gradient(ellipse 60% 
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.4), 0 8px 22px rgba(0,0,0,.35);
 }
 @media (prefers-reduced-motion: reduce) { body .tabs::before, body .subpop::before, .label, .di-head b, .hero-stat > small, .record small { animation: none; } }
+
+/* VIP: mehr Glas – Listen, Kacheln, Suchfeld, Leer-Karten und Knöpfe wie klares, verwischtes Glas mit Lichtkante oben,
+   Rand als dünne Gold-Metall-Linie, warmes Licht von unten. Ruhig (Backstage ohne Bewegung). */
+.backstage .slist, .backstage .bs-tile, .backstage .empty-card, .backstage .field.search, .backstage .btn.line, .backstage .btn.dark, .friend .slist, .friend .kv-c {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.035) 40%, rgba(255,255,255,0) 55%, rgba(255,255,255,.03) 100%), rgba(24,20,16,.45) !important;
+  backdrop-filter: blur(16px) saturate(170%); -webkit-backdrop-filter: blur(16px) saturate(170%);
+  border: 1px solid rgba(255,236,190,.16) !important;
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(255,255,255,.06), inset 0 8px 16px -10px rgba(255,255,255,.18),
+    inset 0 -12px 20px -14px rgba(255,150,60,.22), 0 10px 26px rgba(0,0,0,.45) !important;
+}
+.backstage .slist .srow { background: transparent !important; border-color: rgba(255,236,190,.08) !important; }
+.backstage .bs-tile::after, .backstage .slist::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: var(--gold-metal); opacity: .75;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.backstage .bs-tile:active, .backstage .btn.line:active { box-shadow: inset 0 1.5px 0 rgba(255,255,255,.3), inset 0 -16px 26px -12px rgba(255,150,60,.45), 0 6px 16px rgba(0,0,0,.45) !important; }
+/* eigener Dart liegt wie hinter Glas: weicher Lichtreflex quer darüber */
+.backstage .vip-dart { position: relative; }
+.backstage .vip-dart::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.10) 44%, rgba(255,255,255,.02) 52%, transparent 60%); }
+.page.backstage .bs-tile.glint::after { opacity: .75 !important; }
