@@ -43,7 +43,7 @@ export const sigmaFor = (aim, sigma, dsigma = sigma) => (aim.m === 2 ? dsigma : 
 /** Nächster Bot-Dart im laufenden X01-Match. `dsigma` = Streuung auf Doppel (Standard: wie sigma). */
 export function x01BotDart(m, sigma, r = Math.random, dsigma = sigma) {
   const before = X.curRem(m) - X.pendingSum(m), left = 3 - m.pending.length;
-  const aim = x01Aim(before, left, m.opts.out);
+  const aim = X.curIn(m) ? x01Aim(before, left, m.opts.out) : { n: 20, m: 2 }; // Double In: erst aufs Doppel
   return throwAt(aim, sigmaFor(aim, sigma, dsigma), r);
 }
 

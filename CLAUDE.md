@@ -125,6 +125,7 @@ Turn = { s, pid, startRem, input: 'sum' | 'darts', score, darts, bust?, out?, th
 Cricket-Turn = { s, pid, v (Punkte), marks (Treffer), throws: [{ n, m }] }   // Match.pending = laufende Darts
 Party-Turn = { s, pid, v, throws? }   // throws nur bei Bots: [{ n, m, before: null, target: null }]
 ```
+- **Double In** (`opts.in = 'double'`, nur X01 über die Galerie-Kachel „X01 / Double In“ mit 101 · 301 · 701 · 1001, Setup › Mehr Optionen › Check-In; **nie** bei der 501-Karte – dort erzwungen `single`): eine Seite punktet im Leg erst ab ihrem ersten Doppel (Bull zählt als Doppel, das Doppel selbst zählt mit). Bis dahin Dart für Dart, Darts davor `x: true` (zählen 0), die öffnende Aufnahme `din: true`; Bots zielen solange auf D20; in der Karte steht „Erst ein Doppel · Double In“.
 - Einzeldart-Eingabe für Menschen ab Rest ≤ 170. **Bots werfen immer Dart für Dart** (`throwDart(m, n, mult, { any: true })`).
 - Doppelversuch (Double Out): Dart mit `before` gerade 2–40 oder 50.
 - Teams: Werfer = `side[(Aufnahmen der Seite im Match) % Teamgröße]`. Ausbullen wirft der Erste der Teamliste.

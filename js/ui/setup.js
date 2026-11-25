@@ -19,6 +19,7 @@ function mainOptions(id) {
   if (id === 'x01') {
     // 501 nur über die große Karte; die X01-Kachel wählt einen anderen Startwert
     if (ui.x01Var !== 'other' && o.start !== 501) o.start = 501; // große Karte: immer 501, nicht umstellbar
+    if (ui.x01Var !== 'other' && o.in === 'double') o.in = 'single'; // Double In nur im X01-Modus (101 … 1001), nie bei der 501-Karte
     const start = ui.x01Var === 'other' ? optRow('Startpunkte', seg('opt', 'start', [[101, '101'], [301, '301'], [701, '701'], [1001, '1001']], o.start)) : '';
     // Drehrad: Legs 1–20, Sets 1–10
     return start + optRow(o.mode === 'sets' ? 'First to … Sets' : 'First to … Legs', wheelHTML('target', 1, o.mode === 'sets' ? 10 : 20, o.target));
@@ -37,7 +38,8 @@ function mainOptions(id) {
 /** Klappfenster „Mehr Optionen“ */
 function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
-  const x01 = id === 'x01' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
+  const x01 = id === 'x01' ? (ui.x01Var === 'other' ? optRow('Check-In', seg('opt', 'in', [['single', 'Single In'], ['double', 'Double In']], o.in === 'double' ? 'double' : 'single')) : '')
+    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out))
     + optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   // Teams erst ab 2 Spielern (im Team spielen sie zusammen eine Punktzahl herunter) – vorher ausgegraut
   if (L.length < 2 && S.teamMode) S.teamMode = false;
@@ -88,7 +90,7 @@ export function setupView() {
   const remote = L.find((e) => e.friend?.mode === 'remote');
   return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
-    <div class="su-title">${badge(id, 44)}<h1>${id === 'x01' && ui.x01Var !== 'other' ? '501' : g.title}</h1></div>
+    <div class="su-title">${badge(id, 44)}<h1>${id === 'x01' ? (ui.x01Var !== 'other' ? '501' : 'X01 / Double In') : g.title}</h1></div>
     ${L.length ? `<div class="plist">${rows}</div>` : '<p class="foot">Noch keine Spieler ausgewählt.</p>'}
     <button class="btn line addp" data-act="addPlayer" ${full ? 'disabled' : ''}>${icon('plus', 2.6, 18)} Spieler hinzufügen</button>
     ${remote ? `<p class="foot"><b class="solo-hint">Online gegen ${esc(remote.name)}:</b> jeder an seinem Gerät, der Anwurf wird ausgelost.</p>` : ''}

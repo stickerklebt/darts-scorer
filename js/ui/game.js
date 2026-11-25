@@ -121,12 +121,13 @@ export function gameView() {
   if (m.game === 'x01') {
     const l = X.leg(m); cur = X.curSide(m); thrower = X.curThrower(m);
     const ps = X.pendingSum(m), sets = X.isSets(m);
-    title = `${m.opts.start} · ${m.opts.out === 'double' ? 'Double Out' : 'Single Out'}`;
+    title = `${m.opts.start} · ${X.dblIn(m) ? 'Double In · ' : ''}${m.opts.out === 'double' ? 'Double Out' : 'Single Out'}`;
     sub = sets ? `Set ${l.set} · Leg ${m.legs.filter((x) => x.set === l.set).length} · First to ${m.opts.target} Sets` : `Leg ${m.legs.length} · First to ${m.opts.target} Legs`;
     // Checkout-Weg bzw. Setup steht direkt unter dem Rest des werfenden Spielers
     const mode = X.inputMode(m), before = X.curRem(m) - ps, left = 3 - m.pending.length;
     let co = '';
-    if (mode === 'darts' && m.opts.out === 'double' && S.prefs.hints) {
+    if (!X.curIn(m)) co = '<span class="co-l">Erst ein Doppel</span><span class="co-c">Double In</span>'; // Double In: noch nicht drin
+    else if (mode === 'darts' && m.opts.out === 'double' && S.prefs.hints) {
       const r = route(before, left);
       if (r) co = r.map((d) => `<span class="co-c ${chipCls(d)}">${label(d)}</span>`).join('');
       else { const su = setupFor(before, left); if (su) co = `<span class="co-l">Stellen</span><span class="co-c">${label(su.dart)}</span><span class="co-l">→ ${su.leave}</span>`; }

@@ -14,7 +14,7 @@ const tileBg = (id) => (partyInfo(id)?.playable ? MODE_COLORS[id] : '#2a2620');
 
 function card(id, mode) {
   const p = partyInfo(id);
-  const name = id === 'x01' ? 'X01 · 101 bis 1001' : p.title;
+  const name = id === 'x01' ? 'X01 / Double In' : p.title;
   const btn = mode === 'add'
     ? `<button class="pb-add" data-act="partyAdd" data-v="${id}" aria-label="${name} hinzufügen">${icon('plus', 2.6, 18)}</button>`
     : ui.partyEdit ? `<button class="pb-del" data-act="partyDel" data-v="${id}" aria-label="${name} entfernen">${icon('minus', 2.8, 18)}</button>` : '';

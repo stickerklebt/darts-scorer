@@ -422,6 +422,7 @@ function bullPlace(x, y) {
 }
 /** Neues Match anlegen (inkl. Ausbullen, wenn gewählt und mehr als eine Seite). */
 function newMatch(game, sides, opts, first, bull) {
+  if (game === 'x01' && opts.in === 'double' && opts.start === 501 && ui.x01Var !== 'other') opts = { ...opts, in: 'single' }; // 501-Karte: nie Double In
   const m = createMatch(game, sides, opts, first);
   if (bull && sides.length > 1) m.bull = createBulloff(sides.length);
   ui.boPending = null; ui.boResult = null; ui.swapKey = undefined; ui.botMarks = {}; ui.botTurn = null; ui.speech = {}; ui.endLines = null;

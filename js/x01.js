@@ -11,7 +11,12 @@ export const sideTurnCount = (m, s) => m.legs.reduce((a, l) => a + l.turns.filte
 export const curThrower = (m) => { const s = curSide(m); return throwerOf(m, s, sideTurnCount(m, s)); };
 export const rem = (m, l, s) => l.turns.reduce((r, t) => (t.s === s ? r - t.score : r), m.opts.start);
 export const curRem = (m) => rem(m, leg(m), curSide(m));
-export const pendingSum = (m) => m.pending.reduce((a, d) => a + val(d), 0);
+export const pendingSum = (m) => m.pending.reduce((a, d) => a + (d.x ? 0 : val(d)), 0); // d.x: Dart vor dem Double In zählt nicht
+/** Double In: eine Seite punktet im Leg erst ab ihrem ersten Doppel (auch Bull). Ohne Double In ist jeder sofort „drin“. */
+export const dblIn = (m) => m.opts.in === 'double';
+export const isIn = (m, l = leg(m), s = curSide(m)) => !dblIn(m) || l.turns.some((t) => t.s === s && t.din);
+/** Ist der Werfer gerade drin (inkl. der Darts der laufenden Aufnahme)? */
+export const curIn = (m) => isIn(m) || m.pending.some((d) => !d.x && d.m === 2);
 export const isSets = (m) => m.opts.mode === 'sets';
 export const legsInSet = (m, s, set) => m.legs.filter((l) => l.set === set && l.winner === s).length;
 export const legsWon = (m, s) => m.legs.filter((l) => l.winner === s).length;
@@ -22,7 +27,7 @@ export function setsWon(m, s) {
   return c;
 }
 /** 'darts' wenn die aktuelle Aufnahme Dart für Dart erfasst wird, sonst 'sum'. */
-export const inputMode = (m) => (m.pending.length || curRem(m) <= DART_INPUT_MAX ? 'darts' : 'sum');
+export const inputMode = (m) => (m.pending.length || curRem(m) <= DART_INPUT_MAX || !isIn(m) ? 'darts' : 'sum'); // vor dem Double In Dart für Dart
 const dbl = (m) => m.opts.out === 'double';
 
 function recordTurn(m, t) {
@@ -73,11 +78,13 @@ export function throwDart(m, n, mult, opts = {}) {
   const r0 = curRem(m);
   const before = r0 - pendingSum(m);
   const left = 3 - m.pending.length;
-  const tgt = dbl(m) ? targetFor(before, left) : null;
-  m.pending.push({ n, m: mult, before, target: tgt ? label(tgt) : null });
-  const after = before - n * mult;
+  const wasIn = curIn(m), opened = !isIn(m); // opened: Aufnahme beginnt noch „draußen“
+  const tgt = !wasIn ? { n: 20, m: 2 } : dbl(m) ? targetFor(before, left) : null;
+  const counts = wasIn || mult === 2; // vor dem Double In zählt erst das Doppel selbst
+  m.pending.push({ n, m: mult, before, target: tgt ? label(tgt) : null, ...(counts ? {} : { x: true }) });
+  const after = before - (counts ? n * mult : 0);
   const throws = m.pending.slice();
-  const base = { startRem: r0, input: 'darts', throws };
+  const base = { startRem: r0, input: 'darts', throws, ...(opened && curIn(m) ? { din: true } : {}) };
   if (after < 0 || (dbl(m) && after === 1) || (after === 0 && dbl(m) && mult !== 2))
     return recordTurn(m, { ...base, score: 0, darts: 3, bust: true });
   if (after === 0) return recordTurn(m, { ...base, score: r0, darts: throws.length, out: true });

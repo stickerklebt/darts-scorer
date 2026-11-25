@@ -97,3 +97,23 @@ test('Mikrofon: Summe auch unter 170 Rest, Finish über die Checkout-Tabelle, �
   const r = X.submitSum(m, 60, { voice: true });              // a hat 60 Rest → Finish
   assert.equal(r.type, 'match'); assert.equal(r.turn.out, true); assert.equal(r.turn.input, 'voice');
 });
+
+test('Double In: erst ab dem ersten Doppel zählt es, vorher Dart für Dart; Bull öffnet auch', () => {
+  const m = createMatch('x01', [['a'], ['b']], { start: 301, in: 'double', out: 'double', mode: 'legs', target: 1 }, 0, 1);
+  assert.equal(X.inputMode(m), 'darts');
+  assert.equal(X.submitSum(m, 60).type, 'error');
+  X.throwDart(m, 20, 3); X.throwDart(m, 5, 1); X.throwDart(m, 1, 1);  // a: nichts zählt
+  assert.equal(X.rem(m, X.leg(m), 0), 301);
+  X.throwDart(m, 19, 3); X.throwDart(m, 10, 2); X.throwDart(m, 20, 3);  // b: T19 zählt nicht, D10 öffnet, T20 zählt
+  assert.equal(X.rem(m, X.leg(m), 1), 301 - 20 - 60);
+  assert.equal(X.leg(m).turns[1].din, true);
+  assert.equal(X.inputMode(m), 'darts');                                 // a ist noch nicht drin
+  X.throwDart(m, 25, 2); X.throwDart(m, 20, 1); X.throwDart(m, 0, 1);  // a: Bull öffnet
+  assert.equal(X.rem(m, X.leg(m), 0), 301 - 70);
+  assert.equal(X.inputMode(m), 'sum');                                   // b drin, Rest über 170 → Summe
+  X.undo(m); X.undo(m); X.undo(m);
+  assert.equal(X.isIn(m, X.leg(m), 0), false);
+  // ohne Double In unverändert
+  const n = createMatch('x01', [['a']], { start: 301, out: 'double', mode: 'legs', target: 1 }, 0, 1);
+  assert.equal(X.inputMode(n), 'sum');
+});
