@@ -44,10 +44,19 @@ export function camBlock() {
   return ''; // kein extra Kamera-Knopf – dafür gibt es die Kachel „Kamera“
 }
 
-/** Zwei metallische Linien hinter der 501 (nach der Linienzeichnung): Titan-Verlauf, feine Glanzkante, ein Lichtpunkt gleitet entlang */
-const LINES = ['M640 -20 C560 60 480 150 460 230 C440 310 470 380 450 440 C425 520 320 535 250 545 C150 560 60 575 -20 590',
-  'M560 -20 C550 60 565 110 640 125 C700 138 745 120 765 150 C790 190 765 290 755 340 C745 395 760 430 810 455 C860 480 960 490 1040 505'];
-const silkLines = () => `<svg class="silk-lines" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+/** Zwei metallische Linien in der 501-Kachel: laufen nur durch die Ecken (nie durch die Zahl) und sehen bei jedem Neuladen
+    etwas anders aus (Zufall einmal pro Seitenaufruf, damit sie beim Neuzeichnen nicht springen). Box 1000 × 560. */
+const r = (a, b) => a + Math.random() * (b - a);
+const CORNERS = ['tl', 'tr', 'bl', 'br'].sort(() => Math.random() - 0.5).slice(0, 2);
+function cornerCurve(c) {
+  // Grundform für oben links; die anderen Ecken gespiegelt
+  const p = [[r(300, 520), -20], [r(70, 170), r(0, 45)], [r(0, 40), r(70, 150)], [-20, r(240, 420)]];
+  const fx = c[1] === 'r', fy = c[0] === 'b';
+  const q = p.map(([x, y]) => [fx ? 1000 - x : x, fy ? 560 - y : y]).map(([x, y]) => `${x.toFixed(0)} ${y.toFixed(0)}`);
+  return `M${q[0]} C${q[1]} ${q[2]} ${q[3]}`;
+}
+const LINES = CORNERS.map(cornerCurve);
+const silkLines = () => `<svg class="silk-lines" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><defs>
   <linearGradient id="slG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="560"><stop offset="0" stop-color="#5d6168"/><stop offset=".18" stop-color="#e9edf1"/><stop offset=".3" stop-color="#8a9098"/><stop offset=".42" stop-color="#2e2a2d"/><stop offset=".55" stop-color="#c9ced5"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".8" stop-color="#7d838d"/><stop offset="1" stop-color="#d6dae0"/></linearGradient></defs>
   ${LINES.map((d, i) => `<path class="sl-sh" d="${d}"/><path class="sl" d="${d}"/><path class="sl-hi" d="${d}"/><path class="sl-run" d="${d}" pathLength="100" style="animation-delay:-${i * 6}s"/>`).join('')}</svg>`;
 
