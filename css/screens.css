@@ -3045,3 +3045,9 @@ body .subpop .subtabs.three button.on { opacity: 1 !important; color: #fff !impo
 /* Kleine Statistik-Karten: kein roter Schein/Strich unten mehr – neutrales Glas */
 .kv-c { background-image: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015) 40%, transparent 60%) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.35) !important; }
+
+/* Einstellung „Bewegung in den Kästen“ aus (`prefs.motion = false` → html.no-motion): alle Daueranimationen an Karten, Kacheln,
+   Leisten und Hintergründen stehen still; Funkeln, Lichtstriche und Schimmer verschwinden. Die großen Wurf-Animationen (.fx) bleiben über „Animationen“. */
+html.no-motion #app *:not(.fx):not(.fx *), html.no-motion #app *:not(.fx):not(.fx *)::before, html.no-motion #app *:not(.fx):not(.fx *)::after { animation: none !important; }
+html.no-motion .fuse, html.no-motion .sparkles, html.no-motion .hero .tw, html.no-motion .hero .hero-num::after, html.no-motion .hero .hero-num::before { display: none !important; }
+html.no-motion .glint::before, html.no-motion .hero::before, html.no-motion .mode::before, html.no-motion .shimmer::after { opacity: 0 !important; }

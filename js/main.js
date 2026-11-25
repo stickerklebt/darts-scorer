@@ -44,6 +44,7 @@ import { probeBotImages } from './ui/avatar.js';
 import { seedDemo, removeDemo } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crestLine } from './ui/svg.js';
+import { translate } from './i18n.js';
 import { entryDone, entryPossible, label, setFavDouble } from './checkout.js';
 import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
@@ -114,6 +115,11 @@ function render() {
   if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
   html += sheetView() + camPill() + spotAskView(ui.dblSpot);
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
+  // Einstellungen: Sprache (nur Oberfläche, per Übersetzung des fertigen HTML) und Bewegung in den Kästen
+  const root = document.documentElement, lang = S.prefs.lang === 'en' ? 'en' : 'de';
+  if (root.lang !== lang) root.lang = lang;
+  root.classList.toggle('no-motion', S.prefs.motion === false);
+  html = translate(html, lang);
   const app = $('#app');
   morph(app, html);
   const key = `${S.screen}:${S.tab}`;
@@ -1037,6 +1043,7 @@ const actions = {
   spotSkip() { if (ui.dblSpot) spotDone(); },
   chKind(el) { if (el.dataset.m === 'dist') ui.distKind = el.dataset.v; else ui.avgKind = el.dataset.v; ui.chMenu = null; render(); },
   favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
+  lang(el) { S.prefs.lang = el.dataset.v === 'en' ? 'en' : 'de'; render(); },
   /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
   ckHit(el) { handle(C.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
   ckMiss() { handle(C.throwDart(S.current, 0, 1)); },

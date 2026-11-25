@@ -29,7 +29,7 @@ function syncText() {
 }
 const pwField = (id, ph, ac) => `<input id="${id}" class="field plain" type="password" placeholder="${ph}" autocomplete="${ac}">`;
 
-const tog = (k, lbl) => `<button class="srow" data-act="pref" data-k="${k}"><span class="lbl">${lbl}</span><span class="tog ${S.prefs[k] ? 'on' : ''}"></span></button>`;
+const tog = (k, lbl, sub = '') => `<button class="srow" data-act="pref" data-k="${k}"><span class="lbl">${lbl}${sub ? `<small>${sub}</small>` : ''}</span><span class="tog ${S.prefs[k] !== false && S.prefs[k] ? 'on' : ''}"></span></button>`;
 
 export function sheetView() {
   const md = ui.modal, m = S.current;
@@ -67,7 +67,8 @@ export function sheetView() {
   } else if (md.type === 'settings') {
     const u = auth.user;
     inner = `<h3>Einstellungen</h3><p>${S.profiles.length} Spieler · ${S.matches.length} gespeicherte Spiele</p>
-      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}
+      <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDarts', 'Darts im Leg anzeigen')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('anim', 'Animationen')}${tog('motion', 'Bewegung in den Kästen', 'Lichter, Glanz und Funkeln an Karten, Kacheln und Leisten')}
+        <div class="srow col"><span class="lbl">Sprache</span>${seg('lang', 'v', [['de', 'Deutsch'], ['en', 'English']], S.prefs.lang === 'en' ? 'en' : 'de')}</div>
         <div class="srow col"><span class="lbl">Lieblingsdoppel<small>Checkout-Vorschläge enden, wenn möglich, auf diesem Doppel</small></span>${seg('favDbl', 'v', [[16, 'D16'], [18, 'D18'], [20, 'D20']], S.prefs.favDbl || 20)}</div>
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
       ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
