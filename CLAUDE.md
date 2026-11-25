@@ -415,3 +415,5 @@ Offen: E-Mail-Bestätigung.
   Reiter-Leiste: neutrales Rauchglas mit Chrom-Rand; Bordeaux nur im Strich unter dem aktiven Reiter und im Verlauf dahinter. Keine Gold-/Gelbtöne mehr
   (Lichtlinien, Glanz, Funkeln, Animationen: Silber/Weiß). Doppel-Heatmap und Liste: durchgehender Verlauf statt Stufen – schlecht dunkles Bordeaux → Rot → Rosé →
   glänzend Weiß = am besten (`ratioColor`/`ratingColor` in `board.js`, `ratio` = Quote / eigene Gesamtquote aus `doubleRating`, 0,4 → dunkel, 1,7 → weiß; ab 1,25 zusätzlicher Glanz).
+  VIP lebendig (ersetzt „Backstage ohne Bewegung“ für die Glasfelder): Rand dunkel/ruhig, nur einzelne Lichtstriche (Verlauf 0 → 100 %) gleiten um Freundesliste und Kacheln,
+  hin und her, mit eigenem Tempo je Feld (`--va`), Helligkeit schwankt (`--vg`) – nie alle gleich hell; dazu ein wandernder, auf- und abblendender Lichtfleck (Silber oben, Bordeaux unten) im Hintergrund.

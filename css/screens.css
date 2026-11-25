@@ -2871,3 +2871,40 @@ body .tabs, body .subpop {
 }
 body .tabs .tab.on > span { text-shadow: 0 0 10px rgba(255,255,255,.45); }
 .heatboard .hshine { pointer-events: none; }
+
+/* VIP lebendiger statt statisch (25.11.2026): Rand ruhig und dunkel; nur einzelne Lichtstriche (sauberer Verlauf 0 → 100 %) gleiten
+   um die Felder, mal schneller, mal langsamer, hin und her, leuchten mal mehr, mal weniger – nie alle gleichzeitig.
+   Dazu ein weicher Lichtfleck im Hintergrund jedes Feldes, der langsam wandert und auf- und abblendet. */
+@property --va { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@property --vg { syntax: '<number>'; inherits: false; initial-value: .4; }
+.page.backstage .slist::after, .page.backstage .bs-tile::after, .page.backstage .bs-tile.glint::after, .page.backstage .empty-card::after {
+  content: "" !important; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px !important; pointer-events: none; z-index: 3; display: block !important;
+  background:
+    conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,0) 4deg, rgba(255,255,255,calc(var(--vg) * .35)) 40deg, rgba(255,255,255,var(--vg)) 70deg, rgba(240,200,212,calc(var(--vg) * .5)) 74deg, transparent 80deg, transparent 360deg),
+    linear-gradient(rgba(255,255,255,.14), rgba(255,255,255,.14)) !important;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 1 !important; filter: drop-shadow(0 0 4px rgba(255,255,255,calc(var(--vg) * .6))) !important;
+  animation: vipSpin 14s ease-in-out infinite alternate, vipGlow 5.5s ease-in-out infinite !important;
+}
+.page.backstage .bs-tile:nth-child(2)::after { animation-duration: 11s, 7s !important; animation-delay: -4s, -2s !important; }
+.page.backstage .bs-tile:nth-child(3)::after { animation-duration: 17s, 4.6s !important; animation-delay: -9s, -1s !important; }
+.page.backstage .bs-tile:nth-child(4)::after { animation-duration: 12.5s, 6.3s !important; animation-delay: -6s, -3.5s !important; }
+.page.backstage .slist::after { animation-duration: 19s, 6.8s !important; animation-delay: -3s, -4s !important; }
+@keyframes vipSpin { 0% { --va: -40deg; } 35% { --va: 150deg; } 60% { --va: 120deg; } 100% { --va: 400deg; } }
+@keyframes vipGlow { 0%, 100% { --vg: .15; } 30% { --vg: .9; } 55% { --vg: .35; } 75% { --vg: .65; } }
+/* Lichtfleck im Hintergrund statt fester Glanzlinie */
+.page.backstage .slist::before, .page.backstage .bs-tile:not(.glint)::before, .page.backstage .bs-tile.glint::before {
+  content: "" !important; position: absolute !important; inset: 0 !important; border-radius: inherit; z-index: 0; pointer-events: none; height: auto !important; box-shadow: none !important;
+  background: radial-gradient(40% 70% at var(--lx, 30%) 0%, rgba(255,255,255,.16), transparent 70%), radial-gradient(35% 60% at calc(100% - var(--lx, 30%)) 100%, rgba(179,36,63,.22), transparent 70%) !important;
+  opacity: 1 !important; animation: vipSpot 16s ease-in-out infinite alternate !important;
+}
+@property --lx { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
+@keyframes vipSpot { 0% { --lx: 10%; opacity: .3; } 40% { --lx: 70%; opacity: 1; } 70% { --lx: 45%; opacity: .55; } 100% { --lx: 90%; opacity: .85; } }
+.page.backstage .bs-tile:nth-child(2n)::before { animation-duration: 21s !important; animation-delay: -7s !important; }
+.page.backstage .bs-tile:nth-child(3)::before { animation-delay: -12s !important; }
+.page.backstage .slist > *, .page.backstage .bs-tile > * { position: relative; z-index: 1; }
+/* Glas-Körper ruhiger: weniger Weiß an den Kanten */
+.backstage .slist, .backstage .bs-tile, .backstage .empty-card, .backstage .field.search {
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.4), inset 0 1px 0 2px rgba(255,255,255,.06), inset 0 12px 20px -16px rgba(255,255,255,.22), 0 12px 28px rgba(0,0,0,.5) !important;
+}
+@media (prefers-reduced-motion: reduce) { .page.backstage .slist::after, .page.backstage .bs-tile::after, .page.backstage .slist::before, .page.backstage .bs-tile::before { animation: none !important; } }
