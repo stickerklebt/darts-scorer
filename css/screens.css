@@ -2672,3 +2672,7 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .hb-spot .ds-rim { filter: drop-shadow(0 0 6px rgba(255,214,110,.9)); }
 @keyframes hbGlow { 50% { filter: drop-shadow(0 0 16px rgba(255,200,90,.75)) drop-shadow(0 0 40px rgba(247,117,31,.5)); } }
 @media (prefers-reduced-motion: reduce) { .hb-spot .hb-glow .dspot { animation: none; } }
+/* Fix: Doppel saß verrutscht (SVG mit height:100% + width:auto hatte in Safari keine feste Breite) – jetzt fester Kasten, SVG füllt ihn per viewBox (zentriert) */
+.hb-spot .hb-fld { position: relative; }
+.hb-spot .hb-glow { position: absolute; inset: 0 6%; display: block; height: auto; max-width: none; }
+.hb-spot .hb-glow .dspot { position: absolute; inset: 0; width: 100% !important; height: 100% !important; max-width: none; overflow: hidden; }

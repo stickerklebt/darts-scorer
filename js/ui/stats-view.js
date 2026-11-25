@@ -6,7 +6,7 @@ import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, numRing } from './svg.js';
 import { heatBoard, tierColor } from './board.js';
 import { spotSVG } from './dblspot.js';
-import { historyCharts, distChart, doubleChart } from './stats-extra.js';
+import { historyCharts, distChart, doubleChart, pickTitle } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
 import { legCurve } from '../situations.js';
@@ -142,8 +142,14 @@ export function doublesBlock(st, sel, withList = true) {
 function moreTab(st, pid) {
   // Average-Verlauf, Aufnahmen im Leg, Doppelquote-Verlauf, Verteilung der Aufnahmen. Checkout steht im Reiter Doppel.
   const lc = legCurve(matchesOf(S.matches, pid, S.statsPeriod), pid);
-  const lcBox = chartBox('Aufnahmen im Leg', `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points));
-  return block('', historyCharts(st, pid) + distChart(st) + doubleChart(st, pid) + lcBox);
+  // Verteilung der Aufnahmen (Standard) und Aufnahmen im Leg teilen sich einen Kasten – lange auf den Titel drücken schaltet um
+  const DIST_KINDS = [['dist', 'Verteilung der Aufnahmen'], ['leg', 'Aufnahmen im Leg']];
+  const dk = ui.distKind === 'leg' ? 'leg' : 'dist';
+  const title = pickTitle('dist', DIST_KINDS, dk, DIST_KINDS.find(([k]) => k === dk)[1]);
+  const distBox = dk === 'leg'
+    ? chartBox(title, `Ø Punkte je Aufnahme von 501 bis 170${lc.avgTurns ? ` · im Schnitt ${fmt(lc.avgTurns, 1)} Aufnahmen` : ''}`, legCurveChart(lc.points))
+    : distChart(st, title);
+  return block('', historyCharts(st, pid) + distBox + doubleChart(st, pid));
 }
 
 export function emptyState(pid, any) {

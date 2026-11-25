@@ -1019,7 +1019,7 @@ const actions = {
   partyDel(el) { removeTile(S.prefs, el.dataset.v); render(); },
   partyEdit() { ui.partyEdit = !ui.partyEdit; render(); },
   spotSkip() { if (ui.dblSpot) spotDone(); },
-  avgKind(el) { ui.avgKind = el.dataset.v; ui.avgMenu = false; render(); },
+  chKind(el) { if (el.dataset.m === 'dist') ui.distKind = el.dataset.v; else ui.avgKind = el.dataset.v; ui.chMenu = null; render(); },
   favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
   /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
   ckHit(el) { handle(C.throwDart(S.current, Number(el.dataset.n), Number(el.dataset.m))); },
@@ -1080,17 +1080,18 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEve
 document.addEventListener('click', (e) => { if (lpFired && e.target.closest('.tab[data-v="stats"]')) { lpFired = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 document.addEventListener('contextmenu', (e) => { if (e.target.closest('.tab[data-v="stats"]')) e.preventDefault(); });
 
-/* Scoring: lange auf „Average pro Match“ drücken → Menü oben links (Average · First 9); Klick danach verschluckt, Tippen daneben schließt */
+/* Scoring: lange auf einen umschaltbaren Titel drücken (Average · First 9 bzw. Verteilung · Aufnahmen im Leg) → Menü oben links; Klick danach verschluckt, Tippen daneben schließt */
 let apTimer = null, apFired = false;
 document.addEventListener('pointerdown', (e) => {
-  if (!e.target.closest('.ch-pick')) return;
+  const pk = e.target.closest('.ch-pick');
+  if (!pk) return;
   apFired = false; clearTimeout(apTimer);
-  apTimer = setTimeout(() => { apFired = true; navigator.vibrate?.(12); ui.avgMenu = true; render(); }, 500);
+  apTimer = setTimeout(() => { apFired = true; navigator.vibrate?.(12); ui.chMenu = pk.dataset.m; render(); }, 500);
 });
 for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEventListener(ev, () => clearTimeout(apTimer));
 document.addEventListener('click', (e) => {
   if (apFired && e.target.closest('.ch-pick')) { apFired = false; e.stopImmediatePropagation(); e.preventDefault(); return; }
-  if (ui.avgMenu && !e.target.closest('.ch-menu')) { ui.avgMenu = false; e.stopImmediatePropagation(); e.preventDefault(); render(); }
+  if (ui.chMenu && !e.target.closest('.ch-menu')) { ui.chMenu = null; e.stopImmediatePropagation(); e.preventDefault(); render(); }
 }, true);
 document.addEventListener('contextmenu', (e) => { if (e.target.closest('.ch-pick')) e.preventDefault(); });
 
