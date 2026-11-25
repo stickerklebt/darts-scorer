@@ -3022,3 +3022,9 @@ body .tabs::before, body .subpop::before {
   animation: vipSpin 16s ease-in-out infinite alternate, vipGlow 6s ease-in-out infinite !important;
 }
 body .subpop::before { animation-duration: 12s, 4.8s !important; animation-delay: -5s, -2s !important; }
+
+/* 501-Hintergrund: Bordeaux-Blasen treiben langsam (verschieben + atmen), jede in eigenem Takt */
+.hero .bb { transform-box: fill-box; transform-origin: center; animation: bbFloat var(--t, 12s) ease-in-out infinite alternate !important; }
+@keyframes bbFloat { from { transform: translate(0, 0) scale(1); } to { transform: translate(var(--mx), var(--my)) scale(var(--s)); } }
+.hero { background: #070104 !important; }
+@media (prefers-reduced-motion: reduce) { .hero .bb { animation: none !important; } }

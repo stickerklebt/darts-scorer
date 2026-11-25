@@ -374,52 +374,37 @@ export function chromeStar(cx, cy, up, right, down, left, { rot = 0, glow = 1 } 
   </g>`;
 }
 
-/** 501-Karte: Glas-Stern rechts, Bordeaux-Nebel, Chrom-Schlieren, Funkeln und Lichtpunkte; die Mitte bleibt dunkel für die 501 */
+/** 501-Karte: dunkle Bordeaux-Flüssigkeit mit glänzenden Blasen (Lichtkante, Glanzbogen, rotes Leuchten innen), die langsam treiben.
+    Die Mitte bleibt dunkel, damit die 501 lesbar ist. Bewegung per CSS (.bb, --mx/--my/--s/--t). */
 export function heroArt() {
-  const rnd = (k) => { const v = Math.sin(k * 12.9898 + 4.1) * 43758.5453; return v - Math.floor(v); };
-  let sw = '';
-  const swirls = [
-    ['M-30 70 C90 10 190 110 300 50 S520 80 640 20', 16, .2, 'hswB'], ['M-40 360 C70 290 180 400 300 330 S480 270 640 350', 20, .22, 'hswB'],
-    ['M450 -20 C400 70 540 130 490 220 S420 340 520 420', 13, .18, 'hsw'], ['M10 200 C60 140 130 250 60 300', 10, .16, 'hsw'],
-    ['M560 230 C520 180 640 130 620 70', 10, .18, 'hsw'], ['M120 -10 C160 60 80 110 140 170', 8, .14, 'hswB'],
+  const B = [ // cx, cy, r, mx, my, scale, Dauer
+    [70, 330, 190, 18, -14, 1.04, 13], [535, 70, 175, -16, 12, 1.05, 15], [585, 375, 125, -12, -10, 1.06, 11], [250, -55, 135, 14, 10, 1.03, 17],
+    [-30, 40, 90, 12, 14, 1.05, 12], [400, 330, 46, -10, -16, 1.08, 9], [170, 175, 22, 8, -12, 1.1, 7], [455, 205, 15, -6, 10, 1.12, 6.5],
+    [330, 395, 28, 10, -8, 1.08, 8], [120, 45, 12, -6, 8, 1.15, 6], [470, 300, 9, 6, -8, 1.2, 5.5], [300, 30, 10, -8, 6, 1.15, 7.5],
   ];
-  for (const [d, w, o, g] of swirls) {
-    sw += `<path d="${d}" fill="none" stroke="url(#${g})" stroke-width="${w}" stroke-linecap="round" opacity="${o}" filter="url(#hsb)"/>`;
-    sw += `<path d="${d}" fill="none" stroke="#f2f4f7" stroke-width=".9" opacity="${o + .12}"/>`;
-  }
-  // Bokeh-Lichtpunkte (unscharf, Silber und Bordeaux)
-  let bk = '';
-  for (let k = 0; k < 22; k++) {
-    const x = rnd(k) * 600, y = rnd(k + 50) * 400, r = 2 + rnd(k + 9) * 7, c = k % 3 ? '#e9edf3' : '#c42a4b';
-    if (x > 190 && x < 410 && y > 110 && y < 300) continue; // Mitte frei für die 501
-    bk += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${c}" opacity="${(0.08 + rnd(k + 3) * 0.2).toFixed(2)}" filter="url(#hsk)"/>`;
-  }
-  // Funkeln: kleine 4-Zack-Sterne, die nacheinander aufblitzen
-  let tw = '';
-  const twp = (x, y, r) => `M${x} ${y - r}Q${x + r * .12} ${y - r * .12} ${x + r} ${y}Q${x + r * .12} ${y + r * .12} ${x} ${y + r}Q${x - r * .12} ${y + r * .12} ${x - r} ${y}Q${x - r * .12} ${y - r * .12} ${x} ${y - r}Z`;
-  for (let k = 0; k < 26; k++) {
-    const x = Math.round(rnd(k + 100) * 600), y = Math.round(rnd(k + 200) * 400), r = 3 + Math.round(rnd(k + 300) * 9);
-    if (x > 200 && x < 400 && y > 120 && y < 290) continue;
-    tw += `<path class="tw" d="${twp(x, y, r)}" fill="#fff" style="animation-delay:-${(rnd(k + 400) * 5).toFixed(2)}s;animation-duration:${(2.6 + rnd(k + 500) * 3).toFixed(2)}s"/>`;
-  }
+  const f = (v) => Math.round(v * 10) / 10;
+  const bubble = ([cx, cy, r, mx, my, sc, t], k) => {
+    const a0 = (205 * Math.PI) / 180, a1 = (262 * Math.PI) / 180, rr = r * 0.86;
+    const p0 = [cx + rr * Math.cos(a0), cy + rr * Math.sin(a0)], p1 = [cx + rr * Math.cos(a1), cy + rr * Math.sin(a1)];
+    return `<g class="bb" style="--mx:${mx}px;--my:${my}px;--s:${sc};--t:${t}s;animation-delay:-${(k * 1.7) % t}s">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbBody)"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#bbGlow)"/>
+      <circle cx="${cx}" cy="${cy}" r="${f(r - Math.max(1, r * .02))}" fill="none" stroke="url(#bbRim)" stroke-width="${f(Math.max(1, r * .045))}"/>
+      <path d="M${f(p0[0])} ${f(p0[1])}A${f(rr)} ${f(rr)} 0 0 1 ${f(p1[0])} ${f(p1[1])}" fill="none" stroke="#ffd9e1" stroke-opacity=".55" stroke-width="${f(Math.max(1, r * .03))}" stroke-linecap="round" filter="url(#bbSoft)"/>
+      ${r < 50 ? `<circle cx="${f(cx - r * .35)}" cy="${f(cy - r * .4)}" r="${f(Math.max(1, r * .12))}" fill="#fff" opacity=".55"/>` : ''}
+    </g>`;
+  };
   return `<svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
-      <linearGradient id="hsw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c2e34"/><stop offset=".5" stop-color="#eef1f5"/><stop offset="1" stop-color="#22242a"/></linearGradient>
-      <linearGradient id="hswB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a0a18"/><stop offset=".45" stop-color="#c42a4b"/><stop offset=".55" stop-color="#f3dbe1"/><stop offset="1" stop-color="#4f0b1e"/></linearGradient>
-      <filter id="hsb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="hsk" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2.2"/></filter>
-      <radialGradient id="hsn1" cx=".12" cy=".85" r=".6"><stop offset="0" stop-color="#7a1430" stop-opacity=".75"/><stop offset=".5" stop-color="#4f0b1e" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-      <radialGradient id="hsn2" cx=".86" cy=".35" r=".55"><stop offset="0" stop-color="#a3203d" stop-opacity=".55"/><stop offset=".55" stop-color="#3a0a18" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-      <radialGradient id="hsv" cx=".5" cy=".52" r=".5"><stop offset="0" stop-color="#050507" stop-opacity=".92"/><stop offset=".55" stop-color="#050507" stop-opacity=".55"/><stop offset="1" stop-color="#050507" stop-opacity="0"/></radialGradient>
+      <radialGradient id="bbBg" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#14030a"/><stop offset="1" stop-color="#070104"/></radialGradient>
+      <radialGradient id="bbBody" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#0d0105"/><stop offset=".55" stop-color="#2a050f"/><stop offset=".86" stop-color="#5e0f22"/><stop offset="1" stop-color="#22030b"/></radialGradient>
+      <radialGradient id="bbGlow" cx=".28" cy=".82" r=".55"><stop offset="0" stop-color="#b3243f" stop-opacity=".55"/><stop offset=".6" stop-color="#7a1430" stop-opacity=".18"/><stop offset="1" stop-color="#7a1430" stop-opacity="0"/></radialGradient>
+      <linearGradient id="bbRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb3c2" stop-opacity=".85"/><stop offset=".3" stop-color="#c42a4b" stop-opacity=".25"/><stop offset=".6" stop-color="#3a0a18" stop-opacity=".2"/><stop offset=".85" stop-color="#c42a4b" stop-opacity=".55"/><stop offset="1" stop-color="#ff9fb3" stop-opacity=".7"/></linearGradient>
+      <filter id="bbSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2"/></filter>
+      <radialGradient id="bbV" cx=".5" cy=".52" r=".5"><stop offset="0" stop-color="#050103" stop-opacity=".8"/><stop offset=".6" stop-color="#050103" stop-opacity=".4"/><stop offset="1" stop-color="#050103" stop-opacity="0"/></radialGradient>
     </defs>
-    <rect width="600" height="400" fill="url(#hsn1)"/><rect width="600" height="400" fill="url(#hsn2)"/>
-    <g class="hs-swirl">${sw}</g>
-    <g>${bk}</g>
-    <path d="M330 420 L520 205" stroke="#fff" stroke-width=".7" opacity=".45"/>
-    <path d="M0 330 L600 250" stroke="url(#hswB)" stroke-width=".8" opacity=".5"/>
-    <g class="hs-star">${chromeStar(505, 205, 215, 95, 105, 110, { rot: 10, glow: 1.5 })}</g>
-    <g class="hs-star2">${chromeStar(78, 78, 46, 26, 30, 26, { rot: -8, glow: 1 })}</g>
-    <ellipse cx="300" cy="212" rx="190" ry="130" fill="url(#hsv)"/>
-    <g class="hs-tw">${tw}</g>
+    <rect width="600" height="400" fill="url(#bbBg)"/>
+    <g class="bb-all">${B.map(bubble).join('')}</g>
+    <ellipse cx="300" cy="212" rx="170" ry="120" fill="url(#bbV)"/>
   </svg>`;
 }

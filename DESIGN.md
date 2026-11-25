@@ -117,7 +117,8 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   kein Papier/Kupferstich, Label-Linie als feine Lichtlinie. 501-Karte: Glas-Stern (`chromeStar`, `heroArt` in `svg.js`) auf tiefem Schwarz mit
   Chrom-Schlieren, Rand als Chrom-Ring. Start-Logo/Anmeldung (`crestLine`): nur kleiner Chrom-Stern + „DARTVADER“ clean (Systemschrift, dünn, weit gesperrt).
   Dartscheiben behalten Rot/Grün.
-  Mehr Glitzer + Bordeaux (Nachtrag): 501-Karte mit Bordeaux-Nebel, Bordeaux-/Chrom-Schlieren, Bokeh-Lichtpunkten, aufblitzenden Funkel-Sternen (`.tw`),
+  501-Karte (neu, ersetzt den Glas-Stern): dunkle Bordeaux-Flüssigkeit mit glänzenden Blasen (Lichtkante, Glanzbogen, rotes Leuchten innen), die langsam treiben und atmen (`.bb`, `bbFloat`), dunkle Mitte für die 501.
+  (Alt:) Mehr Glitzer + Bordeaux: 501-Karte mit Bordeaux-Nebel, Bordeaux-/Chrom-Schlieren, Bokeh-Lichtpunkten, aufblitzenden Funkel-Sternen (`.tw`),
   Glas-Stern rechts + kleiner Stern oben links, dunkle Mitte (die 501 bleibt lesbar, weiß mit Bordeaux-Glühen). Partyspiel-Kacheln als Bordeaux-Glas mit Chrom-Ring
   und Funkel-✦ (keine Pop-Art-Farben, kein Raster), Lichtstreif zieht ab und zu über Karte und Kacheln. Reiter-Leiste bordeaux getöntes Glas. Modus-Farben (`MODE_STYLE`) nur Bordeaux/Silber/Schwarz.
   Reiter-Leiste: neutrales Rauchglas mit dünnem Ring (1 px), an dem Licht entlangläuft, Helligkeit schwankt (`vipSpin`/`vipGlow`); Bordeaux nur im Strich unter dem aktiven Reiter und im Verlauf dahinter. Keine Gold-/Gelbtöne mehr
