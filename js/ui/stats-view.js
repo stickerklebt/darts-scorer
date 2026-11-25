@@ -5,6 +5,7 @@ import { fullStats, matchesOf, doubleRating, doubleSides, TIERS, MIN_ATTEMPTS } 
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, goldSmoke, numRing } from './svg.js';
 import { heatBoard, tierColor } from './board.js';
+import { spotSVG } from './dblspot.js';
 import { historyCharts, distChart, doubleChart } from './stats-extra.js';
 import { recAttrs } from './legdetail.js';
 import { rv } from './reveal.js';
@@ -18,8 +19,8 @@ const SUB_ICONS = {
   // Überblick: es geht um Zahlen – „1 2 3“, steigend wie ein Aufwärtstrend
   overview: '<text x="5.6" y="21" font-size="12" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">1</text><text x="12" y="17.5" font-size="13.5" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">2</text><text x="18.6" y="14" font-size="15" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">3</text>',
   // Doppel (nach Skizze): zwei Bögen des Doppelrings über die ganze Breite, zwei Segmentlinien, dazwischen das Doppelfeld orange
-  doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#ea6a2e" stroke="none"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/>',
-  more: '<path d="M3 21h18"/><path d="M4 16l5-5 4 3 7-7"/><path d="M15 7h5v5"/>',
+  doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g transform="translate(0 -3)"><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#ea6a2e" stroke="none"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/></g>',
+  more: '<path d="M4 18l5-5 4 3 7-7"/><path d="M15 9h5v5"/>', // nur der Pfeil, ohne Grundlinie
 };
 const subIcon = (k) => `<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SUB_ICONS[k]}</svg>`;
 export const SUBTABS = [['overview', 'Überblick'], ['doubles', 'Doppel'], ['more', 'Scoring']];
@@ -91,11 +92,14 @@ function dblInfo(st, key) {
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
   const sd = doubleSides(st.doubles, key);
+  // Doppel groß mit einem Punkt für jeden Treffer an der Stelle, wo er saß (wird nach dem Checkout abgefragt)
+  const sp = st.spots?.[key] || [], dn = /^D(\d+)$/.exec(key);
+  const spotBox = dn ? `<div class="di-spot">${spotSVG(Number(dn[1]), sp)}<p class="di-n">${sp.length ? `${sp.length} Treffer mit genauer Stelle` : 'Noch keine genaue Trefferstelle – sie wird nach einem Checkout abgefragt.'}</p></div>` : '';
   if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
-  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
+  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
   // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
-  return `<div class="dbl-info"><span class="di-arrow"></span>${head}
+  return `<div class="dbl-info"><span class="di-arrow"></span>${head}${spotBox}
     <h4>Wenn du nicht triffst, wirfst du</h4>
     <div class="io-line">
       ${ip > 0 ? `<span class="io-side in ${op === 0 ? 'full' : ''}" style="flex:${ip}"><b>${ip} %</b><small>Inside</small></span>` : ''}

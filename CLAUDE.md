@@ -104,7 +104,7 @@ js/
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
 sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
-tests/  run.mjs + situations · football · insights · dartscan · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
+tests/  run.mjs + situations · football · insights · dartscan · dblspot · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
 
 ## Datenmodell (`localStorage['darts.v3']`)
@@ -377,6 +377,10 @@ Offen: Passwort vergessen / E-Mail-Bestätigung (braucht Mailversand).
 - Höchstes Checkout (Rekord-Karte): Antippen zeigt, wie es geworfen wurde („Single 3 · Doppel 16“, `checkoutHow`); ohne Einzeldarts ein Hinweis.
 - **Lieblingsdoppel** (Einstellungen, `prefs.favDbl` 16 · 18 · 20, Standard 20): `setFavDouble` in `checkout.js` (bei jedem `render()` gesetzt). Bei D16/D18 bevorzugt `route()` Wege mit gleich vielen Darts, die auf dem Lieblingsdoppel enden (Vorbereitung Single > 25 > Triple > Bull; Bull-Finishes bleiben); Setup-Würfe lassen bevorzugt das Lieblingsdoppel stehen. D20 = feste Tabelle.
 - Fußball-Abzeichen/Kachel silbern (nicht grün).
+- **Trefferstelle im Doppel** (`ui/dblspot.js`): Checkt ein Mensch in X01 (Double Out) mit einem einzeln erfassten D1–D20 ein Leg/Match, kommt danach
+  (nach der Animation, vor Leg-Info/Ergebnis) Vollbild „Wo hast du genau getroffen?“ mit dem Doppel groß (außen oben = Outside, innen unten = Inside,
+  Nachbarfelder blass). Antippen speichert `throw.spot = { a: −1…1 quer, r: 0 innen … 1 außen }` am Checkout-Dart, „Überspringen“ geht weiter.
+  Bots pausieren solange (`ui.dblSpot`). Statistik › Doppel: Doppel antippen → im Fenster das Doppel groß mit einem Punkt je Treffer (`fullStats().spots`).
 - Einstellungen ohne Knopf „Alle Daten löschen“ (auf Wunsch entfernt; einzelne Spiele löscht man in der Spielhistorie).
 - **Profil** (VIP › oben der Name in Gold (ohne Kasten/Orange) mit goldenem Stift `.bs-namebox`, antippen → Fenster `profile` im Look der Reiter-Leiste `.vipsheet`): Name ändern, E-Mail, Daten-Stand, Passwort ändern, Abmelden, Konto löschen.
   Die Einstellungen enthalten nur noch App-Optionen (Ansage, Checkout-Hilfe, Anzeige, Kamera, Eingabe).

@@ -2544,3 +2544,23 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 .ch-menu button.on { color: var(--gold-l); background: rgba(212,166,58,.12); }
 .ch-menu button:active { background: rgba(212,166,58,.22); }
 @keyframes chMenuIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* „Wo hast du genau getroffen?“ – nach einem Checkout auf ein Doppel; Doppel groß, außen oben / innen unten */
+.dspot { display: block; width: 100%; height: auto; overflow: visible; }
+.dspot .ds-n { font-family: var(--f-num); font-size: 78px; fill: var(--cream); letter-spacing: 2px; }
+.dspot .ds-nb { font-family: var(--f-num); font-size: 54px; fill: var(--cream); opacity: .35; }
+.dspot .ds-lab { font-family: var(--f-num); font-size: 40px; letter-spacing: 4px; text-transform: uppercase; fill: var(--gold-l); opacity: .8; }
+.dspot .ds-dot { fill: #f3e9d2; stroke: #0b0a08; stroke-width: 3; }
+.dspot .ds-dot.last { fill: var(--gold-l); stroke: #0b0a08; stroke-width: 4; animation: dsPop .35s ease-out; }
+.dspot.tap { cursor: crosshair; touch-action: none; }
+.dspot.tap .ds-field { filter: drop-shadow(0 0 18px rgba(255,138,76,.45)); }
+@keyframes dsPop { from { transform-box: fill-box; transform-origin: center; transform: scale(2.2); opacity: 0; } to { transform-box: fill-box; transform-origin: center; transform: none; opacity: 1; } }
+.dspot-ask { position: fixed; inset: 0; z-index: 900; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: radial-gradient(120% 80% at 50% 30%, rgba(44,26,14,.97), rgba(11,10,8,.98)); animation: dsIn .25s ease-out; }
+.dspot-in { width: min(560px, 100%); text-align: center; }
+.dspot-in h2 { font-family: var(--f-display); font-size: 24px; color: var(--gold-l); margin: 0 0 4px; }
+.dspot-in p { margin: 0 0 14px; color: var(--cream2); }
+.dspot-skip { margin-top: 14px; }
+@keyframes dsIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+.di-spot { margin: 10px auto 4px; max-width: 420px; }
+.di-spot .di-n { margin-top: 4px; }

@@ -77,7 +77,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const counts = { t180: 0, t140: 0, t100: 0, t60: 0 };
   const buckets = BUCKETS.map(() => 0);
   const ranges = RANGES.map(() => ({ chances: 0, hits: 0 }));
-  const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [];
+  const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [], spots = {}; // spots: genaue Trefferstellen im Doppel (throw.spot)
   let bestLegRef = null, bestAvgRef = null;
 
   for (const m of ms) {
@@ -110,7 +110,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
         if (t.out) {
           cos.push({ score: sc, date, opp, darts: t.darts, mid: m.id, li, ti });
           const last = t.throws?.[t.throws.length - 1];
-          if (last) { const k = label(last); favourite[k] = (favourite[k] || 0) + 1; }
+          if (last) { const k = label(last); favourite[k] = (favourite[k] || 0) + 1; if (last.spot) (spots[k] ||= []).push(last.spot); }
         }
         if (m.opts.out === 'double' && route(t.startRem, 3)) {
           const ri = RANGES.findIndex(([, lo, hi]) => t.startRem >= lo && t.startRem <= hi);
@@ -140,7 +140,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     favourite: fav ? { field: fav[0], count: fav[1] } : null,
     dartsPerCheckout: doubles.hits ? doubles.attempts / doubles.hits : null,
     bestLeg: legDarts.length ? Math.min(...legDarts) : null, avgLegDarts: legDarts.length ? legDarts.reduce((a, b) => a + b, 0) / legDarts.length : null,
-    nine, le15, buckets, series, list: list.reverse(), bestLegRef, bestAvgRef,
+    nine, le15, buckets, series, spots, list: list.reverse(), bestLegRef, bestAvgRef,
   };
 }
 function setsOf(m, s) {

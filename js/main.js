@@ -47,6 +47,7 @@ import { createBulloff, bullThrow, bullUndo, bullNext, MM } from './bulloff.js';
 import { bulloffView, loupeShow, loupeHide } from './ui/bulloff-view.js';
 import { fieldAt, aimLoupe, aimLoupeHide, aimHover, AR, mmToAim, aimCenter } from './ui/aimboard.js';
 import { callerView } from './ui/caller.js';
+import { spotAskView, spotFromEvent } from './ui/dblspot.js';
 import { loadCalls, clearCalls, playCall, warmCalls, startRecording, stopRecording, cancelRecording, isRecording, saveCall, deleteCall, playBuffer, callInfo } from './caller.js';
 
 const $ = (s) => document.querySelector(s);
@@ -108,7 +109,7 @@ function render() {
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   ui.camLive = camLiveFor(m);
   if (ui.vs && m && ui.vs === m.id && S.screen === 'game') html += vsView(m);
-  html += sheetView() + camPill();
+  html += sheetView() + camPill() + spotAskView(ui.dblSpot);
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   const app = $('#app');
   morph(app, html);
@@ -199,15 +200,18 @@ function handle(res) {
     own = playCall(m.game === 'x01' ? t.score : t.v);
     if (own) sayAfter = Date.now() + own * 1000 + 250;
   }
-  if (res.type === 'match') { if (anim) { render(); anim.then(finish); } else finish(); return; }
+  // Checkout auf ein Doppel: danach einmal groß „Wo hast du genau getroffen?“ (Stelle im Doppel → Statistik › Doppel)
+  const spot = spotNeeded(m, t, res);
+  if (res.type === 'match') { const go = spot ? () => askSpot(spot, finish) : finish; if (anim) { render(); anim.then(go); } else go(); return; }
   if (m.game === 'x01') {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
     else if (res.type === 'turn' && !own) say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
     else if (res.type === 'leg' || res.type === 'set') {
       const mo = { kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
-      if (anim) anim.then(() => { if (S.current === m) { moment(mo); render(); } });
-      else moment(mo);
+      const show = () => { if (S.current === m) { moment(mo); render(); } };
+      const go = spot ? () => askSpot(spot, show) : show;
+      if (anim) anim.then(go); else go();
     }
   } else if (m.game === 'football') {
     if (res.event === 'goal') { const sc = t ? t.s : F.curSide(m); toast(`Tor! ${sideName(m.sides[sc])} · ${F.state(m, false).goals.join(' : ')}`); say('Tor!'); }
@@ -217,6 +221,25 @@ function handle(res) {
   if (anim && res.type !== 'leg' && res.type !== 'set') anim.then(() => { if (S.current === m && !m.done) render(); });
   render();
 }
+
+/** Braucht dieser Checkout die Abfrage „wo genau im Doppel“? Nur Menschen, X01 Double Out, letzter Dart einzeln erfasst auf D1–D20. */
+function spotNeeded(m, t, res) {
+  if (!t || m.game !== 'x01' || !t.out || isBot(t.pid) || m.opts.out !== 'double') return null;
+  if (!['leg', 'set', 'match'].includes(res.type) || (m.online && t.pid !== S.mainId)) return null;
+  const last = t.throws?.[t.throws.length - 1];
+  return last && last.m === 2 && last.n >= 1 && last.n <= 20 ? { n: last.n, dart: last } : null;
+}
+let spotNext = null;
+function askSpot(sp, next) { spotNext = next; ui.dblSpot = { n: sp.n, dart: sp.dart, picked: null }; render(); }
+function spotDone() { const next = spotNext; spotNext = null; ui.dblSpot = null; render(); next?.(); }
+document.addEventListener('pointerup', (e) => {
+  const svg = e.target.closest?.('svg[data-dspot]');
+  if (!svg || !ui.dblSpot || ui.dblSpot.picked) return;
+  const p = spotFromEvent(svg, e);
+  ui.dblSpot.picked = p; ui.dblSpot.dart.spot = p;
+  navigator.vibrate?.(10); render();
+  setTimeout(spotDone, 550);
+});
 
 /** Bot: kleine Andeutung in der eigenen Karte bei starken Würfen (keine Vollbild-Animation). */
 function botHint(m, t) {
@@ -262,7 +285,7 @@ let botTimer = null;
 function scheduleBot() {
   const m = S.current;
   let who = null;
-  if (S.screen === 'game' && m && !m.done && !ui.modal && !ui.moment && !ui.vs && !fxRunning()) {
+  if (S.screen === 'game' && m && !m.done && !ui.modal && !ui.moment && !ui.vs && !ui.dblSpot && !fxRunning()) {
     if (inBulloff()) { const s = bullNext(m.bull); if (!ui.boResult && s !== null && isBot(m.sides[s][0]) && !ui.boPending) who = 'bull'; }
     else if (isBot(curThrowerOf(m))) who = 'turn';
   }
@@ -989,6 +1012,7 @@ const actions = {
     handle(throwOne(m, d.n, d.n === 0 ? 1 : d.m));
   },
   dartInput(el) { S.prefs.dartInput = el.dataset.v; render(); },
+  spotSkip() { if (ui.dblSpot) spotDone(); },
   avgKind(el) { ui.avgKind = el.dataset.v; ui.avgMenu = false; render(); },
   favDbl(el) { S.prefs.favDbl = Number(el.dataset.v); setFavDouble(S.prefs.favDbl); render(); },
   /* Cricket-Tafel: Zahl antippen = Dart (Single/Double/Triple), Daneben, Weiter = restliche Darts als daneben */
