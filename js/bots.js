@@ -87,7 +87,7 @@ export const BOTS = [
      ausgelosten Aufnahmen (aus den ersten 8, nie der ersten). random.count = Sprüche pro Spiel,
      random.weights = gewichtete Ziehung, random.repeat = Wiederholung erlaubt, startLine = immer zum Spielstart. ---- */
   {
-    id: 'jensn-huang', name: 'Jensn Huang', initials: 'JH', avg: 50, sigma: 18.14, dsigma: 14.87, color: '#c8ccd0', ink: '#f3e9d2', art: 'jensn',
+    id: 'jensn-huang', name: 'Jensn Huang', initials: 'JH', avg: 50, sigma: 18.14, dsigma: 14.87, color: '#2f6fe4', ink: '#f3e9d2', art: 'jensn',
     random: { count: 2, lines: [
       'Ich will auch mal andere Darts ausprobieren.',
       'Man, meine Darts sind nicht so nice.',
@@ -126,7 +126,7 @@ export const BOTS = [
     random: { count: 2, repeat: true, lines: ['Power!', 'Easy.', 'Lightwork.'], weights: [60, 20, 20] },
   },
   {
-    id: 'dreimac', name: 'Dreimac', initials: 'DM', avg: 40, sigma: 24.31, dsigma: 17.77, color: '#a9a9ad', ink: '#f3e9d2', art: 'dreimac',
+    id: 'dreimac', name: 'Dreimac', initials: 'DM', avg: 40, sigma: 24.31, dsigma: 17.77, color: '#8b5cf6', ink: '#f3e9d2', art: 'dreimac',
     random: { count: 2, lines: [
       'negativ, absolut RIESEN ABGELEHNT',
       'cola!?',

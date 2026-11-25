@@ -10,7 +10,7 @@ globalThis.__fxThaw = () => { frozen = false; stopFx(); };
 /** Zufall im Bereich */
 export const rand = (a, b) => a + Math.random() * (b - a);
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-export const MAGIC = ['#e5402c', '#c8ccd0', '#ffd23f', '#d4a63a', '#f3e9d2', '#a9a9ad', '#1f9a4c'];
+export const MAGIC = ['#e5402c', '#2f6fe4', '#ffd23f', '#d4a63a', '#f3e9d2', '#8b5cf6', '#1f9a4c'];
 
 /* ---------- Partikel ---------- */
 export class Particles {
@@ -60,7 +60,7 @@ export class Particles {
       switch (p.shape) {
         case 'circle': x.beginPath(); x.arc(0, 0, s, 0, 6.283); x.fill(); break;
         case 'ring': x.lineWidth = Math.max(1, s * 0.12); x.beginPath(); x.arc(0, 0, s, 0, 6.283); x.stroke(); break;
-        case 'tri': x.beginPath(); x.moveTo(0, -s); x.lineTo(s * 0.87, s * 0.5); x.lineTo(-s * 0.87, s * 0.5); x.closePath(); x.fill(); x.strokeStyle = '#11100f'; x.lineWidth = 1.5; x.stroke(); break;
+        case 'tri': x.beginPath(); x.moveTo(0, -s); x.lineTo(s * 0.87, s * 0.5); x.lineTo(-s * 0.87, s * 0.5); x.closePath(); x.fill(); x.strokeStyle = '#0e1211'; x.lineWidth = 1.5; x.stroke(); break;
         case 'spark': x.beginPath(); for (let i = 0; i < 8; i++) { const r = i % 2 ? s * 0.22 : s; const a2 = (i * Math.PI) / 4; x.lineTo(Math.cos(a2) * r, Math.sin(a2) * r); } x.closePath(); x.fill(); break;
         case 'streak': x.fillRect(-s * 2.2, -s * 0.18, s * 4.4, s * 0.36); break;
         case 'drop': x.beginPath(); x.ellipse(0, 0, s * 0.6, s, 0, 0, 6.283); x.fill(); break;

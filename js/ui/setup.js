@@ -56,7 +56,7 @@ function moreOptions(id) {
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
       <section class="rules"><div class="rules-in">
         ${badge(id, 40)}<span class="overline">Die Spielregeln</span>
-        <h2 class="display">${g.title}</h2>${divider('#0a0a0b')}<p>${g.desc}</p>
+        <h2 class="display">${g.title}</h2>${divider('#0b0a08')}<p>${g.desc}</p>
         ${id === 'x01' ? '<p class="small">Nur 501-Matches zählen für die Statistik.</p>' : ''}
       </div></section>
     </div>` : ''}

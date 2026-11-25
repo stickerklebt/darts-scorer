@@ -87,7 +87,7 @@ export function friendsView() {
       ? `<div class="slist flist ${friends.length > 3 ? 'fl-scroll' : ''}">${friends.map((x) => `<button class="srow" data-act="friendOpen" data-v="${esc(x.id)}">${chip(x.username)}
           <span class="lbl">${esc(x.username)}<small>${x.matches ? `${x.matches} ${x.matches === 1 ? 'Spiel' : 'Spiele'}${x.lastPlayed ? ` · zuletzt ${ago(x.lastPlayed)}` : ''}` : 'Noch keine Spiele'}</small></span>
           <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
-      : `<div class="empty-card"><div>${stars(3, '#0a0a0b', 14)}<h2 class="display">Noch allein am Oche</h2>
+      : `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
   // Backstage: oben das eigene Banner, in der Mitte die Freunde, unten die Kacheln (Spielhistorie, eigener Caller, Einstellungen, Kamera)
   const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe'], ['camAsDevice', 'cam', 'Kamera', 'Dieses Handy filmt das Board']];
@@ -140,7 +140,7 @@ export function friendView() {
       <div class="has-tg">${lineChart(avgs, movingAvg(avgs), { labelL: x.form[0] ? dateStr(x.form[0].date) : '', labelR: x.form.length ? dateStr(x.form[x.form.length - 1].date) : '' })}</div>
       <div class="form-row">${x.form.map((s) => `<span class="${s.solo ? 't' : s.won ? 'w' : 'l'}" title="${dateStr(s.date)}">${s.solo ? 'T' : s.won ? 'S' : 'N'}</span>`).join('')}</div>`;
   } else {
-    body = `<div class="empty-card"><div>${stars(3, '#0a0a0b', 14)}<h2 class="display">Noch kein 501</h2>
+    body = `<div class="empty-card"><div>${stars(3, '#0b0a08', 14)}<h2 class="display">Noch kein 501</h2>
       <p>${esc(name)} hat noch kein 501-Match gespielt. Sobald das passiert, stehen hier Average, Doppelquote und Rekorde.</p></div></div>`;
   }
   return `${head}<main class="page friend">

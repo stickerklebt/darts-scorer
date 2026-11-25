@@ -111,7 +111,7 @@ export function straighten(img, mask) {
 }
 
 /** Farbstufen der App (dunkel → hell) */
-export const TONES = [[22, 22, 24], [92, 90, 86], [200, 204, 208], [240, 217, 140]];
+export const TONES = [[18, 15, 12], [92, 84, 74], [200, 204, 208], [240, 217, 140]];
 
 /** Im App-Stil nachzeichnen: Helligkeit in Stufen (nach Quantilen des Darts) + Goldkontur am Rand */
 export function stylize(st) {

@@ -45,8 +45,8 @@ const ART = {
     <rect x="27" y="38" width="10" height="9" fill="${SKIN}" stroke="${K}" stroke-width="1.5"/>
     <ellipse cx="32" cy="29" rx="12" ry="13" fill="${SKIN}" stroke="${K}" stroke-width="2"/>
     <path d="M19.5 26 C19 15 26 12 32 12 C39 12 45 15 44.5 26 C42 20 37 18 32 18.5 C26 18 22 20 19.5 26 Z" fill="#b8b6ae" stroke="${K}" stroke-width="1.8"/>
-    <rect x="22" y="27" width="8.5" height="6" rx="1.5" fill="#e8e7e5" stroke="${K}" stroke-width="1.8"/>
-    <rect x="33.5" y="27" width="8.5" height="6" rx="1.5" fill="#e8e7e5" stroke="${K}" stroke-width="1.8"/>
+    <rect x="22" y="27" width="8.5" height="6" rx="1.5" fill="#dfe8ee" stroke="${K}" stroke-width="1.8"/>
+    <rect x="33.5" y="27" width="8.5" height="6" rx="1.5" fill="#dfe8ee" stroke="${K}" stroke-width="1.8"/>
     <path d="M30.5 29 H33.5" stroke="${K}" stroke-width="1.6"/>
     <circle cx="26.3" cy="30" r="1.2" fill="${K}"/><circle cx="37.7" cy="30" r="1.2" fill="${K}"/>
     <path d="M28 37 C30 38.5 34 38.5 36 37" fill="none" stroke="${K}" stroke-width="1.5" stroke-linecap="round"/>`,
@@ -63,10 +63,10 @@ const ART = {
     <path d="M21 26 C21 16 25 12 32 12 C39 12 43 16 43 26 Z" fill="#141210" stroke="${K}" stroke-width="1.8"/>
     <path d="M21.5 22 H42.5" stroke="#f3e9d2" stroke-width="2"/>
     <g transform="translate(51 40) rotate(-14)"><path d="M-6 10 V-2 C-6 -5 -3 -5 -3 -2 V-8 C-3 -11 0 -11 0 -8 V-9 C0 -12 3 -12 3 -9 V-6 C3 -9 6 -9 6 -6 V4 C6 9 3 11 0 11 H-4 Z" fill="#f6f4ee" stroke="${K}" stroke-width="1.6"/>
-      <path d="M-3 0 l1 1 M1 -4 l1 1 M3 3 l1 1 M-1 6 l1 1" stroke="#d1d0cd" stroke-width="1.4"/><path d="M-4 -6 l1 -1 M4 -2 l1 -1" stroke="${COLORS.gold}" stroke-width="1.4"/></g>`,
+      <path d="M-3 0 l1 1 M1 -4 l1 1 M3 3 l1 1 M-1 6 l1 1" stroke="#9fd8ff" stroke-width="1.4"/><path d="M-4 -6 l1 -1 M4 -2 l1 -1" stroke="${COLORS.gold}" stroke-width="1.4"/></g>`,
   // Darts-Spieler: kurze, zurückgekämmte Haare, Spieler-Trikot
   phil: (b) => `${frame(b.color)}
-    <path d="M8 64 C9 50 18 45 32 45 C46 45 55 50 56 64 Z" fill="#c8ccd0" stroke="${K}" stroke-width="2"/>
+    <path d="M8 64 C9 50 18 45 32 45 C46 45 55 50 56 64 Z" fill="#2f6fe4" stroke="${K}" stroke-width="2"/>
     <path d="M12 56 L24 48 M52 56 L40 48" stroke="${COLORS.yellow}" stroke-width="3"/><path d="M14 62 L26 54 M50 62 L38 54" stroke="${COLORS.red}" stroke-width="2.4"/>
     <path d="M26 45 L32 52 L38 45 Z" fill="#f3e9d2" stroke="${K}" stroke-width="1.5"/>
     <circle cx="44" cy="55" r="3.2" fill="${COLORS.yellow}" stroke="${K}" stroke-width="1.2"/>

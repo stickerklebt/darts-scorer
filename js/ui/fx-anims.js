@@ -41,7 +41,7 @@ export function triangle(el, ctx) {
   title(el, String(ctx.score), `Sehr gut, setzen!${who(ctx)}`, 'chalk');
   at(2400, () => add(el, '<b>1+</b><small>mit Sternchen</small>', 'fx-stamp grade'));
   const p = particles(el);
-  const wave = () => p.burst(40, () => ({ x: rand(0, W()), y: rand(-H() * 0.4, 0), vx: rand(-40, 40), vy: rand(80, 240), ay: 260, vr: rand(-6, 6), rot: rand(0, 6), shape: 'tri', size: rand(8, 16), color: pick(['#ffd23f', '#c8ccd0', '#e5402c', '#f3e9d2', '#1f9a4c']), life: 1900, fade: false }));
+  const wave = () => p.burst(40, () => ({ x: rand(0, W()), y: rand(-H() * 0.4, 0), vx: rand(-40, 40), vy: rand(80, 240), ay: 260, vr: rand(-6, 6), rot: rand(0, 6), shape: 'tri', size: rand(8, 16), color: pick(['#ffd23f', '#2f6fe4', '#e5402c', '#f3e9d2', '#1f9a4c']), life: 1900, fade: false }));
   wave(); at(1400, wave); at(2700, wave);
 }
 
@@ -61,7 +61,7 @@ export function confetti(el, ctx) {
 /** 100–120: Ballons (4 s) – zwei Schwärme, einer platzt */
 export function balloons(el, ctx) {
   add(el, '', 'fx-bg bg-dim');
-  const cols = ['#e5402c', '#c8ccd0', '#ffd23f', '#a9a9ad', '#1f9a4c', '#f3e9d2', '#d4a63a'];
+  const cols = ['#e5402c', '#2f6fe4', '#ffd23f', '#8b5cf6', '#1f9a4c', '#f3e9d2', '#d4a63a'];
   for (let i = 0; i < 22; i++) {
     const n = add(el, balloon(cols[i % cols.length]), 'bl-b');
     n.style.cssText = `left:${((i % 11) / 11) * 100 + rand(-3, 3)}%;--s:${rand(0.7, 1.25)};--sw:${rand(-14, 14)}px;animation-delay:${(i < 11 ? 0 : 1300) + rand(0, 500)}ms;animation-duration:${rand(2300, 2800)}ms`;
@@ -161,7 +161,7 @@ export function shatter(el, ctx) {
     el.classList.add('broken');
     shake(14, 400);
     const p = particles(el);
-    p.burst(140, () => { const a = rand(0, 6.283), v = rand(80, 420); return { x: rand(0, W()), y: rand(0, H() * 0.8), vx: Math.cos(a) * v * 0.6, vy: Math.sin(a) * v * 0.4 - 120, ay: 1300, vr: rand(-8, 8), rot: rand(0, 6), shape: 'shard', size: rand(10, 34), color: 'rgba(238,238,237,.45)', life: 2400, fade: false }; });
+    p.burst(140, () => { const a = rand(0, 6.283), v = rand(80, 420); return { x: rand(0, W()), y: rand(0, H() * 0.8), vx: Math.cos(a) * v * 0.6, vy: Math.sin(a) * v * 0.4 - 120, ay: 1300, vr: rand(-8, 8), rot: rand(0, 6), shape: 'shard', size: rand(10, 34), color: 'rgba(220,236,255,.45)', life: 2400, fade: false }; });
     title(el, String(ctx.score), `Glasklar!${who(ctx)}`, 'pop');
   });
 }
@@ -169,7 +169,7 @@ export function shatter(el, ctx) {
 /** 121–179: Blendeffekt (5 s) – zwei Lichtdurchgänge, Glanz auf dem Titel */
 export function flare(el, ctx) {
   add(el, '', 'fx-bg bg-dim');
-  const ghosts = [[0.12, 70, '#c8ccd0'], [0.28, 26, '#ffd23f'], [0.42, 46, '#e5402c'], [0.6, 18, '#a9a9ad'], [0.74, 88, '#1f9a4c'], [0.9, 34, '#ffd23f']]
+  const ghosts = [[0.12, 70, '#2f6fe4'], [0.28, 26, '#ffd23f'], [0.42, 46, '#e5402c'], [0.6, 18, '#8b5cf6'], [0.74, 88, '#1f9a4c'], [0.9, 34, '#ffd23f']]
     .map(([t, s, c]) => `<i class="fl-g" style="--t:${t};--s:${s}px;--c:${c}"></i>`).join('');
   add(el, `<i class="fl-sun"></i><i class="fl-streak"></i>${ghosts}`, 'fl-line');
   at(2300, () => add(el, `<i class="fl-sun"></i><i class="fl-streak"></i>${ghosts}`, 'fl-line rev'));
@@ -195,7 +195,7 @@ export function freeze(el, ctx) {
     shake(24, 480);
     el.classList.add('smash');
     const p = particles(el);
-    p.burst(150, () => { const a = rand(0, 6.283), v = rand(200, 800); return { x: W() / 2 + rand(-40, 40), y: H() * 0.6 + rand(-40, 40), vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 1200, vr: rand(-10, 10), rot: rand(0, 6), shape: 'shard', size: rand(8, 26), color: pick(['rgba(224,223,221,.85)', 'rgba(255,255,255,.9)', 'rgba(191,189,184,.7)']), life: 1900, fade: false }; });
+    p.burst(150, () => { const a = rand(0, 6.283), v = rand(200, 800); return { x: W() / 2 + rand(-40, 40), y: H() * 0.6 + rand(-40, 40), vx: Math.cos(a) * v, vy: Math.sin(a) * v - 200, ay: 1200, vr: rand(-10, 10), rot: rand(0, 6), shape: 'shard', size: rand(8, 26), color: pick(['rgba(190,235,255,.85)', 'rgba(255,255,255,.9)', 'rgba(120,200,255,.7)']), life: 1900, fade: false }; });
     title(el, String(ctx.score), `Eiskalt!${who(ctx)}`, 'pop');
     add(el, '<b>KRACH!</b>', 'fx-pow');
   });
@@ -230,7 +230,7 @@ export function trophy(el, ctx) {
   });
   at(3300, () => {
     add(el, `<div class="fx-big">180</div><div class="fx-sub">Maximum!${who(ctx)}</div>`, 'fx-title lb-title');
-    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#ffd23f', '#ecc96a', '#fff3c0', '#e5402c', '#c8ccd0', '#f3e9d2']), life: 2600, fade: false }); }, 3300, 6800);
+    p.every((ps) => { ps.add({ x: rand(0, W()), y: -10, vx: rand(-30, 30), vy: rand(120, 260), ay: 60, vr: rand(-6, 6), shape: pick(['spark', 'rect', 'rect']), size: rand(5, 12), color: pick(['#ffd23f', '#ecc96a', '#fff3c0', '#e5402c', '#2f6fe4', '#f3e9d2']), life: 2600, fade: false }); }, 3300, 6800);
   });
   at(4200, () => { cup.classList.add('gleam'); shake(6, 200); });
   [['tl', 3500], ['tr', 3600], ['bl', 3700], ['br', 3800]].forEach(([c, t]) => at(t, () => add(el, cornerOrnament(), `tr-corner ${c}`)));
@@ -286,14 +286,14 @@ export function nuke(el, ctx) {
 export function bigfish(el, ctx) {
   add(el, '', 'fx-bg bg-dim');
   const wave = (c, o) => `<svg viewBox="0 0 1200 60" preserveAspectRatio="none" style="opacity:${o}"><path d="M0 30 Q75 0 150 30 T300 30 T450 30 T600 30 T750 30 T900 30 T1050 30 T1200 30 V60 H0 Z" fill="${c}"/></svg>`;
-  add(el, `<div class="bf-waves"><div class="wv w1">${wave('#c8ccd0', 1)}</div><div class="wv w2">${wave('#e0bf7c', 0.85)}</div></div><div class="bf-body"></div>`, 'bf-water');
+  add(el, `<div class="bf-waves"><div class="wv w1">${wave('#2f6fe4', 1)}</div><div class="wv w2">${wave('#6c9cf0', 0.85)}</div></div><div class="bf-body"></div>`, 'bf-water');
   add(el, bigFish(), 'bf-fish');
   add(el, `<div class="fx-big">170</div><div class="fx-sub">Big Fish!${who(ctx)}</div>`, 'fx-title bf-title');
   const p = particles(el);
   at(5000, () => {
     shake(32, 800);
     const cx = W() * 0.3, cy = H() * 0.66;
-    p.burst(200, () => { const a = rand(-3.0, -0.14), v = rand(300, 1150); return { x: cx + rand(-60, 60), y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, ay: 1500, shape: 'drop', rot: 0, size: rand(5, 14), color: pick(['#e8e7e6', '#e0bf7c', '#ffffff', '#c8ccd0']), life: 1700, fade: false }; });
+    p.burst(200, () => { const a = rand(-3.0, -0.14), v = rand(300, 1150); return { x: cx + rand(-60, 60), y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, ay: 1500, shape: 'drop', rot: 0, size: rand(5, 14), color: pick(['#cfe0ff', '#6c9cf0', '#ffffff', '#2f6fe4']), life: 1700, fade: false }; });
     add(el, '<b>PLATSCH!</b>', 'bf-splash');
   });
   p.every((ps) => { if (Math.random() < 0.5) ps.add({ x: rand(0, W()), y: H() * rand(0.7, 1), vy: -rand(30, 90), vx: rand(-10, 10), shape: 'ring', size: rand(3, 8), color: 'rgba(255,255,255,.7)', life: 900 }); }, 400, 7000);
