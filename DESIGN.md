@@ -149,3 +149,4 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
   Weiße Verläufe stark gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkel ohne weißen Glanz, Lichtstriche nur als leiser Hauch (max. ~28 %), kein Lichtfleck im VIP.
   Linien aus der Linienzeichnung: nur ZWEI metallische Striche in der 501-Kachel zwischen Seide und Zahl (`silkLines` in play.js: Titan-Verlauf, Glanzkante, weicher Schatten, ein Lichtpunkt gleitet entlang) – nicht mehr im App-Hintergrund. Farbe des Hintergrunds trägt `html`, `body` ist transparent. Lade-Bildschirm ohne roten Schein.
+  Rot-Menge (Stand 25.11.2026 abends): Statistik nur halb so viel Rot wie zuvor (Nebel, Innenlinie, Zahlenschatten 2 Stufen, Titel fast weiß-rosé); VIP fast ohne Rot (Überschriften silbern, nur winziger roter Linienanfang, Ø mit dünnem rotem Schatten).
