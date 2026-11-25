@@ -85,7 +85,7 @@ js/
                         kein MediaRecorder – Safari „Decoding failed“) → WAV (mono 22 kHz, getrimmt, normalisiert), Server + IndexedDB
   sync.js               Konto (auth), Login/Logout, Delta-Sync mit dem Server (Meta in `darts.sync`)
   match.js              Match-Objekt, Werfer-Reihenfolge
-  checkout.js           Feste Checkout-Tabelle (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
+  checkout.js           Feste Checkout-Tabelle (170–41 = Dartcoach-Checkout-Tabelle, D25 heißt in der App „Bull“, S25 „25“; mit 2 Darts 110/107/104/101 übers Bull) (1/2/3 Darts), Setup-Würfe, Doppelversuch, Summen-Eingabe fertig?
   x01.js                X01-Engine (Legs/Sets, Summe/Einzeldart, Undo, Matchstatistik)
   party.js              Highscore, Shanghai, Halbieren, Around the Clock
   cricket.js            Cricket: 20–15 + Bull, Treffer/Punkte, Sieg, Rundenlimit, Undo pro Dart, Bot-Ziel

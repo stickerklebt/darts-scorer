@@ -6,7 +6,7 @@ const show = (r) => (r ? r.map(label).join(' ') : null);
 test('Pflicht-Testfälle (3 Darts übrig)', () => {
   const cases = {
     170: 'T20 T20 Bull', 167: 'T20 T19 Bull', 164: 'T20 T18 Bull', 161: 'T20 T17 Bull',
-    160: 'T20 T20 D20', 141: 'T20 T19 D12', 137: 'T20 T19 D10', 100: 'T20 D20',
+    160: 'T20 T20 D20', 141: 'T20 T19 D12', 137: 'T20 T15 D16', 135: '25 T20 Bull', 110: 'T20 S10 D20', 82: 'Bull D16', 100: 'T20 D20',
     64: 'T16 D8', 40: 'D20', 32: 'D16',
   };
   for (const [n, exp] of Object.entries(cases)) assert.equal(show(route(Number(n), 3)), exp, `Rest ${n}`);
@@ -67,4 +67,9 @@ test('Summen-Eingabe: ohne OK übernehmen, wenn keine Ziffer mehr folgen kann', 
   assert.equal(entryPossible('17'), true);
   assert.equal(entryPossible('163'), false);
   assert.equal(entryPossible('160'), true);
+});
+
+test('Dartcoach-Tabelle: mit 2 Darts geht 110 noch übers Bull', () => {
+  assert.equal(show(route(110, 2)), 'T20 Bull');
+  assert.equal(show(route(82, 2)), 'Bull D16');
 });
