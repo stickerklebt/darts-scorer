@@ -2970,3 +2970,26 @@ html, body { background: #0a0a0c !important; background-image: none !important; 
   100% { text-shadow: 0 0 0 transparent; }
 }
 @media (prefers-reduced-motion: reduce) { .hero .hero-num::before { animation: none; } }
+
+/* Partyspiele: kein roter Strich unter den Kacheln; Rot taucht stattdessen kurz im Logo auf (nacheinander, nie alle gleichzeitig) */
+.mode:not(.mode-soon)::after { display: none !important; }
+.mode:not(.mode-plus) .badge-mode { animation: badgeRed 7s ease-in-out infinite !important; }
+.mode:nth-child(2) .badge-mode { animation-delay: -2.4s !important; } .mode:nth-child(3) .badge-mode { animation-delay: -4.7s !important; }
+.mode:nth-child(4) .badge-mode { animation-delay: -1.2s !important; } .mode:nth-child(5) .badge-mode { animation-delay: -5.9s !important; }
+@keyframes badgeRed {
+  0%, 68%, 100% { filter: drop-shadow(0 0 8px rgba(255,255,255,.22)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  76% { filter: drop-shadow(0 0 2px #e0405f) drop-shadow(0 0 14px rgba(196,42,75,.95)) drop-shadow(0 0 28px rgba(196,42,75,.6)); }
+  84% { filter: drop-shadow(0 0 6px rgba(196,42,75,.5)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+}
+/* Plus deutlich anders als die Spiele: kein Glas, nur gestrichelter Rahmen, Plus als feiner Ring – wirkt wie ein leerer Platz */
+.mode.mode-plus { background: transparent !important; box-shadow: none !important; }
+.mode.mode-plus::before { display: none !important; }
+.mode.mode-plus .mode-art { background: transparent !important; background-image: none !important; }
+.mode.mode-plus .mode-art::after { display: none !important; }
+.mode.mode-plus .mode-art::before { background: repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 5px, transparent 5px 11px) !important; opacity: 1 !important; padding: 1px !important; }
+.mode.mode-plus .badge-mode { background: transparent !important; color: rgba(242,244,247,.75) !important; border: 1.5px solid rgba(242,244,247,.4); border-radius: 50% !important; box-shadow: none !important;
+  transform: none !important; filter: none !important; width: 40px !important; height: 40px !important; transition: border-color .2s, color .2s; }
+.mode.mode-plus .badge-mode::before { display: none; }
+.mode.mode-plus .badge-mode svg path { stroke: currentColor !important; stroke-width: 2 !important; }
+.mode.mode-plus:hover .badge-mode, .mode.mode-plus:active .badge-mode { color: #fff !important; border-color: rgba(255,255,255,.8); }
+@media (prefers-reduced-motion: reduce) { .mode .badge-mode { animation: none !important; } }
