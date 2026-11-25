@@ -146,3 +146,4 @@ Abzeichen nur Gold/Schwarz/Orange/Bronze, je Modus anders kombiniert (`MODE_STYL
   Vollbild (`heroLeave`, 0,6 s) → Setup wie bisher. Ohne WebGL: CSS-Ersatz (Bild-Layer + clip-path). prefers-reduced-motion oder
   „Bewegung in den Kästen“ aus: nur weiches Einblenden, kein Dauerlicht, keine Drift. Debug: `?intro=full|slow|off|reset`.
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
+  Weiße Verläufe gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkler, Lichtstriche nur noch halb so hell.

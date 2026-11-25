@@ -192,3 +192,16 @@ test('Doppel: Fehlwürfe inside (ins Board) gegen outside (daneben)', async () =
   const d = { fields: { D16: { attempts: 10, hits: 2 } }, outcomes: { D16: { D16: 2, S16: 4, S8: 1, Miss: 3 } } };
   assert.deepEqual(doubleSides(d, 'D16'), { misses: 8, inside: 5, outside: 3, insideRate: 5 / 8, outsideRate: 3 / 8 });
 });
+
+test('Statistik-Modi: Standard nur 501, weitere X01-Modi zuschaltbar', async () => {
+  const S = await import('../js/stats.js');
+  const mk = (start, extra = {}) => ({ game: 'x01', done: true, playerIds: ['p'], endedAt: Date.now(), opts: { start, out: 'double', ...extra }, legs: [] });
+  const ms = [mk(501), mk(301), mk(301, { in: 'double' }), { game: 'cricket', done: true, playerIds: ['p'], opts: {} }];
+  S.setStatsModes(null);
+  assert.equal(S.matchesOf(ms, 'p').length, 1);
+  assert.deepEqual(S.availableModes(ms, 'p'), ['301', '301-di', '501']);
+  S.setStatsModes(['501', '301']);
+  assert.equal(S.matchesOf(ms, 'p').length, 2);
+  assert.equal(S.modeLabel('301-di'), '301 · Double In');
+  S.setStatsModes(null);
+});

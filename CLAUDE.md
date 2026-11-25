@@ -298,7 +298,7 @@ bekanntem Stand übernommen, sonst `stateConflict` → Gerät führt zusammen (S
 - **Statistik**: Überblick-Karte „Lieblingsdoppel“ = Doppel mit der besten Quote (statt Bester Average). Drei Unter-Reiter Überblick · Doppel · Scoring (nur 501). Aktiver Reiter groß im Vordergrund, die anderen
   treten zurück (kleiner, blasser), roter Strich gleitet mit. „Scoring“: Average pro Match (lange auf den Titel drücken → kleines Menü oben links: Average · First 9 Average, `ui.avgKind`, Standard Average) · Verteilung der Aufnahmen · Doppelquote gesamt · Aufnahmen im Leg (`legCurve` in `situations.js`, `legCurveChart`: Ø der 1., 2., 3. … Aufnahme von 501 bis 170,
   beste gold) · Doppelquote gesamt (kumuliert: Gesamtquote nach jedem Match, Kurve erst ab 100 Doppelversuchen, `cumulativeDoubles`/`DBL_MIN` in `stats-extra.js`) · Verteilung der Aufnahmen – sonst nichts („Wann du gut wirfst“ entfernt). Checkout steht im Überblick. Die Abschnitte „Legs“ und „Matches“ sind auf Wunsch entfallen (Spiele: Backstage › Spielhistorie)
-  (Bestes Leg steht im Überblick). Zeitraum: Standard immer „Gesamt“
+  (Bestes Leg steht im Überblick). **Modi in der Statistik** (im selben Fenster wie der Zeitraum, lange auf „Stats“): Standard nur 501; weitere X01-Modi aus der eigenen Historie (Startwert, mit Double In getrennt, `modeKey`) zuschaltbar (`S.statsModes`, lokal, bleibt gespeichert; Chip mit ✕ = zurück auf 501). `setStatsModes` in `render()`, `matchesOf` filtert über `inStats`; Freundes-Statistik auf dem Server bleibt immer 501. Partyspiele haben keine 501-Werte und stehen nicht in der Liste. Zeitraum: Standard immer „Gesamt“
   (beim Öffnen des Reiters und beim Start zurückgesetzt), ändern durch langes Drücken auf den Reiter „Stats“ → Auswahlfenster; ein anderer
   Zeitraum erscheint als Chip mit ✕ (zurück auf Gesamt). Alte Werte `scoring/checkout/history` von `statsSub` → „Scoring“. Doppelfarben relativ zur eigenen
   Gesamtquote: ≥1,5× grün · ≥1,15× hellgrün · ≥0,85× gold · ≥0,5× orange · darunter rot; unter 10 Versuchen neutral.
@@ -440,3 +440,4 @@ Offen: E-Mail-Bestätigung.
   Vollbild (`heroLeave`, 0,6 s) → Setup wie bisher. Ohne WebGL: CSS-Ersatz (Bild-Layer + clip-path). prefers-reduced-motion oder
   „Bewegung in den Kästen“ aus: nur weiches Einblenden, kein Dauerlicht, keine Drift. Debug: `?intro=full|slow|off|reset`.
   Server: Ordner `assets/` in der Allowlist (`static.js`). Tests: `intro.test.mjs`.
+  Weiße Verläufe gedämpft (Reiter-Leiste, VIP-Kästen): Glas dunkler, Lichtstriche nur noch halb so hell.

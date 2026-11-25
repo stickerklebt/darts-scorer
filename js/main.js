@@ -2,7 +2,7 @@
 import { S, ui, save, flushSave, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid, markRemoved, unmarkRemoved } from './store.js';
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
-import { overview } from './stats.js';
+import { overview, setStatsModes } from './stats.js';
 import { vsView, onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
@@ -98,6 +98,7 @@ function fitDblList() {
 addEventListener('resize', () => fitDblList());
 function render() {
   setFavDouble(S.prefs.favDbl);
+  setStatsModes(S.statsModes);
   if (auth.user) ensureMainProfile();
   save();
   const m = S.current;
@@ -794,6 +795,12 @@ const actions = {
   statsPick(el) { S.statsPid = el.dataset.v; ui.modal = null; ui.heatSel = null; render(); },
   period(el) { S.statsPeriod = el.dataset.v; if (ui.modal?.type === 'period') ui.modal = null; render(); },
   periodPick() { ui.modal = { type: 'period' }; render(); },
+  statsMode(el) { // Modus für die Statistik an/aus; mindestens einer bleibt (sonst wieder 501)
+    const k = el.dataset.v, cur = Array.isArray(S.statsModes) && S.statsModes.length ? S.statsModes : ['501'];
+    const next = cur.includes(k) ? cur.filter((x) => x !== k) : [...cur, k];
+    S.statsModes = next.length ? next : ['501']; render();
+  },
+  statsModesReset() { S.statsModes = ['501']; render(); },
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },

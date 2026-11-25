@@ -3102,3 +3102,25 @@ html.intro-pre .splash { display: none; }
 .silk-css-l:first-child { mix-blend-mode: normal; }
 @media (prefers-reduced-motion: reduce) { .silk-hero.silk-live .silk-img { animation: none; } .silk-hero { transition: none; } }
 html.no-motion .silk-hero.silk-live .silk-img { animation: none !important; }
+
+/* Weniger weiße Verläufe: Reiter-Leiste und VIP-Kästen dunkler, Lichtstriche gedämpft (Bewegung bleibt) */
+body .tabs, body .subpop {
+  background: linear-gradient(180deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 40%, rgba(255,255,255,0) 55%), rgba(14,14,17,.62) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 8px 14px -10px rgba(255,255,255,.1), 0 14px 34px rgba(0,0,0,.55) !important;
+}
+body .tabs::before, body .subpop::before {
+  background:
+    conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .12)) 30deg, rgba(255,255,255,calc(var(--vg) * .5)) 62deg, transparent 70deg, transparent 180deg,
+      rgba(255,255,255,calc(var(--vg) * .1)) 215deg, rgba(255,255,255,calc(var(--vg) * .4)) 245deg, transparent 252deg, transparent 360deg),
+    linear-gradient(rgba(220,224,230,.22), rgba(220,224,230,.22)) !important;
+  filter: none !important;
+}
+.backstage .slist, .backstage .bs-tile, .backstage .empty-card, .backstage .field.search, .backstage .btn.line, .backstage .btn.dark, .friend .slist, .friend .kv-c {
+  background: linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,0) 50%), rgba(16,16,19,.6) !important;
+}
+.page.backstage .slist::before, .page.backstage .bs-tile:not(.glint)::before, .page.backstage .bs-tile.glint::before {
+  background: radial-gradient(40% 70% at var(--lx, 30%) 0%, rgba(255,255,255,.06), transparent 70%) !important; }
+.page.backstage .slist::after, .page.backstage .bs-tile::after, .page.backstage .bs-tile.glint::after, .page.backstage .empty-card::after {
+  background: conic-gradient(from var(--va), transparent 0deg, rgba(255,255,255,calc(var(--vg) * .12)) 40deg, rgba(255,255,255,calc(var(--vg) * .5)) 70deg, transparent 78deg, transparent 360deg),
+    linear-gradient(rgba(255,255,255,.09), rgba(255,255,255,.09)) !important;
+  filter: none !important; }

@@ -3,13 +3,28 @@
 import { isDoubleAttempt, attemptField, hitsField, label, route } from './checkout.js';
 
 export const is501 = (m) => m.game === 'x01' && m.opts.start === 501 && m.done;
+/** Welche X01-Modi zählen in der Statistik? Standard nur 501 (Einstellung: lange auf „Stats“ drücken). Schlüssel: Startwert,
+    mit Double In „-di“ (z. B. '301', '301-di'). Die Freundes-Statistik auf dem Server nutzt immer den Standard. */
+export const DEFAULT_MODES = ['501'];
+let MODES = DEFAULT_MODES;
+export const modeKey = (m) => (m.game === 'x01' ? `${m.opts.start}${m.opts.in === 'double' ? '-di' : ''}` : m.game);
+export const modeLabel = (k) => k.replace(/-di$/, ' · Double In');
+export function setStatsModes(list) { MODES = Array.isArray(list) && list.length ? list : DEFAULT_MODES; }
+export const statsModes = () => MODES;
+export const inStats = (m) => m.game === 'x01' && m.done && MODES.includes(modeKey(m));
+/** Alle X01-Modi, die ein Spieler in seinen fertigen Spielen hat (501 immer), sortiert */
+export function availableModes(matches, pid) {
+  const set = new Set(DEFAULT_MODES);
+  for (const m of matches) if (m.game === 'x01' && m.done && m.playerIds?.includes(pid)) set.add(modeKey(m));
+  return [...set].sort((a, b) => parseInt(a, 10) - parseInt(b, 10) || a.localeCompare(b));
+}
 const DAY = 864e5;
 export const PERIODS = { '7d': 7 * DAY, '30d': 30 * DAY, '1y': 365 * DAY, all: Infinity };
 
 /** 501-Matches eines Profils, optional im Zeitraum (period-Key aus PERIODS). */
 export function matchesOf(matches, pid, period = 'all', now = Date.now()) {
   const span = PERIODS[period] ?? Infinity;
-  return matches.filter((m) => is501(m) && m.playerIds.includes(pid) && now - (m.endedAt ?? m.startedAt) <= span);
+  return matches.filter((m) => inStats(m) && m.playerIds.includes(pid) && now - (m.endedAt ?? m.startedAt) <= span);
 }
 
 /** Alle Aufnahmen, die dieses Profil selbst geworfen hat. */
