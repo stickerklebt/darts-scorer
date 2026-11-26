@@ -3908,3 +3908,16 @@ html.no-motion .bs-name { animation: none; }
 .heat-board .hb-none { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 3; pointer-events: none; }
 .heat-board .hb-none .dbl-info { pointer-events: auto; margin: 0 !important; max-width: min(78%, 320px); }
 .heat-board.has-none .heatboard { opacity: .35; transition: opacity .3s; }
+
+/* ---------- Eigener Dart als Steckbrief (gezeichnet, ui/dartart.js) ---------- */
+.vip-dart.mine svg { display: block; width: 100%; height: auto; max-height: 120px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.55)) drop-shadow(0 0 10px rgba(207,211,217,.18)); }
+.dart-tune { margin-top: 4px; }
+.dt-prev { padding: 6px 4px 2px; }
+.dt-prev svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.55)); }
+.dart-tune .seg { flex-wrap: wrap; }
+.dt-step { display: flex; align-items: center; gap: 10px; }
+.dt-step .btn { min-width: 40px; padding: 4px 0; }
+.dt-step b { min-width: 2ch; text-align: center; font-family: var(--f-num); font-size: 22px; }
+.dt-cols { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.dt-col { width: 30px; height: 30px; border-radius: 50%; background: var(--c); border: 1px solid rgba(238,240,243,.35); cursor: pointer; }
+.dt-col.on { outline: 2px solid #eef0f3; outline-offset: 2px; }

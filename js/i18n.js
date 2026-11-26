@@ -149,6 +149,9 @@ export const DICT = {
   // Profil / Konto
   'Name': 'Name', 'Freunde finden dich darüber': 'Friends find you by it', 'E-Mail': 'Email', 'Daten': 'Data', 'Passwort ändern': 'Change password', 'Abmelden': 'Sign out',
   'Dein Dart': 'Your dart', 'Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App schneidet ihn aus, der Tisch verschwindet.': 'Put it on a calm, single-coloured table and photograph it from above – the app cuts it out, the table disappears.',
+  'Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App.': 'Lay it flat on a calm, plain table and photograph it from above – the app measures shape, grooves and colours and draws it in the app style.',
+  'Rillen': 'Grooves', 'Silber': 'Silver', 'Schwarz': 'Black', 'Farbe': 'Colour', 'Flight-Farbe': 'Flight colour', 'Weniger Rillen': 'Fewer grooves', 'Mehr Rillen': 'More grooves',
+  'Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.': 'Dart not detected cleanly. Lay it flat, fully in frame, photographed from above.',
   'Dart fotografieren': 'Photograph dart', 'Neues Foto': 'New photo', 'Erkenne Dart …': 'Detecting dart …', 'Konto löschen': 'Delete account', 'Konto löschen?': 'Delete account?',
   'Eindeutig – Freunde finden dich darüber. 3–16 Zeichen, ohne Leerzeichen.': 'Unique – friends find you by it. 3–16 characters, no spaces.',
   'Aktuelles Passwort': 'Current password', 'Neues Passwort (mind. 8 Zeichen)': 'New password (min. 8 characters)', 'Andere Geräte werden danach abgemeldet.': 'Other devices will be signed out.',

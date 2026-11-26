@@ -32,6 +32,7 @@ import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMain
 import { statsView, SUBTABS } from './ui/stats-view.js';
 import { initWheels } from './ui/wheel.js';
 import { dartFromFile } from './dartscan.js';
+import { cleanSpec, MAX_RINGS } from './dartspec.js';
 import { compareView, comparePair } from './ui/compare.js';
 import { setupView } from './ui/setup.js';
 import { gameView } from './ui/game.js';
@@ -818,6 +819,21 @@ const actions = {
   settings() { ui.modal = { type: 'settings' }; render(); },
   profileOpen() { ui.modal = { type: 'profile' }; render(); },
   dartRemove() { delete S.prefs.myDart; render(); },
+  /** Eigenen Dart nachjustieren (Profil): Flight-Form, Rillen ±, Metall, Flight-Farbe */
+  dartSet(el) {
+    const sp = cleanSpec(S.prefs.myDart); if (!sp) return;
+    const k = el.dataset.k, v = el.dataset.v;
+    if (k === 'shape') sp.flight.shape = v;
+    else if (k === 'metal') sp.metal = v;
+    else if (k === 'color') sp.flight.colors = [v];
+    else if (k === 'rings') {
+      // gleichmäßig über die bisherige Grip-Zone verteilen (ohne erkannte Zone: Mitte des Barrels)
+      const r = sp.rings, n = Math.max(0, Math.min(MAX_RINGS, r.length + Number(v)));
+      const a = r.length > 1 ? r[0] : 0.2, b = r.length > 1 ? r[r.length - 1] : 0.8;
+      sp.rings = Array.from({ length: n }, (_, i) => +(n === 1 ? (a + b) / 2 : a + (b - a) * i / (n - 1)).toFixed(3));
+    }
+    S.prefs.myDart = sp; render();
+  },
   /* Rekord-Karte/Zeile in der Statistik → Leg bzw. Match im Detail */
   rec(el) {
     const d = el.dataset, num = (v) => (v === '' || v === undefined ? null : Number(v));

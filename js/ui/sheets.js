@@ -1,4 +1,5 @@
 /* Dialoge: Zahnrad, Einstellungen, Daten löschen, Name, Bestätigungen */
+import { renderDart } from './dartart.js';
 import { availableModes, statsModes, modeLabel } from '../stats.js';
 import { S, ui, nameOf } from '../store.js';
 import { BOTS } from '../bots.js';
@@ -32,6 +33,19 @@ function syncText() {
 const pwField = (id, ph, ac) => `<input id="${id}" class="field plain" type="password" placeholder="${ph}" autocomplete="${ac}">`;
 
 const tog = (k, lbl, sub = '') => `<button class="srow" data-act="pref" data-k="${k}"><span class="lbl">${lbl}${sub ? `<small>${sub}</small>` : ''}</span><span class="tog ${S.prefs[k] !== false && S.prefs[k] ? 'on' : ''}"></span></button>`;
+/** Eigener Dart nachjustieren (nur Steckbrief, kein altes Foto): Vorschau + Flight-Form, Rillen, Metall, Flight-Farbe */
+const FLIGHT_COLS = ['#b3243f', '#111215', '#eef0f3', '#c9ced5', '#1f5fd1', '#1e9e5a', '#f2c230', '#e8661f', '#7d3cc8', '#e03a8c'];
+function dartTune(sp) {
+  if (!sp || typeof sp !== 'object') return '';
+  const c0 = sp.flight?.colors?.[0];
+  const cols = [...new Set([c0, ...(sp.flight?.colors || []), ...FLIGHT_COLS].filter(Boolean))].slice(0, 10);
+  return `<div class="dart-tune"><div class="dt-prev">${renderDart(sp, 'Dein Dart')}</div>
+    <div class="srow col"><span class="lbl">Flight</span>${seg('dartSet', 'shape', [['standard', 'Standard'], ['slim', 'Slim'], ['kite', 'Kite'], ['pear', 'Pear']], sp.flight?.shape)}</div>
+    <div class="srow"><span class="lbl">Rillen</span><span class="dt-step"><button class="btn line" data-act="dartSet" data-k="rings" data-v="-1" aria-label="Weniger Rillen">−</button><b>${(sp.rings || []).length}</b><button class="btn line" data-act="dartSet" data-k="rings" data-v="1" aria-label="Mehr Rillen">+</button></span></div>
+    <div class="srow col"><span class="lbl">Barrel</span>${seg('dartSet', 'metal', [['silver', 'Silber'], ['titan', 'Titan'], ['black', 'Schwarz'], ['gold', 'Gold'], ...(sp.metal === 'color' ? [['color', 'Farbe']] : [])], sp.metal)}</div>
+    <div class="srow col"><span class="lbl">Flight-Farbe</span><div class="dt-cols">${cols.map((c) => `<button class="dt-col ${c === c0 ? 'on' : ''}" style="--c:${c}" data-act="dartSet" data-k="color" data-v="${c}" aria-label="Farbe ${c}"></button>`).join('')}</div></div>
+  </div>`;
+}
 
 export function sheetView() {
   const md = ui.modal, m = S.current;
@@ -61,9 +75,10 @@ export function sheetView() {
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
-      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App schneidet ihn aus, der Tisch verschwindet.</small></span>
+      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App.</small></span>
         <div class="dart-btns"><label class="btn dark dart-cam" ${ui.dartBusy ? 'aria-disabled="true"' : ''}>${ui.dartBusy ? 'Erkenne Dart …' : S.prefs.myDart ? 'Neues Foto' : 'Dart fotografieren'}<input id="dartFile" type="file" accept="image/*" capture="environment" hidden></label>
-        ${S.prefs.myDart ? '<button class="btn line" data-act="dartRemove">Entfernen</button>' : ''}</div></div></div>
+        ${S.prefs.myDart ? '<button class="btn line" data-act="dartRemove">Entfernen</button>' : ''}</div></div>
+        ${dartTune(S.prefs.myDart)}</div>
       <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>
       ${u ? '<button class="btn textonly del-acct" data-act="delAcct">Konto löschen</button>' : ''}`;
   } else if (md.type === 'settings') {

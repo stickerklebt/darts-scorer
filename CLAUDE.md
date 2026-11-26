@@ -397,8 +397,13 @@ Offen: E-Mail-Bestätigung.
   Schwelle aus der Bildverteilung → Teile über einen Saum verbinden, Dart-Fläche wählen (groß × länglich) + Teile auf der Achsen-Verlängerung (Flight) →
   Hysterese für Spitze/Ränder → Kanten gegen die Tischfarbe ohne Dart nachschärfen → Löcher füllen. `straighten`: je Spalte entlang der Achse die
   halbe Breite, **spiegelsymmetrisch zur Mittellinie** (Flight wird voll, auch wenn eine Kante kaum Kontrast hat), geglättet, Krümel an den Enden weg;
-  Flight nach links. Dann echter Dart in seinen Farben (Kontrast/Sättigung leicht verstärkt), Tisch transparent, Goldrand (`OUTLINE`), 1000 px PNG in `prefs.myDart`
-  (synchronisiert). Ohne Foto ein schlichter, leerer Platzhalter-Dart. Tests: `dartscan.test.mjs`.
+  Flight nach links. **Danach kein Foto-Ausschnitt mehr, sondern ein Dart-Steckbrief** (`js/dartspec.js`, `features`): Längenverhältnisse
+  Flight/Schaft/Barrel/Spitze, Barrel-Profil (12 Punkte), Dicke, Grip-Rillen (Helligkeitstäler entlang der Barrel-Mitte), Metall (Silber/Titan/Schwarz/Gold/Farbe),
+  Schaft- und Flight-Farben (k-means, 1–2), Flight-Form (Standard · Slim · Kite · Pear). Gespeichert als kleines Objekt in `prefs.myDart` (synchronisiert);
+  gezeichnet IMMER im selben Stil von `renderDart` (`js/ui/dartart.js`: waagerecht, gleiche Umrisslinie, Chrom-Glanz, Lichtstreif) – auch der Standard-Dart
+  (`DEFAULT_SPEC`). Profil › darunter Nachjustieren: Flight-Form, Rillen ±, Barrel-Metall, Flight-Farbe (`dartSet`). `cleanSpec` prüft jeden Steckbrief
+  (auch auf dem Server, `routes/friends.js` liefert `dartSpec` in Liste/Profil). Alte PNG-Darts (data-URL) werden weiter angezeigt bis zum nächsten Scan.
+  Tests: `dartscan.test.mjs`, `dartspec.test.mjs`.
 - Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).
 
 - **Liquid Glass + flüssiges Gold** (seit 25.11.2026, Block „LIQUID GLASS“ am Ende von `screens.css`): Reiter-Leiste und Statistik-Pille aus klarem Glas (stark verwischt, Glanz oben, Lichtkante, warmes Licht von unten, unter dem aktiven Reiter farbiges Licht im Glas), Rand als Ring aus flüssigem Gold (`--gold-metal`, langsam fließend). Überschriften (`.label`), Doppel-Name, Average-Titel, Rekord-Titel in Metall-Gold (`--gold-metal-h`, Text-Clip). Karten mit Glasglanz oben + Lichtkante. VIP: Freundesliste, Suchfeld, Kacheln, Leer-Karten und Knöpfe als dickes Kristallglas (doppelte Kante, helle weiße Lichtkanten, prismatischer Rand `--prism` mit feinen Farbsäumen, Glanzlicht oben links, Lichtsaum unten), eigener Dart mit Lichtreflex wie hinter Glas. Gold soll wie geschmolzenes, spiegelndes Metall wirken (harte Hell/Dunkel-Wechsel), nicht flach.

@@ -2,6 +2,7 @@
    die App findet den Dart, dreht ihn waagerecht (Flight links, Spitze rechts) und stellt ihn frei: der Tisch verschwindet komplett,
    übrig bleibt nur der fotografierte Dart in seinen echten Farben (leicht kräftiger), mit feinem Goldrand im Stil der App.
    Ergebnis: PNG mit transparentem Hintergrund als data-URL.
+   Seit dem Dart-Steckbrief (js/dartspec.js) liefert dartFromFile nur noch die gemessenen Merkmale; gezeichnet wird in ui/dartart.js.
    Kern ohne DOM (ImageData-artige Objekte { width, height, data }), damit er testbar ist. */
 
 const lum = (d, i) => 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
@@ -271,6 +272,9 @@ export function stylize(st) {
 }
 
 /* ---------- Im Browser: Foto → fertiges PNG (data-URL) ---------- */
+import { features } from './dartspec.js';
+
+/** Foto → Dart-Steckbrief (Merkmale, kein Bild) */
 export async function dartFromFile(file) {
   // createImageBitmap kann manche iPhone-Fotos (HEIC) nicht – dann über ein <img>
   let bmp;
@@ -286,12 +290,7 @@ export async function dartFromFile(file) {
   const { mask } = segment(img);
   const st = straighten(img, mask);
   if (!st || st.width < 40) throw new Error('Kein Dart erkannt. Leg ihn auf einen ruhigen, einfarbigen Untergrund und fotografiere ihn von oben.');
-  const sy = stylize(st);
-  // auf 1000 px Länge bringen (scharf auf großen Bildschirmen)
-  const tmp = document.createElement('canvas'); tmp.width = sy.width; tmp.height = sy.height;
-  tmp.getContext('2d').putImageData(new ImageData(sy.data, sy.width, sy.height), 0, 0);
-  const L = 1000, f = L / sy.width;
-  const out = document.createElement('canvas'); out.width = L; out.height = Math.max(8, Math.round(sy.height * f));
-  const ox = out.getContext('2d'); ox.imageSmoothingEnabled = true; ox.imageSmoothingQuality = 'high'; ox.drawImage(tmp, 0, 0, out.width, out.height);
-  return out.toDataURL('image/png');
+  const spec = features(st);
+  if (!spec) throw new Error('Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.');
+  return spec;
 }
