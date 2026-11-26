@@ -4,12 +4,12 @@ import { stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { join, normalize, extname, sep } from 'node:path';
 
-const FILES = new Set(['index.html', 'manifest.webmanifest', 'sw.js', 'icon-180.png', 'icon-512.png', 'favicon.svg']);
+const FILES = new Set(['index.html', 'manifest.webmanifest', 'sw.js', 'icon-180.png', 'icon-512.png', 'favicon.svg', 'favicon.ico']);
 const DIRS = new Set(['css', 'js', 'fonts', 'bots', 'assets']);
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json; charset=utf-8',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2',
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
 };
 
 export function createStatic(appDir) {

@@ -30,7 +30,7 @@ function mainOptions(id) {
   if (id === 'shanghai') return optRow('Ziele', seg('opt', 'rounds', [[7, '1–7'], [10, '1–10'], [20, '1–20']], o.rounds));
   if (id === 'atc') return optRow('Ende', seg('opt', 'bull', [[1, 'Mit Bull'], [0, 'Bis 20']], o.bull));
   if (id === 'cricket') return optRow('Variante', seg('opt', 'mode', [['points', 'Mit Punkten'], ['close', 'Nur Schließen']], o.mode))
-    + optRow('Runden (max.)', seg('opt', 'rounds', [[15, '15'], [20, '20'], [25, '25']], o.rounds));
+    + optRow('Runden (max.)', wheelHTML('rounds', 5, 40, o.rounds || 20));
   if (id === 'football') return optRow('Tore bis zum Sieg', seg('opt', 'target', [[3, '3'], [5, '5'], [7, '7']], o.target))
     + optRow('Tore (Seite 1 · Seite 2)', seg('opt', 'goal', [16, 20, 6, 19].map((g) => [g, `D${g} · D${F.opposite(g)}`]), o.goal))
     + '<p class="foot">Fußball spielt man immer einer gegen einen – genau zwei Spieler in der Liste.</p>';
@@ -59,11 +59,15 @@ function moreOptions(id) {
       ${S.teamMode ? '<p class="foot">Tippe bei den Spielern auf „Team“, um sie zuzuordnen. Im Team wird reihum geworfen, in der Reihenfolge der Liste.</p>' : ''}
       ${id === 'x01' && o.mode === 'sets' ? `<p class="foot">Ein Set gewinnt, wer zuerst ${X.LEGS_PER_SET} Legs holt.</p>` : ''}
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
-      <section class="rules"><div class="rules-in">
+      ${id === 'x01' && ui.x01Var !== 'other' ? `<section class="rules x01-hint"><div class="rules-in">
+        <h2 class="display">Double In? Oder X01?</h2>
+        <p>Double In und die anderen Startwerte (101 · 301 · 701 · 1001) findest du auf Play unter „Partyspiele“ beim <b class="xh-plus">+</b>.</p>
+        <button class="btn line xh-go" data-act="partyBrowse">${icon('plus', 2.2, 16)} Zu den Partyspielen</button>
+      </div></section>` : `<section class="rules"><div class="rules-in">
         ${badge(id, 40)}<span class="overline">Die Spielregeln</span>
         <h2 class="display">${g.title}</h2>${divider('#08080a')}<p>${g.desc}</p>
         ${id === 'x01' ? '<p class="small">Nur 501-Matches zählen für die Statistik.</p>' : ''}
-      </div></section>
+      </div></section>`}
     </div>` : ''}
   </div>`;
 }

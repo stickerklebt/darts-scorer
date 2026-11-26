@@ -1,4 +1,4 @@
-/* App-Icon aus dem Start-Logo (Chrom-Stern, symmetrisch: oben = unten, links = rechts, oben/unten länger) als PNG –
+/* App-Icon aus dem Start-Logo (Chrom-Stern, alle vier Arme gleich lang, hell silbern mit Schein) als PNG –
    ohne Grafikprogramm: Pfad wie chromeStarPath (svg.js) abtasten, 4×4-Überabtastung, Chrom-Verlauf, weicher Schein, PNG über zlib.
    Aufruf: node tools/mkstar-icon.mjs  → icon-180.png, icon-512.png, favicon.svg */
 import { writeFileSync } from 'node:fs';
@@ -6,7 +6,7 @@ import { deflateSync } from 'node:zlib';
 
 const BG = [10, 10, 12];
 // Chrom-Verlauf diagonal (wie chromeStar in svg.js)
-const STOPS = [[0, [255, 255, 255]], [0.28, [217, 222, 230]], [0.46, [93, 98, 108]], [0.55, [244, 246, 250]], [0.7, [139, 144, 153]], [1, [255, 255, 255]]];
+const STOPS = [[0, [255, 255, 255]], [0.28, [228, 231, 236]], [0.46, [150, 155, 164]], [0.55, [250, 251, 253]], [0.7, [190, 195, 203]], [1, [255, 255, 255]]];
 const grad = (t) => {
   t = Math.max(0, Math.min(1, t));
   let i = 1; while (i < STOPS.length - 1 && STOPS[i][0] < t) i++;
@@ -50,10 +50,10 @@ const distTo = (pts, x, y) => {
 };
 
 function render(S) {
-  const c = S / 2, up = S * 0.36, side = up * 34 / 48;
+  const c = S / 2, up = S * 0.33, side = up;
   const pts = starPoly(c, c, up, side, up, side);
   const px = Buffer.alloc(S * S * 3);
-  const glowR = S * 0.05;
+  const glowR = S * 0.075;
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     let cov = 0, col = [0, 0, 0];
     for (let sy = 0; sy < 4; sy++) for (let sx = 0; sx < 4; sx++) {
@@ -71,7 +71,7 @@ function render(S) {
     else {
       // weicher weißer Schein um den Stern (+ ganz leichtes Bordeaux weiter außen)
       const d = cov ? 0 : distTo(pts, x + 0.5, y + 0.5);
-      const glow = cov ? 0 : Math.exp(-d / glowR) * 0.55, bord = cov ? 0 : Math.exp(-d / (S * 0.18)) * 0.12;
+      const glow = cov ? 0 : Math.exp(-d / glowR) * 0.75, bord = cov ? 0 : Math.exp(-d / (S * 0.18)) * 0.12;
       const base = BG.map((v, k) => v + (255 - v) * glow + ([122, 20, 48][k] - v) * bord);
       out = base.map((v, k) => (v * (16 - cov) + col[k]) / 16);
     }
@@ -92,7 +92,10 @@ function png(w, h, rgb) {
 
 writeFileSync('icon-180.png', render(180));
 writeFileSync('icon-512.png', render(512));
+{ const p = render(64), h = Buffer.alloc(22); h.writeUInt16LE(0, 0); h.writeUInt16LE(1, 2); h.writeUInt16LE(1, 4);
+  h[6] = 64; h[7] = 64; h[8] = 0; h[9] = 0; h.writeUInt16LE(1, 10); h.writeUInt16LE(32, 12); h.writeUInt32LE(p.length, 14); h.writeUInt32LE(22, 18);
+  writeFileSync('favicon.ico', Buffer.concat([h, p])); }
 // Favicon als SVG (gleiche Form)
-const pts = starPoly(32, 32, 23, 23 * 34 / 48, 23, 23 * 34 / 48);
-writeFileSync('favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="rgb(${c.join(',')})"/>`).join('')}</linearGradient></defs><rect width="64" height="64" rx="14" fill="#0a0a0c"/><path d="M${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join('L')}Z" fill="url(#g)" stroke="#fff" stroke-width=".6"/></svg>\n`);
-console.log('icon-180.png, icon-512.png, favicon.svg geschrieben');
+const pts = starPoly(32, 32, 22, 22, 22, 22);
+writeFileSync('favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="rgb(${c.join(',')})"/>`).join('')}</linearGradient></defs><defs><radialGradient id="h"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#0a0a0c"/><circle cx="32" cy="32" r="26" fill="url(#h)"/><path d="M${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join('L')}Z" fill="url(#g)" stroke="#fff" stroke-width=".6"/></svg>\n`);
+console.log('icon-180.png, icon-512.png, favicon.svg, favicon.ico geschrieben');

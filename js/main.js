@@ -98,7 +98,20 @@ function fitDblList() {
   const top = (head ? head.getBoundingClientRect().height + 10 : 0);
   list.style.maxHeight = `${Math.max(160, Math.round(board.getBoundingClientRect().height - top))}px`;
 }
-addEventListener('resize', () => fitDblList());
+addEventListener('resize', () => { fitDblList(); fitCoRight(); });
+/** Statistik › Überblick breit: rechte Spalte (Top 10 + High Finish) endet genau auf Höhe der letzten Karte links
+    (offsetTop statt getBoundingClientRect – die Einblend-Animation verschiebt die Karten kurz) */
+function fitCoRight() {
+  const right = document.querySelector('.co-right'), left = document.querySelector('.co-left');
+  if (!right || !left) return;
+  if (innerWidth < 900) { right.style.removeProperty('--co-gap'); return; }
+  const top = (el) => { let y = 0; for (let e = el; e; e = e.offsetParent) y += e.offsetTop; return y; };
+  let lastBottom = 0;
+  for (const el of left.querySelectorAll('.record, .kv-c')) if (el.offsetParent) lastBottom = Math.max(lastBottom, top(el) + el.offsetHeight);
+  if (!lastBottom) return;
+  const gap = Math.max(0, Math.round(top(right) + right.offsetHeight - lastBottom));
+  right.style.setProperty('--co-gap', `${gap}px`);
+}
 /* High Finish: Seite (3 Darts · 2 Darts) beim Wischen merken – die Punkte unten zeigen sie */
 document.addEventListener('scroll', (e) => {
   const el = e.target;
@@ -126,7 +139,7 @@ function render() {
   else if (S.screen === 'caller' && auth.user) html = callerView();
   else { S.screen = 'home'; html = tabsBar() + (S.tab === 'stats' ? statsView() : S.tab === 'friends' ? friendsView() : playView()); }
   ui.camLive = camLiveFor(m);
-  html += sheetView() + camPill() + spotAskView(ui.dblSpot);
+  html += sheetView() + camPill() + spotAskView(ui.dblSpot) + (S.screen === 'game' && ui.kbDart && S.prefs.dartInput === 'keys' ? `<div class="kbd-buf" aria-live="polite"><b>${ui.kbDart}</b><i></i></div>` : '');
   if (ui.toast) html += `<div class="toast">${esc(ui.toast)}</div>`;
   // Einstellungen: Sprache (nur Oberfläche, per Übersetzung des fertigen HTML) und Bewegung in den Kästen
   const root = document.documentElement, lang = S.prefs.lang === 'en' ? 'en' : 'de';
@@ -141,6 +154,7 @@ function render() {
   ui.lastKey = key;
   // Bot am Zug: Eingabebereich so hoch wie zuletzt die eigene Tastatur, damit die Karten oben nicht springen
   fitDblList();
+  fitCoRight();
   initWheels((k, v) => { if (S.screen === 'setup' && S.opts[S.game]) { S.opts[S.game][k] = v; render(); } });
   const pad = app.querySelector('.game .pad');
   if (pad) {
@@ -1230,11 +1244,47 @@ document.addEventListener('keydown', (e) => {
   if (fxRunning()) { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') stopFx(); return; }
   if (S.screen !== 'game' || ui.modal || !m || m.done || m.game === 'atc' || inBulloff() || isBot(curThrowerOf(m)) || notMyTurn()) return;
   if (ui.moment) { if (e.key === 'Enter' || e.key === 'Escape') actions.momentClose(); return; }
-  if (m.game === 'cricket' || m.game === 'football' || (m.game === 'x01' && X.inputMode(m) === 'darts')) { if (e.key === 'Backspace') undo(); return; }
+  if (m.game === 'x01' && X.inputMode(m) === 'darts') { if (!e.metaKey && !e.ctrlKey && !e.altKey) kbDartKey(e); return; }
+  if (m.game === 'cricket' || m.game === 'football') { if (e.key === 'Backspace') undo(); return; }
   if (/^\d$/.test(e.key)) actions.key({ dataset: { v: e.key } });
   else if (e.key === 'Enter') actions.ok();
   else if (e.key === 'Backspace') actions.back();
 });
+
+/* Checkout per Tastatur (MacBook): erst S / D / T, dann die Zahl – „T20“, „S3“, „D5“; „B“ = Bull, „0“ = daneben, „S25“ = 25.
+   Eindeutige Eingaben zählen sofort (T5, D16), „T1“/„D2“ warten kurz auf eine zweite Ziffer (oder Enter/Leertaste). */
+let kbTimer = null;
+function kbCommit() {
+  clearTimeout(kbTimer); kbTimer = null;
+  const b = ui.kbDart || ''; ui.kbDart = '';
+  const mm = /^([SDT])(\d{1,2})$/.exec(b);
+  if (!mm) { if (b) render(); return; }
+  const mult = { S: 1, D: 2, T: 3 }[mm[1]], n = Number(mm[2]);
+  if (!((n >= 1 && n <= 20) || (n === 25 && mult < 3))) { toast(`${b} gibt es nicht`); render(); return; }
+  kbThrow({ n, m: mult });
+}
+function kbThrow(d) {
+  const m = S.current;
+  if (!m || m.done || X.inputMode(m) !== 'darts' || isBot(curThrowerOf(m)) || notMyTurn()) return render();
+  if (document.getElementById('dartBoard')) { const p = aimCenter(d); actions.aimDart(p.x, p.y); }
+  else { if (ui.aimPos) ui.aimPos = ui.aimPos.slice(0, m.pending.length); ui.mult = 1; handle(throwOne(m, d.n, d.m)); }
+}
+function kbDartKey(e) {
+  const k = e.key.length === 1 ? e.key.toUpperCase() : e.key, b = ui.kbDart || '';
+  if (k === 'Backspace') { e.preventDefault(); if (b) { ui.kbDart = b.slice(0, -1); clearTimeout(kbTimer); render(); } else undo(); return; }
+  if (k === 'Escape') { ui.kbDart = ''; clearTimeout(kbTimer); render(); return; }
+  if (k === 'Enter' || k === ' ') { e.preventDefault(); if (b) kbCommit(); return; }
+  if (k === 'S' || k === 'D' || k === 'T') { clearTimeout(kbTimer); if (/\d$/.test(b)) kbCommit(); ui.kbDart = k; render(); return; }
+  if (k === 'B') { clearTimeout(kbTimer); ui.kbDart = ''; kbThrow({ n: 25, m: b === 'S' ? 1 : 2 }); return; }
+  if (k === 'M' || (k === '0' && !b)) { clearTimeout(kbTimer); ui.kbDart = ''; kbThrow({ n: 0, m: 1 }); return; }
+  if (!/^\d$/.test(k) || !b) return;
+  const nb = b + k, digits = nb.slice(1);
+  if (digits.length > 2) return;
+  ui.kbDart = nb; clearTimeout(kbTimer);
+  // fertig, sobald keine weitere Ziffer mehr ein Feld ergeben kann (1x, 2x → warten; 3–9, zweistellig → sofort)
+  if (digits.length === 2 || Number(digits) >= 3 || digits === '0') return kbCommit();
+  render(); kbTimer = setTimeout(kbCommit, 900);
+}
 
 /* ---------------- Kamera (Beta): erkannte Darts als Vorschlag ---------------- */
 /* Kamera-Erkennung im Spiel: Würfe vom Kamera-Gerät (oder vom eigenen Gerät) landen in ui.ct.darts (3 Slots),

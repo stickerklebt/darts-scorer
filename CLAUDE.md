@@ -476,3 +476,10 @@ Offen: E-Mail-Bestätigung.
   „Auffällig“ ohne Bust-Schock und Wochentag. Doppel groß: nur ab und zu kurzer Glanz. Doppel-Fenster: Prozent antippen → Kurve „Treffer beim wievielten Versuch im Leg“
   (`doubleTriesToHit`, x-Achse = Ø × 1,4, Rest in der letzten Säule). Setup-501 höher.
 - **Update 26.11.2026 (6)**: Doppel-Kurve mit Platz für die Prozente oben. Statistik breit: rechte Spalte (Top 10 scrollt im Kasten, High Finish unten) genau so hoch wie die linke (`.co-right-in`). „Auffällig“ 2 × 2.
+- **Update 26.11.2026 (7)** (Block „UPDATE 26.11.2026 (7)“ in `screens.css`): Logo-Stern mit vier gleich langen Armen, hell silbern + Schein (`crestLine`, `tools/mkstar-icon.mjs` → auch `favicon.ico`, Icons `?v=star4`).
+  Reiter enger, Strich + Symbole weiß leuchtend. Play: Abstand „The Game“/„Partyspiele“ zur Kachel gleich. Zurück-Pfeile ohne Rahmen, breit in der Inhaltsspalte (720 px).
+  Drehrad-Rot repariert (`!important` blockierte die Animation) + roter Verlauf durch die waagerechten Linien. Spielerkarten im Stil des Startknopfs (Karte 1 rötlich, 2 weißlich).
+  Checkout per Tastatur (`kbDartKey` in main.js): S/D/T + Zahl, B = Bull, 0/M = daneben, Anzeige im „Jetzt“-Kästchen. Cricket-Runden per Drehrad (5–40).
+  Doppel: bestes Doppel/Glanz gehören zur Einfall-Animation; dünne Farbskala rot → weiß unter der Scheibe (`DBL_SCALE`). Überblick: Karten/Zahlen ploppen beim Öffnen,
+  Average + Doppelquote als `hs-epic` (Chrom-Ring, Schein, Strahlen). Top 10: Überschrift bleibt stehen, unten verschwommen, rechte Spalte endet bündig (`fitCoRight`).
+  Partyspiel-Logos aus Chrom (`metalBadge` in svg.js). Setup 501 › Mehr Optionen: Hinweis „Double In? Oder X01?“ → Partyspiele-Plus.

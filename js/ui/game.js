@@ -299,14 +299,15 @@ function boardPad(m, thrower) {
   });
   const chip = (i) => {
     const d = hits[i], now = i === hits.length;
-    if (!d) return `<div class="ahit ${now ? 'now' : ''}"><i>${ROMAN[i]}</i><b>${now ? 'Jetzt' : '–'}</b></div>`;
+    if (!d) return `<div class="ahit ${now ? 'now' : ''} ${now && ui.kbDart ? 'kb' : ''}"><i>${ROMAN[i]}</i><b>${now ? (ui.kbDart || 'Jetzt') : '–'}</b></div>`;
     return `<div class="ahit done m${d.n === 0 ? 0 : d.m}"><i>${ROMAN[i]}</i><b>${fieldName(d)}</b>${m.game === 'cricket' || d.n === 0 ? '' : `<small>${d.n * d.m}</small>`}</div>`;
   };
   return `${restEntry(m, thrower)}
     <div class="ahits">${[0, 1, 2].map(chip).join('')}</div>
     <div class="aimbox" id="dartBoard">${aimBoard(hits)}</div>
     <div class="boardrow"><button class="dk miss" data-act="dart" data-v="0">Daneben</button>
-      <button class="dk" style="color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 24)}</button></div>`;
+      <button class="dk" style="color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px" data-act="back" aria-label="Rückgängig">${icon('undo', 2.4, 24)}</button></div>
+    ${m.game === 'x01' ? '<p class="kbd-hint">Tastatur: T20 · D16 · S5 · B = Bull · 0 = daneben</p>' : ''}`;
 }
 
 function hitsPad(m, thrower, cur, locked = false) {

@@ -61,19 +61,21 @@ export function statsHeader(pid) {
 }
 
 /* ---------------- Unter-Reiter ---------------- */
+/** Die zwei wichtigsten Zahlen (Average, Doppelquote): Chrom-Ring mit wanderndem Licht, roter Schein hinter der Zahl, Lichtstrahlen */
+const HS_FX = '<i class="hs-ring" aria-hidden="true"></i><i class="hs-aura" aria-hidden="true"></i><i class="hs-rays" aria-hidden="true"></i><i class="hs-flash" aria-hidden="true"></i>';
 function overviewTab(st, pid) {
   const c = st.counts;
   // Lieblingsdoppel = Doppel mit der besten Trefferquote (erst ab MIN_ATTEMPTS Versuchen, mindestens ein Treffer)
   const rating = doubleRating(st.doubles);
   const favK = Object.keys(rating).find((k) => rating[k].top === 1);
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
-  return `<div class="hero-stat has-rv">${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv('Modus 501')}</em></div>
+  return `<div class="hero-stat hs-epic has-rv">${HS_FX}${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv('Modus 501')}</em></div>
     ${cards([
       ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
       ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], 'three', pid)}
-    <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
+    <div class="hero-stat dbl-hero hs-epic has-rv">${HS_FX}${fuse(5, 12)}<small>Doppelquote</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${pct(st.doubles.rate)}">${pct(st.doubles.rate)}</b>${sparkles(7, 6)}</span><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
     ${checkoutTab(st, pid)}
     ${insightsBlock(cachedInsights(pid))}`;
 }
@@ -166,6 +168,7 @@ export function doublesBlock(st, sel, withList = true) {
   const dot = (k) => { const c = ratingColor(rating[k]); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
   return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
       <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}</div>
+      ${withList ? DBL_SCALE.replace('dbl-scale', 'dbl-scale ds-narrow') : ''}
       ${withList && sel && !spotOverlay(st, sel) ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? `<div class="dbl-right">
@@ -173,8 +176,11 @@ export function doublesBlock(st, sel, withList = true) {
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r, i) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}" style="--k:${i}"><td>${dot(r.k)}${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
-    ${withList ? '</div>' : ''}</div>`;
+    ${withList ? `</div>${DBL_SCALE.replace('dbl-scale', 'dbl-scale ds-wide')}` : ''}</div>`;
 }
+/** Dünne Farbskala unter der Scheibe: links das dunkelste Rot (schlechtestes Doppel) bis rechts glänzend Weiß (bestes) –
+    mit weichem Leuchten und Lichtern, die durch die Linie wandern (gleicher Verlauf wie ratioColor in board.js) */
+const DBL_SCALE = '<div class="dbl-scale" role="img" aria-label="Farbskala: links schwach, rechts stark"><i class="ds-glow"></i><i class="ds-line"></i><i class="ds-run"></i><i class="ds-run r2"></i><i class="ds-spark"></i></div>';
 
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {

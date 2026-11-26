@@ -55,7 +55,9 @@ export const DICT = {
   'Solo starten': 'Start solo', 'Spieler hinzufügen': 'Add player', 'Wer wirft heute mit?': 'Who is playing today?', 'Freunde': 'Friends', 'Gast': 'Guest', 'Bot': 'Bot',
   'spielt schon mit': 'already playing', 'Du hast noch keine Freunde – füge sie im VIP-Bereich hinzu.': 'You have no friends yet – add them in the VIP area.',
   'Lade Freunde …': 'Loading friends …', 'Alle Bots spielen schon mit.': 'All bots are already playing.', 'Noch keine Spieler ausgewählt.': 'No players selected yet.',
-  'Reihenfolge mischen': 'Shuffle order', 'Jeder für sich': 'Free for all', 'Teams': 'Teams', 'Die Spielregeln': 'The rules', 'Spielregeln': 'Rules',
+  'Reihenfolge mischen': 'Shuffle order', 'Double In? Oder X01?': 'Double In? Or X01?', 'Zu den Partyspielen': 'To the party games',
+  'Double In und die anderen Startwerte (101 · 301 · 701 · 1001) findest du auf Play unter „Partyspiele“ beim': 'You find Double In and the other starting scores (101 · 301 · 701 · 1001) on Play under “Party games” behind the',
+  'Tastatur: T20 · D16 · S5 · B = Bull · 0 = daneben': 'Keyboard: T20 · D16 · S5 · B = Bull · 0 = miss', 'Farbskala: links schwach, rechts stark': 'Colour scale: weak on the left, strong on the right', 'Jeder für sich': 'Free for all', 'Teams': 'Teams', 'Die Spielregeln': 'The rules', 'Spielregeln': 'Rules',
   'Nur 501-Matches zählen für die Statistik.': 'Only 501 matches count for the stats.', 'Mit Kamera-Erkennung spielen': 'Play with camera detection',
   'Würfe kommen von der Kamera, du kannst sie korrigieren': 'Throws come from the camera, you can correct them', 'Gast · nur dieses Spiel, ohne Statistik': 'Guest · this game only, no stats',
   'Fußball spielt man immer einer gegen einen – genau zwei Spieler in der Liste.': 'Football is always one against one – exactly two players in the list.',
@@ -188,6 +190,7 @@ export const DICT = {
 
 /** Texte mit Zahlen/Namen */
 const PATTERNS = [
+  [/^([SDT]\d{1,2}) gibt es nicht$/, (m, d) => `${d} does not exist`],
   [/^(\d+) Spiele? · zuletzt (heute|gestern)$/, (m, n, d) => `${n} game${n === '1' ? '' : 's'} · last played ${d === 'heute' ? 'today' : 'yesterday'}`],
   [/^(\d+) Spiele? · zuletzt vor (\d+) Tag(en)?$/, (m, n, d) => `${n} game${n === '1' ? '' : 's'} · last played ${d} day${d === '1' ? '' : 's'} ago`],
   [/^(\d+) Spieler · (\d+) gespeicherte Spiele$/, (m, a, b) => `${a} player${a === '1' ? '' : 's'} · ${b} saved games`],

@@ -164,9 +164,10 @@ let lineN = 0;
     darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
   const w = opts.size || 200, g = `ti${++starN}`;
-  const d = chromeStarPath(100, 58, 48, 34, 48, 34);
+  const d = chromeStarPath(100, 58, 46, 46, 46, 46); // alle vier Arme gleich weit von der Mitte
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
-    <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f5f7"/><stop offset=".18" stop-color="#b9bcc2"/><stop offset=".34" stop-color="#6d7178"/><stop offset=".46" stop-color="#3d4045"/><stop offset=".56" stop-color="#8e9299"/><stop offset=".68" stop-color="#e3e5e9"/><stop offset=".82" stop-color="#9a9ea5"/><stop offset="1" stop-color="#55585e"/></linearGradient>
+    <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
+    <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     <linearGradient id="${g}t" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a9ea5"/><stop offset=".3" stop-color="#f1f2f4"/><stop offset=".5" stop-color="#7d8188"/><stop offset=".72" stop-color="#e6e8eb"/><stop offset="1" stop-color="#8a8e95"/></linearGradient>
     <filter id="${g}f" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="11" result="n"/>
@@ -178,11 +179,14 @@ export function crestLine(opts = {}) {
       <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
       <feComposite in="sp2" in2="textured" operator="arithmetic" k2=".7" k3="1"/>
     </filter>
-    <filter id="${g}s" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter></defs>
-    <path d="${d}" fill="#fff" opacity=".22" filter="url(#${g}s)"/>
+    <filter id="${g}s" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="${g}w" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14"/></filter></defs>
+    <path class="brand-glow" d="${d}" fill="#e9eef5" opacity=".38" filter="url(#${g}w)"/>
+    <path d="${d}" fill="#fff" opacity=".55" filter="url(#${g}s)"/>
     <path d="${d}" fill="url(#${g}a)" filter="url(#${g}f)"/>
     <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
-    <path d="${d}" transform="translate(100 58) scale(.9) translate(-100 -58)" fill="none" stroke="#1d1f23" stroke-opacity=".55" stroke-width=".8"/>
+    <path d="${d}" transform="translate(100 58) scale(.9) translate(-100 -58)" fill="none" stroke="#1d1f23" stroke-opacity=".35" stroke-width=".7"/>
+    <circle class="brand-core" cx="100" cy="58" r="22" fill="url(#${g}c)"/>
     <text x="104" y="134" text-anchor="middle" class="brand-name" style="fill:url(#${g}t)">DARTVADER</text></svg>`;
 }
 
@@ -244,6 +248,33 @@ export const MODE_COLORS = Object.fromEntries(Object.entries(MODE_STYLE).map(([k
 export const badge = (game, size = 44) => {
   const [bg, ink, line] = MODE_STYLE[game] || MODE_STYLE.x01;
   return `<span class="badge-mode" style="--badge-bg:${bg};--badge-ink:${ink};--badge-line:${line};width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true">${SYMBOLS[game]}</svg></span>`;
+};
+
+/** Partyspiel-Logo aus hart glänzendem Chrom: polierte dunkle Scheibe mit Chrom-Ring, das Symbol selbst aus Silber
+    (Verlauf mit harten Hell/Dunkel-Wechseln, Fase per feSpecularLighting, Glanzlicht oben). text statt Symbol für „Bald“-Kacheln. */
+export const metalBadge = (game, size = 52, text = '') => {
+  const k = `mb-${String(game).replace(/[^a-z0-9]/gi, '')}`;
+  const chrome = `url(#${k}g)`;
+  const sym = text ? '' : (SYMBOLS[game] || SYMBOLS.x01)
+    .replace(/currentColor/g, chrome).replace(/var\(--badge-bg\)/g, '#0b0b0e')
+    .replace(/#f6f1e4/g, chrome).replace(/id="fbclip"/g, `id="${k}c"`).replace(/url\(#fbclip\)/g, `url(#${k}c)`);
+  const fs = text.length > 3 ? 6.2 : text.length > 2 ? 7.4 : 9.5;
+  return `<span class="badge-mode metal" style="width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true"><defs>
+    <linearGradient id="${k}g" gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".38" stop-color="#7b818a"/><stop offset=".47" stop-color="#2f3238"/><stop offset=".55" stop-color="#f7f8fa"/><stop offset=".68" stop-color="#b4b9c1"/><stop offset=".84" stop-color="#5d626a"/><stop offset="1" stop-color="#eef0f3"/></linearGradient>
+    <linearGradient id="${k}r" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#8d939b"/><stop offset=".5" stop-color="#f2f4f7"/><stop offset=".72" stop-color="#3b3e44"/><stop offset="1" stop-color="#d7dbe0"/></linearGradient>
+    <radialGradient id="${k}d" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="#2a2c31"/><stop offset=".55" stop-color="#0f1013"/><stop offset="1" stop-color="#040405"/></radialGradient>
+    <filter id="${k}f" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation=".45" result="b"/>
+      <feSpecularLighting in="b" surfaceScale="1.6" specularConstant="1.1" specularExponent="26" lighting-color="#fff" result="sp"><feDistantLight azimuth="235" elevation="42"/></feSpecularLighting>
+      <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+      <feComposite in="sp2" in2="SourceGraphic" operator="arithmetic" k2=".75" k3="1" result="lit"/>
+      <feDropShadow in="lit" dx="0" dy=".5" stdDeviation=".45" flood-color="#000" flood-opacity=".8"/></filter></defs>
+    <circle cx="12" cy="12" r="11.2" fill="url(#${k}d)"/>
+    <circle cx="12" cy="12" r="11.2" fill="none" stroke="url(#${k}r)" stroke-width="1.1"/>
+    <circle cx="12" cy="12" r="10.1" fill="none" stroke="#000" stroke-opacity=".7" stroke-width=".5"/>
+    <g filter="url(#${k}f)">${text ? `<text x="12" y="12" text-anchor="middle" dominant-baseline="central" font-family="'League Gothic', sans-serif" font-size="${fs}" fill="${chrome}">${text}</text>` : `<g transform="translate(12 12) scale(.66) translate(-12 -12)">${sym}</g>`}</g>
+    <path d="M4.6 8.2 A8.6 8.6 0 0 1 19.4 8.2" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.4" stroke-linecap="round"/>
+  </svg></span>`;
 };
 
 /* ---------- Comic: Dartpfeil als Raumschiff ---------- */
