@@ -107,6 +107,48 @@ export function metalOf(rgb) {
 }
 
 /** Flight-Form aus dem Breitenprofil (links = hinten): schmal → Slim, spitz hinten → Kite, gerade hinten → Standard, rund → Pear */
+/** Flight-Vorlagen als Breitenprofil (16 Punkte, hinten → vorne, 0…1) – daraus wird gezeichnet UND damit wird verglichen.
+    Slim = Standard-Profil, nur schmaler (über aspect). */
+export const FLIGHT_TPL = {
+  standard: [0.84, 0.9, 0.95, 0.99, 1, 0.99, 0.95, 0.88, 0.79, 0.68, 0.57, 0.46, 0.35, 0.25, 0.16, 0.1],
+  pear: [0.25, 0.55, 0.75, 0.88, 0.96, 1, 0.99, 0.95, 0.88, 0.79, 0.68, 0.55, 0.42, 0.3, 0.19, 0.1],   // runde Rückseite
+  kite: [0.1, 0.3, 0.5, 0.7, 0.87, 0.98, 1, 0.94, 0.83, 0.71, 0.59, 0.47, 0.35, 0.25, 0.16, 0.1],
+};
+/** Gemessener Umriss → ähnlichste Vorlage. Verglichen wird die hintere Hälfte (dort unterscheiden sich die Formen;
+    vorne verdeckt der Schaft oft das Ende). Schmal (aspect < 0,7) → Slim. */
+export function matchFlight(outline, aspect = 1) {
+  if (aspect < 0.7) return 'slim';
+  if (!Array.isArray(outline) || outline.length !== 16) return 'standard';
+  let best = 'standard', bd = Infinity;
+  for (const [k, tpl] of Object.entries(FLIGHT_TPL)) {
+    const d = tpl.slice(0, 8).reduce((a, v, i) => a + Math.abs(v - outline[i]), 0);
+    if (d < bd) { bd = d; best = k; }
+  }
+  return best;
+}
+
+/**
+ * Nur Schatten statt Muster? Alle nennenswerten Farben (≥ 5 % der Fläche) haben denselben Farbton (±25°) bzw. sind alle grau,
+ * und die Helligkeit liegt nicht weit auseinander (< 110) → die Flight ist einfarbig; Rückgabe = Hauptfarbe [r,g,b], sonst null.
+ * (Schwarzes V auf Weiß, Grün mit schwarzen Streifen: großer Helligkeitsabstand → bleibt Muster.)
+ */
+export function shadingOnly(pal, counts) {
+  const tot = counts.reduce((a, b) => a + b, 0) || 1;
+  const sig = pal.map((c, k) => ({ c, n: counts[k], h: rgbToHsl(c) })).filter((x) => x.n / tot >= 0.05);
+  if (!sig.length) return null;
+  const lums = sig.map((x) => lumOf(x.c, 0)), chroma = sig.filter((x) => x.h[1] >= 0.25 && x.h[2] > 0.08 && x.h[2] < 0.92);
+  if (Math.max(...lums) - Math.min(...lums) >= 110) return null;
+  if (chroma.length && chroma.length < sig.length) {
+    // Grau + Farbe gemischt: nur Schatten, wenn die grauen Teile sehr dunkel sind (Schattenseite einer farbigen Flight)
+    if (sig.some((x) => !chroma.includes(x) && x.h[2] > 0.2)) return null;
+  }
+  if (chroma.length > 1) {
+    const hd = (a, b) => { const d = Math.abs(a - b) % 360; return Math.min(d, 360 - d); };
+    if (chroma.some((x) => hd(x.h[0], chroma[0].h[0]) > 25)) return null;
+  }
+  return sig.reduce((m, x) => (x.n > m.n ? x : m)).c;
+}
+
 export function flightShape(prof) {
   const L = prof.length, mx = Math.max(...prof, 1), aspect = mx / Math.max(1, L);
   const at = (f) => prof[Math.min(L - 1, Math.round(f * (L - 1)))] / mx;
@@ -220,7 +262,7 @@ export function features(st, dbg = {}) {
     profile: guess ? DEFAULT_SPEC.profile : smooth(profile, 1), thick: guess ? Math.min(bw, maxW * 0.35) / L : bmx / L,
     rings: guess ? DEFAULT_SPEC.rings : findRings(lum),
     metal: metalOf(barrelRgb), tone: toHex(barrelRgb), shaft: toHex(shaftRgb),
-    flight: { shape: 'photo', outline, aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.7)) },
+    flight: { shape: matchFlight(outline, fp.aspect), outline, aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.7)) },
   });
 }
 
@@ -301,9 +343,12 @@ export function flightTexture(st, x0, fE, TW = 96) {
     if (a >= 0) for (let j = a; j <= b; j++) vm[j * TW + i] = 1;
     ext.push(a < 0 ? 0 : Math.max(TH / 2 - a, b + 1 - TH / 2) / (TH / 2));
   }
+  // nur Schatten (einfarbige Flight)? → Hauptfarbe, dann zeichnet die App sie einfarbig statt mit Muster
+  const counts = pal.map(() => 0); idx.forEach((k, n) => { if (er[n]) counts[k]++; });
+  const sh = shadingOnly(pal, counts), plain = sh ? toHex(sh) : null;
   // auf die sichtbare Höhe zuschneiden, damit Muster und Umriss gleich groß gezeichnet werden
   const E = Math.max(...ext);
-  if (E < 0.2) return { w: TW, h: TH, pal, idx, alpha: er, outline: null, E: 1 };
+  if (E < 0.2) return { w: TW, h: TH, pal, idx, alpha: er, outline: null, E: 1, plain };
   const r0 = Math.max(0, Math.floor(TH / 2 * (1 - E))), r1 = Math.min(TH, Math.ceil(TH / 2 * (1 + E))), h2 = r1 - r0;
-  return { w: TW, h: h2, pal, idx: idx.slice(r0 * TW, r1 * TW), alpha: er.slice(r0 * TW, r1 * TW), outline: flightOutline(ext), E };
+  return { w: TW, h: h2, pal, idx: idx.slice(r0 * TW, r1 * TW), alpha: er.slice(r0 * TW, r1 * TW), outline: flightOutline(ext), E, plain };
 }

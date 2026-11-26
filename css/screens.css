@@ -4013,12 +4013,16 @@ html.no-motion .hero-stat.hs-epic > .hs-star { animation: none; }
 /* Kommende Partyspiele auf Play: genau wie Cricket/Fußball (gleiche Höhe, kein Namensstreifen), nur nicht antippbar */
 .mode.soon { opacity: 1 !important; filter: none !important; cursor: default; }
 .modes .mode { align-self: start; }
-/* Partyspiel-Kacheln: ab und zu huscht ein rotes Licht um den Rand (je Kachel versetzt) */
+/* Partyspiel-Kacheln: alle gleich aufgebaut – Kachel = genau der Kasten mit dem Symbol, keine leere Fläche darunter */
+.modes { align-items: start !important; }
+.modes .mode { display: block !important; padding: 0 !important; height: auto !important; min-height: 0 !important; }
+.modes .mode .mode-art { display: flex !important; width: 100% !important; height: 112px !important; margin: 0 !important; }
+.modes .mode .mode-art::after { display: none !important; content: none !important; }
+/* ab und zu huscht ein rotes Licht einmal um den Rand (je Kachel versetzt) */
 @property --mrA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-.modes .mode:not(.mode-plus) .mode-art::after { content: "" !important; display: block !important; position: absolute; inset: 0; z-index: 3; border-radius: inherit; padding: 1.5px; pointer-events: none;
-  background: conic-gradient(from var(--mrA), transparent 0deg, rgba(196,42,75,0) 20deg, #e0315a 60deg, #ff8aa2 72deg, rgba(196,42,75,0) 110deg, transparent 360deg) !important;
+.mode-ring { position: absolute; inset: 0; z-index: 3; border-radius: inherit; padding: 1.5px; pointer-events: none; display: block; opacity: 0;
+  background: conic-gradient(from var(--mrA), transparent 0deg 20deg, #e0315a 60deg, #ff8aa2 72deg, transparent 110deg 360deg);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  filter: drop-shadow(0 0 4px rgba(224,49,90,.9)) !important; text-shadow: none !important; opacity: 0;
-  animation: modeRed 9s linear infinite !important; animation-delay: calc(var(--bi, 0) * -3.1s) !important; }
-@keyframes modeRed { 0%, 70% { opacity: 0; --mrA: 0deg; } 74% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; --mrA: 360deg; } }
-html.no-motion .modes .mode .mode-art::after { animation: none !important; opacity: 0; }
+  filter: drop-shadow(0 0 4px rgba(224,49,90,.9)); animation: modeRed 9s linear infinite; animation-delay: calc(var(--bi, 0) * -3.1s); }
+@keyframes modeRed { 0%, 70% { opacity: 0; --mrA: 0deg; } 74% { opacity: 1; } 94% { opacity: 1; } 100% { opacity: 0; --mrA: 360deg; } }
+html.no-motion .mode-ring { animation: none; opacity: 0; }

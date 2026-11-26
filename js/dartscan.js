@@ -333,7 +333,7 @@ export function stylize(st) {
 }
 
 /* ---------- Im Browser: Foto → fertiges PNG (data-URL) ---------- */
-import { features, flightTexture, cleanSpec } from './dartspec.js';
+import { features, flightTexture, cleanSpec, matchFlight } from './dartspec.js';
 import { apiGate } from './api.js';
 
 /** Foto → Dart-Steckbrief (Merkmale, kein Bild). Jeder Versuch geht mit Foto + Zwischenergebnissen ans Scan-Protokoll (Server). */
@@ -370,8 +370,11 @@ export async function dartFromFile(file) {
     for (const tw of [96, 64]) {
       const tex = flightTexture(st, zones.x0, zones.gfE ?? zones.fE, tw), url = tex && texUrl(tex);
       if (url && url.length < 24000) {
-        spec.flight.tex = url; meta.tex = { w: tex.w, h: tex.h, colors: tex.pal.length, chars: url.length, E: tex.E };
-        if (tex.outline) { spec.flight.outline = tex.outline; spec.flight.aspect *= tex.E; }
+        if (tex.outline) { spec.flight.outline = tex.outline; spec.flight.aspect *= tex.E; spec.flight.shape = matchFlight(tex.outline, spec.flight.aspect); }
+        // nur Schatten → einfarbig in der Hauptfarbe (kein Muster); sonst Muster aus dem Foto
+        if (tex.plain) spec.flight.colors = [tex.plain]; else spec.flight.tex = url;
+        meta.spec.flight = { ...spec.flight, tex: undefined };
+        meta.zones.tex = { w: tex.w, h: tex.h, colors: tex.pal.length, chars: url.length, E: +tex.E.toFixed(2), plain: tex.plain, shape: spec.flight.shape };
         break;
       }
     }

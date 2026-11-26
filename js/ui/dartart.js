@@ -1,7 +1,7 @@
 /* Dart zeichnen aus dem Steckbrief (js/dartspec.js): immer derselbe Stil – waagerecht, Flight links, gleiche Umrisslinie,
    gleicher Chrom-Glanz und Lichtstreif; übernommen werden nur die echten Merkmale (Längen, Barrel-Form, Rillen, Metall, Farben, Flight-Form).
    Ergebnis: SVG-Text, viewBox 600 × 90 wie der frühere Standard-Dart. */
-import { cleanSpec, DEFAULT_SPEC } from '../dartspec.js';
+import { cleanSpec, DEFAULT_SPEC, FLIGHT_TPL } from '../dartspec.js';
 
 const X0 = 8, X1 = 592, SPAN = X1 - X0, CY = 45;
 const OUT = 'stroke="#eef0f3" stroke-opacity=".45" stroke-width="1.3" stroke-linejoin="round"';
@@ -31,24 +31,21 @@ function curve(p) {
   return d;
 }
 
-/** Flight-Umriss: hinten bei X0, vorne bei x1, halbe Höhe h */
+/** Flight-Umriss: hinten bei X0, vorne bei x1, halbe Höhe h – aus dem Breitenprofil der Vorlage (oder alter Foto-Umriss).
+    Harte Regeln: bis zur breitesten Stelle nur steigend, danach nur fallend → nie ein dünner Strich nach links, nie eine Einschnürung. */
 function flightPath(shape, x1, h, outline) {
-  const L = x1 - X0, X = (f) => f1(X0 + f * L), T = (f) => f1(CY - f * h), B = (f) => f1(CY + f * h);
-  if (shape === 'photo' && outline) {
-    // echter Umriss aus dem Foto (Breite je Stelle), vorne mindestens Schaft-Breite, glatt gezogen
-    // harte Regeln (gelten auch für alte Steckbriefe): bis zur breitesten Stelle nur steigend und nie schmaler als 35 %,
-    // danach nur fallend → nie ein dünner Strich nach links, nie eine Einschnürung
-    const n = outline.length; let pk = 0; outline.forEach((o, i) => { if (o > outline[pk]) pk = i; });
-    const o2 = outline.slice();
-    for (let i = pk - 1; i >= 0; i--) o2[i] = Math.max(0.35, Math.min(o2[i], o2[i + 1]));
-    for (let i = pk + 1; i < n; i++) o2[i] = Math.min(o2[i], o2[i - 1]);
-    const pts = o2.map((o, i) => [X0 + i / (n - 1) * L, CY - Math.max(i === n - 1 ? 5 : 1, o * h)]);
-    const top = curve(pts), bot = curve(pts.map(([x, y]) => [x, 2 * CY - y]).reverse());
-    return `M${f1(pts[0][0])} ${f1(pts[0][1])}${top} L${f1(pts[n - 1][0])} ${f1(2 * CY - pts[n - 1][1])}${bot} Z`;
+  const L = x1 - X0, photo = shape === 'photo' && outline;
+  const prof = photo ? outline : FLIGHT_TPL[shape === 'slim' ? 'standard' : shape] || FLIGHT_TPL.standard;
+  const n = prof.length; let pk = 0; prof.forEach((o, i) => { if (o > prof[pk]) pk = i; });
+  const o2 = prof.slice();
+  for (let i = pk - 1; i >= 0; i--) {
+    o2[i] = Math.min(o2[i], o2[i + 1]);
+    if (photo) o2[i] = Math.max(0.35, o2[i]);   // alter Foto-Umriss: hinten nie dünner als 35 % (Kite-Vorlage darf hinten spitz sein)
   }
-  if (shape === 'kite') return `M${X0} ${CY} L${X(0.42)} ${T(1)} L${f1(x1)} ${CY - 5} L${f1(x1)} ${CY + 5} L${X(0.42)} ${B(1)} Z`;
-  if (shape === 'pear') return `M${f1(x1)} ${CY - 5} C${X(0.55)} ${T(0.8)} ${X(0.08)} ${T(1.08)} ${X(0.02)} ${T(0.4)} Q${X(-0.03)} ${CY} ${X(0.02)} ${B(0.4)} C${X(0.08)} ${B(1.08)} ${X(0.55)} ${B(0.8)} ${f1(x1)} ${CY + 5} Z`;
-  return `M${X0} ${T(1)} L${f1(x1)} ${CY - 5} L${f1(x1)} ${CY + 5} L${X0} ${B(1)} L${X(0.07)} ${CY} Z`; // standard + slim
+  for (let i = pk + 1; i < n; i++) o2[i] = Math.min(o2[i], o2[i - 1]);
+  const pts = o2.map((o, i) => [X0 + i / (n - 1) * L, CY - Math.max(i === n - 1 ? 5 : 1, o * h)]);
+  const top = curve(pts), bot = curve(pts.map(([x, y]) => [x, 2 * CY - y]).reverse());
+  return `M${f1(pts[0][0])} ${f1(pts[0][1])}${top} L${f1(pts[n - 1][0])} ${f1(2 * CY - pts[n - 1][1])}${bot} Z`;
 }
 
 let n = 0;
@@ -60,7 +57,7 @@ export function renderDart(spec, label = 'Dart', cls = 'ddart') {
   const sum = raw.reduce((a, b) => a + b, 0), [lf, ls, lb] = raw.map((v) => v / sum * SPAN);
   const fx1 = X0 + lf, sx1 = fx1 + ls, bx1 = sx1 + lb;
   const hb = clamp(s.thick * SPAN / 2, 9, 17);
-  const hf = s.flight.shape === 'photo' ? clamp(s.flight.aspect * lf / 2, 18, 42) : s.flight.shape === 'slim' ? clamp(s.flight.aspect * lf / 2, 18, 28) : clamp(s.flight.aspect * lf / 2, 26, 42);
+  const hf = s.flight.shape === 'slim' ? clamp(s.flight.aspect * lf / 2, 18, 28) : clamp(s.flight.aspect * lf / 2, 26, 42);
   // Barrel: Profilpunkte, Enden etwas eingezogen (Übergang zu Schaft und Spitze)
   const P = s.profile, pts = [[sx1, Math.max(6.5, P[0] * hb * 0.75)], ...P.map((p, i) => [sx1 + (i + 0.5) / P.length * lb, Math.max(6.5, p * hb)]), [bx1, Math.max(4, P[P.length - 1] * hb * 0.7)]];
   const top = pts.map(([x, r]) => [x, CY - r]), bot = pts.map(([x, r]) => [x, CY + r]).reverse();

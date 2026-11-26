@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { segment, straighten } from '../js/dartscan.js';
-import { features, cleanSpec, flightTexture } from '../js/dartspec.js';
+import { features, cleanSpec, flightTexture, shadingOnly, matchFlight } from '../js/dartspec.js';
 import { renderDart } from '../js/ui/dartart.js';
 
 /* Synthetischer Dart auf hellem Tisch, schräg: Spitze · Barrel mit 6 dunklen Rillen · Schaft · rote Standard-Flight (hinten gerade) */
@@ -26,7 +26,7 @@ test('Dart-Steckbrief: Längen, Rillen, Metall, Flight-Farbe und -Form aus dem F
   assert.ok(Math.abs(sp.len.flight - 80 / 300) < 0.07, `Flight ${sp.len.flight}`);
   assert.ok(sp.rings.length >= 4 && sp.rings.length <= 8, `Rillen ${sp.rings.length}`);
   assert.equal(sp.metal, 'silver');
-  assert.equal(sp.flight.shape, 'photo');
+  assert.ok(['standard', 'slim', 'kite', 'pear'].includes(sp.flight.shape), sp.flight.shape);
   assert.equal(sp.flight.outline.length, 16);
   const [r, g] = [1, 3].map((i) => parseInt(sp.flight.colors[0].slice(i, i + 2), 16));
   assert.ok(r > 140 && g < 80, `Flight-Farbe ${sp.flight.colors[0]}`);
@@ -90,4 +90,21 @@ test('Dart-Steckbrief: abgetrenntes Flight-Stück hinten → kein Strich nach li
   // hintere Hälfte der Flight (x < 8 + 60): oberer Rand nie näher als 35 % der halben Höhe (≥ 18) an der Mitte (y = 45)
   const ys = [...d.matchAll(/(-?[\d.]+) (-?[\d.]+)/g)].filter((m) => +m[1] < 68 && +m[2] < 45).map((m) => +m[2]);
   assert.ok(ys.length && Math.max(...ys) <= 45 - 0.35 * 18 + 0.5, `hinten zu dünn: ${Math.max(...ys)}`);
+});
+
+test('Flight: nur Schatten → einfarbig, echtes Muster bleibt (Werte aus echten Uploads vom 26.11.)', () => {
+  const pc = (s) => s.split('  ').map((x) => { const [c, p] = x.split(':'); return [c.split(',').map(Number), parseInt(p, 10)]; });
+  const run = (s) => { const a = pc(s); return shadingOnly(a.map((x) => x[0]), a.map((x) => x[1])); };
+  assert.deepEqual(run('151,4,4:39%  220,9,8:42%  236,44,40:11%  242,112,105:8%  254,254,254:0%'), [220, 9, 8]);   // rote Flight, Schatten
+  assert.deepEqual(run('38,39,43:88%  89,89,93:12%  220,222,223:1%'), [38, 39, 43]);                               // schwarze Flight
+  assert.equal(run('46,54,31:19%  94,105,71:14%  131,164,40:33%  189,209,122:6%  174,214,30:28%'), null);          // grün-schwarzes Muster
+  assert.equal(run('44,41,38:9%  109,104,96:1%  163,161,152:2%  203,205,206:80%  231,213,147:8%'), null);         // schwarzes V auf Weiß
+});
+
+test('Flight-Form: gemessener Umriss → ähnlichste Vorlage (Werte aus echten Uploads)', () => {
+  const o = (s) => s.split(' ').map(Number);
+  assert.equal(matchFlight(o('0.16 0.36 0.65 0.87 0.94 0.98 0.98 0.96 0.94 0.89 0.79 0.66 0.50 0.36 0.24 0.18'), 1), 'pear');      // runde Rückseite
+  assert.equal(matchFlight(o('0.85 0.86 0.88 0.91 0.95 0.97 0.97 0.95 0.92 0.90 0.88 0.83 0.76 0.66 0.55 0.49'), 1), 'standard');
+  assert.equal(matchFlight(o('0.05 0.2 0.4 0.6 0.8 0.95 1 0.95 0.85 0.7 0.6 0.5 0.4 0.3 0.2 0.1'), 1), 'kite');
+  assert.equal(matchFlight(o('0.85 0.86 0.88 0.91 0.95 0.97 0.97 0.95 0.92 0.90 0.88 0.83 0.76 0.66 0.55 0.49'), 0.6), 'slim');
 });

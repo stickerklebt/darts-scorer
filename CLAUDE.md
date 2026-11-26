@@ -407,9 +407,9 @@ Offen: E-Mail-Bestätigung.
   gezeichnet IMMER im selben Stil von `renderDart` (`js/ui/dartart.js`: waagerecht, gleiche Umrisslinie, Chrom-Glanz, Lichtstreif) – auch der Standard-Dart
   (`DEFAULT_SPEC`). Profil › darunter Nachjustieren: Flight-Form, Rillen ±, Barrel-Metall, Flight-Farbe (`dartSet`). `cleanSpec` prüft jeden Steckbrief
   (auch auf dem Server, `routes/friends.js` liefert `dartSpec` in Liste/Profil). Alte PNG-Darts (data-URL) werden weiter angezeigt bis zum nächsten Scan.
-  **Clean-Icon statt Foto-Ausschnitt:** Flight = echter Umriss (`flight.outline`, 16 Punkte, Form „Wie Foto“ = `photo`) + Muster aus dem Foto
+  **Clean-Icon statt Foto-Ausschnitt:** Flight-Form = **Vorlage** (`FLIGHT_TPL` Standard · Pear (runde Rückseite) · Kite; Slim = Standard schmal), gewählt per `matchFlight` (gemessener Umriss, hintere Hälfte, L1) – gemessener Umriss bleibt nur in `flight.outline`; alte Steckbriefe mit `photo` werden weiter gezeichnet. Dazu das Muster aus dem Foto
   (`flightTexture`: abgerollt in Kastenform, Median 3×3, k-means ≤ 5 Farben, Mehrheitsfilter → kleines PNG in `flight.tex`, ≤ 24 000 Zeichen),
-  im SVG auf den Umriss beschnitten, darüber derselbe Glanz + Umrisslinie wie bei allen. Profil: „Flight-Muster“ Aus dem Foto · Einfarbig (`texOff`).
+  im SVG auf den Umriss beschnitten, darüber derselbe Glanz + Umrisslinie wie bei allen. **Nur Schatten** (`shadingOnly`: alle Farben ≥ 5 % gleicher Farbton bzw. grau, Helligkeitsabstand < 110) → kein Muster, Flight einfarbig in der Hauptfarbe. Profil: „Flight-Muster“ Aus dem Foto · Einfarbig (`texOff`).
   `tighten` (dartscan.js) schärft Schaft/Barrel/Spitze nach (Pixel näher an der Dart-Mitte als am Untergrund daneben – gemusterte Tische).
   Unplausible Längen → kein Fehler, sondern typische Proportionen hinter der Flight (`guess` im Scan-Protokoll), Farben/Flight bleiben echt.
   Untergrundfarbe = Median des Bildrands (`st.bg`); was ihr ähnelt (Lücken zwischen Flügeln, Schatten-Saum), zählt nicht bei Farben und ist im
