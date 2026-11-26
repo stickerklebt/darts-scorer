@@ -103,9 +103,9 @@ export function friendsView() {
     ? `<p class="foot">${err ? esc(err) : 'Lade Freunde …'}</p>${err ? '<button class="btn dark" data-act="friendsReload">Erneut versuchen</button>' : ''}`
     : friends.length
       ? `<div class="slist flist ${friends.length > 3 ? 'fl-scroll' : ''}">${friends.map((x) => `<button class="srow fl-row" data-act="friendOpen" data-v="${esc(x.id)}">
-          <span class="lbl">${esc(x.username)}<small>${x.matches ? `${x.matches} ${x.matches === 1 ? 'Spiel' : 'Spiele'}${x.lastPlayed ? ` · zuletzt ${ago(x.lastPlayed)}` : ''}` : 'Noch keine Spiele'}</small></span>
+          <span class="lbl">${esc(x.username)}</span>
           <span class="fl-dart ${x.dart ? 'mine' : 'plain'}">${friendDart(x.id, x.dart)}</span>
-          <span class="favg"><small>Ø 501</small><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
+          <span class="favg"><b class="pop">${fmt(x.avg)}</b></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
       : `<div class="empty-card"><div>${stars(3, '#08080a', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
   // Backstage: oben das eigene Banner, in der Mitte die Freunde, unten die Kacheln (Spielhistorie, eigener Caller, Einstellungen, Kamera)

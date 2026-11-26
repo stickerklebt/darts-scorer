@@ -250,7 +250,7 @@ export const badge = (game, size = 44) => {
   return `<span class="badge-mode" style="--badge-bg:${bg};--badge-ink:${ink};--badge-line:${line};width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true">${SYMBOLS[game]}</svg></span>`;
 };
 
-/** Partyspiel-Logo aus hart glänzendem Chrom: polierte dunkle Scheibe mit Chrom-Ring, das Symbol selbst aus Silber
+/** Partyspiel-Logo aus hart glänzendem Chrom: nur das Symbol (keine Scheibe, kein Ring – die Kachel ist der Rahmen) aus Silber
     (Verlauf mit harten Hell/Dunkel-Wechseln, Fase per feSpecularLighting, Glanzlicht oben). text statt Symbol für „Bald“-Kacheln. */
 export const metalBadge = (game, size = 52, text = '') => {
   const k = `mb-${String(game).replace(/[^a-z0-9]/gi, '')}`;
@@ -258,7 +258,7 @@ export const metalBadge = (game, size = 52, text = '') => {
   const sym = text ? '' : (SYMBOLS[game] || SYMBOLS.x01)
     .replace(/currentColor/g, chrome).replace(/var\(--badge-bg\)/g, '#0b0b0e')
     .replace(/#f6f1e4/g, chrome).replace(/id="fbclip"/g, `id="${k}c"`).replace(/url\(#fbclip\)/g, `url(#${k}c)`);
-  const fs = text.length > 3 ? 6.2 : text.length > 2 ? 7.4 : 9.5;
+  const fs = text.length > 3 ? 8 : text.length > 2 ? 10 : 14;
   return `<span class="badge-mode metal" style="width:${size}px;height:${size}px"><svg viewBox="0 0 24 24" aria-hidden="true"><defs>
     <linearGradient id="${k}g" gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".38" stop-color="#7b818a"/><stop offset=".47" stop-color="#2f3238"/><stop offset=".55" stop-color="#f7f8fa"/><stop offset=".68" stop-color="#b4b9c1"/><stop offset=".84" stop-color="#5d626a"/><stop offset="1" stop-color="#eef0f3"/></linearGradient>
     <linearGradient id="${k}r" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#8d939b"/><stop offset=".5" stop-color="#f2f4f7"/><stop offset=".72" stop-color="#3b3e44"/><stop offset="1" stop-color="#d7dbe0"/></linearGradient>
@@ -269,11 +269,7 @@ export const metalBadge = (game, size = 52, text = '') => {
       <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
       <feComposite in="sp2" in2="SourceGraphic" operator="arithmetic" k2=".75" k3="1" result="lit"/>
       <feDropShadow in="lit" dx="0" dy=".5" stdDeviation=".45" flood-color="#000" flood-opacity=".8"/></filter></defs>
-    <circle cx="12" cy="12" r="11.2" fill="url(#${k}d)"/>
-    <circle cx="12" cy="12" r="11.2" fill="none" stroke="url(#${k}r)" stroke-width="1.1"/>
-    <circle cx="12" cy="12" r="10.1" fill="none" stroke="#000" stroke-opacity=".7" stroke-width=".5"/>
-    <g filter="url(#${k}f)">${text ? `<text x="12" y="12" text-anchor="middle" dominant-baseline="central" font-family="'League Gothic', sans-serif" font-size="${fs}" fill="${chrome}">${text}</text>` : `<g transform="translate(12 12) scale(.66) translate(-12 -12)">${sym}</g>`}</g>
-    <path d="M4.6 8.2 A8.6 8.6 0 0 1 19.4 8.2" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.4" stroke-linecap="round"/>
+    <g filter="url(#${k}f)">${text ? `<text x="12" y="12" text-anchor="middle" dominant-baseline="central" font-family="'League Gothic', sans-serif" font-size="${fs}" fill="${chrome}">${text}</text>` : `${sym}`}</g>
   </svg></span>`;
 };
 

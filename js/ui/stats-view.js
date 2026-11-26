@@ -18,8 +18,8 @@ export const PERIOD_OPTS = [['7d', '7 Tage'], ['30d', '30 Tage'], ['1y', '1 Jahr
 const SUB_ICONS = {
   // Überblick: es geht um Zahlen – „1 2 3“, steigend wie ein Aufwärtstrend
   overview: '<text x="5.6" y="21" font-size="12" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">1</text><text x="12" y="17.5" font-size="13.5" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">2</text><text x="18.6" y="14" font-size="15" font-family="League Gothic, Arial Narrow, sans-serif" fill="currentColor" stroke="none" text-anchor="middle">3</text>',
-  // Doppel (nach Skizze): zwei Bögen des Doppelrings über die ganze Breite, zwei Segmentlinien, dazwischen das Doppelfeld orange
-  doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g transform="translate(0 -3)"><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#c42a4b" stroke="none"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/></g>',
+  // Doppel (nach Skizze): zwei Bögen des Doppelrings über die ganze Breite, zwei Segmentlinien, dazwischen das Doppelfeld hell weiß
+  doubles: '<defs><linearGradient id="dblFadeX" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset=".28" stop-color="currentColor"/><stop offset=".72" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient><linearGradient id="dblFade" gradientUnits="userSpaceOnUse" x1="0" y1="9" x2="0" y2="22.5"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g transform="translate(0 -3)"><path d="M4.8 8.83A32 32 0 0 1 19.2 8.83L18.41 12.23A28.5 28.5 0 0 0 5.59 12.23Z" fill="#ffffff" stroke="none" class="dbl-fill"/><path d="M-1 10.77A32 32 0 0 1 25 10.77M0.4 13.97A28.5 28.5 0 0 1 23.6 13.97" stroke="url(#dblFadeX)"/><path d="M4.8 8.83L7.95 22.47M19.2 8.83L16.05 22.47" stroke="url(#dblFade)"/></g>',
   more: '<path d="M4 18l5-5 4 3 7-7"/><path d="M15 9h5v5"/>', // nur der Pfeil, ohne Grundlinie
 };
 const subIcon = (k) => `<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SUB_ICONS[k]}</svg>`;
@@ -62,7 +62,7 @@ export function statsHeader(pid) {
 
 /* ---------------- Unter-Reiter ---------------- */
 /** Die zwei wichtigsten Zahlen (Average, Doppelquote): Chrom-Ring mit wanderndem Licht, roter Schein hinter der Zahl, Lichtstrahlen */
-const HS_FX = '<i class="hs-ring" aria-hidden="true"></i><i class="hs-aura" aria-hidden="true"></i><i class="hs-rays" aria-hidden="true"></i><i class="hs-flash" aria-hidden="true"></i>';
+const HS_FX = '<i class="hs-ring" aria-hidden="true"></i><i class="hs-aura" aria-hidden="true"></i><i class="hs-flash" aria-hidden="true"></i>';
 function overviewTab(st, pid) {
   const c = st.counts;
   // Lieblingsdoppel = Doppel mit der besten Trefferquote (erst ab MIN_ATTEMPTS Versuchen, mindestens ein Treffer)
@@ -180,7 +180,7 @@ export function doublesBlock(st, sel, withList = true) {
 }
 /** Dünne Farbskala unter der Scheibe: links das dunkelste Rot (schlechtestes Doppel) bis rechts glänzend Weiß (bestes) –
     mit weichem Leuchten und Lichtern, die durch die Linie wandern (gleicher Verlauf wie ratioColor in board.js) */
-const DBL_SCALE = '<div class="dbl-scale" role="img" aria-label="Farbskala: links schwach, rechts stark"><i class="ds-glow"></i><i class="ds-line"></i><i class="ds-run"></i><i class="ds-run r2"></i><i class="ds-spark"></i></div>';
+const DBL_SCALE = '<div class="dbl-scale" role="img" aria-label="Farbskala: links schwach, rechts stark"><i class="ds-glow"></i><i class="ds-line"></i><i class="ds-run"></i><i class="ds-run r2"></i></div>';
 
 /** „Scoring“: zuerst die Verläufe, darunter alles Weitere eingeklappt */
 function moreTab(st, pid) {

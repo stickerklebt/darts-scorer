@@ -483,3 +483,5 @@ Offen: E-Mail-Bestätigung.
   Doppel: bestes Doppel/Glanz gehören zur Einfall-Animation; dünne Farbskala rot → weiß unter der Scheibe (`DBL_SCALE`). Überblick: Karten/Zahlen ploppen beim Öffnen,
   Average + Doppelquote als `hs-epic` (Chrom-Ring, Schein, Strahlen). Top 10: Überschrift bleibt stehen, unten verschwommen, rechte Spalte endet bündig (`fitCoRight`).
   Partyspiel-Logos aus Chrom (`metalBadge` in svg.js). Setup 501 › Mehr Optionen: Hinweis „Double In? Oder X01?“ → Partyspiele-Plus.
+- **Update 26.11.2026 (8)**: Überblick ohne Einblend-Animationen und ohne Lichtstrahlen. Doppel-Farbskala ohne Striche darin. Statistik-Pille ganz ohne Rot, Doppelfeld im Symbol hell weiß.
+  Partyspiel-Logos ohne runde Scheibe (nur Chrom-Symbol in der Kachel), kein Funkel-Stern. VIP-Name kräftiges Silber-Metall. Freundesliste: nur Name · Dart · Ø-Zahl.
