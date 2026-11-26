@@ -250,6 +250,9 @@ export function straighten(img, mask) {
   for (let x = 0; x < w; x += 2) for (let k = 0; k < bw2; k++) { ring.push(x + k * w); ring.push(x + (h - 1 - k) * w); }
   for (let y = 0; y < h; y += 2) for (let k = 0; k < bw2; k++) { ring.push(k + y * w); ring.push(w - 1 - k + y * w); }
   const bg = [0, 1, 2].map((k) => { const a = ring.map((p) => d[p * 4 + k]).sort((p, q) => p - q); return a[a.length >> 1]; });
+  // Toleranz nach Unruhe des Untergrunds: 80 % der Randpixel liegen so nah an der Untergrundfarbe (ruhig ≈ 42, Maserung mehr, höchstens 90)
+  const dev = ring.map((p) => Math.hypot(d[p * 4] - bg[0], d[p * 4 + 1] - bg[1], d[p * 4 + 2] - bg[2])).sort((p, q) => p - q);
+  const bgTol = Math.max(42, Math.min(90, dev[Math.floor(dev.length * 0.8)] * 1.3));
   let Xa = 0, Xe = Wc - 1; while (Xa < Wc && !hw[Xa]) Xa++; while (Xe > Xa && !hw[Xe]) Xe--;
   const maxHw = Math.max(1, ...hw);
   const pad = 2, W = Xe - Xa + 1 + pad * 2, H = Math.ceil(maxHw * 2) + 1 + pad * 2, cy = (H - 1) / 2;
@@ -279,7 +282,7 @@ export function straighten(img, mask) {
     }
     thick.reverse();
   }
-  return { width: W, height: H, data: out, alpha, thick: [...thick], bg };
+  return { width: W, height: H, data: out, alpha, thick: [...thick], bg, bgTol };
 }
 
 /** Rand um den Dart (px im ausgerichteten Bild) und Goldton */

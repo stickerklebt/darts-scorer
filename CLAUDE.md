@@ -414,6 +414,10 @@ Offen: E-Mail-Bestätigung.
   Unplausible Längen → kein Fehler, sondern typische Proportionen hinter der Flight (`guess` im Scan-Protokoll), Farben/Flight bleiben echt.
   Untergrundfarbe = Median des Bildrands (`st.bg`); was ihr ähnelt (Lücken zwischen Flügeln, Schatten-Saum), zählt nicht bei Farben und ist im
   Flight-Muster durchsichtig; der Flight-Umriss kommt aus dem bereinigten Muster (`flightOutline`: bis zur breitesten Stelle steigend, danach fallend).
+  Regeln gegen Ausreißer: Flight = EIN Stück um ihre breiteste Stelle (abgetrennte Reste hinten fallen weg); Renderer zeichnet den Umriss immer
+  bis zur breitesten Stelle steigend und hinten ≥ 35 %, danach fallend – **nie ein dünner Strich nach links, nie eine Einschnürung**.
+  Kein Dart (L/Breite < 2,2 oder vorne keine Spitze) → „Kein Dart erkannt“. Toleranz „sieht aus wie Untergrund“ wächst mit der Unruhe des Rands (`bgTol`, 42–90).
+  Im Fallback (`guess`) liegen Schaft→Barrel und Barrel→Spitze am stärksten Farbwechsel entlang der Mittellinie.
   Prüfen mit echten Uploads: Kontaktbogen (Original | gezeichneter Dart) aus `/var/lib/darts/dartscans` rendern (Werkzeuge nur im Scratchpad, nicht im Repo).
   Tests: `dartscan.test.mjs`, `dartspec.test.mjs`.
 - Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).

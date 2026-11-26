@@ -71,3 +71,23 @@ test('Flight-Muster: Streifen bleiben, Farben auf wenige reduziert; Muster im St
   assert.ok(col(5)[1] > 150 && col(15)[1] < 60, 'Streifen grün/schwarz');
   assert.equal(cleanSpec({ flight: { tex: 'javascript:alert(1)' } }).flight.tex, undefined);
 });
+
+test('Dart-Steckbrief: kein Dart (Streifen, Fläche) wird abgelehnt', () => {
+  const dbg = {};
+  assert.equal(features(straightFrom(Array(200).fill(60)), dbg), null);      // Streifen: überall gleich breit, keine Spitze
+  assert.match(dbg.fail, /kein Dart/);
+  assert.equal(features(straightFrom(Array(60).fill(50)), {}), null);         // Fläche: zu breit für einen Dart
+});
+
+test('Dart-Steckbrief: abgetrenntes Flight-Stück hinten → kein Strich nach links, Renderer ohne Einschnürung', () => {
+  // wie das 3D-Produktfoto: kleines Flügelstück, Lücke, dann die eigentliche Flight
+  const w = [...Array(40).fill(30), ...Array(60).fill(0), ...Array(80).fill(120), ...Array(60).fill(10), ...Array(90).fill(24), ...Array(60).fill(6)];
+  const dbg = {}, sp = features(straightFrom(w), dbg);
+  assert.ok(sp && dbg.cut >= 100, `Stück hinten nicht abgeschnitten (cut ${dbg.cut})`);
+  // Renderer: auch ein absichtlich kaputter Umriss (dünn hinten, Einschnürung) wird hinten ≥ 35 % und ohne Einschnürung gezeichnet
+  const svg = renderDart({ ...sp, flight: { ...sp.flight, shape: 'photo', outline: [0.05, 0.05, 0.05, 0.6, 0.1, 0.1, 0.8, 1, 1, 0.9, 0.8, 0.6, 0.4, 0.3, 0.2, 0.1] } });
+  const d = svg.match(/<path d="(M[^"]+)" fill="url\(#da\d+f\)"/)[1];
+  // hintere Hälfte der Flight (x < 8 + 60): oberer Rand nie näher als 35 % der halben Höhe (≥ 18) an der Mitte (y = 45)
+  const ys = [...d.matchAll(/(-?[\d.]+) (-?[\d.]+)/g)].filter((m) => +m[1] < 68 && +m[2] < 45).map((m) => +m[2]);
+  assert.ok(ys.length && Math.max(...ys) <= 45 - 0.35 * 18 + 0.5, `hinten zu dünn: ${Math.max(...ys)}`);
+});

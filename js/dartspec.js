@@ -75,8 +75,8 @@ function pixels(st, a, b, core = 0.6) {
   return out;
 }
 /** Pixel sieht aus wie der Untergrund (z. B. Lücke zwischen den Flügeln, Schatten-Saum)? */
-const BG_DIST = 42;
-const isBg = (st, d, i) => !!st.bg && Math.hypot(d[i] - st.bg[0], d[i + 1] - st.bg[1], d[i + 2] - st.bg[2]) < BG_DIST;
+const BG_DIST = 42;   // ruhiger Untergrund; bei unruhigem (Maserung, Linien) misst straighten eine größere Toleranz (st.bgTol)
+const isBg = (st, d, i) => !!st.bg && Math.hypot(d[i] - st.bg[0], d[i + 1] - st.bg[1], d[i + 2] - st.bg[2]) < (st.bgTol || BG_DIST);
 const medColor = (px) => (px.length ? [0, 1, 2].map((c) => median(px.map((p) => p[c]))) : null);
 
 /** Zwei Hauptfarben (k-means, Start bei dunkelstem/hellstem Pixel) → nach Anteil sortiert; fast gleich → nur eine */
@@ -151,11 +151,21 @@ export function findRings(lum) {
 export function features(st, dbg = {}) {
   const t0 = st.thick, W = t0.length;
   let x0 = 0, x1 = W - 1; while (x0 < W && !t0[x0]) x0++; while (x1 > x0 && !t0[x1]) x1--;
-  const L = x1 - x0 + 1;
-  dbg.L = L;
-  if (L < 30) { dbg.fail = 'zu kurz'; return null; }
+  if (x1 - x0 + 1 < 30) { dbg.fail = 'zu kurz'; return null; }
   const t = t0.map((v, i) => { const a = [t0[i - 1] ?? v, v, t0[i + 1] ?? v].sort((p, q) => p - q); return a[1]; });
   const maxW = Math.max(...t.slice(x0, x1 + 1));
+  // Die Flight beginnt erst, wo sie wirklich breit ist: dünne Reste davor (abgetrennter Flügel, Schatten, Krümel) gehören nicht dazu –
+  // sonst entsteht ein langer Strich nach links
+  // Die Flight ist EIN zusammenhängendes Stück um ihre breiteste Stelle – abgetrennte Stücke dahinter (Lücke) fallen weg
+  const xs = x0; let pk = x0; for (let x = x0; x <= x1; x++) if (t[x] > t[pk]) pk = x;
+  let xa = pk; while (xa > x0 && t[xa - 1] >= maxW * 0.12) xa--;
+  x0 = xa; while (x0 < pk && t[x0] < maxW * 0.3) x0++;
+  const L = x1 - x0 + 1;
+  dbg.L = L; dbg.cut = x0 - xs;
+  // Kein Dart? Ein Dart ist lang und schmal und läuft vorne spitz zu (Muster, Screenshots, Flächen fallen hier raus)
+  const endW = t.slice(x1 - Math.max(2, Math.round(L * 0.06)), x1 + 1).reduce((a, b) => a + b, 0) / (Math.max(2, Math.round(L * 0.06)) + 1);
+  if (L / maxW < 2.2) { dbg.fail = 'kein Dart (zu breit)'; return null; }
+  if (endW > maxW * 0.45) { dbg.fail = 'kein Dart (keine Spitze)'; return null; }
   const rest = t.slice(x0 + Math.round(L * 0.35), x1 + 1).slice().sort((a, b) => a - b);
   const bw = Math.max(2, rest[Math.floor(rest.length * 0.9)] || 2);
   // Flight-Ende: letzte breite Spalte in der linken Hälfte
@@ -179,6 +189,16 @@ export function features(st, dbg = {}) {
     if (!ok(fl, 0.12, 0.45)) fE = x0 + Math.round(L * 0.25);
     const r = x1 - fE;
     bS = fE + 1 + Math.round(r * 0.26); bE = bS + Math.round(r * 0.42) - 1;
+    // besser als raten: Grenzen dort, wo die Farbe entlang der Mittellinie am stärksten wechselt (Schaft → Barrel, Barrel → Spitze)
+    const k = Math.max(2, Math.round(L * 0.03)), col = [];
+    for (let X = fE + 1; X <= x1; X++) col[X] = medColor(pixels(st, X, X, 0.4));
+    const avg = (a, b) => { const ps = []; for (let X = a; X <= b; X++) if (col[X]) ps.push(col[X]); return ps.length ? [0, 1, 2].map((c) => ps.reduce((s2, p) => s2 + p[c], 0) / ps.length) : null; };
+    const edge = (a, b) => { let best = -1, bd = 60; for (let X = a; X <= b; X++) { const l = avg(X - k, X - 1), rr = avg(X, X + k - 1); if (!l || !rr) continue; const dd = Math.hypot(l[0] - rr[0], l[1] - rr[1], l[2] - rr[2]); if (dd > bd) { bd = dd; best = X; } } return best; };
+    const cS = edge(fE + 1 + Math.round(r * 0.12), fE + Math.round(r * 0.6));
+    if (cS > 0) bS = cS;
+    const cE = edge(bS + Math.round(r * 0.2), x1 - Math.round(r * 0.06));
+    if (cE > 0) bE = cE - 1; else bE = Math.min(x1 - Math.round(r * 0.12), bS + Math.round(r * 0.42) - 1);
+    dbg.colorEdges = [cS, cE];
     fl = fE - x0 + 1; sl = bS - fE - 1; bl = bE - bS + 1; tl = x1 - bE;
     Object.assign(dbg, { guess: true, gfE: fE, gbS: bS, gbE: bE });
   }
@@ -191,7 +211,7 @@ export function features(st, dbg = {}) {
   const lum = [];
   for (let X = bS; X <= bE; X++) { const px = pixels(st, X, X, 0.5); lum.push(px.length ? px.reduce((a, p) => a + lumOf(p, 0), 0) / px.length : 0); }
   const barrelRgb = medColor(pixels(st, bS, bE)) || [157, 163, 171];
-  const shaftRgb = medColor(pixels(st, fE + 1, bS - 1, 0.8)) || [27, 28, 32];
+  const shaftRgb = medColor(pixels(st, fE + 1, bS - 1, 0.4)) || [27, 28, 32];
   const fp = flightShape(t.slice(x0, fE + 1));
   const fw = t.slice(x0, fE + 1), fmx = Math.max(...fw, 1);
   const outline = flightOutline(fw.map((v) => v / fmx));
@@ -269,6 +289,12 @@ export function flightTexture(st, x0, fE, TW = 96) {
     let n = 0; for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) n += vis[clamp(j + dj, 0, TH - 1) * TW + clamp(i + di, 0, TW - 1)];
     vm[j * TW + i] = n >= 5 ? 1 : 0;
   }
+  // Rand der sichtbaren Fläche um 1 px zurücknehmen (heller Saum aus Untergrund/Schatten → dort liegt die Grundfarbe der Flight)
+  const er = vm.slice();
+  for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) if (vm[j * TW + i]) {
+    const inside = (jj, ii) => jj < 0 || ii < 0 || jj >= TH || ii >= TW || vm[jj * TW + ii];
+    if (!inside(j - 1, i) || !inside(j + 1, i) || !inside(j, i - 1) || !inside(j, i + 1)) er[j * TW + i] = 0;
+  }
   const ext = [];   // je Spalte: halbe sichtbare Breite (symmetrisch zur Mitte) → Umriss
   for (let i = 0; i < TW; i++) {
     let a = -1, b = -1; for (let j = 0; j < TH; j++) if (vm[j * TW + i]) { if (a < 0) a = j; b = j; }
@@ -277,7 +303,7 @@ export function flightTexture(st, x0, fE, TW = 96) {
   }
   // auf die sichtbare Höhe zuschneiden, damit Muster und Umriss gleich groß gezeichnet werden
   const E = Math.max(...ext);
-  if (E < 0.2) return { w: TW, h: TH, pal, idx, alpha: vm, outline: null, E: 1 };
+  if (E < 0.2) return { w: TW, h: TH, pal, idx, alpha: er, outline: null, E: 1 };
   const r0 = Math.max(0, Math.floor(TH / 2 * (1 - E))), r1 = Math.min(TH, Math.ceil(TH / 2 * (1 + E))), h2 = r1 - r0;
-  return { w: TW, h: h2, pal, idx: idx.slice(r0 * TW, r1 * TW), alpha: vm.slice(r0 * TW, r1 * TW), outline: flightOutline(ext), E };
+  return { w: TW, h: h2, pal, idx: idx.slice(r0 * TW, r1 * TW), alpha: er.slice(r0 * TW, r1 * TW), outline: flightOutline(ext), E };
 }

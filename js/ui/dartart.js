@@ -36,7 +36,13 @@ function flightPath(shape, x1, h, outline) {
   const L = x1 - X0, X = (f) => f1(X0 + f * L), T = (f) => f1(CY - f * h), B = (f) => f1(CY + f * h);
   if (shape === 'photo' && outline) {
     // echter Umriss aus dem Foto (Breite je Stelle), vorne mindestens Schaft-Breite, glatt gezogen
-    const n = outline.length, pts = outline.map((o, i) => [X0 + i / (n - 1) * L, CY - Math.max(i === n - 1 ? 5 : 1, o * h)]);
+    // harte Regeln (gelten auch für alte Steckbriefe): bis zur breitesten Stelle nur steigend und nie schmaler als 35 %,
+    // danach nur fallend → nie ein dünner Strich nach links, nie eine Einschnürung
+    const n = outline.length; let pk = 0; outline.forEach((o, i) => { if (o > outline[pk]) pk = i; });
+    const o2 = outline.slice();
+    for (let i = pk - 1; i >= 0; i--) o2[i] = Math.max(0.35, Math.min(o2[i], o2[i + 1]));
+    for (let i = pk + 1; i < n; i++) o2[i] = Math.min(o2[i], o2[i - 1]);
+    const pts = o2.map((o, i) => [X0 + i / (n - 1) * L, CY - Math.max(i === n - 1 ? 5 : 1, o * h)]);
     const top = curve(pts), bot = curve(pts.map(([x, y]) => [x, 2 * CY - y]).reverse());
     return `M${f1(pts[0][0])} ${f1(pts[0][1])}${top} L${f1(pts[n - 1][0])} ${f1(2 * CY - pts[n - 1][1])}${bot} Z`;
   }
