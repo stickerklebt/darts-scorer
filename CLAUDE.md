@@ -412,6 +412,9 @@ Offen: E-Mail-Bestätigung.
   im SVG auf den Umriss beschnitten, darüber derselbe Glanz + Umrisslinie wie bei allen. Profil: „Flight-Muster“ Aus dem Foto · Einfarbig (`texOff`).
   `tighten` (dartscan.js) schärft Schaft/Barrel/Spitze nach (Pixel näher an der Dart-Mitte als am Untergrund daneben – gemusterte Tische).
   Unplausible Längen → kein Fehler, sondern typische Proportionen hinter der Flight (`guess` im Scan-Protokoll), Farben/Flight bleiben echt.
+  Untergrundfarbe = Median des Bildrands (`st.bg`); was ihr ähnelt (Lücken zwischen Flügeln, Schatten-Saum), zählt nicht bei Farben und ist im
+  Flight-Muster durchsichtig; der Flight-Umriss kommt aus dem bereinigten Muster (`flightOutline`: bis zur breitesten Stelle steigend, danach fallend).
+  Prüfen mit echten Uploads: Kontaktbogen (Original | gezeichneter Dart) aus `/var/lib/darts/dartscans` rendern (Werkzeuge nur im Scratchpad, nicht im Repo).
   Tests: `dartscan.test.mjs`, `dartspec.test.mjs`.
 - Overall-Average (Statistik › Überblick) ohne goldenen Rauch dahinter (auf Wunsch entfernt; `goldSmoke` nicht mehr verwendet).
 

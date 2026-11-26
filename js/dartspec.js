@@ -67,11 +67,16 @@ function pixels(st, a, b, core = 0.6) {
     const hw = Math.max(1, thick[X] / 2) * core;
     for (let Y = Math.floor(cy - hw); Y <= Math.ceil(cy + hw); Y++) {
       if (Y < 0 || Y >= H || !alpha[Y * W + X]) continue;
-      const i = (Y * W + X) * 4; out.push([data[i], data[i + 1], data[i + 2]]);
+      const i = (Y * W + X) * 4;
+      if (isBg(st, data, i)) continue;
+      out.push([data[i], data[i + 1], data[i + 2]]);
     }
   }
   return out;
 }
+/** Pixel sieht aus wie der Untergrund (z. B. Lücke zwischen den Flügeln, Schatten-Saum)? */
+const BG_DIST = 42;
+const isBg = (st, d, i) => !!st.bg && Math.hypot(d[i] - st.bg[0], d[i + 1] - st.bg[1], d[i + 2] - st.bg[2]) < BG_DIST;
 const medColor = (px) => (px.length ? [0, 1, 2].map((c) => median(px.map((p) => p[c]))) : null);
 
 /** Zwei Hauptfarben (k-means, Start bei dunkelstem/hellstem Pixel) → nach Anteil sortiert; fast gleich → nur eine */
@@ -109,6 +114,21 @@ export function flightShape(prof) {
   const shape = aspect < 0.7 ? 'slim' : at(0.15) < 0.55 ? 'kite' : at(0.04) > 0.85 ? 'standard' : 'pear';
   return { shape, aspect: +aspect.toFixed(2) };
 }
+/**
+ * Flight-Umriss (Breite je Stelle, 0…1, hinten → vorne) → 16 Punkte, sauber wie gezeichnet: bis zur breitesten Stelle nie schmaler,
+ * danach nie wieder breiter (Flügel in Schräglage, Schatten, Tisch-Krümel ergeben sonst Fliegen- oder Klumpenformen), geglättet.
+ */
+export function flightOutline(w) {
+  const n = w.length, sm = smooth(w, Math.max(1, Math.round(n * 0.04)));
+  let pk = 0; sm.forEach((v, i) => { if (v > sm[pk]) pk = i; });
+  const u = sm.slice();
+  for (let i = pk - 1; i >= 0; i--) u[i] = Math.min(u[i], u[i + 1]);         // hinten: zur Spitze hin nie schmaler …
+  for (let i = 1; i <= pk; i++) u[i] = Math.max(u[i], u[i - 1]);             // … d. h. von hinten steigend
+  for (let i = pk + 1; i < n; i++) u[i] = Math.min(u[i], u[i - 1]);          // vorne: nur noch schmaler
+  const mx = Math.max(...u, 1e-6);
+  return smooth(Array.from({ length: 16 }, (_, i) => u[Math.round(i / 15 * (n - 1))] / mx), 1);
+}
+
 /** Grip-Rillen: Helligkeit entlang der Barrel-Mitte, Trend abziehen, deutliche Täler zählen → Positionen 0…1 */
 export function findRings(lum) {
   const n = lum.length;
@@ -174,13 +194,13 @@ export function features(st, dbg = {}) {
   const shaftRgb = medColor(pixels(st, fE + 1, bS - 1, 0.8)) || [27, 28, 32];
   const fp = flightShape(t.slice(x0, fE + 1));
   const fw = t.slice(x0, fE + 1), fmx = Math.max(...fw, 1);
-  const outline = Array.from({ length: 16 }, (_, i) => fw[Math.round(i / 15 * (fw.length - 1))] / fmx);
+  const outline = flightOutline(fw.map((v) => v / fmx));
   return cleanSpec({
     v: 1, len: { flight: fl / L, shaft: sl / L, barrel: bl / L, tip: tl / L },
     profile: guess ? DEFAULT_SPEC.profile : smooth(profile, 1), thick: guess ? Math.min(bw, maxW * 0.35) / L : bmx / L,
     rings: guess ? DEFAULT_SPEC.rings : findRings(lum),
     metal: metalOf(barrelRgb), tone: toHex(barrelRgb), shaft: toHex(shaftRgb),
-    flight: { shape: 'photo', outline: smooth(outline, 1), aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.9)) },
+    flight: { shape: 'photo', outline, aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.7)) },
   });
 }
 
@@ -195,14 +215,18 @@ export function flightTexture(st, x0, fE, TW = 96) {
   const mxH = Math.max(1, ...thick.slice(x0, fE + 1)) / 2;
   if (fl < 8 || mxH < 4) return null;
   const TH = Math.round(clamp(TW * (2 * mxH) / fl, 32, 96));
-  const raw = new Float32Array(TW * TH * 3);
+  const raw = new Float32Array(TW * TH * 3), vis = new Uint8Array(TW * TH);
   for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) {
     const X = Math.min(W - 1, Math.round(x0 + (i + 0.5) / TW * fl)), hw = Math.max(0, thick[X] / 2 - 1);
     let v = ((j + 0.5) / TH * 2 - 1) * mxH; v = clamp(v, -hw, hw);
+    const Y0 = Math.round(cy + ((j + 0.5) / TH * 2 - 1) * mxH);
     let Y = Math.round(cy + v), o = (j * TW + i) * 3;
     while (Y !== Math.round(cy) && !alpha[Y * W + X]) Y += Y > cy ? -1 : 1;   // bis in die Flight hinein
     const p = (Y * W + X) * 4;
     raw[o] = data[p]; raw[o + 1] = data[p + 1]; raw[o + 2] = data[p + 2];
+    // sichtbar nur, was zur Flight gehört: innerhalb der Fläche und nicht in Untergrundfarbe
+    const q = (Y0 * W + X) * 4;
+    vis[j * TW + i] = Y0 >= 0 && Y0 < H && alpha[Y0 * W + X] && !isBg(st, data, q) ? 1 : 0;
   }
   // Median 3×3 je Kanal (Rauschen, JPEG-Kanten)
   const med = new Float32Array(raw.length);
@@ -239,5 +263,21 @@ export function flightTexture(st, x0, fE, TW = 96) {
   }
   // Farben etwas kräftiger (wie gedruckt)
   pal = pal.map((c) => { const m = (c[0] + c[1] + c[2]) / 3; return c.map((v) => clamp(m + (v - m) * 1.2, 0, 255)); });
-  return { w: TW, h: TH, pal, idx };
+  // Sichtbarkeit glätten (Mehrheit 3×3) und Löcher in der Mitte der Spalte schließen (Muster in Untergrundfarbe, z. B. weißes Logo auf weißem Tisch)
+  const vm = vis.slice();
+  for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) {
+    let n = 0; for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) n += vis[clamp(j + dj, 0, TH - 1) * TW + clamp(i + di, 0, TW - 1)];
+    vm[j * TW + i] = n >= 5 ? 1 : 0;
+  }
+  const ext = [];   // je Spalte: halbe sichtbare Breite (symmetrisch zur Mitte) → Umriss
+  for (let i = 0; i < TW; i++) {
+    let a = -1, b = -1; for (let j = 0; j < TH; j++) if (vm[j * TW + i]) { if (a < 0) a = j; b = j; }
+    if (a >= 0) for (let j = a; j <= b; j++) vm[j * TW + i] = 1;
+    ext.push(a < 0 ? 0 : Math.max(TH / 2 - a, b + 1 - TH / 2) / (TH / 2));
+  }
+  // auf die sichtbare Höhe zuschneiden, damit Muster und Umriss gleich groß gezeichnet werden
+  const E = Math.max(...ext);
+  if (E < 0.2) return { w: TW, h: TH, pal, idx, alpha: vm, outline: null, E: 1 };
+  const r0 = Math.max(0, Math.floor(TH / 2 * (1 - E))), r1 = Math.min(TH, Math.ceil(TH / 2 * (1 + E))), h2 = r1 - r0;
+  return { w: TW, h: h2, pal, idx: idx.slice(r0 * TW, r1 * TW), alpha: vm.slice(r0 * TW, r1 * TW), outline: flightOutline(ext), E };
 }

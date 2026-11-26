@@ -243,7 +243,13 @@ export function straighten(img, mask) {
   const longest = runs.reduce((m, r) => (r[1] - r[0] > m[1] - m[0] ? r : m), [0, 0]);
   for (const [A, E] of runs) if (E - A < Wc * 0.06 && A !== longest[0]) for (let X = A; X < E; X++) hw[X] = 0;
   // Kanten nachschärfen (gemusterter Untergrund hängt sonst als breiter Saum an Schaft, Barrel und Spitze)
-  hw = tighten(hw, (X, dv) => sample(img, ax.cx + (X + u0) * c - (vc + dv) * s, ax.cy + (X + u0) * s + (vc + dv) * c));
+  const at = (X, dv) => sample(img, ax.cx + (X + u0) * c - (vc + dv) * s, ax.cy + (X + u0) * s + (vc + dv) * c);
+  hw = tighten(hw, at);
+  // Untergrund-Farbe = Median des Bildrands (fast immer Tisch) – damit Muster/Farben später Untergrund in Lücken (zwischen Flügeln) erkennen
+  const ring = [], bw2 = Math.max(1, Math.round(Math.min(w, h) * 0.02));
+  for (let x = 0; x < w; x += 2) for (let k = 0; k < bw2; k++) { ring.push(x + k * w); ring.push(x + (h - 1 - k) * w); }
+  for (let y = 0; y < h; y += 2) for (let k = 0; k < bw2; k++) { ring.push(k + y * w); ring.push(w - 1 - k + y * w); }
+  const bg = [0, 1, 2].map((k) => { const a = ring.map((p) => d[p * 4 + k]).sort((p, q) => p - q); return a[a.length >> 1]; });
   let Xa = 0, Xe = Wc - 1; while (Xa < Wc && !hw[Xa]) Xa++; while (Xe > Xa && !hw[Xe]) Xe--;
   const maxHw = Math.max(1, ...hw);
   const pad = 2, W = Xe - Xa + 1 + pad * 2, H = Math.ceil(maxHw * 2) + 1 + pad * 2, cy = (H - 1) / 2;
@@ -273,7 +279,7 @@ export function straighten(img, mask) {
     }
     thick.reverse();
   }
-  return { width: W, height: H, data: out, alpha, thick: [...thick] };
+  return { width: W, height: H, data: out, alpha, thick: [...thick], bg };
 }
 
 /** Rand um den Dart (px im ausgerichteten Bild) und Goldton */
@@ -360,7 +366,11 @@ export async function dartFromFile(file) {
     meta.step = 'texture';
     for (const tw of [96, 64]) {
       const tex = flightTexture(st, zones.x0, zones.gfE ?? zones.fE, tw), url = tex && texUrl(tex);
-      if (url && url.length < 24000) { spec.flight.tex = url; meta.tex = { w: tex.w, h: tex.h, colors: tex.pal.length, chars: url.length }; break; }
+      if (url && url.length < 24000) {
+        spec.flight.tex = url; meta.tex = { w: tex.w, h: tex.h, colors: tex.pal.length, chars: url.length, E: tex.E };
+        if (tex.outline) { spec.flight.outline = tex.outline; spec.flight.aspect *= tex.E; }
+        break;
+      }
     }
     meta.ok = true; meta.step = 'ok';
     return cleanSpec(spec);
@@ -374,10 +384,10 @@ export async function dartFromFile(file) {
 }
 
 /** Indiziertes Muster → PNG data-URL */
-function texUrl({ w, h, pal, idx }) {
+function texUrl({ w, h, pal, idx, alpha }) {
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const im = new ImageData(w, h);
-  for (let n = 0; n < w * h; n++) { const c = pal[idx[n]]; im.data[n * 4] = c[0]; im.data[n * 4 + 1] = c[1]; im.data[n * 4 + 2] = c[2]; im.data[n * 4 + 3] = 255; }
+  for (let n = 0; n < w * h; n++) { const c = pal[idx[n]]; im.data[n * 4] = c[0]; im.data[n * 4 + 1] = c[1]; im.data[n * 4 + 2] = c[2]; im.data[n * 4 + 3] = alpha && !alpha[n] ? 0 : 255; }
   cv.getContext('2d').putImageData(im, 0, 0);
   return cv.toDataURL('image/png');
 }

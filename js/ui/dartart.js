@@ -64,7 +64,7 @@ export function renderDart(spec, label = 'Dart', cls = 'ddart') {
   const shaftHi = mix(s.shaft, '#ffffff', 0.35), shaftLo = mix(s.shaft, '#000000', 0.4);
   return `<svg class="${cls}" viewBox="0 0 600 90" role="img" aria-label="${label}">
   <defs>${vGrad(`${k}b`, metalStops(s))}${vGrad(`${k}s`, [shaftHi, s.shaft, shaftLo])}${vGrad(`${k}t`, ['#8d939b', '#f2f4f7', '#7a7f87'])}
-    <linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${mix(fc[0], '#ffffff', 0.3)}"/><stop offset=".5" stop-color="${fc[0]}"/><stop offset="1" stop-color="${fc[1] || mix(fc[0], '#000000', 0.5)}"/></linearGradient>
+    <linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${mix(fc[0], '#ffffff', 0.3)}"/><stop offset=".5" stop-color="${fc[0]}"/><stop offset="1" stop-color="${mix(fc[0], '#000000', 0.5)}"/></linearGradient>
     <linearGradient id="${k}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
     <clipPath id="${k}c"><path d="${barrel}"/></clipPath><clipPath id="${k}fc"><path d="${fd}"/></clipPath></defs>
   <path d="${fd}" fill="url(#${k}f)"/>
