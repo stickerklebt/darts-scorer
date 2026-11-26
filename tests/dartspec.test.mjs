@@ -40,9 +40,18 @@ test('Dart-Steckbrief: fremde Daten werden bereinigt, Zeichnung ist gleichbleibe
   assert.equal(a, b); assert.ok(a.startsWith('<svg') && !a.includes('NaN') && !a.includes('<script'));
 });
 
+/** Fertig ausgerichteter Dart (Flight links) aus einem Breitenprofil – prüft nur die Zonen-Logik, ohne Segmentierung */
+function straightFrom(widths) {
+  const W = widths.length, H = Math.max(...widths) + 4, cy = (H - 1) / 2, data = new Uint8ClampedArray(W * H * 4), alpha = new Uint8Array(W * H);
+  widths.forEach((w, X) => { for (let Y = 0; Y < H; Y++) if (Math.abs(Y - cy) <= w / 2) { alpha[Y * W + X] = 1; data.set([150, 150, 150, 255], (Y * W + X) * 4); } });
+  return { width: W, height: H, data, alpha, thick: widths };
+}
+
 test('Dart-Steckbrief: Soft-Dart – Spitze halb so dick wie der Barrel wird nicht als Barrel gezählt', () => {
-  const img = synth(400, 260, 3.5), sp = features(straighten(img, segment(img).mask));
+  // wie das Produktfoto vom 26.11.: Flight 57 · Schaft 46 (4 px) · Barrel 71 (8 px) · Spitze 31 (4 px)
+  const w = [...Array(57).fill(40), ...Array(46).fill(4), ...Array(71).fill(8), ...Array(31).fill(4)];
+  const sp = features(straightFrom(w));
   assert.ok(sp, 'kein Steckbrief');
-  assert.ok(Math.abs(sp.len.barrel - 85 / 300) < 0.07, `Barrel ${sp.len.barrel}`);
-  assert.ok(Math.abs(sp.len.tip - 55 / 300) < 0.07, `Spitze ${sp.len.tip}`);
+  assert.ok(Math.abs(sp.len.barrel - 71 / 205) < 0.03, `Barrel ${sp.len.barrel}`);
+  assert.ok(Math.abs(sp.len.tip - 31 / 205) < 0.03, `Spitze ${sp.len.tip}`);
 });
