@@ -475,3 +475,4 @@ Offen: E-Mail-Bestätigung.
   (wer zuerst Rest ≤ 170 hat → Leg geholt; wischen oder Punkt antippen, `ui.fcPage`), **Triple im Finish** (meistgetroffenes Triple bei Rest ≤ 170). Top 10 Checkouts ganz sichtbar.
   „Auffällig“ ohne Bust-Schock und Wochentag. Doppel groß: nur ab und zu kurzer Glanz. Doppel-Fenster: Prozent antippen → Kurve „Treffer beim wievielten Versuch im Leg“
   (`doubleTriesToHit`, x-Achse = Ø × 1,4, Rest in der letzten Säule). Setup-501 höher.
+- **Update 26.11.2026 (6)**: Doppel-Kurve mit Platz für die Prozente oben. Statistik breit: rechte Spalte (Top 10 scrollt im Kasten, High Finish unten) genau so hoch wie die linke (`.co-right-in`). „Auffällig“ 2 × 2.

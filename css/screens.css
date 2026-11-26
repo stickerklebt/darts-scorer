@@ -3679,3 +3679,19 @@ html.no-motion .hb-spot .dspot { animation: none !important; }
 .di-curve .cv rect { fill: #e9ecf0; }
 .di-curve .cv text { font-family: var(--f-num); font-size: 11px; fill: rgba(222,226,231,.75); text-anchor: middle; }
 .di-curve .cv .cv-v { fill: #fff; font-size: 12px; }
+
+/* ================= UPDATE 26.11.2026 (6) ================= */
+/* Doppel-Kurve: schlankere Säulen, Prozente oben nicht mehr abgeschnitten */
+.di-curve .cv { overflow: visible; }
+.di-curve .cv rect { fill: rgba(233,236,240,.85); }
+/* Statistik breit: rechte Spalte genau so hoch wie die linke – Top 10 scrollt in ihrem Kasten, High Finish steht unten bündig */
+@media (min-width: 900px) {
+  .co-layout { align-items: stretch !important; }
+  .co-right { position: relative; min-height: 420px; }
+  .co-right-in { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; }
+  .co-right-in .rlist { flex: 1 1 auto; min-height: 0; margin: 0 !important; overflow-y: auto !important; overscroll-behavior: contain; scrollbar-width: thin;
+    -webkit-mask-image: linear-gradient(#000 88%, transparent) !important; mask-image: linear-gradient(#000 88%, transparent) !important; }
+  .co-right-in .hf-card { flex: none; margin: 0 !important; }
+}
+/* „Auffällig“ hat 4 Karten → 2 × 2 statt einer einzelnen Karte in der letzten Reihe */
+.kv.three.ins { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }

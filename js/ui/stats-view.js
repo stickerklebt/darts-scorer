@@ -102,7 +102,7 @@ function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
   return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
     + block('Quote nach Bereich', rangeCards(st.ranges) + extraCards(pid))}</div>
-    <div class="co-right">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div>`;
+    <div class="co-right"><div class="co-right-in">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div></div>`;
 }
 
 /** Doppel groß mit einem Punkt je Treffer – erscheint an Stelle der Heatmap-Scheibe (fertige Matches + laufendes Spiel) */
@@ -124,7 +124,7 @@ function triesCurve(key) {
   const avg = list.reduce((a, x) => a + x, 0) / list.length, n = Math.max(2, Math.ceil(avg * 1.4));
   const bins = Array(n).fill(0); for (const x of list) bins[Math.min(n, x) - 1]++;
   const p = bins.map((c) => c / list.length), mx = Math.max(...p), W = 300, H = 120, bw = W / n;
-  const bars = p.map((v, i) => { const h = mx ? (v / mx) * (H - 22) : 0; return `<rect x="${(i * bw + bw * 0.18).toFixed(1)}" y="${(H - 16 - h).toFixed(1)}" width="${(bw * 0.64).toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>
+  const bars = p.map((v, i) => { const h = mx ? (v / mx) * (H - 40) : 0; return `<rect x="${(i * bw + bw * 0.3).toFixed(1)}" y="${(H - 16 - h).toFixed(1)}" width="${(bw * 0.4).toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>
     <text class="cv-v" x="${(i * bw + bw / 2).toFixed(1)}" y="${(H - 20 - h).toFixed(1)}">${Math.round(v * 100)}%</text>
     <text class="cv-x" x="${(i * bw + bw / 2).toFixed(1)}" y="${H - 3}">${i + 1}${i === n - 1 ? '+' : ''}</text>`; }).join('');
   return `<div class="di-curve"><h4>Treffer beim wievielten Versuch im Leg · Ø ${fmt(avg, 1)}</h4><svg viewBox="0 0 ${W} ${H}" class="cv">${bars}</svg></div>`;
