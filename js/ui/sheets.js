@@ -41,10 +41,11 @@ function dartTune(sp) {
   const c0 = sp.flight?.colors?.[0];
   const cols = [...new Set([c0, ...(sp.flight?.colors || []), ...FLIGHT_COLS].filter(Boolean))].slice(0, 10);
   return `<div class="dart-tune"><div class="dt-prev">${renderDart(sp, 'Dein Dart')}</div>
-    <div class="srow col"><span class="lbl">Flight</span>${seg('dartSet', 'shape', [['standard', 'Standard'], ['slim', 'Slim'], ['kite', 'Kite'], ['pear', 'Pear']], sp.flight?.shape)}</div>
+    <div class="srow col"><span class="lbl">Flight</span>${seg('dartSet', 'shape', [...(sp.flight?.outline ? [['photo', 'Wie Foto']] : []), ['standard', 'Standard'], ['slim', 'Slim'], ['kite', 'Kite'], ['pear', 'Pear']], sp.flight?.shape)}</div>
+    ${sp.flight?.tex ? `<div class="srow col"><span class="lbl">Flight-Muster</span>${seg('dartSet', 'tex', [['on', 'Aus dem Foto'], ['off', 'Einfarbig']], sp.flight.texOff ? 'off' : 'on')}</div>` : ''}
     <div class="srow"><span class="lbl">Rillen</span><span class="dt-step"><button class="btn line" data-act="dartSet" data-k="rings" data-v="-1" aria-label="Weniger Rillen">−</button><b>${(sp.rings || []).length}</b><button class="btn line" data-act="dartSet" data-k="rings" data-v="1" aria-label="Mehr Rillen">+</button></span></div>
     <div class="srow col"><span class="lbl">Barrel</span>${seg('dartSet', 'metal', [['silver', 'Silber'], ['titan', 'Titan'], ['black', 'Schwarz'], ['gold', 'Gold'], ...(sp.metal === 'color' ? [['color', 'Farbe']] : [])], sp.metal)}</div>
-    <div class="srow col"><span class="lbl">Flight-Farbe</span><div class="dt-cols">${cols.map((c) => `<button class="dt-col ${c === c0 ? 'on' : ''}" style="--c:${c}" data-act="dartSet" data-k="color" data-v="${c}" aria-label="Farbe ${c}"></button>`).join('')}</div></div>
+    ${sp.flight?.tex && !sp.flight.texOff ? '' : `<div class="srow col"><span class="lbl">Flight-Farbe</span><div class="dt-cols">${cols.map((c) => `<button class="dt-col ${c === c0 ? 'on' : ''}" style="--c:${c}" data-act="dartSet" data-k="color" data-v="${c}" aria-label="Farbe ${c}"></button>`).join('')}</div></div>`}
   </div>`;
 }
 

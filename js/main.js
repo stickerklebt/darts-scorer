@@ -825,6 +825,7 @@ const actions = {
     if (k === 'shape') sp.flight.shape = v;
     else if (k === 'metal') sp.metal = v;
     else if (k === 'color') sp.flight.colors = [v];
+    else if (k === 'tex') { if (v === 'off') sp.flight.texOff = true; else delete sp.flight.texOff; }
     else if (k === 'rings') {
       // gleichmäßig über die bisherige Grip-Zone verteilen (ohne erkannte Zone: Mitte des Barrels)
       const r = sp.rings, n = Math.max(0, Math.min(MAX_RINGS, r.length + Number(v)));

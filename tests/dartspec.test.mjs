@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { segment, straighten } from '../js/dartscan.js';
-import { features, cleanSpec } from '../js/dartspec.js';
+import { features, cleanSpec, flightTexture } from '../js/dartspec.js';
 import { renderDart } from '../js/ui/dartart.js';
 
 /* Synthetischer Dart auf hellem Tisch, schräg: Spitze · Barrel mit 6 dunklen Rillen · Schaft · rote Standard-Flight (hinten gerade) */
@@ -26,7 +26,8 @@ test('Dart-Steckbrief: Längen, Rillen, Metall, Flight-Farbe und -Form aus dem F
   assert.ok(Math.abs(sp.len.flight - 80 / 300) < 0.07, `Flight ${sp.len.flight}`);
   assert.ok(sp.rings.length >= 4 && sp.rings.length <= 8, `Rillen ${sp.rings.length}`);
   assert.equal(sp.metal, 'silver');
-  assert.equal(sp.flight.shape, 'standard');
+  assert.equal(sp.flight.shape, 'photo');
+  assert.equal(sp.flight.outline.length, 16);
   const [r, g] = [1, 3].map((i) => parseInt(sp.flight.colors[0].slice(i, i + 2), 16));
   assert.ok(r > 140 && g < 80, `Flight-Farbe ${sp.flight.colors[0]}`);
 });
@@ -54,4 +55,19 @@ test('Dart-Steckbrief: Soft-Dart – Spitze halb so dick wie der Barrel wird nic
   assert.ok(sp, 'kein Steckbrief');
   assert.ok(Math.abs(sp.len.barrel - 71 / 205) < 0.03, `Barrel ${sp.len.barrel}`);
   assert.ok(Math.abs(sp.len.tip - 31 / 205) < 0.03, `Spitze ${sp.len.tip}`);
+});
+
+test('Flight-Muster: Streifen bleiben, Farben auf wenige reduziert; Muster im Steckbrief nur als PNG', () => {
+  // Flight 60 Spalten, 40 hoch: abwechselnd grün/schwarz in 10er-Streifen (+ etwas Rauschen)
+  const w = [...Array(60).fill(40), ...Array(40).fill(4), ...Array(60).fill(8), ...Array(30).fill(3)], W = w.length, H = 44, cy = (H - 1) / 2;
+  const data = new Uint8ClampedArray(W * H * 4), alpha = new Uint8Array(W * H);
+  w.forEach((ww, X) => { for (let Y = 0; Y < H; Y++) if (Math.abs(Y - cy) <= ww / 2) {
+    const g = X < 60 && Math.floor(X / 10) % 2 === 0, n = ((X * 7 + Y * 13) % 11) - 5;
+    alpha[Y * W + X] = 1; data.set(g ? [150 + n, 200 + n, 40 + n, 255] : [25 + n, 30 + n, 20 + n, 255], (Y * W + X) * 4);
+  } });
+  const t = flightTexture({ width: W, height: H, data, alpha, thick: w }, 0, 59, 60);
+  assert.ok(t.pal.length >= 2 && t.pal.length <= 5, `Farben ${t.pal.length}`);
+  const row = Math.floor(t.h / 2), col = (i) => t.pal[t.idx[row * t.w + i]];
+  assert.ok(col(5)[1] > 150 && col(15)[1] < 60, 'Streifen grün/schwarz');
+  assert.equal(cleanSpec({ flight: { tex: 'javascript:alert(1)' } }).flight.tex, undefined);
 });

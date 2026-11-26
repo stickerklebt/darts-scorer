@@ -1,9 +1,12 @@
 /* Dart-Steckbrief: aus dem ausgerichteten Foto-Dart (dartscan.straighten → Flight links, Spitze rechts) werden nur MERKMALE gemessen –
    Längenverhältnisse, Barrel-Form, Grip-Rillen, Metall, Farben, Flight-Form. Gezeichnet wird daraus immer im selben Stil
    (ui/dartart.js), deshalb sehen alle Darts einheitlich aus und behalten trotzdem ihre echten Merkmale.
-   Rein, ohne DOM; auch der Server benutzt cleanSpec (Freundes-Darts). Gespeichert in prefs.myDart (wenige hundert Bytes). */
+   Flight: echter Umriss (outline) + Muster aus dem Foto, auf wenige Farben reduziert (flightTexture → PNG in flight.tex, wenige KB) –
+   sieht damit wie ein gedrucktes Icon aus, nicht wie ein Foto-Ausschnitt.
+   Rein, ohne DOM; auch der Server benutzt cleanSpec (Freundes-Darts). Gespeichert in prefs.myDart. */
 
-export const FLIGHTS = ['standard', 'slim', 'kite', 'pear'];
+export const FLIGHTS = ['photo', 'standard', 'slim', 'kite', 'pear'];
+const TEX_MAX = 24000; // Zeichen der data-URL
 export const METALS = ['silver', 'titan', 'black', 'gold', 'color'];
 export const MAX_RINGS = 24;
 const N_PROFILE = 12;
@@ -30,13 +33,16 @@ export function cleanSpec(x) {
   const rings = Array.isArray(x.rings) ? x.rings.slice(0, MAX_RINGS).map((r) => +clamp(num(r, 0.5), 0, 1).toFixed(3)).sort((a, b) => a - b) : [];
   const f = x.flight || {};
   const colors = (Array.isArray(f.colors) ? f.colors : []).slice(0, 2).map((c) => hex(c, null)).filter(Boolean);
+  const outline = Array.isArray(f.outline) && f.outline.length >= 8 && f.outline.length <= 32 ? f.outline.map((p) => +clamp(num(p, 0.5), 0, 1).toFixed(3)) : null;
+  const tex = typeof f.tex === 'string' && f.tex.length <= TEX_MAX && /^data:image\/png;base64,[A-Za-z0-9+/]+=*$/.test(f.tex) ? f.tex : null;
   return {
     v: 1,
     len: { flight: clamp(num(l.flight, D.len.flight), 0.05, 0.6), shaft: clamp(num(l.shaft, D.len.shaft), 0.02, 0.6),
       barrel: clamp(num(l.barrel, D.len.barrel), 0.05, 0.7), tip: clamp(num(l.tip, D.len.tip), 0.03, 0.5) },
     profile: prof, thick: clamp(num(x.thick, D.thick), 0.02, 0.12), rings,
     metal: METALS.includes(x.metal) ? x.metal : 'silver', tone: hex(x.tone, D.tone), shaft: hex(x.shaft, D.shaft),
-    flight: { shape: FLIGHTS.includes(f.shape) ? f.shape : 'standard', colors: colors.length ? colors : D.flight.colors.slice(), aspect: clamp(num(f.aspect, 1.25), 0.4, 2.5) },
+    flight: { shape: FLIGHTS.includes(f.shape) && (f.shape !== 'photo' || outline) ? f.shape : 'standard', colors: colors.length ? colors : D.flight.colors.slice(), aspect: clamp(num(f.aspect, 1.25), 0.4, 2.5),
+      ...(outline ? { outline } : {}), ...(tex ? { tex } : {}), ...(f.texOff === true ? { texOff: true } : {}) },
   };
 }
 
@@ -143,10 +149,19 @@ export function features(st, dbg = {}) {
   for (let x = fE + 1, s0 = -1, last = -1; x <= x1 + 1; x++) {
     if (x <= x1 && t[x] >= thick) { if (s0 < 0 || x - last > gap + 1) s0 = x; last = x; if (last - s0 > bE - bS) { bS = s0; bE = last; } }
   }
-  const fl = fE - x0 + 1, bl = bE - bS + 1, tl = x1 - bE, sl = Math.max(1, bS - fE - 1);
+  let fl = fE - x0 + 1, bl = bE - bS + 1, tl = x1 - bE, sl = Math.max(1, bS - fE - 1);
   Object.assign(dbg, { x0, x1, fE, bS, bE, bw, maxW, fl, sl, bl, tl });
-  if (bl < L * 0.08) { dbg.fail = 'Barrel nicht gefunden'; return null; }
-  if (tl < L * 0.03) { dbg.fail = 'Spitze nicht gefunden'; return null; }
+  // Unplausibel (z. B. gemusterter Tisch, Spitze kaum sichtbar)? Dann nicht abbrechen, sondern typische Proportionen hinter der Flight –
+  // Farben, Metall und Flight bleiben echt; Rillen/Barrel-Form dann wie beim Standard-Dart.
+  const ok = (v, a, b) => v / L >= a && v / L <= b;
+  const guess = !(ok(fl, 0.12, 0.45) && ok(sl, 0.04, 0.4) && ok(bl, 0.12, 0.5) && ok(tl, 0.06, 0.32));
+  if (guess) {
+    if (!ok(fl, 0.12, 0.45)) fE = x0 + Math.round(L * 0.25);
+    const r = x1 - fE;
+    bS = fE + 1 + Math.round(r * 0.26); bE = bS + Math.round(r * 0.42) - 1;
+    fl = fE - x0 + 1; sl = bS - fE - 1; bl = bE - bS + 1; tl = x1 - bE;
+    Object.assign(dbg, { guess: true, gfE: fE, gbS: bS, gbE: bE });
+  }
   const bt = t.slice(bS, bE + 1), bmx = Math.max(...bt, 1);
   const profile = Array.from({ length: N_PROFILE }, (_, i) => {
     const a = Math.floor(i * bl / N_PROFILE), b = Math.max(a + 1, Math.floor((i + 1) * bl / N_PROFILE));
@@ -158,10 +173,71 @@ export function features(st, dbg = {}) {
   const barrelRgb = medColor(pixels(st, bS, bE)) || [157, 163, 171];
   const shaftRgb = medColor(pixels(st, fE + 1, bS - 1, 0.8)) || [27, 28, 32];
   const fp = flightShape(t.slice(x0, fE + 1));
+  const fw = t.slice(x0, fE + 1), fmx = Math.max(...fw, 1);
+  const outline = Array.from({ length: 16 }, (_, i) => fw[Math.round(i / 15 * (fw.length - 1))] / fmx);
   return cleanSpec({
     v: 1, len: { flight: fl / L, shaft: sl / L, barrel: bl / L, tip: tl / L },
-    profile: smooth(profile, 1), thick: bmx / L, rings: findRings(lum),
+    profile: guess ? DEFAULT_SPEC.profile : smooth(profile, 1), thick: guess ? Math.min(bw, maxW * 0.35) / L : bmx / L,
+    rings: guess ? DEFAULT_SPEC.rings : findRings(lum),
     metal: metalOf(barrelRgb), tone: toHex(barrelRgb), shaft: toHex(shaftRgb),
-    flight: { shape: fp.shape, aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.9)) },
+    flight: { shape: 'photo', outline: smooth(outline, 1), aspect: fp.aspect, colors: twoColors(pixels(st, x0, fE, 0.9)) },
   });
+}
+
+/* ---------- Flight-Muster: aus dem Foto abgerollt, entrauscht, auf wenige Farben reduziert (wie gedruckt) ---------- */
+/**
+ * Flight-Bereich (Spalten x0…fE des ausgerichteten Darts) als kleines Bild in Kastenform: x = entlang der Flight, y = quer, bezogen auf
+ * die breiteste Stelle (wie die gezeichnete Flight). Außerhalb der Flight wird die Randfarbe fortgesetzt (der Umriss schneidet später ab).
+ * Dann Median 3×3, k-means auf ≤ 5 Farben, Krümel per Mehrheitsfilter weg. → { w, h, pal: [[r,g,b]…], idx: Uint8Array } oder null
+ */
+export function flightTexture(st, x0, fE, TW = 96) {
+  const { width: W, height: H, data, alpha, thick } = st, cy = (H - 1) / 2, fl = fE - x0 + 1;
+  const mxH = Math.max(1, ...thick.slice(x0, fE + 1)) / 2;
+  if (fl < 8 || mxH < 4) return null;
+  const TH = Math.round(clamp(TW * (2 * mxH) / fl, 32, 96));
+  const raw = new Float32Array(TW * TH * 3);
+  for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) {
+    const X = Math.min(W - 1, Math.round(x0 + (i + 0.5) / TW * fl)), hw = Math.max(0, thick[X] / 2 - 1);
+    let v = ((j + 0.5) / TH * 2 - 1) * mxH; v = clamp(v, -hw, hw);
+    let Y = Math.round(cy + v), o = (j * TW + i) * 3;
+    while (Y !== Math.round(cy) && !alpha[Y * W + X]) Y += Y > cy ? -1 : 1;   // bis in die Flight hinein
+    const p = (Y * W + X) * 4;
+    raw[o] = data[p]; raw[o + 1] = data[p + 1]; raw[o + 2] = data[p + 2];
+  }
+  // Median 3×3 je Kanal (Rauschen, JPEG-Kanten)
+  const med = new Float32Array(raw.length);
+  for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) for (let k = 0; k < 3; k++) {
+    const a = [];
+    for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const jj = clamp(j + dj, 0, TH - 1), ii = clamp(i + di, 0, TW - 1); a.push(raw[(jj * TW + ii) * 3 + k]); }
+    a.sort((p, q) => p - q); med[(j * TW + i) * 3 + k] = a[4];
+  }
+  // k-means (Start: Helligkeits-Quantile), ähnliche Farben zusammenlegen
+  const N = TW * TH, px = (n) => [med[n * 3], med[n * 3 + 1], med[n * 3 + 2]];
+  const order = [...Array(N).keys()].sort((a, b) => lumOf(med, a * 3) - lumOf(med, b * 3));
+  let pal = [0.08, 0.3, 0.5, 0.7, 0.92].map((q) => px(order[Math.floor(q * (N - 1))]));
+  const idx = new Uint8Array(N);
+  const nearest = (p) => { let b = 0, bd = Infinity; pal.forEach((c, k) => { const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 + (p[2] - c[2]) ** 2; if (d < bd) { bd = d; b = k; } }); return b; };
+  for (let it = 0; it < 10; it++) {
+    const sum = pal.map(() => [0, 0, 0, 0]);
+    for (let n = 0; n < N; n++) { const p = px(n), k = nearest(p); idx[n] = k; sum[k][0] += p[0]; sum[k][1] += p[1]; sum[k][2] += p[2]; sum[k][3]++; }
+    pal = pal.map((c, k) => (sum[k][3] ? [sum[k][0] / sum[k][3], sum[k][1] / sum[k][3], sum[k][2] / sum[k][3]] : c));
+    if (it === 5) { // fast gleiche Farben verschmelzen, leere entfernen
+      const keep = [];
+      pal.forEach((c, k) => { if (sum[k][3] && !keep.some((d) => Math.hypot(c[0] - d[0], c[1] - d[1], c[2] - d[2]) < 38)) keep.push(c); });
+      pal = keep;
+    }
+  }
+  for (let n = 0; n < N; n++) idx[n] = nearest(px(n));
+  // Krümel weg: zweimal Mehrheitsfilter 3×3
+  for (let pass = 0; pass < 2; pass++) {
+    const cp = idx.slice();
+    for (let j = 0; j < TH; j++) for (let i = 0; i < TW; i++) {
+      const cnt = new Uint8Array(pal.length);
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) cnt[cp[clamp(j + dj, 0, TH - 1) * TW + clamp(i + di, 0, TW - 1)]]++;
+      let b = cp[j * TW + i]; cnt.forEach((c, k) => { if (c > cnt[b]) b = k; }); if (cnt[b] >= 5) idx[j * TW + i] = b;
+    }
+  }
+  // Farben etwas kräftiger (wie gedruckt)
+  pal = pal.map((c) => { const m = (c[0] + c[1] + c[2]) / 3; return c.map((v) => clamp(m + (v - m) * 1.2, 0, 255)); });
+  return { w: TW, h: TH, pal, idx };
 }

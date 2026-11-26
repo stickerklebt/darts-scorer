@@ -32,8 +32,14 @@ function curve(p) {
 }
 
 /** Flight-Umriss: hinten bei X0, vorne bei x1, halbe Höhe h */
-function flightPath(shape, x1, h) {
+function flightPath(shape, x1, h, outline) {
   const L = x1 - X0, X = (f) => f1(X0 + f * L), T = (f) => f1(CY - f * h), B = (f) => f1(CY + f * h);
+  if (shape === 'photo' && outline) {
+    // echter Umriss aus dem Foto (Breite je Stelle), vorne mindestens Schaft-Breite, glatt gezogen
+    const n = outline.length, pts = outline.map((o, i) => [X0 + i / (n - 1) * L, CY - Math.max(i === n - 1 ? 5 : 1, o * h)]);
+    const top = curve(pts), bot = curve(pts.map(([x, y]) => [x, 2 * CY - y]).reverse());
+    return `M${f1(pts[0][0])} ${f1(pts[0][1])}${top} L${f1(pts[n - 1][0])} ${f1(2 * CY - pts[n - 1][1])}${bot} Z`;
+  }
   if (shape === 'kite') return `M${X0} ${CY} L${X(0.42)} ${T(1)} L${f1(x1)} ${CY - 5} L${f1(x1)} ${CY + 5} L${X(0.42)} ${B(1)} Z`;
   if (shape === 'pear') return `M${f1(x1)} ${CY - 5} C${X(0.55)} ${T(0.8)} ${X(0.08)} ${T(1.08)} ${X(0.02)} ${T(0.4)} Q${X(-0.03)} ${CY} ${X(0.02)} ${B(0.4)} C${X(0.08)} ${B(1.08)} ${X(0.55)} ${B(0.8)} ${f1(x1)} ${CY + 5} Z`;
   return `M${X0} ${T(1)} L${f1(x1)} ${CY - 5} L${f1(x1)} ${CY + 5} L${X0} ${B(1)} L${X(0.07)} ${CY} Z`; // standard + slim
@@ -48,20 +54,22 @@ export function renderDart(spec, label = 'Dart', cls = 'ddart') {
   const sum = raw.reduce((a, b) => a + b, 0), [lf, ls, lb] = raw.map((v) => v / sum * SPAN);
   const fx1 = X0 + lf, sx1 = fx1 + ls, bx1 = sx1 + lb;
   const hb = clamp(s.thick * SPAN / 2, 9, 17);
-  const hf = s.flight.shape === 'slim' ? clamp(s.flight.aspect * lf / 2, 18, 28) : clamp(s.flight.aspect * lf / 2, 26, 42);
+  const hf = s.flight.shape === 'photo' ? clamp(s.flight.aspect * lf / 2, 18, 42) : s.flight.shape === 'slim' ? clamp(s.flight.aspect * lf / 2, 18, 28) : clamp(s.flight.aspect * lf / 2, 26, 42);
   // Barrel: Profilpunkte, Enden etwas eingezogen (Übergang zu Schaft und Spitze)
   const P = s.profile, pts = [[sx1, Math.max(6.5, P[0] * hb * 0.75)], ...P.map((p, i) => [sx1 + (i + 0.5) / P.length * lb, Math.max(6.5, p * hb)]), [bx1, Math.max(4, P[P.length - 1] * hb * 0.7)]];
   const top = pts.map(([x, r]) => [x, CY - r]), bot = pts.map(([x, r]) => [x, CY + r]).reverse();
   const barrel = `M${f1(top[0][0])} ${f1(top[0][1])}${curve(top)} L${f1(bot[0][0])} ${f1(bot[0][1])}${curve(bot)} Z`;
-  const fc = s.flight.colors, fd = flightPath(s.flight.shape, fx1, hf);
+  const fc = s.flight.colors, fd = flightPath(s.flight.shape, fx1, hf, s.flight.outline), tex = !s.flight.texOff && s.flight.tex;
   const rings = s.rings.map((r) => { const x = f1(sx1 + (0.04 + r * 0.92) * lb); return `<path d="M${x} ${CY - hb}V${CY + hb}" stroke="#0c0d10" stroke-opacity=".6" stroke-width="2.2"/><path d="M${f1(x + 1.7)} ${CY - hb}V${CY + hb}" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>`; }).join('');
   const shaftHi = mix(s.shaft, '#ffffff', 0.35), shaftLo = mix(s.shaft, '#000000', 0.4);
   return `<svg class="${cls}" viewBox="0 0 600 90" role="img" aria-label="${label}">
   <defs>${vGrad(`${k}b`, metalStops(s))}${vGrad(`${k}s`, [shaftHi, s.shaft, shaftLo])}${vGrad(`${k}t`, ['#8d939b', '#f2f4f7', '#7a7f87'])}
     <linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${mix(fc[0], '#ffffff', 0.3)}"/><stop offset=".5" stop-color="${fc[0]}"/><stop offset="1" stop-color="${fc[1] || mix(fc[0], '#000000', 0.5)}"/></linearGradient>
     <linearGradient id="${k}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <clipPath id="${k}c"><path d="${barrel}"/></clipPath></defs>
-  <path d="${fd}" fill="url(#${k}f)" ${OUT}/><path d="${fd}" fill="url(#${k}g)"/>
+    <clipPath id="${k}c"><path d="${barrel}"/></clipPath><clipPath id="${k}fc"><path d="${fd}"/></clipPath></defs>
+  <path d="${fd}" fill="url(#${k}f)"/>
+  ${tex ? `<image href="${tex}" x="${X0}" y="${f1(CY - hf)}" width="${f1(lf)}" height="${f1(2 * hf)}" preserveAspectRatio="none" clip-path="url(#${k}fc)"/>` : ''}
+  <path d="${fd}" fill="url(#${k}g)" ${OUT}/>
   <path d="M${X0 + 14} ${CY}H${f1(fx1)}" stroke="#000" stroke-opacity=".45" stroke-width="2"/>
   <rect x="${f1(fx1 - 10)}" y="${CY - 6}" width="${f1(sx1 - fx1 + 12)}" height="12" rx="4" fill="url(#${k}s)" ${OUT}/>
   <path d="M${f1(fx1 - 6)} ${CY - 3}H${f1(sx1 - 2)}" stroke="#fff" stroke-opacity=".25" stroke-width="1.2" stroke-linecap="round"/>

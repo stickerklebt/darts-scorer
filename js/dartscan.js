@@ -147,6 +147,56 @@ function pick(mask, w, h, merge = false) {
   return out;
 }
 
+/** Farbe an einer Kommastelle (bilinear) → [r, g, b] */
+function sample(img, fx, fy) {
+  const { width: w, height: h, data: d } = img;
+  const x0 = Math.max(0, Math.min(w - 2, Math.floor(fx))), y0 = Math.max(0, Math.min(h - 2, Math.floor(fy)));
+  const ax = Math.max(0, Math.min(1, fx - x0)), ay = Math.max(0, Math.min(1, fy - y0)), o = [0, 0, 0];
+  for (let k = 0; k < 3; k++) {
+    const i00 = (y0 * w + x0) * 4 + k, i10 = i00 + 4, i01 = i00 + w * 4, i11 = i01 + 4;
+    o[k] = (d[i00] * (1 - ax) + d[i10] * ax) * (1 - ay) + (d[i01] * (1 - ax) + d[i11] * ax) * ay;
+  }
+  return o;
+}
+const cdist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+
+/**
+ * Halbe Breite je Spalte nachschärfen – nur im schmalen Teil (Schaft, Barrel, Spitze; die Flight bleibt):
+ * Dart-Farbe = Mitte der Spalte, Untergrund = knapp außerhalb der groben Kante (beides über ein paar Spalten gemittelt).
+ * Von der Mitte nach außen gehört ein Punkt zum Dart, solange er näher an der Dart- als an der Untergrundfarbe liegt
+ * (ein einzelner Ausreißer, z. B. Glanzlicht, wird übersprungen). at(X, dv) = Farbe in Spalte X, dv px neben der Mitte.
+ */
+export function tighten(hw, at) {
+  const Wc = hw.length, mx = Math.max(1, ...hw), narrow = (X) => hw[X] > 0 && hw[X] < mx * 0.5;
+  const avg = (ps) => [0, 1, 2].map((k) => ps.reduce((a, p) => a + p[k], 0) / ps.length);
+  const cen = [], bg = [];
+  for (let X = 0; X < Wc; X++) {
+    if (!narrow(X)) continue;
+    const r = Math.min(1, hw[X] * 0.4);
+    cen[X] = avg([-r, 0, r].map((d) => at(X, d)));
+    bg[X] = avg([2, 3, 4, 5, 6].flatMap((k) => [at(X, -(hw[X] + k)), at(X, hw[X] + k)]));
+  }
+  const near = (arr, X) => { const ps = []; for (let k = X - 4; k <= X + 4; k++) if (arr[k]) ps.push(arr[k]); return avg(ps); };
+  const out = hw.slice();
+  for (let X = 0; X < Wc; X++) {
+    if (!narrow(X)) continue;
+    const C = near(cen, X), B = near(bg, X);
+    if (cdist(C, B) < 30) continue;                 // Dart und Untergrund zu ähnlich → grobe Kante behalten
+    const side = (sg) => {
+      let r = 0.5, miss = 0;
+      for (let d = 0.5; d <= hw[X]; d += 0.5) {
+        const p = at(X, sg * d);
+        if (cdist(p, C) <= cdist(p, B)) { r = d; miss = 0; } else if (++miss * 0.5 > Math.max(1.5, r * 0.4)) break; // Glanzlicht im Dart überspringen
+      }
+      return r;
+    };
+    out[X] = Math.max(0.75, (side(1) + side(-1)) / 2);
+  }
+  // glätten (Median über ~3 % der Länge – einzelne Linien im Untergrund fallen weg), Lücken bleiben Lücken
+  const k0 = Math.max(2, Math.round(Wc * 0.015));
+  return out.map((v, X) => { if (!v) return 0; const a = []; for (let k = X - k0; k <= X + k0; k++) if (out[k]) a.push(out[k]); a.sort((p, q) => p - q); return a[a.length >> 1]; });
+}
+
 /** Hauptachse (PCA) der Maske → Winkel, Mittelpunkt */
 export function axis(mask, w) {
   let n = 0, mx = 0, my = 0;
@@ -192,6 +242,8 @@ export function straighten(img, mask) {
   const runs = []; for (let X = 0; X < Wc;) { if (!hw[X]) { X++; continue; } let E = X; while (E < Wc && hw[E]) E++; runs.push([X, E]); X = E; }
   const longest = runs.reduce((m, r) => (r[1] - r[0] > m[1] - m[0] ? r : m), [0, 0]);
   for (const [A, E] of runs) if (E - A < Wc * 0.06 && A !== longest[0]) for (let X = A; X < E; X++) hw[X] = 0;
+  // Kanten nachschärfen (gemusterter Untergrund hängt sonst als breiter Saum an Schaft, Barrel und Spitze)
+  hw = tighten(hw, (X, dv) => sample(img, ax.cx + (X + u0) * c - (vc + dv) * s, ax.cy + (X + u0) * s + (vc + dv) * c));
   let Xa = 0, Xe = Wc - 1; while (Xa < Wc && !hw[Xa]) Xa++; while (Xe > Xa && !hw[Xe]) Xe--;
   const maxHw = Math.max(1, ...hw);
   const pad = 2, W = Xe - Xa + 1 + pad * 2, H = Math.ceil(maxHw * 2) + 1 + pad * 2, cy = (H - 1) / 2;
@@ -272,7 +324,7 @@ export function stylize(st) {
 }
 
 /* ---------- Im Browser: Foto → fertiges PNG (data-URL) ---------- */
-import { features } from './dartspec.js';
+import { features, flightTexture, cleanSpec } from './dartspec.js';
 import { apiGate } from './api.js';
 
 /** Foto → Dart-Steckbrief (Merkmale, kein Bild). Jeder Versuch geht mit Foto + Zwischenergebnissen ans Scan-Protokoll (Server). */
@@ -303,8 +355,15 @@ export async function dartFromFile(file) {
     const zones = {}, spec = features(st, zones);
     meta.zones = zones;
     if (!spec) throw new Error('Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.');
-    Object.assign(meta, { ok: true, step: 'ok', spec });
-    return spec;
+    meta.spec = { ...spec, flight: { ...spec.flight } };
+    // Flight-Muster als kleines PNG (wenige Farben → wenige KB); zu groß → kleiner rechnen, sonst ohne Muster
+    meta.step = 'texture';
+    for (const tw of [96, 64]) {
+      const tex = flightTexture(st, zones.x0, zones.gfE ?? zones.fE, tw), url = tex && texUrl(tex);
+      if (url && url.length < 24000) { spec.flight.tex = url; meta.tex = { w: tex.w, h: tex.h, colors: tex.pal.length, chars: url.length }; break; }
+    }
+    meta.ok = true; meta.step = 'ok';
+    return cleanSpec(spec);
   } catch (e) {
     meta.err = String(e?.message || e);
     throw e;
@@ -312,6 +371,15 @@ export async function dartFromFile(file) {
     meta.ms = performance.now() - t0;
     reportScan(file, cv, meta);
   }
+}
+
+/** Indiziertes Muster → PNG data-URL */
+function texUrl({ w, h, pal, idx }) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const im = new ImageData(w, h);
+  for (let n = 0; n < w * h; n++) { const c = pal[idx[n]]; im.data[n * 4] = c[0]; im.data[n * 4 + 1] = c[1]; im.data[n * 4 + 2] = c[2]; im.data[n * 4 + 3] = 255; }
+  cv.getContext('2d').putImageData(im, 0, 0);
+  return cv.toDataURL('image/png');
 }
 
 /** Scan-Protokoll: genau das Bild, das die Erkennung gesehen hat (JPEG ≤ 1200 px), sonst das Originalfoto (z. B. HEIC, das nicht lesbar war).
