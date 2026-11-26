@@ -2574,7 +2574,6 @@ html, body { background: radial-gradient(120% 70% at 50% -10%, #2c1a0e 0%, #1711
 /* Partyspiele: Plus-Kachel, kommende Modi ausgegraut, Galerie zum Hinzufügen/Entfernen */
 /* Plus-Kachel: gleicher Stil wie die Modus-Kacheln (Rahmen, Stern, Abzeichen in Gold mit Plus) */
 .mode.soon { opacity: .55; cursor: default; filter: grayscale(.4); }
-.mode.soon .mode-art { height: 70px; }
 .mode-soon { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 6px 10px; background: var(--ink); }
 .mode-soon b { font-family: var(--f-num); font-weight: 400; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mode-soon small { font-family: var(--f-num); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
@@ -3998,3 +3997,28 @@ html.no-motion .hero-stat.hs-epic > .hs-star { animation: none; }
 .pb-soon .pb-tile { filter: none !important; opacity: 1 !important; }
 .pb-tile .mode-art .badge-mode.metal, .mode .mode-art .badge-mode.metal { width: 64% !important; max-width: 70px; }
 .mode.soon .badge-mode.metal { opacity: .6; filter: drop-shadow(0 0 8px rgba(235,240,248,.2)) drop-shadow(0 4px 8px rgba(0,0,0,.6)) !important; }
+
+/* ================= UPDATE 26.11.2026 (11) ================= */
+/* Kein Rot unten an Karten – nirgends (kein roter Strich, kein roter Schein um die kleinen Karten) */
+.kv-c, .stats .sub-overview .kv-c.hot { box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.35) !important; }
+.kv-c::after { background: none !important; }
+/* Doppel-Farbskala: Linie läuft an beiden Enden weich aus (kein harter Rand), Leuchten liegt im eigenen Kasten */
+.dbl-scale { height: 30px !important; clip-path: none !important; background: none !important;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.dbl-scale .ds-line { inset: auto 0 !important; top: 13.5px !important; height: 3px !important; }
+.dbl-scale .ds-glow { top: 9px !important; bottom: 9px !important; filter: blur(5px) !important; }
+.dbl-scale .ds-run { top: 11px !important; bottom: 11px !important; }
+/* Play: „Partyspiele“ ohne rote Striche links/rechts */
+.play-lbl.party-lbl::before, .play-lbl.party-lbl::after { background: none !important; }
+/* Kommende Partyspiele auf Play: genau wie Cricket/Fußball (gleiche Höhe, kein Namensstreifen), nur nicht antippbar */
+.mode.soon { opacity: 1 !important; filter: none !important; cursor: default; }
+.modes .mode { align-self: start; }
+/* Partyspiel-Kacheln: ab und zu huscht ein rotes Licht um den Rand (je Kachel versetzt) */
+@property --mrA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.modes .mode:not(.mode-plus) .mode-art::after { content: "" !important; display: block !important; position: absolute; inset: 0; z-index: 3; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--mrA), transparent 0deg, rgba(196,42,75,0) 20deg, #e0315a 60deg, #ff8aa2 72deg, rgba(196,42,75,0) 110deg, transparent 360deg) !important;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 4px rgba(224,49,90,.9)) !important; text-shadow: none !important; opacity: 0;
+  animation: modeRed 9s linear infinite !important; animation-delay: calc(var(--bi, 0) * -3.1s) !important; }
+@keyframes modeRed { 0%, 70% { opacity: 0; --mrA: 0deg; } 74% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; --mrA: 360deg; } }
+html.no-motion .modes .mode .mode-art::after { animation: none !important; opacity: 0; }

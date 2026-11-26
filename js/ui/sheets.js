@@ -132,11 +132,10 @@ export function sheetView() {
       ${md.error ? `<p class="auth-err">${esc(md.error)}</p>` : ''}
       <div class="sbtns"><button class="btn line" data-act="profileOpen">Abbrechen</button><button class="btn red" data-act="delAcctForce" ${md.busy ? 'disabled' : ''}>Endgültig löschen</button></div>`;
   } else if (md.type === 'period') {
-    const opts = [['all', 'Gesamt', 'Alle gespeicherten Spiele'], ['1y', 'Letztes Jahr', ''], ['30d', 'Letzte 30 Tage', ''], ['7d', 'Letzte 7 Tage', '']];
-    inner = `<h3>Zeitraum</h3><p>Welche Spiele sollen in die Statistik?</p>
-      <div class="slist">${opts.map(([v, l, sub]) => `<button class="srow" data-act="period" data-v="${v}"><span class="lbl">${l}${sub ? `<small>${sub}</small>` : ''}</span>${S.statsPeriod === v ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
-      <h3 class="sh-sub">Modi</h3><p>Standard ist nur 501. Weitere X01-Modi aus deiner Spielhistorie kannst du dazunehmen – sonst verändern sie deine Statistik nicht.</p>
-      <div class="slist">${availableModes(S.matches, S.mainId).map((k) => `<button class="srow" data-act="statsMode" data-v="${k}"><span class="lbl">${modeLabel(k)}${k === '501' ? '<small>Standard</small>' : ''}</span><span class="tog ${statsModes().includes(k) ? 'on' : ''}"></span></button>`).join('')}</div>
+    // Lange auf „Stats“: nur noch ein Schalter – Partyspiele (X01-Varianten wie 301, 701, Double In) mit in die Statistik oder nicht
+    const extra = availableModes(S.matches, S.mainId).filter((k) => k !== '501'), on = extra.some((k) => statsModes().includes(k));
+    inner = `<h3>Statistik</h3>
+      <div class="slist"><button class="srow" data-act="statsParty" ${extra.length ? '' : 'disabled'}><span class="lbl">Partyspiele mitzählen<small>${extra.length ? 'X01-Varianten aus den Partyspielen (z. B. 301, Double In) zusätzlich zu 501' : 'Noch keine X01-Partyspiele gespielt'}</small></span><span class="tog ${on ? 'on' : ''}"></span></button></div>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
   } else if (md.type === 'hist') {
     inner = histSheet(md.id);

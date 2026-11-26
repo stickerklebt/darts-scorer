@@ -36,7 +36,7 @@ const ends = (st) => (st.series.length ? { labelL: dateStr(st.series[0].date), l
 /** Titel mit Umschalt-Menü (lange drücken → kleines Menü oben links, `ui.chMenu` = welches Menü offen ist) */
 export function pickTitle(id, kinds, kind, label) {
   const menu = ui.chMenu === id ? `<span class="ch-menu" role="menu">${kinds.map(([k, l]) => `<button role="menuitemradio" aria-checked="${k === kind}" class="${k === kind ? 'on' : ''}" data-act="chKind" data-m="${id}" data-v="${k}">${l}</button>`).join('')}</span>` : '';
-  return `<span class="ch-pick" data-m="${id}" title="Lange drücken zum Umschalten">${label}<i aria-hidden="true">▾</i></span>${menu}`;
+  return `<span class="ch-pick" data-m="${id}" title="Antippen zum Umschalten">${label}<i aria-hidden="true">▾</i></span>${menu}`;
 }
 
 /** Verlauf: ein Kasten „Average pro Match“ – lange auf den Titel drücken → kleines Menü oben links: Average · First 9 Average (Standard: Average) */

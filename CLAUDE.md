@@ -518,3 +518,6 @@ Offen: E-Mail-Bestätigung.
   Legs-Kästchen als Chrom-Rauten, **keine Leg-Info mit „Weiter“ mehr** (Kästchen füllt sich), Restzahl aktiv heller/inaktiv dunkler.
   Eingabe-Scheibe: DartVader-Stern als Markierung/Mauszeiger, Bordeaux + Flaschengrün. Doppel-Abfrage ohne Strahlen/Kasten, Feld wie auf der Scheibe (Punkte + Körnung).
   Alle kommenden Partyspiele haben eigene Chrom-Symbole (`SYMBOLS` in svg.js, `hasSymbol`).
+- **Update 26.11.2026 (11)**: Nirgends Rot unten an Karten. Doppel-Farbskala läuft an den Enden weich aus (mask). Umschalt-Titel (Average/First 9, Verteilung/Aufnahmen im Leg):
+  einmal antippen öffnet das Menü. Lange auf „Stats“: nur noch der Schalter **Partyspiele mitzählen** (`statsParty`: X01-Varianten an/aus, Zeitraum-Auswahl entfällt).
+  „Partyspiele“ ohne rote Striche. Kommende Partyspiele auf Play genau wie Cricket/Fußball (ohne Namensstreifen). Partyspiel-Kacheln: ab und zu huscht ein rotes Licht um den Rand (`modeRed`).

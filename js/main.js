@@ -2,7 +2,7 @@
 import { S, ui, save, flushSave, resetAll, ensureProfile, findProfile, profile, nameOf, sideName, nameTaken, uid, markRemoved, unmarkRemoved } from './store.js';
 import { initOnline, invite, syncIfChanged, abortOnline, acceptInvite, declineInvite, queueConfirms, flushOutbox, loadConfirms, answerConfirm, startOnlineLoops } from './online.js';
 import { myBannerData } from './ui/friends.js';
-import { overview, setStatsModes } from './stats.js';
+import { overview, setStatsModes, availableModes } from './stats.js';
 import { onlineWaitView } from './ui/versus.js';
 import { bruchView, bruchResult, clock } from './ui/bruch.js';
 import * as BR from './bruch.js';
@@ -850,6 +850,11 @@ const actions = {
     S.statsModes = next.length ? next : ['501']; render();
   },
   statsModesReset() { S.statsModes = ['501']; render(); },
+  statsParty() { // Partyspiele (alle X01-Varianten) an/aus
+    const extra = availableModes(S.matches, S.mainId).filter((k) => k !== '501');
+    const on = Array.isArray(S.statsModes) && S.statsModes.some((k) => k !== '501');
+    S.statsModes = on ? ['501'] : ['501', ...extra]; render();
+  },
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; ui.ovSeed = Math.random(); render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; ui.dblCurve = null; render(); },
@@ -1208,17 +1213,10 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEve
 document.addEventListener('click', (e) => { if (lpFired && e.target.closest('.tab[data-v="stats"]')) { lpFired = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 document.addEventListener('contextmenu', (e) => { if (e.target.closest('.tab[data-v="stats"]')) e.preventDefault(); });
 
-/* Scoring: lange auf einen umschaltbaren Titel drücken (Average · First 9 bzw. Verteilung · Aufnahmen im Leg) → Menü oben links; Klick danach verschluckt, Tippen daneben schließt */
-let apTimer = null, apFired = false;
-document.addEventListener('pointerdown', (e) => {
-  const pk = e.target.closest('.ch-pick');
-  if (!pk) return;
-  apFired = false; clearTimeout(apTimer);
-  apTimer = setTimeout(() => { apFired = true; navigator.vibrate?.(12); ui.chMenu = pk.dataset.m; render(); }, 500);
-});
-for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) document.addEventListener(ev, () => clearTimeout(apTimer));
+/* Scoring: einmal auf einen umschaltbaren Titel tippen (Average · First 9 bzw. Verteilung · Aufnahmen im Leg) → Menü; Tippen daneben schließt */
 document.addEventListener('click', (e) => {
-  if (apFired && e.target.closest('.ch-pick')) { apFired = false; e.stopImmediatePropagation(); e.preventDefault(); return; }
+  const pk = e.target.closest?.('.ch-pick');
+  if (pk) { e.stopImmediatePropagation(); e.preventDefault(); ui.chMenu = ui.chMenu === pk.dataset.m ? null : pk.dataset.m; render(); return; }
   if (ui.chMenu && !e.target.closest('.ch-menu')) { ui.chMenu = null; e.stopImmediatePropagation(); e.preventDefault(); render(); }
 }, true);
 document.addEventListener('contextmenu', (e) => { if (e.target.closest('.ch-pick')) e.preventDefault(); });
