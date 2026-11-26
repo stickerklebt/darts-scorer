@@ -113,3 +113,32 @@ export function removeDemo(S) {
   if (ids.has(S.cmpB)) S.cmpB = null;
   if (S.current && S.current.playerIds.some((id) => ids.has(id))) S.current = null;
 }
+
+/**
+ * „Nutzer simulieren“ (Anmeldung): ein Spieler, der seit einem Jahr spielt, Ø um 70 (wird über das Jahr etwas besser).
+ * ~180 × 501 gegen die Bots (Namen kommen aus bots.js) + ein paar Partyspiele. Alles mit `demo: true`.
+ */
+const SIM_OPP = ['sensei-wu', 'super-mario', 'shrek', 'jensn-huang', 'michael-jackson', 'phil-taylor', 'dreimac'];
+const SIM_OPP_SIGMA = { 'sensei-wu': 20, 'super-mario': 22.72, shrek: 19.09, 'jensn-huang': 18.14, 'michael-jackson': 21.16, 'phil-taylor': 6.7, dreimac: 24.31 };
+export function generateSimUser({ mainId, now = Date.now(), seed = 7070, count = 180 } = {}) {
+  const r = rng(seed), matches = [];
+  for (let i = 0; i < count; i++) {
+    const t = i / (count - 1), daysAgo = 365 - t * 364 + r() * 0.5;
+    const start = Math.round(now - daysAgo * DAY);
+    const opp = SIM_OPP[Math.floor(r() * SIM_OPP.length)];
+    const cfg = { [mainId]: { sigma: 12.6 - t * 2.2, fav: [16, 20, 8][Math.floor(r() * 3)] }, [opp]: { sigma: SIM_OPP_SIGMA[opp], fav: 16 } };
+    const m = playX01([[mainId], [opp]], cfg, start, r() < 0.6 ? 3 : r() < 0.7 ? 2 : 4, r);
+    m.endedAt = start + (20 + Math.round(r() * 25)) * 6e4;
+    matches.push(m);
+  }
+  [['cricket', { mode: 'points', rounds: 20 }], ['highscore', { rounds: 10 }], ['shanghai', { rounds: 7 }], ['atc', { bull: 1 }], ['halveit', {}]].forEach(([game, opts], i) => {
+    if (game === 'cricket') return; // Cricket hat ein eigenes Modell – hier nur die Partyspiele aus party.js
+    const start = Math.round(now - (300 - i * 60) * DAY), opp = SIM_OPP[i % SIM_OPP.length];
+    const m = playParty(game, [[mainId], [opp]], { [mainId]: { sigma: 11.5 }, [opp]: { sigma: SIM_OPP_SIGMA[opp] } }, start, opts, r);
+    m.endedAt = start + 20 * 6e4;
+    matches.push(m);
+  });
+  matches.sort((a, b) => a.startedAt - b.startedAt);
+  matches.forEach((m, i) => { m.id = `m_sim_${String(i).padStart(3, '0')}`; m.pending = []; m.demo = true; delete m.bull; });
+  return matches;
+}

@@ -2,6 +2,7 @@
    Link aus der Mail (?reset=TOKEN) → Schritt „Neues Passwort“.
    Eine gerahmte Karte mit Eck-Ornamenten und wanderndem Licht, Schritt-Anzeige oben, Wappen mit Lichtschein darüber. */
 import { ui } from '../store.js';
+import { storedAccount } from '../sync.js';
 import { esc } from './common.js';
 import { crestLine, cornerOrnament, stars } from './svg.js';
 
@@ -60,6 +61,7 @@ export function authView() {
       <input id="authEmail" class="field plain" type="text" placeholder="name@beispiel.de oder Name" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" value="${esc(a.email || '')}">
       ${err}
       <button class="btn red big" data-act="authEmail" ${busy}>${a.busy ? 'Moment …' : 'Weiter'}</button>
+      ${storedAccount() ? '' : '<button class="btn line auth-sim" data-act="simUser">Nutzer simulieren</button><p class="auth-sim-note">Ein Spieler mit einem Jahr Spielen und Ø 70 – so siehst du, was die App alles kann. Nur auf diesem Gerät, ohne Konto.</p>'}
     </div>`;
   }
   const s2 = a.step === 'register' ? 'Konto anlegen' : a.step === 'reset' ? 'Neues Passwort' : 'Passwort';

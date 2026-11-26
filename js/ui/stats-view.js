@@ -166,17 +166,16 @@ export function doublesBlock(st, sel, withList = true) {
   const rated = (r) => (r.attempts >= MIN_ATTEMPTS ? 1 : 0);
   rows.sort((a, b) => rated(b) - rated(a) || b.rate - a.rate || b.attempts - a.attempts); // immer: beste zuerst
   const dot = (k) => { const c = ratingColor(rating[k]); return `<i class="dot ${c ? '' : 'none'}" ${c ? `style="background:${c}"` : ''}></i>`; };
-  return `<div class="${withList ? 'dbl-layout' : ''}"><div class="heat">
-      <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}</div>
-      ${withList ? DBL_SCALE.replace('dbl-scale', 'dbl-scale ds-narrow') : ''}
-      ${withList && sel && !spotOverlay(st, sel) ? dblInfo(st, sel) : ''}
+  return `<div class="${withList ? 'dbl-layout' : ''}">${withList ? DBL_SCALE : ''}<div class="heat">
+      <div class="heat-board ${withList && spotOverlay(st, sel) ? 'has-spot' : ''} ${withList && sel && !spotOverlay(st, sel) && !fields[sel] ? 'has-none' : ''}">${heatBoard(fields, sel || null, rating)}${withList ? spotOverlay(st, sel) : ''}${withList && sel && !spotOverlay(st, sel) && !fields[sel] ? `<div class="hb-none">${dblInfo(st, sel)}</div>` : ''}</div>
+      ${withList && sel && !spotOverlay(st, sel) && fields[sel] ? dblInfo(st, sel) : ''}
     </div>
     ${withList ? `<div class="dbl-right">
 ` : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
       ${rows.map((r, i) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}" style="--k:${i}"><td>${dot(r.k)}${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
-    ${withList ? `</div>${DBL_SCALE.replace('dbl-scale', 'dbl-scale ds-wide')}` : ''}</div>`;
+    ${withList ? '</div>' : ''}</div>`;
 }
 /** Dünne Farbskala unter der Scheibe: links das dunkelste Rot (schlechtestes Doppel) bis rechts glänzend Weiß (bestes) –
     mit weichem Leuchten und Lichtern, die durch die Linie wandern (gleicher Verlauf wie ratioColor in board.js) */

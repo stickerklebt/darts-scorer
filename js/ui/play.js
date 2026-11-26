@@ -14,10 +14,13 @@ export const tabIndex = () => Math.max(0, TABS.indexOf(S.tab));
 
 export function tabsBar() {
   const i = tabIndex(), n = incomingCount();
-  return `<nav class="tabs"><div class="tabs-in">
-    <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${icon('dart', 2)}<span>Play</span></button>
-    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${icon('chart', 2)}<span>Stats</span></button>
-    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${icon('vip', 2)}<span>VIP</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
+  // Symbole aus Chrom: Strich mit Silber-Verlauf (gemeinsamer Verlauf #tabChrome im unsichtbaren SVG)
+  const ic = (k) => icon(k, 2).replace(/currentColor/g, 'url(#tabChrome)');
+  return `<nav class="tabs"><svg class="tab-defs" width="0" height="0" aria-hidden="true"><defs><linearGradient id="tabChrome" gradientUnits="userSpaceOnUse" x1="3" y1="2" x2="21" y2="22">
+    <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#d5d9df"/><stop offset=".46" stop-color="#7f858e"/><stop offset=".56" stop-color="#ffffff"/><stop offset=".74" stop-color="#a9aeb6"/><stop offset="1" stop-color="#f4f6f8"/></linearGradient></defs></svg><div class="tabs-in">
+    <button class="tab ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play">${ic('dart')}<span>Play</span></button>
+    <button class="tab ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats">${ic('chart')}<span>Stats</span></button>
+    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${ic('more')}<span>More</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
 }

@@ -4,7 +4,7 @@
    - übriger Zustand (SYNC_KEYS) als Ganzes; bei Konflikt gewinnt der Server, eigene Spieler werden ergänzt.
    Meta in localStorage['darts.sync'] = { uid, user, rev, hashes: { matchId: hash }, stateHash } */
 import { S, save, clearLocal, applyState, SYNC_KEYS, profile, uid, setSaveHook } from './store.js';
-import { api, ApiError } from './api.js';
+import { api, ApiError, apiGate } from './api.js';
 
 const META = 'darts.sync';
 const BATCH = 200;
@@ -109,7 +109,7 @@ let running = null, again = false, timer = null, retry = 0;
 
 /** Einmal vollständig abgleichen (mehrere Pakete bei vielen Matches). */
 export function syncNow() {
-  if (!auth.user) return Promise.resolve(false);
+  if (!auth.user || auth.user.demo) return Promise.resolve(false);
   if (running) { again = true; return running; }
   clearTimeout(timer);
   running = (async () => {
@@ -179,6 +179,7 @@ function sessionLost() {
 
 /** Start der App: gemerkte Anmeldung sofort nutzen (offline spielbar), im Hintergrund beim Server bestätigen. */
 export async function bootAuth() {
+  if (S.simUser) { clearLocal(); save(); } // simulierter Nutzer lebt nur bis zum Neuladen
   if (meta.uid && meta.user) { auth.user = meta.user; ensureMainProfile(); }
   try {
     const r = await api('GET', 'api/me');
@@ -225,6 +226,7 @@ export async function login(user) {
 
 /** Abmelden: vorher sichern; lokale Daten werden vom Gerät entfernt (geteilte Geräte). */
 export async function logout(force = false) {
+  if (auth.user?.demo) { endDemo(); return true; }
   if (!force) {
     await syncNow();
     if (sync.state !== 'ok') return false;
@@ -250,4 +252,28 @@ export function forget() {
 export function setUser(user) {
   auth.user = meta.user = user; saveMeta();
   ensureMainProfile();
+}
+
+/** „Nutzer simulieren“: Demo-Spieler nur auf diesem Gerät (kein Konto, kein Sync, keine Server-Aufrufe).
+    Beenden über Abmelden oder Neuladen – dann ist alles wieder weg. */
+export const storedAccount = () => !!meta.uid; // abgelaufene Anmeldung mit Daten auf dem Gerät → kein Demo (würde sie löschen)
+export function startDemo(name, makeMatches) {
+  if (meta.uid) return false;
+  clearLocal();
+  const mainId = uid('p');
+  S.mainId = mainId;
+  S.profiles = [{ id: mainId, name, createdAt: Date.now() - 366 * 864e5 }];
+  S.matches = makeMatches(mainId);
+  S.simUser = true;
+  auth.user = { id: 'demo', username: name, demo: true }; auth.checked = true; auth.offline = false;
+  apiGate.demo = true;
+  save(); onChange();
+  return true;
+}
+export function endDemo() {
+  clearTimeout(timer);
+  clearLocal(); save();
+  apiGate.demo = false;
+  auth.user = null; sync.state = 'idle';
+  onChange();
 }

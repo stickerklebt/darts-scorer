@@ -5,7 +5,11 @@ export class ApiError extends Error {
   constructor(status, code, message, data = null) { super(message); this.status = status; this.code = code; this.data = data; }
 }
 
+/** Demo-Modus („Nutzer simulieren“): nichts geht an den Server */
+export const apiGate = { demo: false };
+
 export async function api(method, path, body) {
+  if (apiGate.demo) throw new ApiError(0, 'demo', 'Im Demo-Modus nicht verfügbar – melde dich mit einem Konto an.');
   let res;
   try {
     res = await fetch(path.replace(/^\/+/, ''), {

@@ -72,8 +72,9 @@ export function sheetView() {
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDbl', 'Doppelquote im Spiel anzeigen')}${tog('quick', 'Zahl-Vorschläge im Spiel', 'deine häufigsten Aufnahmen über der Tastatur')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('motion', 'Bewegung in den Kästen', 'Lichter, Glanz und Funkeln an Karten, Kacheln und Leisten')}
         <div class="srow col"><span class="lbl">Sprache</span>${seg('lang', 'v', [['de', 'Deutsch'], ['en', 'English']], S.prefs.lang === 'en' ? 'en' : 'de')}</div>
         <div class="srow col"><span class="lbl">Lieblingsdoppel<small>Checkout-Vorschläge enden, wenn möglich, auf diesem Doppel</small></span>${seg('favDbl', 'v', [[16, 'D16'], [18, 'D18'], [20, 'D20']], S.prefs.favDbl || 20)}</div>
-        <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div></div>
-      ${S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
+        <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>
+        <button class="srow set-link" data-act="callerOpen">${icon('mic', 1.9, 20)}<span class="lbl">Eigener Caller<small>Zahlen selbst einsprechen</small></span>${icon('chevR', 2.4, 16)}</button></div>
+      ${!auth.user?.demo && (S.matches.some((x) => x.demo) || S.profiles.some((x) => x.demo)) ? '<button class="btn dark demo-btn" data-act="demoWipe">Testdaten entfernen</button>' : ''}
       <div class="sbtns"><button class="btn red" data-act="closeModal">Fertig</button></div>
 `;
   } else if (md.type === 'addPlayer') {
@@ -216,7 +217,7 @@ function addPlayerSheet() {
         <button class="btn line" data-act="addFriendBack">Anderen Freund wählen</button>`;
     } else body = fr.length ? `<div class="slist">${fr.map((f) => `<button class="srow" data-act="addFriendPick" data-v="${esc(f.id)}" ${inLineup.has(f.pid) ? 'disabled' : ''}>
         <span class="pc sm" style="${pcVars(3)}">${esc(f.username.slice(0, 1).toUpperCase())}</span><span class="lbl">${esc(f.username)}<small>${inLineup.has(f.pid) ? 'spielt schon mit' : f.avg ? `Ø 501 ${String(Math.round(f.avg * 10) / 10).replace('.', ',')}` : 'Freund'}</small></span>${icon('chevR', 2.4, 18)}</button>`).join('')}</div>`
-      : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie im VIP-Bereich hinzu.' : 'Lade Freunde …'}</p>`;
+      : `<p class="ap-hint">${ui.friends?.data ? 'Du hast noch keine Freunde – füge sie unter „More“ hinzu.' : 'Lade Freunde …'}</p>`;
   } else if (tab === 'guest') {
     body = `<p class="ap-hint">Wie heißt dein Gast? Er spielt nur dieses Spiel mit – nichts wird für ihn gespeichert, beim nächsten Spiel gibst du den Namen neu ein. Wer seine Statistik behalten will, legt ein Konto an und wird dein Freund.</p>
       <input id="newPlayer" class="field" placeholder="Name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">

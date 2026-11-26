@@ -28,7 +28,7 @@ import { friendsView, friendView } from './ui/friends.js';
 import { historyView } from './ui/history.js';
 import { historyRows, deleteMatch } from './history.js';
 import { api } from './api.js';
-import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow } from './sync.js';
+import { auth, bootAuth, login, logout, forget, setUser, setOnChange, ensureMainProfile, syncNow, startDemo } from './sync.js';
 import { statsView, SUBTABS } from './ui/stats-view.js';
 import { initWheels } from './ui/wheel.js';
 import { dartFromFile } from './dartscan.js';
@@ -41,7 +41,7 @@ import { fxRunning, stopFx } from './ui/fx.js';
 import { isBot, bot, BOTS, planLines } from './bots.js';
 import { x01BotDart, partyBotDart, partyValue, partyTurnDone, throwBull, throwAt, sigmaFor } from './botsim.js';
 import { probeBotImages } from './ui/avatar.js';
-import { seedDemo, removeDemo } from './demo.js';
+import { seedDemo, removeDemo, generateSimUser } from './demo.js';
 import { sheetView } from './ui/sheets.js';
 import { crestLine } from './ui/svg.js';
 import { translate } from './i18n.js';
@@ -685,6 +685,12 @@ const actions = {
       loadFriends(); loadCalls(r.user.id);
     });
   },
+  /** Anmeldung › „Nutzer simulieren“: ein Jahr Spiele mit Ø 70, nur auf diesem Gerät (Abmelden/Neuladen beendet es) */
+  simUser() {
+    if (!startDemo('Demo-Spieler', (pid) => generateSimUser({ mainId: pid }))) { toast('Erst mit deinem Konto anmelden'); return; }
+    ui.auth = null; S.screen = 'home'; S.tab = 'play';
+    toast('Demo: ein Jahr gespielt, Ø 70'); render(); window.scrollTo(0, 0);
+  },
   async logout() {
     ui.modal = null; toast('Wird gesichert …'); render();
     if (!(await logout())) { ui.modal = { type: 'logoutUnsynced' }; render(); return; }
@@ -709,7 +715,7 @@ const actions = {
   },
   /* Eigener Caller */
   callerOpen() { ui.modal = null; ui.caller = { sel: ui.caller?.sel ?? 180 }; S.screen = 'caller'; render(); window.scrollTo(0, 0); },
-  crBack() { cancelRecording(); clearInterval(crTimer); ui.caller = null; S.screen = 'home'; S.tab = 'friends'; render(); window.scrollTo(0, 0); },
+  crBack() { cancelRecording(); clearInterval(crTimer); ui.caller = null; S.screen = 'home'; S.tab = 'friends'; ui.modal = { type: 'settings' }; render(); window.scrollTo(0, 0); }, // zurück in die Einstellungen
   crSel(el) {
     if (isRecording()) return;
     ui.caller = { sel: Number(el.dataset.v) }; render();

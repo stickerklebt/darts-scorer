@@ -3867,7 +3867,7 @@ html.no-motion .hero-stat.hs-epic > i { animation: none !important; }
 body .subpop .subtabs.three button.on { background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(255,255,255,.16), transparent 72%) !important; }
 .subpop .subtabs.three button.on .sub-num { color: #fff !important; text-shadow: 0 0 10px rgba(255,255,255,.6) !important; }
 .subpop .subtabs.three button.on .ic, .subpop .subtabs.three button .ic { filter: drop-shadow(0 0 5px rgba(255,255,255,.55)) !important; }
-.subpop .subtabs.three .sub-line, .subpop .subtabs.three .sub-line::before { box-shadow: 0 0 5px #fff, 0 0 12px rgba(255,255,255,.75) !important; }
+.subpop .subtabs.three .sub-line::before { box-shadow: 0 0 5px #fff, 0 0 12px rgba(255,255,255,.75) !important; }
 .subpop .subtabs.three .sub-line::after { background: radial-gradient(ellipse at 50% 60%, rgba(255,255,255,.22), rgba(255,255,255,.06) 45%, transparent 72%) !important; }
 body .subpop { box-shadow: 0 14px 34px rgba(0,0,0,.55) !important; }
 .subpop .dbl-fill { fill: #fff; filter: drop-shadow(0 0 3px rgba(255,255,255,.9)); }
@@ -3884,3 +3884,27 @@ html.no-motion .bs-name { animation: none; }
 /* Freundesliste: nur Name · Dart · Average-Zahl */
 .flist .fl-row .favg small { display: none; }
 .flist .fl-row .lbl { align-self: center; }
+
+/* ================= UPDATE 26.11.2026 (9) ================= */
+/* Anmeldung: „Nutzer simulieren“ */
+.auth-sim { width: 100%; margin-top: 12px; }
+.auth-sim-note { margin: 8px 0 0 !important; font-size: 13px !important; color: var(--dim) !important; text-align: center; }
+/* Statistik-Pille: unter 1 2 3 · Doppel · Kurve nur noch ein kurzer weißer Strich – kein dunkler Streifen links/rechts */
+.subpop .subtabs.three .sub-line { background: none !important; box-shadow: none !important; border: 0 !important; outline: 0 !important; }
+.subpop .subtabs.three .sub-line::before { left: 30% !important; right: 30% !important; width: auto !important; border: 0 !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0), #fff 30%, #fff 70%, rgba(255,255,255,0)) !important; }
+.subpop .subtabs.three .sub-line::after { display: none !important; }
+/* Haupt-Reiter: Verlauf-Definition unsichtbar, Symbole aus Chrom */
+.tabs .tab-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* Einstellungen: Eigener Caller als Zeile */
+.set-link { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; color: inherit; background: none; border: 0; cursor: pointer; }
+.set-link .lbl { flex: 1; }
+/* Doppel-Farbskala jetzt ÜBER Scheibe und Tabelle (breit über beide Spalten); Leuchten und Lichter bleiben in der Linie */
+.dbl-scale { margin: 4px 2px 22px !important; clip-path: inset(-14px 0 -14px 0); }
+.dbl-scale .ds-glow { left: 0; right: 0; }
+@media (min-width: 900px) { .dbl-layout > .dbl-scale { grid-column: 1 / -1; justify-self: stretch; margin: 0 0 -4px !important; } }
+/* Doppel ohne Versuch: das Info-Fenster liegt wie bei den anderen mitten in der Scheibe */
+.heat-board.has-none { position: relative; }
+.heat-board .hb-none { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 3; pointer-events: none; }
+.heat-board .hb-none .dbl-info { pointer-events: auto; margin: 0 !important; max-width: min(78%, 320px); }
+.heat-board.has-none .heatboard { opacity: .35; transition: opacity .3s; }

@@ -485,3 +485,9 @@ Offen: E-Mail-Bestätigung.
   Partyspiel-Logos aus Chrom (`metalBadge` in svg.js). Setup 501 › Mehr Optionen: Hinweis „Double In? Oder X01?“ → Partyspiele-Plus.
 - **Update 26.11.2026 (8)**: Überblick ohne Einblend-Animationen und ohne Lichtstrahlen. Doppel-Farbskala ohne Striche darin. Statistik-Pille ganz ohne Rot, Doppelfeld im Symbol hell weiß.
   Partyspiel-Logos ohne runde Scheibe (nur Chrom-Symbol in der Kachel), kein Funkel-Stern. VIP-Name kräftiges Silber-Metall. Freundesliste: nur Name · Dart · Ø-Zahl.
+- **Update 26.11.2026 (9)**: Dritter Reiter heißt **More** (Symbol `more`: drei Kästchen + Kreis), Reiter-Symbole mit Chrom-Verlauf (`#tabChrome` in `tabsBar`).
+  Eigener Caller nur noch in den Einstellungen (Zeile „Eigener Caller“, Zurück führt in die Einstellungen). Statistik-Pille: nur kurzer weißer Strich.
+  Doppel-Farbskala steht ÜBER Scheibe + Tabelle, Licht bleibt in der Linie (`clip-path`). Doppel ohne Versuch: Info mitten in der Scheibe (`.hb-none`).
+  **Nutzer simulieren** (Anmeldung): `startDemo`/`endDemo` in `sync.js`, `generateSimUser` in `demo.js` (≈ 180 × 501 über ein Jahr gegen Bots, Ø ≈ 70, steigend).
+  Nur lokal: `auth.user.demo`, `apiGate.demo` (api.js blockt alle Server-Aufrufe), kein Sync; Abmelden oder Neuladen (`S.simUser`) löscht alles.
+  Nicht angeboten, wenn auf dem Gerät noch ein abgelaufenes Konto liegt (`storedAccount`).

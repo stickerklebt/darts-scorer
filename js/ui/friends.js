@@ -109,7 +109,7 @@ export function friendsView() {
       : `<div class="empty-card"><div>${stars(3, '#08080a', 14)}<h2 class="display">Noch allein am Oche</h2>
           <p>Such oben nach dem Namen deiner Freunde und schick eine Anfrage. Sobald sie annehmen, siehst du ihre Statistik.</p></div></div>`;
   // Backstage: oben das eigene Banner, in der Mitte die Freunde, unten die Kacheln (Spielhistorie, eigener Caller, Einstellungen, Kamera)
-  const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['callerOpen', 'mic', 'Eigener Caller', 'Zahlen einsprechen'], ['camAsDevice', 'cam', 'Kamera', 'Dieses Handy filmt das Board'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe']];
+  const tiles = [['history', 'clock', 'Spielhistorie', 'Alle Spiele · löschen'], ['camAsDevice', 'cam', 'Kamera', 'Dieses Handy filmt das Board'], ['settings', 'gear', 'Einstellungen', 'Konto · Ansage · Eingabe']];
   return `<main class="page friends backstage">
     ${myBanner(me?.username || '')}
     ${(ui.invites || []).length ? `<h2 class="label">Einladungen zum Spiel</h2><div class="slist">${ui.invites.map((v) => `<div class="srow">${chip(v.host)}
