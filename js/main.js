@@ -99,6 +99,13 @@ function fitDblList() {
   list.style.maxHeight = `${Math.max(160, Math.round(board.getBoundingClientRect().height - top))}px`;
 }
 addEventListener('resize', () => fitDblList());
+/* High Finish: Seite (3 Darts · 2 Darts) beim Wischen merken – die Punkte unten zeigen sie */
+document.addEventListener('scroll', (e) => {
+  const el = e.target;
+  if (!el?.classList?.contains('hf-pages')) return;
+  const pg = el.scrollLeft > el.clientWidth / 2 ? 1 : 0;
+  if (pg !== ui.hfPage) { ui.hfPage = pg; const d = el.parentElement.querySelectorAll('.hf-dots i'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
+}, true);
 function render() {
   setFavDouble(S.prefs.favDbl);
   setStatsModes(S.statsModes);
@@ -1080,6 +1087,7 @@ const actions = {
   partyBrowse() { S.screen = 'partyBrowse'; ui.partyEdit = false; render(); window.scrollTo(0, 0); },
   partyAdd(el) { addTile(S.prefs, el.dataset.v); toast('Auf deinem Play-Reiter'); render(); },
   partyDel(el) { removeTile(S.prefs, el.dataset.v); render(); },
+  pbInfo(el) { ui.pbOpen = ui.pbOpen === el.dataset.v ? null : el.dataset.v; render(); }, // Erklärung erst nach Antippen
   partyEdit() { ui.partyEdit = !ui.partyEdit; render(); },
   spotSkip() { if (ui.dblSpot) spotDone(); },
   chKind(el) { if (el.dataset.m === 'dist') ui.distKind = el.dataset.v; else ui.avgKind = el.dataset.v; ui.chMenu = null; render(); },
@@ -1099,6 +1107,7 @@ const actions = {
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
   boDone() { finishBulloff(); },
   boTie() { clearTimeout(boTimer); ui.boResult = null; render(); },
+  hfNote() { ui.hfNote = Date.now(); render(); setTimeout(() => { if (ui.hfNote && Date.now() - ui.hfNote >= 2950) { ui.hfNote = 0; render(); } }, 3000); },
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },
   undo() { undo(); },
   gear() { ui.modal = { type: 'gear' }; render(); },
@@ -1177,7 +1186,7 @@ document.addEventListener('contextmenu', (e) => { if (e.target.closest('.ch-pick
 /* Statistik: zwischen Überblick · Doppel · Scoring wischen (waagerecht, deutlich mehr als senkrecht) */
 let swipe0 = null;
 document.addEventListener('touchstart', (e) => {
-  swipe0 = S.screen === 'home' && S.tab === 'stats' && e.touches.length === 1 && !e.target.closest('.dbl-scroll, .heat-board, .chart, input')
+  swipe0 = S.screen === 'home' && S.tab === 'stats' && e.touches.length === 1 && !e.target.closest('.dbl-scroll, .heat-board, .chart, input, .hf-pages, .rl-scroll')
     ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() } : null;
 }, { passive: true });
 document.addEventListener('touchend', (e) => {

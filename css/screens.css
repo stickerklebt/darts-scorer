@@ -3525,3 +3525,79 @@ html.no-motion .start-go::before, html.no-motion .start-go .sg-bg, html.no-motio
   .game .duo .sbp-name { flex: 1 0 100%; }
   .game .duo .sbp-head .speech { top: 62px; }
 }
+
+/* ================= UPDATE 26.11.2026 (3) ================= */
+/* Start-Knopf: Rand blitzt nur ROT auf (kein Gelbstich mehr – kein Farbfilter, sondern eine echte Farbe im Lichtring) */
+@property --sgC { syntax: '<color>'; inherits: false; initial-value: #ffffff; }
+.start-go::before { filter: none !important;
+  background: conic-gradient(from var(--sgA), rgba(206,210,216,.45) 0deg, var(--sgC) 40deg, rgba(206,210,216,.45) 80deg, rgba(206,210,216,.45) 180deg, var(--sgC) 220deg, rgba(206,210,216,.45) 260deg, rgba(206,210,216,.45) 360deg) !important;
+  animation: sgRing 4.5s linear infinite, sgRingRed2 9s ease-in-out infinite !important; }
+@keyframes sgRingRed2 { 0%, 70%, 100% { --sgC: #ffffff; } 74% { --sgC: #e0315a; } 78% { --sgC: #ffffff; } 82% { --sgC: #e0315a; } 86% { --sgC: #ffffff; } }
+html.no-motion .start-go::before { animation: sgRing 0s !important; }
+
+/* Drehrad: Rot nur an den beiden senkrechten Strichen um die Zahl – nichts mehr oben/unten */
+.wheel-box::before { display: none !important; }
+
+/* Setup: Hoch/Entfernen erscheinen links neben „Team“ (Team bleibt rechts) und blenden weich ein */
+.prow .pfade { animation: pFade .28s ease-out both; }
+.prow .pfade + .pfade { animation-delay: .05s; }
+@keyframes pFade { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+/* Setup-Kopf: Zurück ohne Kästchen, silbern, innerhalb der Inhaltsbreite (am Mac nicht ganz links) */
+.bar.su-bar { max-width: 760px; margin-left: auto; margin-right: auto; border-bottom: 0 !important; }
+.bar.su-bar .su-back { background: none !important; border: 0 !important; box-shadow: none !important; width: 44px; color: #e4e7ec;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.25)) drop-shadow(0 1px 0 rgba(0,0,0,.8)); }
+.bar.su-bar .su-back:hover, .bar.su-bar .su-back:active { color: #fff; filter: drop-shadow(0 0 10px rgba(255,255,255,.45)); }
+.su-501 { cursor: default; }
+
+/* Play: „Partyspiele“ mittig mit rotem Strich links und rechts (läuft nach außen aus), Kacheln etwas höher */
+.play-lbl.party-lbl { flex-direction: row !important; gap: 12px !important; background: none !important; padding-bottom: 0 !important; margin-top: 30px; margin-bottom: 6px; }
+.play-lbl.party-lbl::before, .play-lbl.party-lbl::after { display: block !important; content: "" !important; flex: 1; height: 1px !important; }
+.play-lbl.party-lbl::before { background: linear-gradient(270deg, rgba(196,42,75,.95), rgba(196,42,75,0)) !important; }
+.play-lbl.party-lbl::after { background: linear-gradient(90deg, rgba(196,42,75,.95), rgba(196,42,75,0)) !important; }
+
+/* Doppel antippen: inside/outside in Schwarz und Weiß statt Rot/Gelb */
+.io-side.in { background: #f2f4f7 !important; color: #0b0b0e !important; }
+.io-side.out { background: #0b0b0e !important; color: #f2f4f7 !important; }
+.io-line { border-color: rgba(206,210,216,.5) !important; }
+
+/* Statistik › Überblick: Top 10 kleiner (3 sichtbar, scrollen wie die Doppel-Liste), High Finish passt darunter */
+.rlist.rl-scroll { max-height: 214px !important; -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent); }
+.co-right .hf-card { margin-top: 10px; }
+.hf-card { padding: 10px 12px 8px; cursor: pointer; overflow: hidden; }
+.hf-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.hf-pages::-webkit-scrollbar { display: none; }
+.hf-page { flex: 0 0 100%; scroll-snap-align: start; }
+.hf-cols { height: 96px; }
+.hf-cols.c2 { grid-template-columns: repeat(2, 1fr); max-width: 66%; margin: 0 auto; }
+.hf-foot { display: flex; justify-content: center; align-items: center; min-height: 14px; margin-top: 6px; }
+.hf-dots { display: flex; gap: 8px; }
+.hf-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.3); transition: all .25s; }
+.hf-dots i.on { background: #fff; box-shadow: 0 0 6px #fff, 0 0 12px rgba(255,255,255,.6); transform: scale(1.25); }
+.hf-note { margin: 0; animation: bFade .25s ease-out; }
+
+/* Statistik › Überblick: weniger Rot, kein Gold; Zahlen in den Kästen glänzen mit rotem Schatten */
+.stats .glint::before { animation: glint 5s linear infinite !important; animation-delay: var(--gd, 0s) !important; --gc: rgba(220,224,230,.75); }
+.stats .sub-overview .hero-stat, .stats .sub-overview .record { background-image: none !important; }
+.stats .sub-overview .hero-stat::after, .stats .sub-overview .record::after { opacity: .35 !important; }
+.stats .sub-overview .label { filter: none !important; }
+.stats .sub-overview .kv-c b { color: #fff !important; text-shadow: 0 1px 0 rgba(255,255,255,.35), 2px 2px 0 #7a1430, 0 0 14px rgba(224,49,90,.45), 0 0 2px rgba(255,255,255,.6) !important; }
+
+/* Doppel-Reiter: beim Öffnen fallen die Doppel im Uhrzeigersinn ab der 20 kurz in die Scheibe, die Liste fällt daneben rein */
+.sub-doubles .heatboard .hd, .sub-doubles .heatboard .hn { animation: dblDrop .5s cubic-bezier(.2,1.3,.4,1) both; animation-delay: calc(var(--k, 0) * 28ms); transform-box: fill-box; transform-origin: center; }
+@keyframes dblDrop { from { opacity: 0; transform: translateY(-14px) scale(1.25); } to { opacity: 1; transform: none; } }
+.sub-doubles .sbtable.dbl tr[data-act] { animation: rowDrop .42s cubic-bezier(.2,1.2,.4,1) both; animation-delay: calc(240ms + var(--k, 0) * 40ms); }
+@keyframes rowDrop { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sub-doubles .heatboard *, .sub-doubles .sbtable tr { animation: none !important; } }
+
+/* VIP: Name in Silber (wie Metall, aber ruhiger als die 501) */
+.bs-name { background: linear-gradient(180deg, #ffffff 0%, #e6e9ee 35%, #9ea4ad 52%, #f2f4f7 64%, #c3c8cf 100%) !important; -webkit-background-clip: text !important; background-clip: text !important;
+  color: transparent !important; -webkit-text-fill-color: transparent !important; filter: drop-shadow(0 1px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(255,255,255,.18)) !important; }
+.bs-pen { color: #d6dae0 !important; }
+
+/* Partyspiele entdecken: immer 2 pro Reihe, Erklärung erst nach Antippen */
+.pb-list { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pb-card { flex-direction: column !important; align-items: center !important; text-align: center; gap: 8px !important; position: relative; cursor: pointer; }
+.pb-card .pb-txt { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pb-card .pb-txt small { font-size: 13px; line-height: 1.3; animation: bFade .25s ease-out; }
+.pb-card .pb-add, .pb-card .pb-del { position: absolute; top: 6px; right: 6px; }
+.pb-card.open { grid-column: span 1; }

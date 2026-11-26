@@ -220,3 +220,12 @@ test('High Finish: Dart getroffen, solange das Finish danach noch geht', () => {
   dart(s, 20, 3); dart(s, 20, 3); dart(s, 20, 3);          // 169 ist kein Finish → zählt nicht
   assert.equal(finishOdds([s], 'a')[0].tries, 0);
 });
+
+test('2-Dart-Finish: ab Rest 61, 1. Dart getroffen wenn mit einem Dart noch checkbar', () => {
+  const m = createMatch('x01', [['a']], { start: 80, out: 'double', mode: 'legs', target: 2 });
+  dart(m, 20, 3); dart(m, 10, 2);                          // 80: T20 · D10 → beide getroffen
+  dart(m, 20, 1); dart(m, 0, 1); dart(m, 0, 1);            // 80: S20 → 60 mit einem Dart nicht checkbar
+  const r = finishOdds([m], 'a', 2);
+  assert.deepEqual(r.map((x) => x.tries), [2, 1]);
+  assert.deepEqual(r.map((x) => x.hits), [1, 1]);
+});

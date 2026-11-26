@@ -108,7 +108,7 @@ export function sweep(dur = 600) {
 /** Licht-Steuerung starten (nach jedem Zeichnen aufrufen – bindet sich nur einmal an die aktuelle Kachel). still: kein Dauerlicht */
 export function metalLight(still = false) {
   state.still = still;
-  const el = document.querySelector('.silk-hero');
+  const el = document.querySelector('.silk-hero, .su-501'); // 501-Kachel und die 501 oben im Setup
   if (!el) { if (state.io) { state.io.disconnect(); state.io = null; } state.el = null; return; }
   if (el === state.el) { kick(); return; }
   state.el = el; state.t0 = performance.now(); schedule();

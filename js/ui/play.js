@@ -50,7 +50,8 @@ const r = (a, b) => a + Math.random() * (b - a);
 const CORNERS = ['tl', 'tr', 'bl', 'br'].sort(() => Math.random() - 0.5).slice(0, 2);
 function cornerCurve(c) {
   // Grundform für oben links; die anderen Ecken gespiegelt
-  const p = [[r(300, 520), -20], [r(70, 170), r(0, 45)], [r(0, 40), r(70, 150)], [-20, r(240, 420)]];
+  // immer deutlich gebogen (Bogen schmiegt sich in die Ecke), Anfang am oberen Rand, Ende am Seitenrand – nie durch 501/Double Out
+  const p = [[r(250, 420), -20], [r(30, 110), r(-10, 30)], [r(-10, 30), r(30, 110)], [-20, r(200, 330)]];
   const fx = c[1] === 'r', fy = c[0] === 'b';
   const q = p.map(([x, y]) => [fx ? 1000 - x : x, fy ? 560 - y : y]).map(([x, y]) => `${x.toFixed(0)} ${y.toFixed(0)}`);
   return `M${q[0]} C${q[1]} ${q[2]} ${q[3]}`;

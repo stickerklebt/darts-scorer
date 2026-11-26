@@ -19,9 +19,9 @@ function card(id, mode) {
     ? `<button class="pb-add" data-act="partyAdd" data-v="${id}" aria-label="${name} hinzufügen">${icon('plus', 2.6, 18)}</button>`
     : ui.partyEdit ? `<button class="pb-del" data-act="partyDel" data-v="${id}" aria-label="${name} entfernen">${icon('minus', 2.8, 18)}</button>` : '';
   // Kachel genau wie auf dem Play-Reiter, daneben Name (+ Erklärung nur unter „Entdecken“)
-  return `<div class="pb-card ${p.playable ? '' : 'pb-soon'}">
+  return `<div class="pb-card ${p.playable ? '' : 'pb-soon'} ${ui.pbOpen === id ? 'open' : ''}" ${mode === 'add' ? `data-act="pbInfo" data-v="${id}"` : ''}>
     <span class="mode pb-tile" style="--mc:${tileBg(id)}"><span class="mode-art">${tileArt(id, 52)}</span></span>
-    <span class="pb-txt"><b>${name}</b>${p.playable ? '' : '<em>Bald spielbar</em>'}${mode === 'add' ? `<small>${p.desc}</small>` : ''}</span>${btn}</div>`;
+    <span class="pb-txt"><b>${name}</b>${p.playable ? '' : '<em>Bald spielbar</em>'}${mode === 'add' && ui.pbOpen === id ? `<small>${p.desc}</small>` : ''}</span>${btn}</div>`;
 }
 
 export function partyBrowseView() {

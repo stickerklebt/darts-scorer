@@ -93,7 +93,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const buckets = BUCKETS.map(() => 0);
   const ranges = RANGES.map(() => ({ chances: 0, hits: 0 }));
   const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [], spots = {}; // spots: genaue Trefferstellen im Doppel (throw.spot)
-  let bestLegRef = null, bestAvgRef = null;
+  let bestLegRef = null, bestAvgRef = null, t180Ref = null; // t180Ref: die letzte 180 (Karte „180er“ antippen → Match)
 
   for (const m of ms) {
     const solo = m.sides.length === 1; // gegen sich selbst = Training: zählt weder als Sieg noch als Niederlage
@@ -118,7 +118,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
         n++;
         if (t.bust) busts++;
         const sc = t.score;
-        if (sc === 180) counts.t180++; else if (sc >= 140) counts.t140++; else if (sc >= 100) counts.t100++; else if (sc >= 60) counts.t60++;
+        if (sc === 180) { counts.t180++; if (!t180Ref || date >= t180Ref.date) t180Ref = { mid: m.id, li, ti, date }; } else if (sc >= 140) counts.t140++; else if (sc >= 100) counts.t100++; else if (sc >= 60) counts.t60++;
         // Verteilung nur aus dem Scoring (Rest vor der Aufnahme über 170) – im Checkout-Bereich wirft man bewusst kleine Zahlen
         if (t.startRem > 170) buckets[BUCKETS.findIndex(([, lo, hi]) => sc >= lo && sc <= hi)]++;
         top.push({ score: sc, date, opp, mid: m.id, li, ti });
@@ -155,7 +155,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     favourite: fav ? { field: fav[0], count: fav[1] } : null,
     dartsPerCheckout: doubles.hits ? doubles.attempts / doubles.hits : null,
     bestLeg: legDarts.length ? Math.min(...legDarts) : null, avgLegDarts: legDarts.length ? legDarts.reduce((a, b) => a + b, 0) / legDarts.length : null,
-    nine, le15, buckets, series, spots, list: list.reverse(), bestLegRef, bestAvgRef,
+    nine, le15, buckets, series, spots, list: list.reverse(), bestLegRef, bestAvgRef, t180Ref,
   };
 }
 function setsOf(m, s) {
@@ -302,7 +302,10 @@ export function legDetail(m, li, pid) {
    Wer einen Dart nicht trifft, kann danach keinen mehr treffen: Dart 2 zählt nur nach getroffenem Dart 1, Dart 3 nur nach Dart 2.
    Quote je Dart = getroffen / Versuche mit diesem Dart. */
 export const HF_MIN = 101, HF_MAX = 170;
-export function finishOdds(matches, pid) {
+/** darts = 3: Aufnahmen ab Rest 101–170 mit 3-Dart-Finish. darts = 2: 2-Dart-Finishes – Aufnahmen ab Rest 61–110, die der Checkout-Weg
+    mit 2 Darts spielt (1. Dart getroffen = mit einem Dart noch checkbar, 2. Dart = aus). */
+export function finishOdds(matches, pid, darts = 3) {
+  if (darts === 2) return finishOdds2(matches, pid);
   const tries = [0, 0, 0], hits = [0, 0, 0];
   for (const m of matches) {
     if (!m || m.game !== 'x01' || m.opts?.out !== 'double') continue;
@@ -320,4 +323,24 @@ export function finishOdds(matches, pid) {
     }
   }
   return [0, 1, 2].map((k) => ({ tries: tries[k], hits: hits[k], rate: tries[k] ? hits[k] / tries[k] : null }));
+}
+
+function finishOdds2(matches, pid) {
+  const tries = [0, 0], hits = [0, 0];
+  for (const m of matches) {
+    if (!m || m.game !== 'x01' || m.opts?.out !== 'double') continue;
+    for (const l of m.legs || []) for (const t of l.turns) {
+      if (t.pid !== pid || !t.throws?.length || t.input !== 'darts') continue;
+      let rem = t.startRem;
+      if (!(rem >= 61 && rem <= 110) || route(rem, 3)?.length !== 2) continue;
+      for (let k = 0; k < 2 && k < t.throws.length; k++) {
+        const d = t.throws[k], after = rem - d.n * d.m;
+        tries[k]++;
+        const ok = k === 1 ? after === 0 && d.m === 2 : after >= 2 && !!route(after, 1);
+        if (!ok) break;
+        hits[k]++; rem = after;
+      }
+    }
+  }
+  return [0, 1].map((k) => ({ tries: tries[k], hits: hits[k], rate: tries[k] ? hits[k] / tries[k] : null }));
 }

@@ -71,7 +71,7 @@ function overviewTab(st, pid) {
     ${cards([
       ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
       ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
-      ['180er', c.t180], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
+      ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ], 'three', pid)}
     <div class="hero-stat dbl-hero has-rv">${fuse(5, 12)}<small>Doppelquote</small><b>${pct(st.doubles.rate)}</b><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
     ${checkoutTab(st, pid)}
@@ -81,7 +81,7 @@ function overviewTab(st, pid) {
 function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
   return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
-    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} / ${r.chances}`)]), 'three'))}</div>
+    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} von ${r.chances} gecheckt`)]), 'three'))}</div>
     <div class="co-right">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div>`;
 }
 
@@ -137,7 +137,7 @@ export function doublesBlock(st, sel, withList = true) {
 ` : ''}
     ${withList && rows.length ? `<div class="dbl-head"><h2 class="label">Deine Doppel</h2></div>
       <div class="sbtable-wrap dbl-scroll"><table class="sbtable dbl"><tr><th><div>Feld</div></th><th><div>Versuche</div></th><th><div>Treffer</div></th><th><div>Quote</div></th></tr>
-      ${rows.map((r) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}"><td>${dot(r.k)}${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
+      ${rows.map((r, i) => `<tr class="${r.k === sel ? 'sel' : ''}" data-act="heat" data-v="${r.k}" style="--k:${i}"><td>${dot(r.k)}${r.k}</td><td>${r.attempts}</td><td>${r.hits}</td><td>${pct(r.rate)}</td></tr>`).join('')}</table></div>` : ''}
     ${withList ? '</div>' : ''}</div>`;
 }
 
@@ -197,19 +197,23 @@ export function profilePicker() {
     <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
 }
 
-/* High Finish: bei Checkout-Versuchen ab Rest 101–170 – wie oft sitzt der 1., 2., 3. Dart (getroffen = Finish danach noch möglich). Kompakt. */
-let hfCache = { key: '', r: null };
+/* High Finish: zwei Seiten zum Wischen – 3-Dart-Finishes (ab 101) und 2-Dart-Finishes (ab 61). Je Dart die Quote (getroffen = Finish danach
+   noch möglich). Unten zwei Punkte: der hellere zeigt die Seite. Antippen: statt der Punkte steht 3 s lang die Erklärung. */
+let hfCache = { key: '', r3: null, r2: null };
 export function hfCard(pid) {
   const last = S.matches[S.matches.length - 1];
   const key = `${pid}|${S.statsPeriod}|${statsModes().join(',')}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
-  if (hfCache.key !== key) hfCache = { key, r: finishOdds(matchesOf(S.matches, pid, S.statsPeriod), pid) };
+  if (hfCache.key !== key) { const ms = matchesOf(S.matches, pid, S.statsPeriod); hfCache = { key, r3: finishOdds(ms, pid, 3), r2: finishOdds(ms, pid, 2) }; }
   const bar = (d, i) => {
     const p = d.rate === null ? null : Math.round(d.rate * 100);
-    return `<div class="hf-col has-rv"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small><em>${rv(`${d.hits} / ${d.tries}`)}</em></div>`;
+    return `<div class="hf-col"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small></div>`;
   };
-  return `<div class="hf-card"><small class="hf-t">High Finish · Treffer je Dart</small>
-    <div class="hf-cols">${hfCache.r.map(bar).join('')}</div>
-    <p class="hf-note">Checkout-Versuche ab Rest 101 – getroffen, wenn das Finish danach noch geht</p></div>`;
+  const page = (title, r, n) => `<div class="hf-page"><small class="hf-t">${title}</small><div class="hf-cols c${n}">${r.map(bar).join('')}</div></div>`;
+  const pg = ui.hfPage === 1 ? 1 : 0, note = ui.hfNote && Date.now() - ui.hfNote < 3000;
+  const notes = ['Checkout-Versuche ab Rest 101 mit 3 Darts – ein Dart zählt als getroffen, wenn das Finish danach noch geht.', 'Checkout-Versuche ab Rest 61, die man mit 2 Darts auscheckt – getroffen, wenn das Finish danach noch geht.'];
+  return `<div class="hf-card ${note ? 'note' : ''}" data-act="hfNote">
+    <div class="hf-pages">${page('High Finish · 3 Darts', hfCache.r3, 3)}${page('High Finish · 2 Darts', hfCache.r2, 2)}</div>
+    <div class="hf-foot">${note ? `<p class="hf-note">${notes[pg]}</p>` : `<span class="hf-dots"><i class="${pg === 0 ? 'on' : ''}"></i><i class="${pg === 1 ? 'on' : ''}"></i></span>`}</div></div>`;
 }
 
 /* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */

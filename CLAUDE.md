@@ -462,3 +462,9 @@ Offen: E-Mail-Bestätigung.
   **Sets-Modus**: oben mittig 3 kleine Kästchen (Legs im Set), darunter die großen (Sets); höchstens First to 7 Sets. VIP-Profilfenster normal lesbar (hell, kein Rot).
   **High Finish neu gezählt** (`finishOdds`): Dart getroffen, wenn das Finish danach noch möglich ist (3. Dart = ausgecheckt); Dart 2/3 zählen nur nach getroffenem Vordart. Kein Regler mehr;
   Karte steht unter „Top 10 Checkouts“ (Liste scrollt, 5 sichtbar).
+- **Update 26.11.2026 (3)**: Startknopf blitzt nur rot (`--sgC`), Drehrad rot nur an den zwei senkrechten Strichen. Setup: Hoch/Entfernen blenden links neben „Team“ ein, Zurück ohne Kästchen
+  in Silber innerhalb der Inhaltsbreite (`.su-bar`), Licht der Setup-501 folgt Maus/Finger wie auf der Kachel (`metalLight` bindet `.silk-hero, .su-501`). Linien in der 501-Kachel immer deutlich gebogen, vom oberen Rand zum Seitenrand.
+  „Partyspiele“ mittig mit rotem Strich links/rechts. Inside/Outside schwarz-weiß. Statistik › Überblick: weniger Rot, kein Gold, Zahlen in den Kästen mit rotem Schatten;
+  „180er“ antippbar (letzte 180, `t180Ref`); Quote nach Bereich zeigt „x von y gecheckt“; Top 10 kleiner (scrollt); **High Finish** zum Wischen: 3 Darts (ab 101) · 2 Darts (ab 61, `finishOdds(…, 2)`),
+  zwei Punkte zeigen die Seite, Antippen zeigt 3 s die Erklärung. Doppel-Reiter: Doppel fallen beim Öffnen im Uhrzeigersinn ab der 20 ein, die Liste daneben. VIP: Name silbern, Einstellungen ganz rechts.
+  Partyspiele entdecken: 2 pro Reihe, Erklärung erst nach Antippen.

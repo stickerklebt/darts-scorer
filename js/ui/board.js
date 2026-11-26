@@ -70,15 +70,15 @@ export function heatBoard(fields, sel, rating = {}) {
     s += `<path d="${ringPath(R.outerBull, R.triIn, a0, a1)}" fill="${dark[k]}"/><path d="${ringPath(R.triIn, R.triOut, a0, a1)}" fill="${tri[k]}"/>`;
     s += `<path d="${ringPath(R.triOut, R.dblIn, a0, a1)}" fill="${dark[k]}"/>`;
     const key = `D${n}`, d = ringPath(R.dblIn, R.dblOut, a0, a1);
-    s += `<path class="hd ${sel === key ? 'sel' : ''}" d="${d}" fill="${fillFor(key)}" data-act="heat" data-v="${key}"/>`;
+    s += `<path class="hd ${sel === key ? 'sel' : ''}" d="${d}" fill="${fillFor(key)}" data-act="heat" data-v="${key}" style="--k:${i}"/>`;
     if ((rating[key]?.ratio ?? 0) >= 1.25) glow += `<path class="hshine" d="${d}" fill="#fff" opacity="${Math.min(0.9, (rating[key].ratio - 1.1) * 1.2).toFixed(2)}"/>`; // sehr gute glänzen
     // Nur das beste Doppel: hell weiß leuchtender Rand
     if (rating[key]?.top === 1) { glow += `<path class="hmed-g" d="${d}" stroke="#ffffff"/>`; medals += `<path class="hmed best" d="${d}" stroke="#ffffff"/>`; }
     const [x, y] = pt(125, (a0 + a1) / 2).split(',');
-    nums += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central">${n}</text>`;
+    nums += `<text x="${x}" y="${y}" class="hn" text-anchor="middle" dominant-baseline="central" style="--k:${i}">${n}</text>`;
   });
   s += `<circle r="${R.outerBull}" fill="#202025"/>`;
-  s += `<circle class="hd ${sel === 'Bull' ? 'sel' : ''}" r="${R.bull + 3}" fill="${fillFor('Bull')}" data-act="heat" data-v="Bull"/>`;
+  s += `<circle class="hd ${sel === 'Bull' ? 'sel' : ''}" r="${R.bull + 3}" fill="${fillFor('Bull')}" data-act="heat" data-v="Bull" style="--k:20"/>`;
   if (rating.Bull?.top === 1) { glow += `<circle class="hmed-g" r="${R.bull + 3}" stroke="#ffffff"/>`; medals += `<circle class="hmed best" r="${R.bull + 3}" stroke="#ffffff"/>`; }
   s += `<g class="hwire">${[R.outerBull, R.triIn, R.triOut, R.dblIn, R.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(R.outerBull, segAngles(i)[0])} L${pt(R.dblOut, segAngles(i)[0])}"/>`).join('')}</g>`;

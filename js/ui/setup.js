@@ -85,13 +85,13 @@ export function setupView() {
     return `<div class="prow ${bot ? 'isbot' : ''} ${open ? 'open' : ''}" style="${pcVars(ci)}" data-act="prowSel" data-v="${i}">
       <span class="pc">${S.teamMode ? e.team : i + 1}</span>
       <span class="pname">${esc(nameOf(e.id))}${!open ? '' : bot ? `<small>Bot · Ø ${BOTS.find((b) => b.id === e.id).avg}</small>` : e.friend ? `<small>Freund · ${e.friend.mode === 'remote' ? 'spielt auf seinem Gerät' : 'spielt hier mit, bestätigt danach'}</small>` : e.guest ? '<small>Gast · nur dieses Spiel, ohne Statistik</small>' : ''}</span>
+      ${open ? `<button class="sq sm pfade" data-act="pup" data-v="${i}" ${i ? '' : 'disabled'} aria-label="Nach oben">${icon('up', 2.4, 18)}</button>
+      <button class="sq sm del pfade" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>` : ''}
       ${S.teamMode ? `<button class="teambtn" data-act="team" data-v="${i}">Team ${e.team}</button>` : ''}
-      ${open ? `<button class="sq sm" data-act="pup" data-v="${i}" ${i ? '' : 'disabled'} aria-label="Nach oben">${icon('up', 2.4, 18)}</button>
-      <button class="sq sm del" data-act="pdel" data-v="${i}" aria-label="Entfernen">${icon('minus', 2.8, 18)}</button>` : ''}
     </div>`;
   }).join('');
   const remote = L.find((e) => e.friend?.mode === 'remote');
-  return `<header class="bar"><button class="sq" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
+  return `<header class="bar su-bar"><button class="sq su-back" data-act="home" aria-label="Zurück">${icon('chevL', 2.6)}</button><span class="bar-title"></span><span class="sq ghost"></span></header>
   <main class="page with-dock setup">
     ${id === 'x01' && ui.x01Var !== 'other'
     ? `<div class="su-title su-501">${metal501(S.opts.x01.out === 'single' ? 'Single Out' : 'Double Out', 'small')}</div>`
