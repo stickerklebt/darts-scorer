@@ -98,11 +98,11 @@ export function metalOf(rgb) {
 /** Flight-Form aus dem Breitenprofil (links = hinten): schmal → Slim, spitz hinten → Kite, gerade hinten → Standard, rund → Pear */
 export function flightShape(prof) {
   const L = prof.length, mx = Math.max(...prof, 1), aspect = mx / Math.max(1, L);
-  const back = prof.slice(0, Math.max(1, Math.round(L * 0.06))).reduce((a, b) => a + b, 0) / Math.max(1, Math.round(L * 0.06)) / mx;
-  const shape = aspect < 0.7 ? 'slim' : back < 0.45 ? 'kite' : back > 0.85 ? 'standard' : 'pear';
+  const at = (f) => prof[Math.min(L - 1, Math.round(f * (L - 1)))] / mx;
+  // Kite: wird erst zur Mitte hin breit (bei 15 % noch schmal); Standard: hinten sofort voll; dazwischen (runde Ecken) Pear
+  const shape = aspect < 0.7 ? 'slim' : at(0.15) < 0.55 ? 'kite' : at(0.04) > 0.85 ? 'standard' : 'pear';
   return { shape, aspect: +aspect.toFixed(2) };
 }
-
 /** Grip-Rillen: Helligkeit entlang der Barrel-Mitte, Trend abziehen, deutliche Täler zählen → Positionen 0…1 */
 export function findRings(lum) {
   const n = lum.length;
@@ -116,7 +116,8 @@ export function findRings(lum) {
     if (out.length && i - out[out.length - 1] < gap) { if (det[i] < det[out[out.length - 1]]) out[out.length - 1] = i; continue; }
     out.push(i);
   }
-  return out.slice(0, MAX_RINGS).map((i) => +(i / (n - 1)).toFixed(3));
+  // an den Enden ist es die Verjüngung zu Schaft/Spitze, keine Rille
+  return out.map((i) => i / (n - 1)).filter((r) => r > 0.06 && r < 0.94).slice(0, MAX_RINGS).map((r) => +r.toFixed(3));
 }
 
 /** Ausgerichteter Dart ({ width, height, data, alpha, thick }, Flight links) → Steckbrief (null = nicht erkannt).
@@ -135,11 +136,13 @@ export function features(st, dbg = {}) {
   let fE = -1;
   for (let x = x0; x <= x0 + L * 0.55; x++) if (t[x] > Math.max(bw * 1.5, maxW * 0.3)) fE = x;
   if (fE < 0) fE = x0 + Math.round(L * 0.25);
-  // Spitze: von rechts, solange deutlich schmaler als das Barrel
-  let bE = x1; while (bE > fE && t[bE] < bw * 0.5) bE--;
-  // Barrel: nach links, solange breit (kurze Einschnitte = Rillen werden übersprungen)
-  let bS = bE, low = 0;
-  for (let x = bE; x > fE; x--) { if (t[x] >= bw * 0.55) { bS = x; low = 0; } else if (++low > L * 0.03) break; }
+  // Barrel = längster zusammenhängender dicker Abschnitt hinter der Flight (kurze Einschnitte = Rillen zählen mit).
+  // Rechts davon die Spitze, links der Schaft – egal wie dick die sind (Soft-Darts: Spitze halb so dick wie der Barrel).
+  const thick = bw * 0.7, gap = Math.max(2, Math.round(L * 0.02));
+  let bS = x1, bE = x1 - 1;
+  for (let x = fE + 1, s0 = -1, last = -1; x <= x1 + 1; x++) {
+    if (x <= x1 && t[x] >= thick) { if (s0 < 0 || x - last > gap + 1) s0 = x; last = x; if (last - s0 > bE - bS) { bS = s0; bE = last; } }
+  }
   const fl = fE - x0 + 1, bl = bE - bS + 1, tl = x1 - bE, sl = Math.max(1, bS - fE - 1);
   Object.assign(dbg, { x0, x1, fE, bS, bE, bw, maxW, fl, sl, bl, tl });
   if (bl < L * 0.08) { dbg.fail = 'Barrel nicht gefunden'; return null; }

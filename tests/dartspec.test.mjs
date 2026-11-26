@@ -4,13 +4,13 @@ import { features, cleanSpec } from '../js/dartspec.js';
 import { renderDart } from '../js/ui/dartart.js';
 
 /* Synthetischer Dart auf hellem Tisch, schräg: Spitze · Barrel mit 6 dunklen Rillen · Schaft · rote Standard-Flight (hinten gerade) */
-function synth(W = 400, H = 260) {
+function synth(W = 400, H = 260, tipHalf = 1.5) {
   const data = new Uint8ClampedArray(W * H * 4).fill(240);
   const a = -25 * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), cx = 200, cy = 130;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const u = (x - cx) * c + (y - cy) * s, v = -(x - cx) * s + (y - cy) * c; // -150 Spitze … +150 Flight
     let half = 0, col = [70, 70, 75];
-    if (u > -150 && u < -95) half = 1.5;
+    if (u > -150 && u < -95) half = tipHalf;
     else if (u >= -95 && u < -10) { half = 7; col = [175, 180, 188]; if (u > -80 && u < -25 && ((Math.round(u) % 10) + 10) % 10 < 3) col = [40, 40, 45]; }
     else if (u >= -10 && u < 70) half = 3;
     else if (u >= 70 && u < 150) { half = 36; col = [190, 30, 50]; }
@@ -38,4 +38,11 @@ test('Dart-Steckbrief: fremde Daten werden bereinigt, Zeichnung ist gleichbleibe
   assert.deepEqual(sp.flight.colors, ['#abcdef']); assert.deepEqual(sp.rings, [0, 1]);
   const a = renderDart(sp).replace(/da\d+/g, ''), b = renderDart(sp).replace(/da\d+/g, '');
   assert.equal(a, b); assert.ok(a.startsWith('<svg') && !a.includes('NaN') && !a.includes('<script'));
+});
+
+test('Dart-Steckbrief: Soft-Dart – Spitze halb so dick wie der Barrel wird nicht als Barrel gezählt', () => {
+  const img = synth(400, 260, 3.5), sp = features(straighten(img, segment(img).mask));
+  assert.ok(sp, 'kein Steckbrief');
+  assert.ok(Math.abs(sp.len.barrel - 85 / 300) < 0.07, `Barrel ${sp.len.barrel}`);
+  assert.ok(Math.abs(sp.len.tip - 55 / 300) < 0.07, `Spitze ${sp.len.tip}`);
 });
