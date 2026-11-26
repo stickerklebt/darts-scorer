@@ -411,3 +411,26 @@ test('Kamera-Kopplung: Raum öffnen, beitreten, Nachrichten in beide Richtungen,
     assert.equal((await ctl('GET', '/api/camlink/mine')).body.code, null);        // fremdes Konto nicht
   } finally { await s.stop(); }
 });
+
+test('Dart-Scan-Protokoll: Foto + Meta landen in DATA_DIR/dartscans, Log-Zeile dart_scan, nur angemeldet', async () => {
+  const { mkdtempSync, readdirSync, readFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const dir = mkdtempSync(`${tmpdir()}/dscan-`);
+  const s = await boot({ dataDir: dir });
+  try {
+    const a = client(s.base);
+    await register(a, 'scan@x.de', 'Scanner');
+    const login = await fetch(`${s.base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'scan@x.de', password: 'geheim123' }) });
+    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const meta = encodeURIComponent(JSON.stringify({ ok: false, step: 'features', err: 'Barrel nicht gefunden', zones: { L: 300 } }));
+    const post = (h) => fetch(`${s.base}/api/dartscan`, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'X-Scan-Meta': meta, ...h }, body: Buffer.from([0xff, 0xd8, 0xff, 1, 2, 3]) });
+    assert.equal((await post({})).status, 401);
+    assert.equal((await post({ Cookie: cookie })).status, 200);
+    const files = readdirSync(`${dir}/dartscans`).sort();
+    assert.equal(files.length, 2);
+    assert.ok(files[0].endsWith('_fail.jpg') && files[1].endsWith('_fail.json'));
+    const m = JSON.parse(readFileSync(`${dir}/dartscans/${files[1]}`, 'utf8'));
+    assert.equal(m.step, 'features'); assert.equal(m.zones.L, 300); assert.equal(m.bytes, 6);
+    assert.ok(s.logs.some((e) => e.msg === 'dart_scan' && e.level === 'warn' && e.err === 'Barrel nicht gefunden'));
+  } finally { await s.stop(); rmSync(dir, { recursive: true, force: true }); }
+});

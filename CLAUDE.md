@@ -55,6 +55,10 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   friend_*, call_*, sync mit Änderungen, Start/Stopp, Migrationen); `debug` (nicht ausgegeben) = Leer-Syncs. Statische Dateien
   nur bei Fehlern. **Nie** E-Mail, Passwort, Token/Cookie loggen; IPs nur gekürzt (`anonIp`). App-Fehler aus dem Browser
   meldet `js/errlog.js` an `POST /api/client-log` (max. 5 je Seitenaufruf, Server drosselt 20/min je IP).
+  **Dart-Scan-Protokoll:** jeder Versuch „Dart fotografieren“ schickt das Bild, das die Erkennung gesehen hat (JPEG ≤ 1200 px; nicht lesbares Foto → Original),
+  mit Meta im Header `X-Scan-Meta` (Schritt decode/segment/straighten/features/ok, Fehler, Zeit, Maske, Zonen, Steckbrief) an `POST /api/dartscan`
+  (nur angemeldet, nicht im Demo-Modus, 30/h je Konto). Ablage `DATA_DIR/dartscans/<Zeit>_<Nutzer-8>_<ok|fail>.jpg` + `.json`, die neuesten 300 bleiben;
+  Log-Zeile `dart_scan` (info bzw. warn bei Fehlschlag). Zum Analysieren: neueste `*_fail.json` + Bild in `/var/lib/darts/dartscans` ansehen.
 - Lokal mit Server: `Darts starten.command` (Node, Daten in `.data/`) oder Vorschau „darts-server“ (Port 8787, `.data/dev`).
 - **Nicht als Datei öffnen:** Firefox/Chrome laden ES-Module nicht über `file://` (sonst schwarzer Bildschirm). `js/filehint.js`
   zeigt dann nach 1,5 s einen Hinweis. Lokal starten: `Darts starten.command` (Doppelklick, Node-Server auf 127.0.0.1,
@@ -68,7 +72,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
 index.html              Gerüst, lädt css/, js/errlog.js (Fehler melden), js/main.js (type="module") und js/filehint.js
 deploy/  nginx.conf · darts.service · install.sh (einmalig) · update.sh · start.sh · stop.sh · logs.sh · backup.sh; README.md (Betrieb)
 server/src/             server.js · app.js · config.js · db.js · sessions.js · passwords.js · ratelimit.js · static.js ·
-                        validate.js · friend-stats.js · backup.js · log.js · routes/ (auth, account, sync, friends, games, caller, client-log)
+                        validate.js · friend-stats.js · backup.js · log.js · routes/ (auth, account, sync, friends, games, caller, client-log, dartscan)
 css/
   tokens.css            Farben, Schriften, Muster (Raster, Gold-Schraffur, Kupferstich, Papier, Handlinie)
   base.css              Reset, Typo, Buttons, Tabs, Dialoge
