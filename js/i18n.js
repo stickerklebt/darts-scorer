@@ -4,6 +4,7 @@
    dann Muster mit Zahlen/Namen (PATTERNS). Was fehlt, bleibt Deutsch – neue Texte hier eintragen. */
 
 export const DICT = {
+  'Break': 'Break', 'Zuerst im Finish': 'First in finish', 'Comeback': 'Comeback', 'Triple im Finish': 'Treble in finish',
   'The Game': 'The Game', 'High Finish · Treffer je Dart': 'High finish · hits per dart', '1. Dart': '1st dart', '2. Dart': '2nd dart', '3. Dart': '3rd dart',
   'Doppel': 'Doubles', 'Doppelquote anzeigen': 'Show double rate', 'Doppelquote im Spiel anzeigen': 'Show double rate in game',
   'in diesem Spiel – neben Letzte und Average': 'in this game – next to last and average', 'Zahl-Vorschläge': 'Score suggestions', 'Zahl-Vorschläge im Spiel': 'Score suggestions in game',

@@ -344,3 +344,50 @@ function finishOdds2(matches, pid) {
   }
   return [0, 1].map((k) => ({ tries: tries[k], hits: hits[k], rate: tries[k] ? hits[k] / tries[k] : null }));
 }
+
+/* ---------------- Unter „Quote nach Bereich“: Break, zuerst im Finish / Comeback, meistgetroffenes Triple im Finish ----------------
+   Finish-Bereich = Rest ≤ 170 nach einer Aufnahme. Nur Legs mit Gegner und Sieger. */
+export function finishExtras(matches, pid) {
+  const br = { tries: 0, hits: 0 }, first = { tries: 0, hits: 0 }, back = { tries: 0, hits: 0 }, triples = {};
+  for (const m of matches) {
+    if (!m || m.game !== 'x01') continue;
+    const s = m.sides.findIndex((sd) => sd.includes(pid));
+    if (s < 0) continue;
+    for (const l of m.legs || []) {
+      for (const t of l.turns) if (t.pid === pid) for (const d of t.throws || []) if (d.m === 3 && d.n > 0 && d.before !== null && d.before <= 170) triples[`T${d.n}`] = (triples[`T${d.n}`] || 0) + 1;
+      if (m.sides.length < 2 || l.winner === undefined) continue;
+      if (l.starter !== s) { br.tries++; if (l.winner === s) br.hits++; }
+      const rem = m.sides.map(() => m.opts.start);
+      let firstSide = null;
+      for (const t of l.turns) { rem[t.s] -= t.score; if (firstSide === null && rem[t.s] <= 170) firstSide = t.s; }
+      if (firstSide === null) continue;
+      const box = firstSide === s ? first : back;
+      box.tries++; if (l.winner === s) box.hits++;
+    }
+  }
+  const rate = (x) => ({ ...x, rate: x.tries ? x.hits / x.tries : null });
+  const top = Object.entries(triples).sort((a, b) => b[1] - a[1])[0];
+  return { brk: rate(br), first: rate(first), comeback: rate(back), triple: top ? { k: top[0], n: top[1] } : null };
+}
+
+/** Beim wievielten Versuch im Leg sitzt dieses Doppel? Je Treffer die Zahl der Darts auf genau dieses Doppel im Leg (inkl. Treffer). */
+export function doubleTriesToHit(matches, pid, key) {
+  const out = [];
+  for (const m of matches) {
+    if (!m || m.game !== 'x01' || m.opts?.out !== 'double') continue;
+    for (const l of m.legs || []) {
+      let n = 0;
+      for (const t of l.turns) {
+        if (t.pid !== pid) continue;
+        for (const d of t.throws || []) {
+          if (!isDoubleAttempt(d.before)) continue;
+          const f = attemptField(d.before);
+          if (label(f) !== key) continue;
+          n++;
+          if (hitsField(d, f)) { out.push(n); n = 0; }
+        }
+      }
+    }
+  }
+  return out;
+}

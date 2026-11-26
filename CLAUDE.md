@@ -471,3 +471,7 @@ Offen: E-Mail-Bestätigung.
 - **Update 26.11.2026 (4)**: „Partyspiele“ lesbar (silbern). Drehrad: nur die Striche selbst werden rot/hell (kein Quadrat), oben/unten öfter. Spiel-Kopf nur mit Spielname (ohne Leg/Set),
   Zurück ohne Kästchen; Kamera/Mikro erscheinen erst nach Tipp auf den leeren Bereich (`gbarTap`, 6 s, ohne Kästchen). Doppel groß: Glitzern nur am Rand. High Finish ohne Erklärung,
   Seite per Wischen oder Tipp auf den anderen Punkt (`hfPage`). Doppel-Tabelle: ganze Zeilen fallen einzeln rein. Quote nach Bereich: Antippen zeigt „gecheckt/versucht“ in eigener Zeile.
+- **Update 26.11.2026 (5)**: Unter „Quote nach Bereich“ drei Karten (`finishExtras` in `stats.js`): **Break** (Legs gegen den Anwurf gewonnen), **Zuerst im Finish ⇄ Comeback**
+  (wer zuerst Rest ≤ 170 hat → Leg geholt; wischen oder Punkt antippen, `ui.fcPage`), **Triple im Finish** (meistgetroffenes Triple bei Rest ≤ 170). Top 10 Checkouts ganz sichtbar.
+  „Auffällig“ ohne Bust-Schock und Wochentag. Doppel groß: nur ab und zu kurzer Glanz. Doppel-Fenster: Prozent antippen → Kurve „Treffer beim wievielten Versuch im Leg“
+  (`doubleTriesToHit`, x-Achse = Ø × 1,4, Rest in der letzten Säule). Setup-501 höher.

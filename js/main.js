@@ -104,7 +104,8 @@ document.addEventListener('scroll', (e) => {
   const el = e.target;
   if (!el?.classList?.contains('hf-pages')) return;
   const pg = el.scrollLeft > el.clientWidth / 2 ? 1 : 0;
-  if (pg !== ui.hfPage) { ui.hfPage = pg; const d = el.parentElement.querySelectorAll('.hf-dots button'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
+  const k = el.dataset.k || 'hfPage';
+  if (pg !== ui[k]) { ui[k] = pg; const d = el.parentElement.querySelectorAll('.hf-dots button'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
 }, true);
 function render() {
   setFavDouble(S.prefs.favDbl);
@@ -815,7 +816,7 @@ const actions = {
   statsModesReset() { S.statsModes = ['501']; render(); },
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
   statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
-  heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; render(); },
+  heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; ui.dblCurve = null; render(); },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
   compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
   backStats() { S.screen = 'home'; S.tab = 'stats'; render(); window.scrollTo(0, 0); },
@@ -1107,7 +1108,8 @@ const actions = {
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
   boDone() { finishBulloff(); },
   boTie() { clearTimeout(boTimer); ui.boResult = null; render(); },
-  hfPage(el) { const k = Number(el.dataset.v); ui.hfPage = k; const p = el.closest('.hf-card')?.querySelector('.hf-pages'); p?.scrollTo({ left: k * p.clientWidth, behavior: 'smooth' }); render(); },
+  dblCurve(el) { ui.dblCurve = ui.dblCurve === el.dataset.v ? null : el.dataset.v; render(); },
+  hfPage(el) { const k = Number(el.dataset.v); ui[el.dataset.k || 'hfPage'] = k; const p = el.closest('.hf-card, .fc-card')?.querySelector('.hf-pages'); p?.scrollTo({ left: k * p.clientWidth, behavior: 'smooth' }); render(); },
   /* Spiel: Kamera und Mikrofon erscheinen erst nach Tipp auf den leeren Bereich oben (blenden ein, nach 6 s wieder aus) */
   gbarTap() { ui.gbarOpen = Date.now(); render(); clearTimeout(gbarTimer); gbarTimer = setTimeout(() => { ui.gbarOpen = 0; render(); }, 6000); },
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },

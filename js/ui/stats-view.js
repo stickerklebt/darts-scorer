@@ -1,7 +1,7 @@
 /* Tab „Statistiken“: Spielerwahl, Zeitfilter, Vergleichen – darunter Unter-Reiter
    Überblick · Scoring · Checkout · Doppel · Verlauf. Eine große Zahl pro Karte, Beschriftung klein. */
 import { S, ui, nameOf, profile } from '../store.js';
-import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel, finishOdds } from '../stats.js';
+import { fullStats, matchesOf, doubleRating, doubleSides, spotsIn, TIERS, MIN_ATTEMPTS, statsModes, modeLabel, finishOdds, finishExtras, doubleTriesToHit } from '../stats.js';
 import { esc, fmt, pcVars } from './common.js';
 import { icon, stars, fuse, sparkles, numRing } from './svg.js';
 import { heatBoard, ratingColor } from './board.js';
@@ -82,10 +82,26 @@ function overviewTab(st, pid) {
 const rangeCards = (ranges) => `<div class="kv three">${ranges.map((r, i) => `<div class="kv-c glint has-rv rng" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}">
   <small>Rest ${r.name}</small><b>${pct(r.rate)}</b><em class="rng-n">${rv(`${r.hits}/${r.chances} gecheckt`)}</em></div>`).join('')}</div>`;
 
+/** Unter „Quote nach Bereich“: Break · zuerst im Finish ⇄ Comeback (wischen oder Punkt antippen) · meistgetroffenes Triple im Finish */
+let fxCache = { key: '', r: null };
+function extraCards(pid) {
+  const last = S.matches[S.matches.length - 1];
+  const key = `${pid}|${S.statsPeriod}|${statsModes().join(',')}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
+  if (fxCache.key !== key) fxCache = { key, r: finishExtras(matchesOf(S.matches, pid, S.statsPeriod), pid) };
+  const r = fxCache.r, pg = ui.fcPage === 1 ? 1 : 0;
+  const box = (title, x, what) => `<div class="hf-page fc-page"><small>${title}</small><b>${pct(x.rate)}</b><em class="rng-n">${rv(`${x.hits}/${x.tries} ${what}`)}</em></div>`;
+  return `<div class="kv three fx-row">
+    <div class="kv-c glint has-rv rng" style="--gd:-2s"><small>Break</small><b>${pct(r.brk.rate)}</b><em class="rng-n">${rv(`${r.brk.hits}/${r.brk.tries} gebreakt`)}</em></div>
+    <div class="kv-c glint has-rv rng fc-card" style="--gd:-5s"><div class="hf-pages" data-k="fcPage">${box('Zuerst im Finish', r.first, 'Legs geholt')}${box('Comeback', r.comeback, 'Legs geholt')}</div>
+      <span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="fcPage" data-v="${k}" aria-label="${k ? 'Comeback' : 'Zuerst im Finish'}"></button>`).join('')}</span></div>
+    <div class="kv-c glint has-rv rng" style="--gd:-8s"><small>Triple im Finish</small><b>${r.triple ? r.triple.k : '–'}</b><em class="rng-n">${rv(r.triple ? `${r.triple.n}× getroffen` : 'noch keins')}</em></div>
+  </div>`;
+}
+
 function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
   return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
-    + block('Quote nach Bereich', rangeCards(st.ranges))}</div>
+    + block('Quote nach Bereich', rangeCards(st.ranges) + extraCards(pid))}</div>
     <div class="co-right">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div>`;
 }
 
@@ -100,21 +116,36 @@ function spotOverlay(st, key) {
   return `<div class="hb-spot ${n === 25 ? 'is-bull' : ''}"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(n, [...(st.spots?.[key] || []), ...live], { color })}</span></div>${dblInfo(st, key)}</div>`;
 }
 
+/** Beim wievielten Versuch im Leg sitzt das Doppel? Erst nach Antippen der Prozentzahl. x: Versuche (Länge = Ø × 1,4, Rest in der letzten Säule), y: Anteil der Treffer. */
+function triesCurve(key) {
+  if (ui.dblCurve !== key) return '';
+  const list = doubleTriesToHit(matchesOf(S.matches, statsPid(), S.statsPeriod), statsPid(), key);
+  if (!list.length) return '<div class="di-curve"><p class="di-none">Noch kein Treffer – dann steht hier, beim wievielten Versuch er sitzt.</p></div>';
+  const avg = list.reduce((a, x) => a + x, 0) / list.length, n = Math.max(2, Math.ceil(avg * 1.4));
+  const bins = Array(n).fill(0); for (const x of list) bins[Math.min(n, x) - 1]++;
+  const p = bins.map((c) => c / list.length), mx = Math.max(...p), W = 300, H = 120, bw = W / n;
+  const bars = p.map((v, i) => { const h = mx ? (v / mx) * (H - 22) : 0; return `<rect x="${(i * bw + bw * 0.18).toFixed(1)}" y="${(H - 16 - h).toFixed(1)}" width="${(bw * 0.64).toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>
+    <text class="cv-v" x="${(i * bw + bw / 2).toFixed(1)}" y="${(H - 20 - h).toFixed(1)}">${Math.round(v * 100)}%</text>
+    <text class="cv-x" x="${(i * bw + bw / 2).toFixed(1)}" y="${H - 3}">${i + 1}${i === n - 1 ? '+' : ''}</text>`; }).join('');
+  return `<div class="di-curve"><h4>Treffer beim wievielten Versuch im Leg · Ø ${fmt(avg, 1)}</h4><svg viewBox="0 0 ${W} ${H}" class="cv">${bars}</svg></div>`;
+}
+
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
-  const head = `<div class="di-head"><b>${key}</b>${f ? `<span class="has-rv"><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${rv(`${f.hits} / ${f.attempts}`)}</em></span>` : ''}
+  const open = ui.dblCurve === key;
+  const head = `<div class="di-head"><b>${key}</b>${f ? `<span class="has-rv di-pct ${open ? 'rv-on' : ''}" data-act="dblCurve" data-v="${key}"><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${rv(`${f.hits} / ${f.attempts}`)}</em></span>` : ''}
     <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
   const sd = doubleSides(st.doubles, key);
   // Doppel groß mit einem Punkt für jeden Treffer an der Stelle, wo er saß (wird nach dem Checkout abgefragt)
   // fertige Matches + das laufende Spiel (sonst sähe man einen eben eingetragenen Treffer erst nach Spielende)
-  if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}</div>`; // beim Bull gibt es kein inside/outside
-  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
+  if (key === 'Bull') return `<div class="dbl-info"><span class="di-arrow"></span>${head}${triesCurve(key)}</div>`; // beim Bull gibt es kein inside/outside
+  if (!sd.misses) return `<div class="dbl-info"><span class="di-arrow"></span>${head}${triesCurve(key)}<p class="di-none">Jeder Versuch auf ${key} war ein Treffer.</p></div>`;
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
   // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
-  return `<div class="dbl-info"><span class="di-arrow"></span>${head}
+  return `<div class="dbl-info"><span class="di-arrow"></span>${head}${triesCurve(key)}
     <h4>Wenn du nicht triffst, wirfst du</h4>
     <div class="io-wrap has-rv" data-keep title="Antippen für Details">
     <div class="io-line">
@@ -216,8 +247,8 @@ export function hfCard(pid) {
   const pg = ui.hfPage === 1 ? 1 : 0;
   // Keine Erklärung: Seite wechselt per Wischen oder Tipp auf den anderen (dunkleren) Punkt
   return `<div class="hf-card">
-    <div class="hf-pages">${page('High Finish · 3 Darts', hfCache.r3, 3)}${page('High Finish · 2 Darts', hfCache.r2, 2)}</div>
-    <div class="hf-foot"><span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-v="${k}" aria-label="${k ? '2 Darts' : '3 Darts'}"></button>`).join('')}</span></div></div>`;
+    <div class="hf-pages" data-k="hfPage">${page('High Finish · 3 Darts', hfCache.r3, 3)}${page('High Finish · 2 Darts', hfCache.r2, 2)}</div>
+    <div class="hf-foot"><span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="hfPage" data-v="${k}" aria-label="${k ? '2 Darts' : '3 Darts'}"></button>`).join('')}</span></div></div>`;
 }
 
 /* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */
@@ -240,8 +271,8 @@ function insightsBlock(r) {
   items.push(['Entscheidungsleg', dc ? sgn(dc.delta) : '–', dc
     ? `Ø ${fmt(dc.avg, 1)} im letzten möglichen Leg. ${dc.delta >= 2 ? 'Du lebst für den Showdown.' : dc.delta <= -2 ? 'Da wird es eng in der Brust.' : 'Ganz normal weiter.'}`
     : few]);
-  const b = r.bust;
-  items.push(['Bust-Schock', b ? sgn(b.delta) : '–', b
+  const b = null && r.bust;
+  if (b) items.push(['Bust-Schock', b ? sgn(b.delta) : '–', b
     ? `Nach einem Bust wirfst du im Schnitt ${fmt(Math.abs(b.delta), 0)} Punkte ${b.delta < 0 ? 'schlechter. Tief durchatmen.' : 'besser. Jetzt erst recht!'}`
     : few]);
   const ft = r.firstTry;
@@ -252,8 +283,8 @@ function insightsBlock(r) {
   items.push(['High Finish', hf ? pct(hf.hi) : '–', hf
     ? `aufs Doppel nach Rest ab 100 · sonst ${pct(hf.lo)}. ${hf.hi < hf.lo * 0.8 ? 'Nach dem langen Weg wackelt das Doppel.' : hf.hi > hf.lo * 1.2 ? 'Wenn du schon mal da bist, sitzt er.' : 'Egal wie du hinkommst.'}`
     : few]);
-  const wd = r.weekday;
-  items.push(['Wochentag', wd ? wd.best.k.slice(0, 2) : '–', wd
+  const wd = null && r.weekday;
+  if (wd) items.push(['Wochentag', wd ? wd.best.k.slice(0, 2) : '–', wd
     ? `Bester Tag ${wd.best.k} (Ø ${fmt(wd.best.avg, 1)}) · schwächster ${wd.worst.k} (Ø ${fmt(wd.worst.avg, 1)}).`
     : few]);
   return block('Auffällig', `<div class="kv three ins">${items.map(([k, v, t], i) => `<div class="kv-c glint ins-c" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small><b>${v}</b><em>${t}</em></div>`).join('')}</div>`);

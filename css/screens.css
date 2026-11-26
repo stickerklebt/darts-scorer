@@ -3651,3 +3651,31 @@ html.no-motion .wheel, html.no-motion .wheel-box::after { animation: none !impor
 .resume-list .resume-wrap { min-width: 0; overflow: hidden; }
 .resume-list .resume { flex: 1 1 auto; min-width: 0; width: auto; }
 .resume-list .resume .ct, .resume-list .resume small { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ================= UPDATE 26.11.2026 (5) ================= */
+/* Top 10 Checkouts: alle zehn sichtbar (kein Scrollen, keine Ausblendung) */
+.rlist.rl-scroll { max-height: none !important; overflow: visible !important; -webkit-mask-image: none !important; mask-image: none !important; }
+/* Setup: die 501 sitzt höher */
+.su-title.su-501 { margin-top: -6px !important; padding-top: 0 !important; }
+.bar.su-bar { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+/* Doppel groß: kein wanderndes Glitzern mehr – nur ab und zu ein kurzer Glanz am Feld */
+.hb-spot .dspot .ds-rim { stroke-dasharray: none !important; animation: none !important; }
+.hb-spot .dspot { animation: dblBlink 5s ease-in-out infinite !important; filter: drop-shadow(0 0 2px rgba(255,255,255,.55)); }
+@keyframes dblBlink { 0%, 80%, 100% { filter: drop-shadow(0 0 2px rgba(255,255,255,.55)) brightness(1); }
+  86% { filter: drop-shadow(0 0 6px rgba(255,255,255,.95)) brightness(1.25); } 92% { filter: drop-shadow(0 0 2px rgba(255,255,255,.55)) brightness(1); } }
+html.no-motion .hb-spot .dspot { animation: none !important; }
+/* Break · Zuerst im Finish ⇄ Comeback · Triple im Finish */
+.fx-row { margin-top: 10px; }
+.fc-card { overflow: hidden; display: flex; flex-direction: column; }
+.fc-card .hf-pages { flex: 1; }
+.fc-card .fc-page { display: flex; flex-direction: column; min-width: 0; }
+.fc-card .hf-dots { display: flex; justify-content: center; gap: 10px; margin-top: 4px; }
+.fc-card.rv-on .rng-n { max-height: 24px; margin-top: 4px; }
+/* Doppel: Treffer beim wievielten Versuch */
+.di-pct { cursor: pointer; }
+.di-curve { margin: 8px 0 4px; animation: bFade .3s ease-out; }
+.di-curve h4 { margin: 0 0 4px; }
+.di-curve .cv { display: block; width: 100%; height: auto; max-height: 130px; }
+.di-curve .cv rect { fill: #e9ecf0; }
+.di-curve .cv text { font-family: var(--f-num); font-size: 11px; fill: rgba(222,226,231,.75); text-anchor: middle; }
+.di-curve .cv .cv-v { fill: #fff; font-size: 12px; }

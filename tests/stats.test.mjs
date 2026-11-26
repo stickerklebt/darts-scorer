@@ -229,3 +229,19 @@ test('2-Dart-Finish: ab Rest 61, 1. Dart getroffen wenn mit einem Dart noch chec
   assert.deepEqual(r.map((x) => x.tries), [2, 1]);
   assert.deepEqual(r.map((x) => x.hits), [1, 1]);
 });
+
+test('Break, zuerst im Finish, Comeback, Triple im Finish, Versuche bis zum Doppel', async () => {
+  const { finishExtras, doubleTriesToHit } = await import('../js/stats.js');
+  const m = createMatch('x01', [['a'], ['b']], { start: 301, out: 'double', mode: 'legs', target: 2 }, 1); // b fängt an
+  X.submitSum(m, 60); X.submitSum(m, 140);                 // b 241 · a 161 → a zuerst im Finish
+  X.submitSum(m, 60);                                       // b 181
+  dart(m, 20, 3); dart(m, 17, 3); dart(m, 25, 2);           // a: 161 → T20 T17 Bull = Leg gegen den Anwurf (Break)
+  const r = finishExtras([m], 'a');
+  assert.equal(r.triple.k, 'T20');
+  assert.deepEqual([r.brk.tries, r.brk.hits], [1, 1]);
+  assert.deepEqual([r.first.tries, r.first.hits, r.comeback.tries], [1, 1, 0]);
+  const n = createMatch('x01', [['a']], { start: 32, out: 'double', mode: 'legs', target: 1 });
+  dart(n, 16, 1); dart(n, 8, 1); dart(n, 4, 2);             // D16 1×, D8 1×, D4 getroffen beim 1. Versuch
+  assert.deepEqual(doubleTriesToHit([n], 'a', 'D4'), [1]);
+  assert.deepEqual(doubleTriesToHit([n], 'a', 'D16'), []);
+});
