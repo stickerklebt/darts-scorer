@@ -273,24 +273,55 @@ export function stylize(st) {
 
 /* ---------- Im Browser: Foto → fertiges PNG (data-URL) ---------- */
 import { features } from './dartspec.js';
+import { apiGate } from './api.js';
 
-/** Foto → Dart-Steckbrief (Merkmale, kein Bild) */
+/** Foto → Dart-Steckbrief (Merkmale, kein Bild). Jeder Versuch geht mit Foto + Zwischenergebnissen ans Scan-Protokoll (Server). */
 export async function dartFromFile(file) {
-  // createImageBitmap kann manche iPhone-Fotos (HEIC) nicht – dann über ein <img>
-  let bmp;
-  try { bmp = await createImageBitmap(file); }
-  catch {
-    bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error('Foto konnte nicht gelesen werden')); im.src = URL.createObjectURL(file); });
+  const t0 = performance.now(), meta = { ok: false, step: 'decode', img: { type: file.type, size: file.size } };
+  let cv = null;
+  try {
+    // createImageBitmap kann manche iPhone-Fotos (HEIC) nicht – dann über ein <img>
+    let bmp;
+    try { bmp = await createImageBitmap(file); }
+    catch {
+      bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error('Foto konnte nicht gelesen werden')); im.src = URL.createObjectURL(file); });
+    }
+    const scale = Math.min(1, 1200 / Math.max(bmp.width, bmp.height)); // genug Auflösung für Barrel-Rillen
+    const cw = Math.round(bmp.width * scale), ch = Math.round(bmp.height * scale);
+    Object.assign(meta.img, { origW: bmp.width, origH: bmp.height, w: cw, h: ch });
+    cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    const cx = cv.getContext('2d'); cx.drawImage(bmp, 0, 0, cw, ch);
+    const img = cx.getImageData(0, 0, cw, ch);
+    meta.step = 'segment';
+    const { mask, thr } = segment(img);
+    meta.seg = { thr: Math.round(thr), px: mask.reduce((a, b) => a + b, 0) };
+    meta.step = 'straighten';
+    const st = straighten(img, mask);
+    if (st) meta.st = { w: st.width, h: st.height };
+    if (!st || st.width < 40) throw new Error('Kein Dart erkannt. Leg ihn auf einen ruhigen, einfarbigen Untergrund und fotografiere ihn von oben.');
+    meta.step = 'features';
+    const zones = {}, spec = features(st, zones);
+    meta.zones = zones;
+    if (!spec) throw new Error('Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.');
+    Object.assign(meta, { ok: true, step: 'ok', spec });
+    return spec;
+  } catch (e) {
+    meta.err = String(e?.message || e);
+    throw e;
+  } finally {
+    meta.ms = performance.now() - t0;
+    reportScan(file, cv, meta);
   }
-  const scale = Math.min(1, 1200 / Math.max(bmp.width, bmp.height)); // genug Auflösung für Barrel-Rillen
-  const cw = Math.round(bmp.width * scale), ch = Math.round(bmp.height * scale);
-  const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
-  const cx = cv.getContext('2d'); cx.drawImage(bmp, 0, 0, cw, ch);
-  const img = cx.getImageData(0, 0, cw, ch);
-  const { mask } = segment(img);
-  const st = straighten(img, mask);
-  if (!st || st.width < 40) throw new Error('Kein Dart erkannt. Leg ihn auf einen ruhigen, einfarbigen Untergrund und fotografiere ihn von oben.');
-  const spec = features(st);
-  if (!spec) throw new Error('Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.');
-  return spec;
+}
+
+/** Scan-Protokoll: genau das Bild, das die Erkennung gesehen hat (JPEG ≤ 1200 px), sonst das Originalfoto (z. B. HEIC, das nicht lesbar war).
+    Nebenbei, Fehler werden ignoriert; ohne Anmeldung lehnt der Server ab. */
+async function reportScan(file, cv, meta) {
+  if (apiGate.demo) return;
+  try {
+    const blob = cv ? await new Promise((ok) => cv.toBlob(ok, 'image/jpeg', 0.9)) : file;
+    if (!blob) return;
+    await fetch('api/dartscan', { method: 'POST', credentials: 'same-origin', body: blob,
+      headers: { 'Content-Type': blob.type || 'image/jpeg', 'X-Scan-Meta': encodeURIComponent(JSON.stringify(meta)) } });
+  } catch { /* Protokoll ist nur Beiwerk */ }
 }

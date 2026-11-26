@@ -3921,3 +3921,80 @@ html.no-motion .bs-name { animation: none; }
 .dt-cols { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .dt-col { width: 30px; height: 30px; border-radius: 50%; background: var(--c); border: 1px solid rgba(238,240,243,.35); cursor: pointer; }
 .dt-col.on { outline: 2px solid #eef0f3; outline-offset: 2px; }
+
+/* ================= UPDATE 26.11.2026 (10) ================= */
+/* More: drei Kacheln (Spielhistorie · Kamera · Einstellungen) immer in einer Reihe, keine Lücke */
+.bs-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+/* Doppel-Fenster: Doppel + Quote mittig, kein ×; über dem Balken nur „Daneben“; Inside/Outside zur Mitte hin neben den Zahlen;
+   Erklärung (← ins Board … daneben →, Fehlwürfe) erst nach Tippen auf den Balken, darunter */
+.dbl-info .di-head { justify-content: center !important; align-items: baseline; gap: 16px !important; }
+.dbl-info .di-head .di-x { display: none !important; }
+.dbl-info .di-head .di-pct { font-family: var(--f-num); font-weight: 400; font-size: 34px; color: #fff; cursor: pointer; }
+.dbl-info h4 { text-align: center; }
+.io-side { flex-direction: row !important; align-items: center !important; gap: 8px !important; }
+.io-side.in { justify-content: flex-start !important; }
+.io-side.out { justify-content: flex-end !important; }
+.io-side small { margin: 0 !important; }
+.io-wrap:not(.rv-on) .io-key, .io-wrap:not(.rv-on) .di-n { display: none !important; }
+.io-wrap.rv-on .io-key, .io-wrap.rv-on .di-n { animation: bFade .25s ease-out; }
+/* Top 10 Checkouts: Safari schneidet bei mask-image auf einem Scroll-Kasten den Rest ab → keine Maske mehr,
+   stattdessen eine stehende Blende unten (Verlauf + leichte Unschärfe); alle 10 lassen sich bis ganz unten scrollen */
+@media (min-width: 900px) {
+  .co-right-in .rlist { -webkit-mask-image: none !important; mask-image: none !important; padding-bottom: 0 !important; }
+  .co-right-in .rlist::after { height: 56px !important; margin-top: 0 !important; bottom: 0 !important; z-index: 2;
+    background: linear-gradient(rgba(11,11,14,0), rgba(11,11,14,.75) 55%, var(--ink)); }
+}
+/* Überblick: Average/Doppelquote auf schwarzem Grund (Zahlen-Schatten und Leuchten am Rand bleiben),
+   oben links und rechts je ein hart silberner Stern, der kräftig leuchtet und unregelmäßig blinkt */
+.stats .hero-stat.hs-epic { background: #000 !important; background-image: none !important; }
+.hero-stat.hs-epic > .hs-aura { display: none !important; }
+.hero-stat.hs-epic > .hs-star { position: absolute; top: 12px; z-index: 4; width: 22px; height: 22px; pointer-events: none; display: block;
+  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px rgba(255,255,255,.85)) drop-shadow(0 0 18px rgba(220,226,235,.5));
+  animation: hsTwinkle 3.7s ease-in-out infinite; }
+.hero-stat.hs-epic > .hs-star.l { left: 14px; }
+.hero-stat.hs-epic > .hs-star.r { right: 14px; animation-duration: 4.9s; animation-delay: -1.8s; }
+.hero-stat.hs-epic.dbl-hero > .hs-star.l { animation-delay: -2.6s; } .hero-stat.hs-epic.dbl-hero > .hs-star.r { animation-delay: -.7s; }
+.hero-stat.hs-epic > .hs-star svg { display: block; width: 100%; height: 100%; }
+@keyframes hsTwinkle { 0%, 100% { opacity: .75; transform: scale(.85) rotate(0deg); } 18% { opacity: 1; transform: scale(1.25) rotate(20deg); }
+  24% { opacity: .5; transform: scale(.7) rotate(28deg); } 31% { opacity: 1; transform: scale(1.1) rotate(35deg); } 60% { opacity: .85; transform: scale(.9) rotate(45deg); }
+  66% { opacity: 1; transform: scale(1.35) rotate(60deg); } 72% { opacity: .6; transform: scale(.8) rotate(70deg); } }
+html.no-motion .hero-stat.hs-epic > .hs-star { animation: none; }
+/* Kleine Karten: Zahlen ohne Rot – nur die zufällig gelosten (.hot) mit kräftigem rotem Druck und Schein */
+.stats .sub-overview .kv-c b { text-shadow: 0 1px 0 rgba(255,255,255,.35), 0 0 10px rgba(255,255,255,.18) !important; }
+.stats .sub-overview .kv-c.hot b { text-shadow: 0 1px 0 rgba(255,255,255,.4), 2px 2px 0 #a3203d, 4px 4px 0 #5e0f22, 0 0 18px rgba(224,49,90,.75), 0 0 34px rgba(196,42,75,.45) !important; }
+.stats .sub-overview .kv-c.hot { box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 0 rgba(196,42,75,.6), 0 0 22px rgba(179,36,63,.28), 0 8px 22px rgba(0,0,0,.35) !important; }
+/* Spiel-Kopf: Zahnrad ohne Kasten; Mikrofon/Kamera sind jetzt im Einstellungsfenster (nur ein aktives Mikrofon bleibt oben sichtbar) */
+.game .gbar .gear-sq, .game .gbar-r .sq { background: none !important; border: 0 !important; box-shadow: none !important; color: #e4e7ec; opacity: 1 !important; pointer-events: auto !important;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.22)); }
+.game .gtitle.gtap { cursor: default; }
+.set-link.on .val { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,.6); }
+/* Legs-/Sets-Kästchen: kantige Chrom-Rauten statt weicher Quadrate; gewonnen = poliertes Silber mit leisem Bordeaux-Schein,
+   füllt sich weich, sobald das Leg geholt ist */
+.game .pips i, .game .sp-legs i, .game .sp-sets i { border-radius: 1px !important; transform: rotate(45deg) scale(.8); border: 1.2px solid rgba(214,219,226,.75) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(0,0,0,.5)) !important; box-shadow: inset 0 0 0 2px rgba(0,0,0,.55), inset 0 0 0 3px rgba(255,255,255,.08) !important;
+  transition: background .6s ease, box-shadow .6s ease, border-color .6s ease; }
+.game .pips i.w, .game .sp-legs i.w, .game .sp-sets i.w { border-color: #fff !important;
+  background: linear-gradient(135deg, #ffffff 0%, #c3c8cf 38%, #6f757e 50%, #f4f6f9 62%, #b7bcc4 100%) !important;
+  box-shadow: 0 0 10px rgba(255,255,255,.55), 0 0 18px rgba(196,42,75,.45), inset 0 0 0 1px rgba(255,255,255,.6) !important; animation: pipFill .7s cubic-bezier(.2,1.4,.4,1); }
+@keyframes pipFill { from { transform: rotate(45deg) scale(.3); filter: brightness(2); } }
+.game .pips { gap: 9px !important; }
+/* Restzahl: wer selbst wirft, leuchtet kräftig hell; wer wartet, deutlich gedämpfter. Wirft der Bot, bleibt es ruhig wie bisher */
+.game .sbp.off .sbp-rem { color: rgba(222,226,231,.4) !important; }
+.game .sbp.off .sbp-rem > span { opacity: .55; filter: none !important; }
+.game:not(.botturn) .sbp.on .sbp-rem > span { filter: brightness(1.12) drop-shadow(0 1px 0 rgba(255,255,255,.6)) drop-shadow(2px 3px 0 #4a0817) drop-shadow(0 0 16px rgba(255,255,255,.55)) drop-shadow(0 0 34px rgba(255,255,255,.25)) !important; }
+.game.botturn .sbp.off .sbp-rem > span { opacity: .75; }
+/* Eingabe-Scheibe: Mauszeiger und Markierung = DartVader-Stern (Mitte = Treffpunkt) */
+.aimboard { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='-16 -16 32 32'%3E%3Ccircle r='9' fill='white' opacity='.18'/%3E%3Cpath d='M0 -13C1.3 -3 3 -1.3 13 0 3 1.3 1.3 3 0 13 -1.3 3 -3 1.3 -13 0 -3 -1.3 -1.3 -3 0 -13Z' fill='%23f4f6f9' stroke='%23111' stroke-width='.8'/%3E%3Ccircle r='1.4' fill='white'/%3E%3C/svg%3E") 16 16, crosshair !important; }
+.aimboard .amark .astar { filter: drop-shadow(0 0 3px rgba(255,255,255,.8)) drop-shadow(0 1px 1px rgba(0,0,0,.7)) !important; }
+.aimboard .amark .hole { display: none; }
+/* Doppel-Abfrage nach dem Checkout: kein Strahlenkranz, kein Kasten – nur Titel und das Feld wie auf der Scheibe */
+.dspot-ask .ds-rays { display: none !important; }
+.dspot-ask { background: rgba(6,6,8,.94) !important; background-image: none !important; }
+.dspot-ask .dspot-in { background: none !important; background-image: none !important; border: 0 !important; box-shadow: none !important; outline: 0 !important; }
+.dspot-ask .dspot-in::before, .dspot-ask .dspot-in::after, .dspot-ask .ds-field-wrap::before, .dspot-ask .ds-field-wrap::after { display: none !important; }
+.dspot-ask .ds-field-wrap { background: none !important; border: 0 !important; box-shadow: none !important; }
+.dspot-ask .dspot.tap { filter: none !important; }
+/* Partyspiele entdecken: alle Kacheln im Stil der Play-Kacheln (Glas + Chrom-Symbol), auch die kommenden */
+.pb-soon .pb-tile { filter: none !important; opacity: 1 !important; }
+.pb-tile .mode-art .badge-mode.metal, .mode .mode-art .badge-mode.metal { width: 64% !important; max-width: 70px; }
+.mode.soon .badge-mode.metal { opacity: .6; filter: drop-shadow(0 0 8px rgba(235,240,248,.2)) drop-shadow(0 4px 8px rgba(0,0,0,.6)) !important; }

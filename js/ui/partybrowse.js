@@ -2,14 +2,14 @@
    ganz unten „Auf deinem Play-Reiter“ mit Stift → Minus auf jeder Kachel zum Entfernen. */
 import { S, ui } from '../store.js';
 import { ALL_PARTY, partyTiles, partyInfo } from '../partygames.js';
-import { icon, metalBadge, MODE_COLORS } from './svg.js';
+import { icon, metalBadge, hasSymbol, MODE_COLORS } from './svg.js';
 import { esc } from './common.js';
 import { GAMES } from '../games.js';
 
 /** Kachel-Bild: spielbare Modi mit ihrem Abzeichen, kommende mit ihrem Kurzzeichen */
 export function tileArt(id, size = 52) {
-  if (GAMES[id] && partyInfo(id)?.playable) return metalBadge(id, size);
-  return metalBadge(id, size, esc(partyInfo(id)?.tile || '?'));
+  // alle Partyspiele mit eigenem Chrom-Symbol (wie Cricket und Fußball); Kurzzeichen nur, falls es keins gibt
+  return hasSymbol(id) ? metalBadge(id, size) : metalBadge(id, size, esc(partyInfo(id)?.tile || '?'));
 }
 const tileBg = (id) => (partyInfo(id)?.playable ? MODE_COLORS[id] : '#232328');
 

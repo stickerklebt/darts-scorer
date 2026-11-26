@@ -51,17 +51,19 @@ const r2 = (v) => Math.round(v * 100) / 100;
 /** Kleiner Dartpfeil, Spitze bei (0,0), Flights schräg nach oben rechts – für Treffer und Lupe */
 /** Dart-Nummern in der ganzen App römisch */
 export const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-export const dartGlyph = (k = 1) => `<g class="adart" transform="scale(${k}) rotate(-45)">
-  <path d="M0 0H5" stroke="#eef0f3" stroke-width=".9" stroke-linecap="round"/>
-  <rect x="5" y="-1.35" width="7.5" height="2.7" rx="1.1" fill="#eef0f3"/><path d="M7 -1.35V1.35M9 -1.35V1.35" stroke="#08080a" stroke-width=".45" opacity=".55"/>
-  <path d="M12.5 0H16.5" stroke="#c4c8cf" stroke-width="1"/>
-  <path d="M15.6 0L18.4 -4.4H23L21.2 0Z" fill="#e5402c"/><path d="M15.6 0L18.4 4.4H23L21.2 0Z" fill="#a92a1b"/></g>`;
+/** Markierung = DartVader-Logo: symmetrischer Chrom-Stern (vier gleich lange Arme), Mitte = Treffpunkt */
+const STAR = 'M0 -7C.7 -1.6 1.6 -.7 7 0 1.6 .7 .7 1.6 0 7 -.7 1.6 -1.6 .7 -7 0 -1.6 -.7 -.7 -1.6 0 -7Z';
+export const dartGlyph = (k = 1) => `<g class="adart astar" transform="scale(${k})">
+  <circle r="5.5" fill="#fff" opacity=".18"/>
+  <path d="${STAR}" fill="#f4f6f9" stroke="#ffffff" stroke-width=".35"/>
+  <path d="M0 -7C.7 -1.6 1.6 -.7 7 0L0 0Z M0 7C-.7 1.6 -1.6 .7 -7 0L0 0Z" fill="#9aa0a8" opacity=".75"/>
+  <circle r=".9" fill="#ffffff"/></g>`;
 const pt = (r, deg) => `${r2(r * Math.cos((deg * Math.PI) / 180))},${r2(r * Math.sin((deg * Math.PI) / 180))}`;
 const ring = (r0, r1, a0, a1) => `M${pt(r1, a0)} A${r1},${r1} 0 0,1 ${pt(r1, a1)} L${pt(r0, a1)} A${r0},${r0} 0 0,0 ${pt(r0, a0)} Z`;
 
 /* Farben: warm-dunkle Felder, leicht getönte Ringe (nicht grell) */
-const F = {
-  sA: '#221d16', sB: '#2f281d', rA: '#8a3326', rB: '#2a6b45', b25: '#2f7d4f', b50: '#c4452f',
+const F = { // Bordeaux + dazu passendes, tiefes Flaschengrün
+  sA: '#1d1a17', sB: '#29241f', rA: '#7d1631', rB: '#1d5a43', b25: '#226a4e', b50: '#9c1d3d',
   wire: '#cfd3d9', num: '#f2f4f7', rim: '#0e0e11',
 };
 
@@ -130,7 +132,7 @@ export function aimBoard(hits = [], opts = {}) {
   const wires = `<g class="awire">${[AR.bull, AR.outer, AR.triIn, AR.triOut, AR.dblIn, AR.dblOut].map((r) => `<circle r="${r}"/>`).join('')}
     ${ORDER.map((_, i) => `<path d="M${pt(AR.outer, -99 + i * 18)}L${pt(AR.dblOut, -99 + i * 18)}"/>`).join('')}</g>`;
   // Steckende Darts an der Wurfstelle (mit kleiner Nummer)
-  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<text class="anr" x="13.2" y="-12.6" text-anchor="middle" dominant-baseline="central">${ROMAN[i] || i + 1}</text></g>`)).join(''); // Nummer (römisch) steht auf der Flight
+  const marks = hits.map((h, i) => (h.x === undefined ? '' : `<g class="amark" transform="translate(${r2(h.x)} ${r2(h.y)})"><circle class="hole" r="1.6"/>${dartGlyph(0.95)}<text class="anr" x="7.5" y="-8" text-anchor="middle" dominant-baseline="central">${ROMAN[i] || i + 1}</text></g>`)).join(''); // Nummer (römisch) steht auf der Flight
   return `<svg class="aimboard" viewBox="-${AR.edge} -${AR.edge} ${AR.edge * 2} ${AR.edge * 2}" role="img" aria-label="Dartscheibe – Finger auf die Stelle, wo der Dart steckt">
     <defs><filter id="aGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2"/></filter>
       ${opts.bot ? `<mask id="aOut" maskUnits="userSpaceOnUse" x="-${AR.edge}" y="-${AR.edge}" width="${AR.edge * 2}" height="${AR.edge * 2}"><rect x="-${AR.edge}" y="-${AR.edge}" width="${AR.edge * 2}" height="${AR.edge * 2}" fill="#fff"/><circle r="${AR.dblOut}" fill="#000"/></mask>` : ''}</defs>

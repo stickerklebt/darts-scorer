@@ -230,6 +230,17 @@ const SYMBOLS = {
   bruch: '<path d="M13.5 2.5 6 13.2h5l-1.5 8.3L18 10.6h-5.2z" fill="currentColor"/>',
   // Fußball: Fünfeck in der Mitte, Nähte zu den Sechsecken, angeschnittene Fünfecke am Rand
   football: '<defs><clipPath id="fbclip"><circle cx="12" cy="12" r="9.6"/></clipPath></defs><circle cx="12" cy="12" r="9.6" fill="#f6f1e4"/><g clip-path="url(#fbclip)"><path d="M12.00,8.50L12.00,6.50M8.77,4.15L20.46,12.65M15.33,10.92L17.23,10.30M18.47,6.50L14.00,20.25M14.06,14.83L15.23,16.45M19.23,16.45L4.77,16.45M9.94,14.83L8.77,16.45M10.00,20.25L5.53,6.50M8.67,10.92L6.77,10.30M3.54,12.65L15.23,4.15" fill="none" stroke="#08080a" stroke-width=".7" stroke-opacity=".7"/><polygon points="12.00,6.50 8.77,4.15 10.00,0.35 14.00,0.35 15.23,4.15" fill="#08080a"/><polygon points="17.23,10.30 18.47,6.50 22.46,6.50 23.70,10.30 20.46,12.65" fill="#08080a"/><polygon points="15.23,16.45 19.23,16.45 20.46,20.25 17.23,22.60 14.00,20.25" fill="#08080a"/><polygon points="8.77,16.45 10.00,20.25 6.77,22.60 3.54,20.25 4.77,16.45" fill="#08080a"/><polygon points="6.77,10.30 3.54,12.65 0.30,10.30 1.54,6.50 5.53,6.50" fill="#08080a"/></g><polygon points="12.00,8.50 15.33,10.92 14.06,14.83 9.94,14.83 8.67,10.92" fill="#08080a"/><circle cx="12" cy="12" r="9.6" fill="none" stroke="#08080a" stroke-width="1.2"/>',
+  // Kommende Partyspiele (Kacheln „Bald“)
+  killer: '<path d="M12 3a7 7 0 00-7 7c0 2.6 1.3 4.2 2.6 5v3h8.8v-3c1.3-.8 2.6-2.4 2.6-5a7 7 0 00-7-7z" fill="currentColor"/><circle cx="9.2" cy="10.6" r="1.9" fill="#0b0b0e"/><circle cx="14.8" cy="10.6" r="1.9" fill="#0b0b0e"/><path d="M12 13.2l-1 2h2z" fill="#0b0b0e"/><path d="M9.5 18v3M12 18v3M14.5 18v3" stroke="currentColor" stroke-width="1.6"/>',
+  bobs27: '<path d="M4.5 9.2a3.5 3.5 0 017 0c0 2.6-6.8 5.6-6.8 9.3h6.9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M13.2 6h6.6l-4.4 12.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>',
+  baseball: '<path d="M12 3.5l8.5 8.5-8.5 8.5L3.5 12z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 3.5v3M20.5 12h-3M12 20.5v-3M3.5 12h3" stroke="currentColor" stroke-width="2"/>',
+  golf: '<path d="M8 21V3" stroke="currentColor" stroke-width="2.2"/><path d="M8 3.5l10 3.8-10 3.8z" fill="currentColor"/><ellipse cx="11" cy="20.4" rx="7.5" ry="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+  gotcha: '<circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.8v5M12 17.2v5M1.8 12h5M17.2 12h5" stroke="currentColor" stroke-width="2"/>',
+  tictactoe: '<path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.6"/><path d="M4.2 4.2l3.6 3.6M7.8 4.2l-3.6 3.6M16.2 16.2l3.6 3.6M19.8 16.2l-3.6 3.6" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.9" fill="none" stroke="currentColor" stroke-width="1.8"/>',
+  mickey: '<circle cx="12" cy="14.2" r="6.4" fill="currentColor"/><circle cx="5.6" cy="6.4" r="3.8" fill="currentColor"/><circle cx="18.4" cy="6.4" r="3.8" fill="currentColor"/>',
+  scram: '<path d="M3.5 8h13.5M13.5 4.5L17 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M20.5 16H7M10.5 12.5L7 16l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2.3"/>',
+  c121: '<circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.6 12.4l3 3 5.8-6.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>',
+  ninelives: '<path d="M12 20.5S3.5 15.2 3.5 9.2A4.4 4.4 0 0112 7.2a4.4 4.4 0 018.5 2c0 6-8.5 11.3-8.5 11.3z" fill="currentColor"/>',
   atc: '<path d="M20 12a8 8 0 11-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19.5 2.5v4.5H15" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2"/>',
 };
 /* Spielmodi: nur Gold · Schwarz · Orange (X01 bleibt rot). Jeder Modus anders kombiniert, damit er erkennbar bleibt:
@@ -252,6 +263,7 @@ export const badge = (game, size = 44) => {
 
 /** Partyspiel-Logo aus hart glänzendem Chrom: nur das Symbol (keine Scheibe, kein Ring – die Kachel ist der Rahmen) aus Silber
     (Verlauf mit harten Hell/Dunkel-Wechseln, Fase per feSpecularLighting, Glanzlicht oben). text statt Symbol für „Bald“-Kacheln. */
+export const hasSymbol = (id) => Object.prototype.hasOwnProperty.call(SYMBOLS, id);
 export const metalBadge = (game, size = 52, text = '') => {
   const k = `mb-${String(game).replace(/[^a-z0-9]/gi, '')}`;
   const chrome = `url(#${k}g)`;

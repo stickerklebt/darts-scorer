@@ -37,7 +37,7 @@ const block = (title, body) => `<section class="sblock">${title ? `<h2 class="la
 /** Karten: [Beschriftung, große Zahl, kleine Zusatzzeile] */
 const cards = (items, cls = '', pid = '') => `<div class="kv ${cls}">${items.map(([k, v, sub, ref], i) => {
   const tap = ref && v !== '–';
-  return `<${tap ? 'button' : 'div'} class="kv-c glint ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}${String(sub).includes('class="rv"') ? `<span class="kv-row"><b>${v}</b><em>${sub}</em></span>` : `<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}`}</${tap ? 'button' : 'div'}>`;
+  return `<${tap ? 'button' : 'div'} class="kv-c glint ${hot(k)} ${tap ? 'tap' : ''} ${String(sub).includes('class="rv"') ? 'has-rv' : ''}" ${tap ? recAttrs(ref, pid) : ''} style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}"><small>${k}</small>${tap ? '<i class="kv-go" aria-hidden="true">›</i>' : ''}${String(sub).includes('class="rv"') ? `<span class="kv-row"><b>${v}</b><em>${sub}</em></span>` : `<b>${v}</b>${sub ? `<em>${sub}</em>` : ''}`}</${tap ? 'button' : 'div'}>`;
 }).join('')}</div>`;
 /** Rekord-Karte. hidden: Zusatz, der erst nach Antippen erscheint (z. B. wie das Checkout gespielt wurde) */
 const record = (title, value, sub, hidden = '') => `<div class="record ${hidden ? 'has-rv' : ''}">${fuse(4, 10)}<div><small>${title}</small><b class="pop shimmer" data-t="${value}">${value}</b>${sub ? `<em>${sub}</em>` : ''}${hidden ? `<em class="rec-how">${rv(hidden)}</em>` : ''}</div></div>`;
@@ -60,9 +60,13 @@ export function statsHeader(pid) {
   ${S.statsPeriod !== 'all' ? `<button class="period-chip" data-act="period" data-v="all">${icon('clock', 2, 15)}<span>${PERIOD_LONG[S.statsPeriod]}</span><b aria-label="Zurück auf Gesamt">×</b></button>` : ''}`;
 }
 
+/* Kleine Karten im Überblick: nur ein paar Zahlen bekommen den roten Druck/Schein (dafür kräftiger) – welche, wird bei jedem
+   Öffnen des Reiters neu gelost (ui.ovSeed, gesetzt in main.js › tab/statsSub) */
+const hot = (k) => { ui.ovSeed ??= Math.random(); let h = Math.floor(ui.ovSeed * 2147483647) ^ 0x9e3779b9; for (const c of String(k)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return ((h >>> 0) % 100) < 28 ? 'hot' : ''; };
 /* ---------------- Unter-Reiter ---------------- */
 /** Die zwei wichtigsten Zahlen (Average, Doppelquote): Chrom-Ring mit wanderndem Licht, roter Schein hinter der Zahl, Lichtstrahlen */
-const HS_FX = '<i class="hs-ring" aria-hidden="true"></i><i class="hs-aura" aria-hidden="true"></i><i class="hs-flash" aria-hidden="true"></i>';
+const HS_STAR = '<svg viewBox="0 0 24 24"><defs><linearGradient id="hsStarG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#c9ced5"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="#8d939b"/></linearGradient></defs><path d="M12 0C12.8 7.6 16.4 11.2 24 12 16.4 12.8 12.8 16.4 12 24 11.2 16.4 7.6 12.8 0 12 7.6 11.2 11.2 7.6 12 0Z" fill="url(#hsStarG)"/></svg>';
+const HS_FX = '<i class="hs-star l" aria-hidden="true">' + HS_STAR + '</i><i class="hs-star r" aria-hidden="true">' + HS_STAR + '</i><i class="hs-ring" aria-hidden="true"></i><i class="hs-aura" aria-hidden="true"></i><i class="hs-flash" aria-hidden="true"></i>';
 function overviewTab(st, pid) {
   const c = st.counts;
   // Lieblingsdoppel = Doppel mit der besten Trefferquote (erst ab MIN_ATTEMPTS Versuchen, mindestens ein Treffer)
@@ -81,7 +85,7 @@ function overviewTab(st, pid) {
 }
 
 /** Quote nach Bereich: Prozent groß; Antippen zeigt darunter in eigener Zeile „gecheckt / versucht“ (daraus ist die Prozentzahl) */
-const rangeCards = (ranges) => `<div class="kv three">${ranges.map((r, i) => `<div class="kv-c glint has-rv rng" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}">
+const rangeCards = (ranges) => `<div class="kv three">${ranges.map((r, i) => `<div class="kv-c glint ${hot(r.name)} has-rv rng" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}">
   <small>Rest ${r.name}</small><b>${pct(r.rate)}</b><em class="rng-n">${rv(`${r.hits}/${r.chances} gecheckt`)}</em></div>`).join('')}</div>`;
 
 /** Unter „Quote nach Bereich“: Break · zuerst im Finish ⇄ Comeback (wischen oder Punkt antippen) · meistgetroffenes Triple im Finish */
@@ -93,10 +97,10 @@ function extraCards(pid) {
   const r = fxCache.r, pg = ui.fcPage === 1 ? 1 : 0;
   const box = (title, x, what) => `<div class="hf-page fc-page"><small>${title}</small><b>${pct(x.rate)}</b><em class="rng-n">${rv(`${x.hits}/${x.tries} ${what}`)}</em></div>`;
   return `<div class="kv three fx-row">
-    <div class="kv-c glint has-rv rng" style="--gd:-2s"><small>Break</small><b>${pct(r.brk.rate)}</b><em class="rng-n">${rv(`${r.brk.hits}/${r.brk.tries} gebreakt`)}</em></div>
-    <div class="kv-c glint has-rv rng fc-card" style="--gd:-5s"><div class="hf-pages" data-k="fcPage">${box('Zuerst im Finish', r.first, 'Legs geholt')}${box('Comeback', r.comeback, 'Legs geholt')}</div>
+    <div class="kv-c glint ${hot('brk')} has-rv rng" style="--gd:-2s"><small>Break</small><b>${pct(r.brk.rate)}</b><em class="rng-n">${rv(`${r.brk.hits}/${r.brk.tries} gebreakt`)}</em></div>
+    <div class="kv-c glint ${hot('fc')} has-rv rng fc-card" style="--gd:-5s"><div class="hf-pages" data-k="fcPage">${box('Zuerst im Finish', r.first, 'Legs geholt')}${box('Comeback', r.comeback, 'Legs geholt')}</div>
       <span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="fcPage" data-v="${k}" aria-label="${k ? 'Comeback' : 'Zuerst im Finish'}"></button>`).join('')}</span></div>
-    <div class="kv-c glint has-rv rng" style="--gd:-8s"><small>Triple im Finish</small><b>${r.triple ? r.triple.k : '–'}</b><em class="rng-n">${rv(r.triple ? `${r.triple.n}× getroffen` : 'noch keins')}</em></div>
+    <div class="kv-c glint ${hot('tri')} has-rv rng" style="--gd:-8s"><small>Triple im Finish</small><b>${r.triple ? r.triple.k : '–'}</b><em class="rng-n">${rv(r.triple ? `${r.triple.n}× getroffen` : 'noch keins')}</em></div>
   </div>`;
 }
 
@@ -136,8 +140,8 @@ function triesCurve(key) {
 function dblInfo(st, key) {
   const f = st.doubles.fields[key];
   const open = ui.dblCurve === key;
-  const head = `<div class="di-head"><b>${key}</b>${f ? `<span class="has-rv di-pct ${open ? 'rv-on' : ''}" data-act="dblCurve" data-v="${key}"><small>Treffer</small><strong>${pct(f.hits / f.attempts)}</strong><em>${rv(`${f.hits} / ${f.attempts}`)}</em></span>` : ''}
-    <button class="di-x" data-act="heat" data-v="${key}" aria-label="Schließen">×</button></div>`;
+  // Kopf: Doppel und Quote mittig nebeneinander – sonst nichts (schließen: irgendwo daneben tippen)
+  const head = `<div class="di-head"><b>${key}</b>${f ? `<strong class="di-pct ${open ? 'on' : ''}" data-act="dblCurve" data-v="${key}">${pct(f.hits / f.attempts)}</strong>` : ''}</div>`;
   if (!f) return `<div class="dbl-info">${head}<p class="di-none">Noch kein Versuch auf ${key}.</p></div>`;
   // Wenn du nicht triffst: inside (ins Board, nicht das Doppel) gegen outside (daneben, 0) – als geteilte Linie in Prozent
   const sd = doubleSides(st.doubles, key);
@@ -148,11 +152,11 @@ function dblInfo(st, key) {
   const ip = Math.round(sd.insideRate * 100), op = 100 - ip;
   // Seiten mit 0 % werden gar nicht gezeichnet – die andere Seite füllt dann die ganze Linie
   return `<div class="dbl-info"><span class="di-arrow"></span>${head}${triesCurve(key)}
-    <h4>Wenn du nicht triffst, wirfst du</h4>
+    <h4>Daneben</h4>
     <div class="io-wrap has-rv" data-keep title="Antippen für Details">
     <div class="io-line">
       ${ip > 0 ? `<span class="io-side in ${op === 0 ? 'full' : ''}" style="flex:${ip}"><b>${ip} %</b><small>Inside</small></span>` : ''}
-      ${op > 0 ? `<span class="io-side out ${ip === 0 ? 'full' : ''}" style="flex:${op}"><b>${op} %</b><small>Outside</small></span>` : ''}
+      ${op > 0 ? `<span class="io-side out ${ip === 0 ? 'full' : ''}" style="flex:${op}"><small>Outside</small><b>${op} %</b></span>` : ''}
     </div>
     <div class="io-key"><span>← ins Board (alles außer ${key})</span><span>daneben (0) →</span></div>
     <p class="di-n">${sd.misses} Fehlwürfe · ${sd.inside}× inside · ${sd.outside}× outside</p></div></div>`;

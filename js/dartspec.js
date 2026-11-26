@@ -119,12 +119,14 @@ export function findRings(lum) {
   return out.slice(0, MAX_RINGS).map((i) => +(i / (n - 1)).toFixed(3));
 }
 
-/** Ausgerichteter Dart ({ width, height, data, alpha, thick }, Flight links) → Steckbrief */
-export function features(st) {
+/** Ausgerichteter Dart ({ width, height, data, alpha, thick }, Flight links) → Steckbrief (null = nicht erkannt).
+    dbg (optional) bekommt die gemessenen Zonen und ggf. den Grund fürs Scheitern – fürs Scan-Protokoll. */
+export function features(st, dbg = {}) {
   const t0 = st.thick, W = t0.length;
   let x0 = 0, x1 = W - 1; while (x0 < W && !t0[x0]) x0++; while (x1 > x0 && !t0[x1]) x1--;
   const L = x1 - x0 + 1;
-  if (L < 30) return null;
+  dbg.L = L;
+  if (L < 30) { dbg.fail = 'zu kurz'; return null; }
   const t = t0.map((v, i) => { const a = [t0[i - 1] ?? v, v, t0[i + 1] ?? v].sort((p, q) => p - q); return a[1]; });
   const maxW = Math.max(...t.slice(x0, x1 + 1));
   const rest = t.slice(x0 + Math.round(L * 0.35), x1 + 1).slice().sort((a, b) => a - b);
@@ -139,7 +141,9 @@ export function features(st) {
   let bS = bE, low = 0;
   for (let x = bE; x > fE; x--) { if (t[x] >= bw * 0.55) { bS = x; low = 0; } else if (++low > L * 0.03) break; }
   const fl = fE - x0 + 1, bl = bE - bS + 1, tl = x1 - bE, sl = Math.max(1, bS - fE - 1);
-  if (bl < L * 0.08 || tl < L * 0.03) return null;
+  Object.assign(dbg, { x0, x1, fE, bS, bE, bw, maxW, fl, sl, bl, tl });
+  if (bl < L * 0.08) { dbg.fail = 'Barrel nicht gefunden'; return null; }
+  if (tl < L * 0.03) { dbg.fail = 'Spitze nicht gefunden'; return null; }
   const bt = t.slice(bS, bE + 1), bmx = Math.max(...bt, 1);
   const profile = Array.from({ length: N_PROFILE }, (_, i) => {
     const a = Math.floor(i * bl / N_PROFILE), b = Math.max(a + 1, Math.floor((i + 1) * bl / N_PROFILE));

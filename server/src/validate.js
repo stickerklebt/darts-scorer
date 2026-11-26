@@ -36,3 +36,15 @@ export function checkPassword(v, email = '') {
 
 export const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= 80 && /^[\w.-]+$/.test(v);
 export const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+/** Meta eines Dart-Scans (Header X-Scan-Meta, URL-kodiertes JSON): nur ein kleines Objekt, Texte gekürzt */
+export function scanMeta(raw) {
+  let m = {};
+  try { m = typeof raw === 'string' && raw.length <= 12000 ? JSON.parse(decodeURIComponent(raw)) : {}; } catch { m = {}; }
+  if (!isPlainObject(m)) m = {};
+  const out = { ok: m.ok === true, step: typeof m.step === 'string' ? m.step.slice(0, 30) : 'unknown' };
+  if (typeof m.err === 'string') out.err = m.err.slice(0, 300);
+  if (Number.isFinite(m.ms)) out.ms = Math.round(m.ms);
+  for (const k of ['img', 'seg', 'st', 'zones', 'spec']) if (isPlainObject(m[k])) out[k] = m[k];
+  return out;
+}

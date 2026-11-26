@@ -496,3 +496,9 @@ Offen: E-Mail-Bestätigung.
   **Nutzer simulieren** (Anmeldung): `startDemo`/`endDemo` in `sync.js`, `generateSimUser` in `demo.js` (≈ 180 × 501 über ein Jahr gegen Bots, Ø ≈ 70, steigend).
   Nur lokal: `auth.user.demo`, `apiGate.demo` (api.js blockt alle Server-Aufrufe), kein Sync; Abmelden oder Neuladen (`S.simUser`) löscht alles.
   Nicht angeboten, wenn auf dem Gerät noch ein abgelaufenes Konto liegt (`storedAccount`).
+- **Update 26.11.2026 (10)**: More: 3 Kacheln in einer Reihe. Doppel-Fenster: Doppel + Quote mittig, kein × (Tipp daneben schließt, Listener in main.js), über dem Balken nur „Daneben“,
+  Erklärung erst nach Tipp auf den Balken. Top 10 ohne mask-image (Safari schnitt ab), stehende Blende unten. Überblick: Average/Doppelquote auf Schwarz, blinkende Silbersterne
+  oben links/rechts; kleine Karten nur zufällig (`hot`, `ui.ovSeed` je Öffnen) mit Rot. Spiel: Zahnrad ohne Kasten, Mikrofon + Kamera im Einstellungsfenster,
+  Legs-Kästchen als Chrom-Rauten, **keine Leg-Info mit „Weiter“ mehr** (Kästchen füllt sich), Restzahl aktiv heller/inaktiv dunkler.
+  Eingabe-Scheibe: DartVader-Stern als Markierung/Mauszeiger, Bordeaux + Flaschengrün. Doppel-Abfrage ohne Strahlen/Kasten, Feld wie auf der Scheibe (Punkte + Körnung).
+  Alle kommenden Partyspiele haben eigene Chrom-Symbole (`SYMBOLS` in svg.js, `hasSymbol`).

@@ -21,6 +21,7 @@ import { histSheet } from './history.js';
 import { link } from '../camera-link.js';
 import { stationMode } from './camstation.js';
 import { camBigView } from './camview.js';
+import { voiceOn } from '../voice.js';
 
 /** Sync-Stand in Worten */
 function syncText() {
@@ -60,6 +61,8 @@ export function sheetView() {
       : [['Spiel', GAMES[m.game].title], ...(m.game === 'atc' ? [] : [['Runden', G.rounds(m)]])];
     inner = `<h3>Einstellungen</h3><p>${matchSummary(m)}</p>
       <div class="slist">
+        ${m.game === 'x01' ? `<button class="srow set-link ${voiceOn() ? 'on' : ''}" data-act="mic">${icon('mic', 1.9, 20)}<span class="lbl">Mikrofon<small>${voiceOn() ? 'an – Punkte ansagen' : 'Punkte ansagen statt tippen'}</small></span><span class="val">${voiceOn() ? 'An' : 'Aus'}</span></button>` : ''}
+        ${m.game === 'x01' || m.game === 'cricket' ? `<button class="srow set-link ${ui.camLive ? 'on' : ''}" data-act="cam">${icon('cam', 1.9, 20)}<span class="lbl">Kamera<small>${ui.camLive ? 'erkennt die Darts' : 'Darts per Kamera erkennen'}</small></span>${icon('chevR', 2.4, 16)}</button>` : ''}
         ${m.game === 'x01' ? `<div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>` : ''}
         ${tog('voice', 'Ansage')}${m.game === 'x01' ? tog('hints', 'Checkout-Hilfe') : ''}${tog('showAvg', 'Average anzeigen')}${m.game === 'x01' && m.opts.out === 'double' ? tog('showDbl', 'Doppelquote anzeigen', 'in diesem Spiel – neben Letzte und Average') : ''}${m.game === 'x01' || m.game === 'highscore' ? tog('quick', 'Zahl-Vorschläge', 'deine häufigsten Aufnahmen über der Tastatur') : ''}
       </div>
@@ -75,7 +78,7 @@ export function sheetView() {
         <div class="srow"><span class="lbl">Daten</span><span class="val sync-${sync.state}">${syncText()}</span></div>
       </div>
       <div class="sbtns acct-btns"><button class="btn dark" data-act="pwOpen">Passwort ändern</button><button class="btn dark" data-act="logout">Abmelden</button></div>` : ''}
-      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App.</small></span>
+      <div class="slist dart-edit"><div class="srow col"><span class="lbl">Dein Dart<small>Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App. Das Foto wird zur Verbesserung der Erkennung gespeichert.</small></span>
         <div class="dart-btns"><label class="btn dark dart-cam" ${ui.dartBusy ? 'aria-disabled="true"' : ''}>${ui.dartBusy ? 'Erkenne Dart …' : S.prefs.myDart ? 'Neues Foto' : 'Dart fotografieren'}<input id="dartFile" type="file" accept="image/*" capture="environment" hidden></label>
         ${S.prefs.myDart ? '<button class="btn line" data-act="dartRemove">Entfernen</button>' : ''}</div></div>
         ${dartTune(S.prefs.myDart)}</div>

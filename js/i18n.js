@@ -55,7 +55,8 @@ export const DICT = {
   'Solo starten': 'Start solo', 'Spieler hinzufügen': 'Add player', 'Wer wirft heute mit?': 'Who is playing today?', 'Freunde': 'Friends', 'Gast': 'Guest', 'Bot': 'Bot',
   'spielt schon mit': 'already playing', 'Du hast noch keine Freunde – füge sie unter „More“ hinzu.': 'You have no friends yet – add them under “More”.',
   'Lade Freunde …': 'Loading friends …', 'Alle Bots spielen schon mit.': 'All bots are already playing.', 'Noch keine Spieler ausgewählt.': 'No players selected yet.',
-  'Reihenfolge mischen': 'Shuffle order', 'Nutzer simulieren': 'Simulate a player', 'Zahlen selbst einsprechen': 'Record your own calls',
+  'Reihenfolge mischen': 'Shuffle order', 'Mikrofon': 'Microphone', 'Punkte ansagen statt tippen': 'Call scores instead of typing', 'an – Punkte ansagen': 'on – call your scores',
+  'Darts per Kamera erkennen': 'Detect darts by camera', 'erkennt die Darts': 'detecting darts', 'An': 'On', 'Aus': 'Off', 'Mikrofon aus': 'Microphone off', 'Nutzer simulieren': 'Simulate a player', 'Zahlen selbst einsprechen': 'Record your own calls',
   'Ein Spieler mit einem Jahr Spielen und Ø 70 – so siehst du, was die App alles kann. Nur auf diesem Gerät, ohne Konto.': 'A player with a year of games and a 70 average – see everything the app can do. Only on this device, no account.',
   'Demo: ein Jahr gespielt, Ø 70': 'Demo: one year played, 70 average', 'Erst mit deinem Konto anmelden': 'Sign in with your account first',
   'Im Demo-Modus nicht verfügbar – melde dich mit einem Konto an.': 'Not available in demo mode – sign in with an account.', 'Double In? Oder X01?': 'Double In? Or X01?', 'Zu den Partyspielen': 'To the party games',
@@ -149,7 +150,7 @@ export const DICT = {
   // Profil / Konto
   'Name': 'Name', 'Freunde finden dich darüber': 'Friends find you by it', 'E-Mail': 'Email', 'Daten': 'Data', 'Passwort ändern': 'Change password', 'Abmelden': 'Sign out',
   'Dein Dart': 'Your dart', 'Leg ihn auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App schneidet ihn aus, der Tisch verschwindet.': 'Put it on a calm, single-coloured table and photograph it from above – the app cuts it out, the table disappears.',
-  'Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App.': 'Lay it flat on a calm, plain table and photograph it from above – the app measures shape, grooves and colours and draws it in the app style.',
+  'Leg ihn flach auf einen ruhigen, einfarbigen Tisch und fotografiere ihn von oben – die App misst Form, Rillen und Farben und zeichnet ihn im Stil der App. Das Foto wird zur Verbesserung der Erkennung gespeichert.': 'Lay it flat on a calm, plain table and photograph it from above – the app measures shape, grooves and colours and draws it in the app style. The photo is stored to improve detection.',
   'Rillen': 'Grooves', 'Silber': 'Silver', 'Schwarz': 'Black', 'Farbe': 'Colour', 'Flight-Farbe': 'Flight colour', 'Weniger Rillen': 'Fewer grooves', 'Mehr Rillen': 'More grooves',
   'Dart nicht sauber erkannt. Leg ihn flach und ganz ins Bild, von oben fotografiert.': 'Dart not detected cleanly. Lay it flat, fully in frame, photographed from above.',
   'Dart fotografieren': 'Photograph dart', 'Neues Foto': 'New photo', 'Erkenne Dart …': 'Detecting dart …', 'Konto löschen': 'Delete account', 'Konto löschen?': 'Delete account?',

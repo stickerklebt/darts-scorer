@@ -244,10 +244,8 @@ function handle(res, spotAsked = false) {
     if (res.type === 'bust') { toast('Überworfen'); say('Überworfen'); }
     else if (res.type === 'turn' && !own) say(t.score === 0 ? 'Kein Score' : t.score === 180 ? 'Einhundertachtzig!' : String(t.score));
     else if (res.type === 'leg' || res.type === 'set') {
-      const mo = { kind: 'leg', s: t.s, pid: t.pid, score: t.score, darts: t.darts, set: res.type === 'set' };
+      // Kein Leg-Fenster mehr mit „Weiter“: das Kästchen oben füllt sich, es geht direkt weiter
       say(`${res.type === 'set' ? 'Set' : 'Leg'}, ${sideName(m.sides[t.s])}`);
-      if (anim) anim.then(() => { if (S.current === m) { moment(mo); render(); } });
-      else moment(mo);
     }
   } else if (m.game === 'football') {
     if (res.event === 'goal') { const sc = t ? t.s : F.curSide(m); toast(`Tor! ${sideName(m.sides[sc])} · ${F.state(m, false).goals.join(' : ')}`); say('Tor!'); }
@@ -802,6 +800,7 @@ const actions = {
   tab(el) {
     if (el.dataset.v === 'stats' && S.tab !== 'stats') { S.statsPeriod = 'all'; S.statsSub = 'doubles'; } // Statistik startet immer mit „Gesamt“ und im Reiter Doppel
     S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
+    ui.ovSeed = Math.random(); // Überblick: andere kleine Karten leuchten rot
     render(); window.scrollTo(0, 0);
     if (S.tab === 'friends') { loadFriends(); loadConfirms(); }
   },
@@ -851,7 +850,7 @@ const actions = {
   },
   statsModesReset() { S.statsModes = ['501']; render(); },
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
-  statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; render(); window.scrollTo(0, 0); },
+  statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; ui.ovSeed = Math.random(); render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; ui.dblCurve = null; render(); },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
   compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
@@ -1415,6 +1414,13 @@ setInterval(async () => {
     if (codes.join() !== (ui.camMine || []).join()) { ui.camMine = codes; render(); }
   } catch { /* offline */ }
 }, 5000);
+
+/* Statistik › Doppel: offenes Doppel-Fenster schließt, sobald man irgendwo daneben tippt */
+document.addEventListener('click', (e) => {
+  if (!ui.heatSel || S.screen !== 'home' || S.tab !== 'stats') return;
+  if (e.target.closest?.('.dbl-info, [data-act="heat"], .hb-fld, .subpop, .tabs, .sheet')) return;
+  ui.heatSel = null; ui.dblCurve = null; render();
+});
 
 /* ---------------- Mikrofon: angesagte Punktzahlen eintragen ---------------- */
 function onVoice(text) {
