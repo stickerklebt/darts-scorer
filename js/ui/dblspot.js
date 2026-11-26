@@ -65,7 +65,7 @@ export function spotSVG(n, spots = [], { tap = false, last = null, color = null 
   s += `<defs><linearGradient id="dsSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
     <linearGradient id="dsSw" x1="0" y1="0" x2="1" y2=".35"><stop offset=".38" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/>
     <animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.45;1" dur="4.5s" repeatCount="indefinite"/></linearGradient></defs>`;
-  s += `<path d="${fld}" fill="url(#dsSh)"/><path d="${fld}" fill="url(#dsSw)"/>`;
+  s += `<path d="${fld}" fill="url(#dsSh)"/>`;
   s += `<path class="ds-rim" d="${fld}" fill="none" stroke="#f2f4f7" stroke-width="3"/>`;
   for (const p of spots) { const [x, y] = spotXY(p, th); s += `<circle class="ds-dot blk" cx="${f1(x)}" cy="${f1(y)}" r="5"/>`; }
   return `<svg class="dspot" viewBox="${box(R1, R2, th - HALF, th + HALF, 14)}" role="img" aria-label="Doppel ${n}: ${spots.length} Treffer">${s}</svg>`;

@@ -241,8 +241,8 @@ export function gameView() {
     ${m.game === 'x01' && voiceOn() ? `<div class="mic-heard">${esc(ui.micHeard || 'Ich höre zu …')}</div>` : ''}
     <header class="gbar">
       <button class="sq" data-act="home" aria-label="Übersicht">${icon('chevL', 2.6)}</button>
-      <div class="gtitle one"><b>${title}</b><i aria-hidden="true"></i><span>${sub}</span></div>
-      <div class="gbar-r">${m.game === 'x01' ? `<button class="sq mic-sq ${voiceOn() ? 'on' : ''}" data-act="mic" aria-label="Mikrofon: Punkte ansagen" title="Punkte ansagen">${icon('mic', 2, 22)}</button>` : ''}<button class="sq cam-btn ${ui.camLive ? 'on' : ''}" data-act="cam" aria-label="Kamera">${icon('cam', 1.9)}</button>
+      <button class="gtitle one gtap" data-act="gbarTap" aria-label="Kamera und Mikrofon zeigen"><b>${title}</b></button>
+      <div class="gbar-r ${ui.gbarOpen ? 'open' : ''}">${m.game === 'x01' ? `<button class="sq mic-sq ${voiceOn() ? 'on' : ''}" data-act="mic" aria-label="Mikrofon: Punkte ansagen" title="Punkte ansagen">${icon('mic', 2, 22)}</button>` : ''}<button class="sq cam-btn ${ui.camLive ? 'on' : ''}" data-act="cam" aria-label="Kamera">${icon('cam', 1.9)}</button>
       <button class="sq" data-act="gear" aria-label="Einstellungen">${icon('gear', 1.8)}</button></div>
     </header>
     <div class="gmain"><div class="gleft">${board}${ui.camPadOn ? `<div class="cam-under">${camThumb()}</div>` : ''}${hint}</div><div class="pad ${isBoard ? 'board' : ''}">${ui.camPadOn ? '' : camBar(m, thrower)}${pad}</div></div>

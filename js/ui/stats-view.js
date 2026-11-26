@@ -78,10 +78,14 @@ function overviewTab(st, pid) {
     ${insightsBlock(cachedInsights(pid))}`;
 }
 
+/** Quote nach Bereich: Prozent groß; Antippen zeigt darunter in eigener Zeile „gecheckt / versucht“ (daraus ist die Prozentzahl) */
+const rangeCards = (ranges) => `<div class="kv three">${ranges.map((r, i) => `<div class="kv-c glint has-rv rng" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}">
+  <small>Rest ${r.name}</small><b>${pct(r.rate)}</b><em class="rng-n">${rv(`${r.hits}/${r.chances} gecheckt`)}</em></div>`).join('')}</div>`;
+
 function checkoutTab(st, pid) {
   // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
   return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
-    + block('Quote nach Bereich', cards(st.ranges.map((r) => [`Rest ${r.name}`, pct(r.rate), rv(`${r.hits} von ${r.chances} gecheckt`)]), 'three'))}</div>
+    + block('Quote nach Bereich', rangeCards(st.ranges))}</div>
     <div class="co-right">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div>`;
 }
 
@@ -93,7 +97,7 @@ function spotOverlay(st, key) {
   // Farbe wie in Heatmap und Liste: wie gut du dieses Doppel im Vergleich zu deiner Gesamtquote triffst
   const color = ratingColor(doubleRating(st.doubles)[key]);
   // Doppel + Info-Fenster liegen beide genau über der Scheibe – darunter wird nichts länger
-  return `<div class="hb-spot ${n === 25 ? 'is-bull' : ''}"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(n, [...(st.spots?.[key] || []), ...live], { color })}${sparkles(10, 4)}</span></div>${dblInfo(st, key)}</div>`;
+  return `<div class="hb-spot ${n === 25 ? 'is-bull' : ''}"><div class="hb-fld" data-act="heat" data-v="${key}"><span class="hb-glow">${spotSVG(n, [...(st.spots?.[key] || []), ...live], { color })}</span></div>${dblInfo(st, key)}</div>`;
 }
 
 /** Fenster unter der Scheibe für das angetippte Doppel: Quote und – bei Fehlwürfen – inside/outside in Prozent */
@@ -209,11 +213,11 @@ export function hfCard(pid) {
     return `<div class="hf-col"><b>${p === null ? '–' : `${p} %`}</b><span class="hf-bar"><i style="height:${p === null ? 0 : Math.max(3, p)}%"></i></span><small>${['1.', '2.', '3.'][i]} Dart</small></div>`;
   };
   const page = (title, r, n) => `<div class="hf-page"><small class="hf-t">${title}</small><div class="hf-cols c${n}">${r.map(bar).join('')}</div></div>`;
-  const pg = ui.hfPage === 1 ? 1 : 0, note = ui.hfNote && Date.now() - ui.hfNote < 3000;
-  const notes = ['Checkout-Versuche ab Rest 101 mit 3 Darts – ein Dart zählt als getroffen, wenn das Finish danach noch geht.', 'Checkout-Versuche ab Rest 61, die man mit 2 Darts auscheckt – getroffen, wenn das Finish danach noch geht.'];
-  return `<div class="hf-card ${note ? 'note' : ''}" data-act="hfNote">
+  const pg = ui.hfPage === 1 ? 1 : 0;
+  // Keine Erklärung: Seite wechselt per Wischen oder Tipp auf den anderen (dunkleren) Punkt
+  return `<div class="hf-card">
     <div class="hf-pages">${page('High Finish · 3 Darts', hfCache.r3, 3)}${page('High Finish · 2 Darts', hfCache.r2, 2)}</div>
-    <div class="hf-foot">${note ? `<p class="hf-note">${notes[pg]}</p>` : `<span class="hf-dots"><i class="${pg === 0 ? 'on' : ''}"></i><i class="${pg === 1 ? 'on' : ''}"></i></span>`}</div></div>`;
+    <div class="hf-foot"><span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-v="${k}" aria-label="${k ? '2 Darts' : '3 Darts'}"></button>`).join('')}</span></div></div>`;
 }
 
 /* „Auffällig“: kleine Auswertungen mit einem Satz dazu (js/insights.js) */

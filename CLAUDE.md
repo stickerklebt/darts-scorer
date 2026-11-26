@@ -468,3 +468,6 @@ Offen: E-Mail-Bestätigung.
   „180er“ antippbar (letzte 180, `t180Ref`); Quote nach Bereich zeigt „x von y gecheckt“; Top 10 kleiner (scrollt); **High Finish** zum Wischen: 3 Darts (ab 101) · 2 Darts (ab 61, `finishOdds(…, 2)`),
   zwei Punkte zeigen die Seite, Antippen zeigt 3 s die Erklärung. Doppel-Reiter: Doppel fallen beim Öffnen im Uhrzeigersinn ab der 20 ein, die Liste daneben. VIP: Name silbern, Einstellungen ganz rechts.
   Partyspiele entdecken: 2 pro Reihe, Erklärung erst nach Antippen.
+- **Update 26.11.2026 (4)**: „Partyspiele“ lesbar (silbern). Drehrad: nur die Striche selbst werden rot/hell (kein Quadrat), oben/unten öfter. Spiel-Kopf nur mit Spielname (ohne Leg/Set),
+  Zurück ohne Kästchen; Kamera/Mikro erscheinen erst nach Tipp auf den leeren Bereich (`gbarTap`, 6 s, ohne Kästchen). Doppel groß: Glitzern nur am Rand. High Finish ohne Erklärung,
+  Seite per Wischen oder Tipp auf den anderen Punkt (`hfPage`). Doppel-Tabelle: ganze Zeilen fallen einzeln rein. Quote nach Bereich: Antippen zeigt „gecheckt/versucht“ in eigener Zeile.

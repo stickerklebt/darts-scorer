@@ -104,7 +104,7 @@ document.addEventListener('scroll', (e) => {
   const el = e.target;
   if (!el?.classList?.contains('hf-pages')) return;
   const pg = el.scrollLeft > el.clientWidth / 2 ? 1 : 0;
-  if (pg !== ui.hfPage) { ui.hfPage = pg; const d = el.parentElement.querySelectorAll('.hf-dots i'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
+  if (pg !== ui.hfPage) { ui.hfPage = pg; const d = el.parentElement.querySelectorAll('.hf-dots button'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
 }, true);
 function render() {
   setFavDouble(S.prefs.favDbl);
@@ -162,7 +162,7 @@ function render() {
   requestAnimationFrame(paintCamViews);
 }
 
-let toastTimer = null, autoTimer = null;
+let toastTimer = null, autoTimer = null, gbarTimer = null;
 function toast(msg) { ui.toast = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => { ui.toast = null; render(); }, 1800); }
 let momentTimer = null;
 function moment(mo, autoClose = 0) {
@@ -1107,7 +1107,9 @@ const actions = {
   boUndo() { if (ui.boPending) ui.boPending = null; else bullUndo(S.current.bull); render(); },
   boDone() { finishBulloff(); },
   boTie() { clearTimeout(boTimer); ui.boResult = null; render(); },
-  hfNote() { ui.hfNote = Date.now(); render(); setTimeout(() => { if (ui.hfNote && Date.now() - ui.hfNote >= 2950) { ui.hfNote = 0; render(); } }, 3000); },
+  hfPage(el) { const k = Number(el.dataset.v); ui.hfPage = k; const p = el.closest('.hf-card')?.querySelector('.hf-pages'); p?.scrollTo({ left: k * p.clientWidth, behavior: 'smooth' }); render(); },
+  /* Spiel: Kamera und Mikrofon erscheinen erst nach Tipp auf den leeren Bereich oben (blenden ein, nach 6 s wieder aus) */
+  gbarTap() { ui.gbarOpen = Date.now(); render(); clearTimeout(gbarTimer); gbarTimer = setTimeout(() => { ui.gbarOpen = 0; render(); }, 6000); },
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },
   undo() { undo(); },
   gear() { ui.modal = { type: 'gear' }; render(); },
