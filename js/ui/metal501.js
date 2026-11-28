@@ -9,6 +9,8 @@ import { TUNE } from '../intro-config.js';
 const W = 150, H = 232, SUB_Y = 244, SUB_H = 62; // Ziffernfeld je 150 breit, Untertitel darunter
 const STOPS = [[0, '#8c9199'], [0.1, '#dde1e6'], [0.2, '#ffffff'], [0.29, '#eef0f3'], [0.38, '#b2b7be'], [0.46, '#5b6068'], [0.5, '#4a4e55'],
   [0.56, '#8c9199'], [0.66, '#e9ecf0'], [0.74, '#ffffff'], [0.83, '#bcc1c8'], [0.92, '#6c7078'], [1, '#a7adb5']];
+/** Dieselben Titan-Stops für andere Schriftzüge im selben Look (z. B. „Partyspiele“ auf Play) */
+export const METAL_STOPS = STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('');
 const grad = (id, y0, y1) => `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${y0}" x2="40" y2="${y1}">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</linearGradient>`;
 
 const FILTER = `<filter id="mtlF" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB">

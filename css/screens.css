@@ -4069,3 +4069,7 @@ html.no-motion .party-big .pg-ring { animation: none; }
 .pbrowse .pb-sep { border: 0; height: 1px; margin: 22px 0 18px; background: linear-gradient(90deg, rgba(220,224,230,0), #e9ecf0 20%, #ffffff 50%, #e9ecf0 80%, rgba(220,224,230,0));
   box-shadow: 0 0 8px rgba(255,255,255,.35); }
 .bar .pb-pen { background: none !important; border: 0 !important; box-shadow: none !important; color: #e4e7ec; }
+/* „Partyspiele“ im selben Titan wie „The Game“: Bodoni Moda, Versalien, gebürstetes Silber (Filter #mtlF der 501) */
+.party-big text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, serif !important; font-weight: 500; font-size: 104px !important; font-variation-settings: 'opsz' 28; text-transform: uppercase;
+  filter: url(#mtlF) !important; } /* CSS-filter würde sonst das SVG-Attribut überschreiben */
+.party-big svg { filter: brightness(1.12) contrast(1.08) drop-shadow(0 6px 8px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(240,244,250,.28)); }

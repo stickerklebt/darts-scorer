@@ -6,7 +6,7 @@ import { incomingCount } from './friends.js';
 import { link } from '../camera-link.js';
 import { partyTiles, partyInfo } from '../partygames.js';
 import { tileArt } from './partybrowse.js';
-import { metal501 } from './metal501.js';
+import { metal501, METAL_STOPS } from './metal501.js';
 import { cornerOrnament, badge, stars, icon, heroArt, fuse, sparkles, MODE_COLORS } from './svg.js';
 
 export const TABS = ['play', 'stats', 'friends'];
@@ -88,8 +88,7 @@ export function playView() {
       ${metal501('The Game')}
     </section>
     <button class="party-big" data-act="partyBrowse" aria-label="Partyspiele"><span class="pg-ring" aria-hidden="true"></span>
-      <svg viewBox="0 0 1000 170" aria-hidden="true"><defs><linearGradient id="pgChrome" gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="60" y2="160">
-        <stop offset="0" stop-color="#8a8f97"/><stop offset=".22" stop-color="#ffffff"/><stop offset=".4" stop-color="#c9ced5"/><stop offset=".5" stop-color="#6d727a"/><stop offset=".62" stop-color="#f4f6f9"/><stop offset=".8" stop-color="#b4b9c0"/><stop offset="1" stop-color="#eef0f3"/></linearGradient></defs>
-        <text x="500" y="128" text-anchor="middle" textLength="900" lengthAdjust="spacingAndGlyphs" fill="url(#pgChrome)">Partyspiele</text></svg></button>
+      <svg viewBox="0 0 1000 170" aria-hidden="true"><defs><linearGradient id="pgChrome" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="40" y2="150">${METAL_STOPS}</linearGradient></defs>
+        <text x="500" y="122" text-anchor="middle" textLength="880" lengthAdjust="spacing" fill="url(#pgChrome)" filter="url(#mtlF)">Partyspiele</text></svg></button>
   </main>`;
 }
