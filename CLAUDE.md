@@ -542,3 +542,4 @@ Offen: E-Mail-Bestätigung.
 - Logo-Schriftzug „DARTVADER“ (`crestLine`): Silber-Metall wie der Stern – kräftigerer Schnitt, Chrom-Verlauf mit harten Wechseln (wandert langsam), Fase/Glanz über den Stern-Filter.
 - Überblick: Top 10 Checkouts, Auffällig und High Finish erst nach Knopf **Mehr** (`ui.ovMore`, Aktion `ovMore`, „Weniger“ klappt zu).
 - **Design 2 · Neon** (Einstellungen › Design, `prefs.neon`, `html.theme-neon`, Standard Design 1 bleibt): Bordeaux per `hue-rotate(150deg)` auf .page/.game/.tabs/.sheet … → Neongrün, Silber/Weiß bleiben; Leuchten in diesem Block vor der Drehung ROT angeben (wird grün). Filter nie auf #app (fixe Elemente).
+- Logo-Stern: linke/rechte Spitze leicht nach unten gekippt (`chromeStarPath(…, w, tilt)`, tilt 9 von 46) – wirkt wie ein gebogenes Triple-Feld; Icons neu erzeugt (`?v=t1`).

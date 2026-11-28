@@ -15,13 +15,13 @@ const grad = (t) => {
 };
 
 /** Stern als Polygon (wie chromeStarPath: kubische Kurven mit konkaven Flanken) */
-function starPoly(cx, cy, up, right, down, left, w = 0.16) {
+function starPoly(cx, cy, up, right, down, left, w = 0.16, tilt = 0) {
   const k = (a, b) => Math.min(a, b) * w;
   const segs = [
-    [[0, -up], [k(up, right) * 0.25, -k(up, right) * 1.2], [k(up, right) * 1.2, -k(up, right) * 0.25], [right, 0]],
-    [[right, 0], [k(down, right) * 1.2, k(down, right) * 0.25], [k(down, right) * 0.25, k(down, right) * 1.2], [0, down]],
-    [[0, down], [-k(down, left) * 0.25, k(down, left) * 1.2], [-k(down, left) * 1.2, k(down, left) * 0.25], [-left, 0]],
-    [[-left, 0], [-k(up, left) * 1.2, -k(up, left) * 0.25], [-k(up, left) * 0.25, -k(up, left) * 1.2], [0, -up]],
+    [[0, -up], [k(up, right) * 0.25, -k(up, right) * 1.2], [k(up, right) * 1.2, -k(up, right) * 0.25], [right, tilt]],
+    [[right, tilt], [k(down, right) * 1.2, k(down, right) * 0.25], [k(down, right) * 0.25, k(down, right) * 1.2], [0, down]],
+    [[0, down], [-k(down, left) * 0.25, k(down, left) * 1.2], [-k(down, left) * 1.2, k(down, left) * 0.25], [-left, tilt]],
+    [[-left, tilt], [-k(up, left) * 1.2, -k(up, left) * 0.25], [-k(up, left) * 0.25, -k(up, left) * 1.2], [0, -up]],
   ];
   const pts = [];
   for (const [p0, p1, p2, p3] of segs) for (let i = 0; i < 64; i++) {
@@ -51,7 +51,7 @@ const distTo = (pts, x, y) => {
 
 function render(S) {
   const c = S / 2, up = S * 0.33, side = up;
-  const pts = starPoly(c, c, up, side, up, side);
+  const pts = starPoly(c, c, up, side, up, side, 0.16, up * 9 / 46);
   const px = Buffer.alloc(S * S * 3);
   const glowR = S * 0.075;
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
@@ -96,6 +96,6 @@ writeFileSync('dartvader-512.png', render(512));
   h[6] = 64; h[7] = 64; h[8] = 0; h[9] = 0; h.writeUInt16LE(1, 10); h.writeUInt16LE(32, 12); h.writeUInt32LE(p.length, 14); h.writeUInt32LE(22, 18);
   writeFileSync('favicon.ico', Buffer.concat([h, p])); }
 // Favicon als SVG (gleiche Form)
-const pts = starPoly(32, 32, 22, 22, 22, 22);
+const pts = starPoly(32, 32, 22, 22, 22, 22, 0.16, 22 * 9 / 46);
 writeFileSync('dartvader.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="rgb(${c.join(',')})"/>`).join('')}</linearGradient></defs><defs><radialGradient id="h"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#0a0a0c"/><circle cx="32" cy="32" r="26" fill="url(#h)"/><path d="M${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join('L')}Z" fill="url(#g)" stroke="#fff" stroke-width=".6"/></svg>\n`);
 console.log('dartvader-180.png, dartvader-512.png, dartvader.svg, favicon.ico geschrieben');

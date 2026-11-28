@@ -164,7 +164,7 @@ let lineN = 0;
     darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
   const w = opts.size || 200, g = `ti${++starN}`;
-  const d = chromeStarPath(100, 58, 46, 46, 46, 46); // alle vier Arme gleich weit von der Mitte
+  const d = chromeStarPath(100, 58, 46, 46, 46, 46, 0.16, 9); // alle vier Arme gleich lang, links/rechts leicht nach unten gekippt (wie ein Triple-Feld)
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
     <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
     <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -409,12 +409,13 @@ export const fuse = (inset = 6, secs = 24, rx = 3) => {
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 /** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
 /** Lang gezogener 4-Zack-Stern aus Chrom/Glas (konkave Flanken, spitze Enden) */
-export function chromeStarPath(cx, cy, up, right, down, left, w = 0.16) {
+/** tilt: linke/rechte Spitze so weit nach unten gekippt (Logo: leicht, wie ein gebogenes Triple-Feld) */
+export function chromeStarPath(cx, cy, up, right, down, left, w = 0.16, tilt = 0) {
   const P = (x, y) => `${r2(cx + x)} ${r2(cy + y)}`;
   const k = (a, b) => Math.min(a, b) * w;
-  return `M${P(0, -up)} C${P(k(up, right) * .25, -k(up, right) * 1.2)} ${P(k(up, right) * 1.2, -k(up, right) * .25)} ${P(right, 0)}`
+  return `M${P(0, -up)} C${P(k(up, right) * .25, -k(up, right) * 1.2)} ${P(k(up, right) * 1.2, -k(up, right) * .25)} ${P(right, tilt)}`
     + ` C${P(k(down, right) * 1.2, k(down, right) * .25)} ${P(k(down, right) * .25, k(down, right) * 1.2)} ${P(0, down)}`
-    + ` C${P(-k(down, left) * .25, k(down, left) * 1.2)} ${P(-k(down, left) * 1.2, k(down, left) * .25)} ${P(-left, 0)}`
+    + ` C${P(-k(down, left) * .25, k(down, left) * 1.2)} ${P(-k(down, left) * 1.2, k(down, left) * .25)} ${P(-left, tilt)}`
     + ` C${P(-k(up, left) * 1.2, -k(up, left) * .25)} ${P(-k(up, left) * .25, -k(up, left) * 1.2)} ${P(0, -up)}Z`;
 }
 let starN = 0;
