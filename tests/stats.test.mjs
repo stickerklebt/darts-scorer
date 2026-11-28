@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createMatch } from '../js/match.js';
 import * as X from '../js/x01.js';
-import { overview, doubleAttempts, matchesOf, legDetail, doubleMisses, finishOdds } from '../js/stats.js';
+import { overview, doubleAttempts, matchesOf, legDetail, doubleMisses, finishOdds, isSetUp } from '../js/stats.js';
 
 const dart = (m, n, mult) => X.throwDart(m, n, mult);
 
@@ -244,4 +244,11 @@ test('Break, zuerst im Finish, Comeback, Triple im Finish, Versuche bis zum Dopp
   dart(n, 16, 1); dart(n, 8, 1); dart(n, 4, 2);             // D16 1×, D8 1×, D4 getroffen beim 1. Versuch
   assert.deepEqual(doubleTriesToHit([n], 'a', 'D4'), [1]);
   assert.deepEqual(doubleTriesToHit([n], 'a', 'D16'), []);
+});
+
+test('Doppel gestellt: nach Dart 1 oder 2 steht ein Doppel (2–40 gerade oder Bull)', () => {
+  assert.equal(isSetUp({ before: 100, n: 20, m: 3 }), true);   // 100 − 60 = 40
+  assert.equal(isSetUp({ before: 81, n: 1, m: 1 }), false);    // 80 bleibt
+  assert.equal(isSetUp({ before: 75, n: 25, m: 1 }), true);    // 50 = Bull
+  assert.equal(isSetUp({ before: 61, n: 20, m: 1 }), false);   // 41 ungerade
 });

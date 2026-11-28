@@ -75,6 +75,12 @@ export function overview(matches, pid, period = 'all', now = Date.now()) {
 /* ---------------- Vollständige Statistik eines Profils ---------------- */
 export const BUCKETS = [['0–19', 0, 19], ['20–39', 20, 39], ['40–59', 40, 59], ['60–79', 60, 79], ['80–99', 80, 99], ['100–139', 100, 139], ['140–179', 140, 179], ['180', 180, 180]];
 // Checkout-Quote nach Rest in 20er-Schritten (bis 40 zusammen, oben 161–170)
+/** Steht nach diesem Dart ein Doppel (2–40 gerade oder Bull)? before = Rest vor dem Dart */
+export function isSetUp(th) {
+  if (!th || th.before == null || th.x) return false;
+  const after = th.before - th.n * th.m;
+  return after === 50 || (after >= 2 && after <= 40 && after % 2 === 0);
+}
 export const RANGES = [['2–40', 2, 40], ['41–60', 41, 60], ['61–80', 61, 80], ['81–100', 81, 100], ['101–120', 101, 120], ['121–140', 121, 140], ['141–160', 141, 160], ['161–170', 161, 170]];
 const when = (m) => m.endedAt ?? m.startedAt;
 const byScoreThenDate = (a, b) => b.score - a.score || b.date - a.date;
@@ -94,6 +100,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   const counts = { t180: 0, t140: 0, t100: 0, t60: 0 };
   const buckets = BUCKETS.map(() => 0);
   const ranges = RANGES.map(() => ({ chances: 0, hits: 0 }));
+  const setup = { tries: 0, hits: 0 };
   const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [], spots = {}; // spots: genaue Trefferstellen im Doppel (throw.spot)
   let bestLegRef = null, bestAvgRef = null, t180Ref = null; // t180Ref: die letzte 180 (Karte „180er“ antippen → Match)
 
@@ -129,6 +136,8 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
           const last = t.throws?.[t.throws.length - 1];
           if (last) { const k = label(last); favourite[k] = (favourite[k] || 0) + 1; if (last.spot) (spots[k] ||= []).push(last.spot); }
         }
+        // Doppel stellen: Aufnahme ab 61 Rest (checkbar) – bleibt nach dem 1. oder 2. Dart ein Doppel stehen (2–40 gerade oder 50)?
+        if (m.opts.out === 'double' && t.startRem >= 61 && route(t.startRem, 3) && t.throws?.length) setup.tries++, setup.hits += t.throws.slice(0, 2).some((th) => isSetUp(th)) ? 1 : 0;
         if (m.opts.out === 'double' && route(t.startRem, 3)) {
           const ri = RANGES.findIndex(([, lo, hi]) => t.startRem >= lo && t.startRem <= hi);
           ranges[ri].chances++; if (t.out) ranges[ri].hits++;
@@ -153,6 +162,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     legsWon, legsTotal, darts, points: pts, turns,
     top5: top.sort(byScoreThenDate).slice(0, 5), counts, perTurn: turns ? pts / turns : null, bustRate: turns ? busts / turns : null,
     highestCo: cos.length ? Math.max(...cos.map((c) => c.score)) : null, topCo: cos.slice().sort(byScoreThenDate).slice(0, 10),
+    setup: { ...setup, rate: setup.tries ? setup.hits / setup.tries : null },
     doubles, ranges: RANGES.map(([name], i) => ({ name, ...ranges[i], rate: ranges[i].chances ? ranges[i].hits / ranges[i].chances : null })),
     favourite: fav ? { field: fav[0], count: fav[1] } : null,
     dartsPerCheckout: doubles.hits ? doubles.attempts / doubles.hits : null,

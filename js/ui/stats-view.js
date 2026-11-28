@@ -80,6 +80,7 @@ function overviewTab(st, pid) {
     ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
     ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
     ...st.ranges.map((r) => [`Quote Rest ${r.name}`, pct(r.rate), rv(`${r.hits}/${r.chances} gecheckt`)]),
+    ['Doppel gestellt', pct(st.setup.rate), rv(`${st.setup.hits}/${st.setup.tries} Aufnahmen ab 61 Rest – nach Dart 1 oder 2 stand ein Doppel`)],
     ['Break', pct(fx.brk.rate), rv(`${fx.brk.hits}/${fx.brk.tries} gebreakt`)],
     ['Zuerst im Finish', pct(fx.first.rate), rv(`${fx.first.hits}/${fx.first.tries} Legs geholt`)],
     ['Comeback', pct(fx.comeback.rate), rv(`${fx.comeback.hits}/${fx.comeback.tries} Legs geholt`)],
