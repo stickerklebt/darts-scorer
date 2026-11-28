@@ -528,3 +528,5 @@ Offen: E-Mail-Bestätigung.
   Darunter EIN breiter Kasten `.party-big` mit dem Wort „Partyspiele“ (füllt den Kasten, SVG `textLength`) → öffnet `partyBrowse`. Dort oben die eigenen Spiele (antippen = spielen,
   Stift oben rechts = entfernen), silberner Strich `.pb-sep`, darunter alle zum Hinzufügen. Reiter-Leiste ganz ohne Symbole.
 - Statistik › Scoring: „Average gesamt“ (bzw. First 9) ist kumuliert wie die Doppelquote – Gesamt-Average nach jedem Match (`cumulativeAvg`, Series hat dafür `pts/darts/p9/d9`). Partyspiele-Kasten fast schwarz.
+- **Single Out nur im X01-Modus** (28.11.2026): Die 501-Karte spielt immer Double Out (Setup zeigt keinen Check-Out-Schalter, beim Start erzwungen). Single Out gibt es nur im X01-Modus der Partyspiele;
+  Hinweis in „Mehr Optionen“: „Double In? Single Out? Oder X01?“. `modeKey` hängt `-so` an → Single-Out-Spiele zählen nie als 501, nur mit „Partyspiele mitzählen“ (auch alte 501-Single-Out-Spiele).

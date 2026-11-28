@@ -21,6 +21,7 @@ function mainOptions(id) {
     // 501 nur über die große Karte; die X01-Kachel wählt einen anderen Startwert
     if (ui.x01Var !== 'other' && o.start !== 501) o.start = 501; // große Karte: immer 501, nicht umstellbar
     if (ui.x01Var !== 'other' && o.in === 'double') o.in = 'single';
+    if (ui.x01Var !== 'other' && o.out !== 'double') o.out = 'double'; // 501 immer Double Out – Single Out nur im X01-Modus (Partyspiele)
     if (o.mode === 'sets' && o.target > 7) o.target = 7; // höchstens First to 7 Sets // Double In nur im X01-Modus (101 … 1001), nie bei der 501-Karte
     const start = ui.x01Var === 'other' ? optRow('Startpunkte', seg('opt', 'start', [[101, '101'], [301, '301'], [701, '701'], [1001, '1001']], o.start)) : '';
     // Drehrad: Legs 1–20, Sets 1–10
@@ -41,7 +42,7 @@ function mainOptions(id) {
 function moreOptions(id) {
   const o = S.opts[id], g = GAMES[id], L = S.lineup;
   const x01 = id === 'x01' ? (ui.x01Var === 'other' ? optRow('Check-In', seg('opt', 'in', [['single', 'Single In'], ['double', 'Double In']], o.in === 'double' ? 'double' : 'single')) : '')
-    + optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out)) : '';
+      + (ui.x01Var === 'other' ? optRow('Check-Out', seg('opt', 'out', [['double', 'Double Out'], ['single', 'Single Out']], o.out)) : '') : '';
   // Legs/Sets steht beim Aufklappen immer an zweiter Stelle
   const setMode = id === 'x01' ? optRow('Gespielt wird in', seg('opt', 'mode', [['legs', 'Legs'], ['sets', 'Sets']], o.mode)) : '';
   // Teams erst ab 2 Spielern (im Team spielen sie zusammen eine Punktzahl herunter) – vorher ausgegraut
@@ -60,8 +61,8 @@ function moreOptions(id) {
       ${id === 'x01' && o.mode === 'sets' ? `<p class="foot">Ein Set gewinnt, wer zuerst ${X.LEGS_PER_SET} Legs holt.</p>` : ''}
       <button class="btn dark shuffle" data-act="pshuffle" ${L.length < 2 ? 'disabled' : ''}>${icon('shuffle', 2.2, 18)} Reihenfolge mischen</button>
       ${id === 'x01' && ui.x01Var !== 'other' ? `<section class="rules x01-hint"><div class="rules-in">
-        <h2 class="display">Double In? Oder X01?</h2>
-        <p>Double In und die anderen Startwerte (101 · 301 · 701 · 1001) findest du auf Play unter „Partyspiele“ beim <b class="xh-plus">+</b>.</p>
+        <h2 class="display">Double In? Single Out? Oder X01?</h2>
+        <p>Double In, Single Out und die anderen Startwerte (101 · 301 · 701 · 1001) gibt es im Modus X01 – füge ihn auf Play unter „Partyspiele“ beim <b class="xh-plus">+</b> hinzu.</p>
         <button class="btn line xh-go" data-act="partyBrowse">${icon('plus', 2.2, 16)} Zu den Partyspielen</button>
       </div></section>` : `<section class="rules"><div class="rules-in">
         ${badge(id, 40)}<span class="overline">Die Spielregeln</span>

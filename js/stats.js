@@ -7,8 +7,9 @@ export const is501 = (m) => m.game === 'x01' && m.opts.start === 501 && m.done;
     mit Double In „-di“ (z. B. '301', '301-di'). Die Freundes-Statistik auf dem Server nutzt immer den Standard. */
 export const DEFAULT_MODES = ['501'];
 let MODES = DEFAULT_MODES;
-export const modeKey = (m) => (m.game === 'x01' ? `${m.opts.start}${m.opts.in === 'double' ? '-di' : ''}` : m.game);
-export const modeLabel = (k) => k.replace(/-di$/, ' · Double In');
+// Single Out zählt nie als 501 – eigener Modus (nur über „Partyspiele mitzählen“ in der Statistik)
+export const modeKey = (m) => (m.game === 'x01' ? `${m.opts.start}${m.opts.in === 'double' ? '-di' : ''}${m.opts.out === 'single' ? '-so' : ''}` : m.game);
+export const modeLabel = (k) => k.replace(/-so$/, ' · Single Out').replace(/-di/, ' · Double In');
 export function setStatsModes(list) { MODES = Array.isArray(list) && list.length ? list : DEFAULT_MODES; }
 export const statsModes = () => MODES;
 export const inStats = (m) => m.game === 'x01' && m.done && MODES.includes(modeKey(m));
