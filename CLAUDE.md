@@ -545,3 +545,4 @@ Offen: E-Mail-Bestätigung.
 - Logo-Stern: linke/rechte Spitze leicht nach unten gekippt (`chromeStarPath(…, w, tilt)`, tilt 9 von 46) – wirkt wie ein gebogenes Triple-Feld; Icons neu erzeugt (`?v=t1`).
 - **Design 2 neu (Rot + Grün)**: kein hue-rotate mehr – eigene Regeln am Ende von screens.css: Neon-Rot `--neoR` #ff2d55 und Neon-Grün `--neoG` #2dff8a, Anaglyph-Zahlen (rot links/grün rechts), Rot→Grün-Rahmen, Spieler 1 rot / 2 grün, Hauptknopf grün.
 - Logo wieder der symmetrische Chrom-Stern mit vier gleich langen Armen (`chromeStarPath(100, 58, 46, 46, 46, 46)`; Icons mit `starPoly`). `logoPoints`/`logoStarPath` (Triple-Feld-Versuche) sind ungenutzt.
+- Lange auf „Stats“: Fenster mit **Zeitraum** (Gesamt · Letztes Jahr · 30 Tage · 7 Tage) und Schalter **Partyspiele mitzählen**.

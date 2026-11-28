@@ -135,7 +135,11 @@ export function sheetView() {
   } else if (md.type === 'period') {
     // Lange auf „Stats“: nur noch ein Schalter – Partyspiele (X01-Varianten wie 301, 701, Double In) mit in die Statistik oder nicht
     const extra = availableModes(S.matches, S.mainId).filter((k) => k !== '501'), on = extra.some((k) => statsModes().includes(k));
+    const per = [['all', 'Gesamt', 'Alle gespeicherten Spiele'], ['1y', 'Letztes Jahr', ''], ['30d', 'Letzte 30 Tage', ''], ['7d', 'Letzte 7 Tage', '']];
     inner = `<h3>Statistik</h3>
+      <h3 class="sh-sub">Zeitraum</h3>
+      <div class="slist">${per.map(([v, l, sub]) => `<button class="srow" data-act="period" data-v="${v}"><span class="lbl">${l}${sub ? `<small>${sub}</small>` : ''}</span>${S.statsPeriod === v ? '<span class="val">✓</span>' : ''}</button>`).join('')}</div>
+      <h3 class="sh-sub">Partyspiele</h3>
       <div class="slist"><button class="srow" data-act="statsParty" ${extra.length ? '' : 'disabled'}><span class="lbl">Partyspiele mitzählen<small>${extra.length ? 'X01-Varianten aus den Partyspielen (z. B. 301, Double In) zusätzlich zu 501' : 'Noch keine X01-Partyspiele gespielt'}</small></span><span class="tog ${on ? 'on' : ''}"></span></button></div>
       <div class="sbtns"><button class="btn line" data-act="closeModal">Schließen</button></div>`;
   } else if (md.type === 'hist') {
