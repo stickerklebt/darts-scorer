@@ -164,7 +164,7 @@ let lineN = 0;
     darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
   const w = opts.size || 200, g = `ti${++starN}`;
-  const d = logoStarPath(100, 66, 1.25); // nach Skizze: kleiner Stern mit langen, gebogenen Flügeln (Triple-Feld)
+  const d = logoStarPath(100, 56, 1.25); // nach Skizze: gebogenes Feld mit spitzen Ecken (Triple-Feld)
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
     <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
     <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -185,8 +185,8 @@ export function crestLine(opts = {}) {
     <path d="${d}" fill="#fff" opacity=".55" filter="url(#${g}s)"/>
     <path d="${d}" fill="url(#${g}a)" filter="url(#${g}f)"/>
     <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
-    <circle class="brand-core" cx="100" cy="64" r="15" fill="url(#${g}c)"/>
-    <text x="104" y="134" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
+    <circle class="brand-core" cx="100" cy="62" r="15" fill="url(#${g}c)"/>
+    <text x="104" y="124" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
 }
 
 /* ---------- Ornamente ---------- */
@@ -408,26 +408,22 @@ export const fuse = (inset = 6, secs = 24, rx = 3) => {
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 /** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
 /** Lang gezogener 4-Zack-Stern aus Chrom/Glas (konkave Flanken, spitze Enden) */
-/** Logo (DartVader): ein Triple-Feld – Ringstück mit gleichmäßiger Dicke auf einem echten Kreisbogen (Mittelpunkt tief darunter),
-    Enden gerade zum Mittelpunkt hin abgeschnitten – und darauf ein kleiner Stern (kurze Spitze oben, etwas kürzere unten).
-    Ein einziger Umriss als Punktliste (Einheiten: halbe Breite ≈ 68); dieselbe Form nutzt tools/mkstar-icon.mjs. */
+/** Logo (DartVader, nach Skizze): gebogenes Feld wie ein Triple-Feld – Oberkante und Unterkante als Kreisbögen (gleicher Mittelpunkt tief darunter),
+    die Seiten nach innen geschwungen, alle vier Ecken spitz: oben weit nach außen, unten als „Füße“ weiter innen.
+    Ein Umriss als Punktliste (Einheiten: halbe Breite ≈ 74); dieselbe Form nutzt tools/mkstar-icon.mjs. */
 export function logoPoints() {
-  const R = 110, t = 10, rU = R + t / 2, rL = R - t / 2, A = 37, sU = 4.2, sL = 3.6;
+  const R = 86, rU = 96, rL = 72, A = 49, B = 35;
   const arc = (r, a) => [r * Math.sin((a * Math.PI) / 180), R - r * Math.cos((a * Math.PI) / 180)];
   const pts = [];
-  const curve = (p0, c, p1, n = 14) => { for (let i = 1; i <= n; i++) { const u = i / n, v = 1 - u; pts.push([v * v * p0[0] + 2 * v * u * c[0] + u * u * p1[0], v * v * p0[1] + 2 * v * u * c[1] + u * u * p1[1]]); } };
-  const sweep = (r, a0, a1, n = 40) => { for (let i = 1; i <= n; i++) pts.push(arc(r, a0 + ((a1 - a0) * i) / n)); };
-  const top = [0, -28], bot = [0, 20];
-  pts.push(top);
-  const uR = arc(rU, sU); curve(top, [uR[0] * 0.12, uR[1] - 3], uR);           // obere Spitze, rechte Flanke (nach innen gewölbt)
-  sweep(rU, sU, A);                                                         // Oberkante des Feldes nach rechts
-  pts.push(arc(rL, A));                                                     // gerader Schnitt am rechten Ende
-  const lR = arc(rL, sL); sweep(rL, A, sL);                                 // Unterkante zurück
-  curve(lR, [lR[0] * 0.12, lR[1] + 3], bot);                                // untere Spitze
-  const lL = arc(rL, -sL); curve(bot, [lL[0] * 0.12, lL[1] + 3], lL);
-  sweep(rL, -sL, -A); pts.push(arc(rU, -A));                                // Unterkante nach links, Schnitt
-  const uL = arc(rU, -sU); sweep(rU, -A, -sU);
-  curve(uL, [uL[0] * 0.12, uL[1] - 3], top, 13);
+  const sweep = (r, a0, a1, n = 48) => { for (let i = 0; i <= n; i++) pts.push(arc(r, a0 + ((a1 - a0) * i) / n)); };
+  const curve = (p0, c, p1, n = 18) => { for (let i = 1; i < n; i++) { const u = i / n, v = 1 - u; pts.push([v * v * p0[0] + 2 * v * u * c[0] + u * u * p1[0], v * v * p0[1] + 2 * v * u * c[1] + u * u * p1[1]]); } };
+  const tR = arc(rU, A), fR = arc(rL, B), tL = arc(rU, -A), fL = arc(rL, -B);
+  // Seite nach innen geschwungen: Kontrollpunkt deutlich zur Mitte hin gezogen
+  const inner = (t, f) => [(t[0] + f[0]) / 2 - Math.sign(t[0]) * 16, (t[1] + f[1]) / 2 - 4];
+  sweep(rU, -A, A);              // Oberkante links → rechts (Ecken spitz)
+  curve(tR, inner(tR, fR), fR);  // rechte Seite nach innen geschwungen zum Fuß
+  sweep(rL, B, -B);              // Unterkante rechts → links
+  curve(fL, inner(tL, fL), tL);  // linke Seite hoch zur oberen Ecke
   return pts;
 }
 export function logoStarPath(cx, cy, k = 1) {
