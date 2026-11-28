@@ -4140,24 +4140,51 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .ov-more-btn svg { transition: transform .25s; transform: rotate(90deg); }
 .ov-more-btn.on svg { transform: rotate(-90deg); }
 
-/* ================= DESIGN 2 · NEON (Einstellungen › Design 2, `prefs.neon`, html.theme-neon; Standard bleibt Design 1) =================
-   Bordeaux wird per Farbdrehung zu Neongrün (hue-rotate auf die Bereiche, nicht auf #app – sonst verlieren fixe Elemente ihren Bezug).
-   Silber, Weiß und Schwarz haben keinen Farbton und bleiben genau so. Dazu grünes Leuchten an Rahmen, Strichen und Zahlen. */
-html.theme-neon { background: #030805 !important; }
-html.theme-neon body { background: radial-gradient(90% 50% at 50% 110%, rgba(20,255,120,.07), transparent 70%) fixed, #030805 !important; }
-html.theme-neon .page, html.theme-neon .game, html.theme-neon .tabs, html.theme-neon .subpop, html.theme-neon .sheet, html.theme-neon .bar,
-html.theme-neon .dock, html.theme-neon .dspot-ask, html.theme-neon .splash, html.theme-neon .stage, html.theme-neon .loupe, html.theme-neon .toast {
-  filter: hue-rotate(150deg) saturate(1.7) brightness(1.06); }
-/* Neon-Leuchten (vor der Drehung rot angegeben → erscheint grün) */
-html.theme-neon .silk-hero, html.theme-neon .party-big { box-shadow: 0 0 0 .5px rgba(0,0,0,.8), 0 0 22px rgba(255,40,90,.45), 0 0 60px rgba(255,40,90,.18), 0 14px 34px rgba(0,0,0,.5) !important; }
-html.theme-neon .tabs, html.theme-neon .subpop { box-shadow: 0 0 18px rgba(255,40,90,.35), 0 14px 34px rgba(0,0,0,.55) !important; }
+
+/* ================= DESIGN 2 · NEON ROT/GRÜN (Einstellungen › Design 2, `prefs.neon`, html.theme-neon; Design 1 bleibt Standard) =================
+   Zwei Zweitfarben im Komplementär-Kontrast: Neon-Rot (#ff2d55) und Neon-Grün (#2dff8a), dazu Silber/Weiß. Techniken:
+   · Anaglyph-Druck: große Zahlen mit rotem Versatz links, grünem rechts + Glühen (wie 3D-Plakate)
+   · Neon-Glühen (mehrere weiche Schatten) an aktiven Dingen, Duotone-Verläufe Rot → Grün
+   · umlaufende Rahmen Rot · Silber · Grün · Spieler 1 rot, Spieler 2 grün – man sieht sofort, wer dran ist
+   Gut lesbar: Text fast weiß, aktive Elemente hell und groß, inaktive klar gedämpft. */
+html.theme-neon { --neoR: #ff2d55; --neoG: #2dff8a; background: #040605 !important; }
+html.theme-neon body { background: radial-gradient(80% 45% at 0% 100%, rgba(255,45,85,.09), transparent 70%) fixed, radial-gradient(80% 45% at 100% 100%, rgba(45,255,138,.08), transparent 70%) fixed, #040605 !important; }
+/* Überschriften grün leuchtend, Kartentitel hell */
+html.theme-neon .label, html.theme-neon .bar-title { color: var(--neoG) !important; -webkit-text-fill-color: var(--neoG) !important; background: none !important; text-shadow: 0 0 6px rgba(45,255,138,.8), 0 0 18px rgba(45,255,138,.35) !important; }
+html.theme-neon .kv-c small, html.theme-neon .hero-stat > small, html.theme-neon .record small { color: #f4f6f8 !important; -webkit-text-fill-color: #f4f6f8 !important; }
+/* Große Zahlen: Anaglyph (rot links, grün rechts) + Glühen */
+html.theme-neon .hero-stat b, html.theme-neon .record b, html.theme-neon .pop, html.theme-neon .kv-c.hot b {
+  color: #fff !important; text-shadow: -3px 0 0 rgba(255,45,85,.95), 3px 0 0 rgba(45,255,138,.95), 0 0 22px rgba(255,255,255,.35), 0 0 46px rgba(45,255,138,.3) !important; }
+html.theme-neon .kv-c b { color: #fff !important; text-shadow: -1.5px 0 0 rgba(255,45,85,.8), 1.5px 0 0 rgba(45,255,138,.8) !important; }
+/* Karten: dunkel, Rand mit Rot→Grün-Verlauf, leichtes Glühen */
+html.theme-neon .kv-c, html.theme-neon .hero-stat, html.theme-neon .record, html.theme-neon .rlist, html.theme-neon .chart {
+  border: 1px solid transparent !important; background: linear-gradient(#0a0c0b, #0a0c0b) padding-box, linear-gradient(135deg, var(--neoR), rgba(255,255,255,.35) 50%, var(--neoG)) border-box !important;
+  box-shadow: 0 0 16px rgba(45,255,138,.12), 0 0 16px rgba(255,45,85,.1) !important; }
+html.theme-neon .kv-c.hot { box-shadow: 0 0 20px rgba(255,45,85,.45) !important; }
+/* Reiter: aktiver Strich Rot → Grün, aktives Wort weiß mit grünem Glühen */
 html.theme-neon .tabs .tab.on > span::after, html.theme-neon .subpop .subtabs.three .sub-line::before {
-  background: linear-gradient(90deg, rgba(255,40,90,0), #ff2a5f 18%, #ff9fb4 50%, #ff2a5f 82%, rgba(255,40,90,0)) !important;
-  box-shadow: 0 0 6px #ff2a5f, 0 0 16px rgba(255,40,90,.9), 0 0 30px rgba(255,40,90,.5) !important; }
-html.theme-neon .tabs .tab.on > span { text-shadow: 0 0 8px rgba(255,60,100,.9), 0 0 18px rgba(255,40,90,.6) !important; }
-html.theme-neon .kv-c, html.theme-neon .hero-stat, html.theme-neon .record, html.theme-neon .rlist { box-shadow: 0 0 0 1px rgba(255,60,100,.35), 0 0 16px rgba(255,40,90,.22), 0 8px 22px rgba(0,0,0,.35) !important; }
-html.theme-neon .hero-stat b, html.theme-neon .record b, html.theme-neon .kv-c.hot b {
-  text-shadow: 0 0 2px #fff, 2px 2px 0 #ff2a5f, 4px 4px 0 #a3203d, 0 0 18px rgba(255,40,90,.85), 0 0 40px rgba(255,40,90,.45) !important; }
-html.theme-neon .label, html.theme-neon .bar-title { text-shadow: 0 0 8px rgba(255,60,100,.7) !important; }
-html.theme-neon .btn.red, html.theme-neon .start-go { box-shadow: 0 0 14px rgba(255,40,90,.6), 0 0 34px rgba(255,40,90,.25) !important; }
-html.theme-neon .game:not(.botturn) .duo .sbp.on { box-shadow: 0 0 0 1px rgba(255,80,120,.8), 0 0 20px rgba(255,40,90,.55), 0 0 44px rgba(255,40,90,.25) !important; }
+  background: linear-gradient(90deg, rgba(255,45,85,0), var(--neoR) 15%, #fff 50%, var(--neoG) 85%, rgba(45,255,138,0)) !important; box-shadow: 0 0 6px var(--neoG), 0 0 16px rgba(45,255,138,.6) !important; }
+html.theme-neon .tabs .tab.on > span { color: #fff !important; text-shadow: 0 0 6px #fff, 0 0 14px var(--neoG), 0 0 28px rgba(45,255,138,.5) !important; }
+html.theme-neon .tabs, html.theme-neon .subpop { box-shadow: 0 0 0 1px rgba(45,255,138,.35), 0 0 22px rgba(45,255,138,.2), 0 14px 34px rgba(0,0,0,.6) !important; }
+/* Start: 501-Kachel und Partyspiele mit umlaufendem Rand Rot · Silber · Grün */
+html.theme-neon .silk-hero { background: linear-gradient(#030403, #030403) padding-box, conic-gradient(from var(--bmA), var(--neoR) 0deg, #ffffff 60deg, var(--neoG) 120deg, #0a0c0b 180deg, var(--neoR) 240deg, #ffffff 300deg, var(--neoR) 360deg) border-box !important;
+  box-shadow: 0 0 22px rgba(45,255,138,.25), 0 0 40px rgba(255,45,85,.15) !important; }
+html.theme-neon .party-big::before { background: conic-gradient(from var(--bmA), var(--neoG) 0deg, #ffffff 60deg, var(--neoR) 120deg, #0a0c0b 180deg, var(--neoG) 240deg, #ffffff 300deg, var(--neoG) 360deg) !important; }
+html.theme-neon .party-big { box-shadow: 0 0 22px rgba(255,45,85,.22), 0 0 40px rgba(45,255,138,.12) !important; }
+/* Knöpfe: Hauptknopf grün (Los!), Gefahr rot */
+html.theme-neon .btn.red { background: linear-gradient(180deg, #4dffa0, #16c46b) !important; color: #031208 !important; text-shadow: none !important; box-shadow: 0 0 16px rgba(45,255,138,.55) !important; border-color: transparent !important; }
+html.theme-neon .start-go .sg-t { color: #fff !important; text-shadow: 0 0 8px var(--neoG), 0 0 20px rgba(45,255,138,.6) !important; animation: none !important; }
+html.theme-neon .start-go { box-shadow: 0 0 0 1px rgba(45,255,138,.6), 0 0 24px rgba(45,255,138,.35) !important; }
+/* Setup: Spieler 1 rot, 2 grün, 3 gold */
+html.theme-neon .prow .pc.pglow.c1 { --pg1: rgba(45,255,138,.95); --pg2: rgba(22,196,107,.9); --pg3: rgba(10,120,60,.7); color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,.7) !important; }
+html.theme-neon .prow .pc.pglow.c0 { --pg1: rgba(255,45,85,.98); }
+/* Spiel: Spieler 1 rot, Spieler 2 grün; wer dran ist, leuchtet kräftig */
+html.theme-neon .game .duo .sbp { --t1: rgba(255,45,85,.45); --t2: rgba(255,45,85,.15); --t3: rgba(140,10,40,.4); }
+html.theme-neon .game .duo .sbp:nth-child(2) { --t1: rgba(45,255,138,.38); --t2: rgba(45,255,138,.12); --t3: rgba(10,120,60,.4); }
+html.theme-neon .game:not(.botturn) .duo .sbp.on { --t1: rgba(255,45,85,.75); box-shadow: 0 0 0 1.5px var(--neoR), 0 0 26px rgba(255,45,85,.55) !important; }
+html.theme-neon .game:not(.botturn) .duo .sbp.on:nth-child(2) { --t1: rgba(45,255,138,.6); box-shadow: 0 0 0 1.5px var(--neoG), 0 0 26px rgba(45,255,138,.5) !important; }
+html.theme-neon .game .sbp.on .sbp-rem > span { filter: drop-shadow(-2px 0 0 rgba(255,45,85,.9)) drop-shadow(2px 0 0 rgba(45,255,138,.9)) drop-shadow(0 0 14px rgba(255,255,255,.4)) !important; }
+html.theme-neon .game .pips i.w, html.theme-neon .game .sp-sets i.w { box-shadow: 0 0 10px var(--neoG), 0 0 18px rgba(45,255,138,.5) !important; }
+html.theme-neon .key.ok, html.theme-neon .dk.ok { background: #16c46b !important; color: #031208 !important; }
+/* Partyspiel-Kacheln: rotes Randlicht wird abwechselnd grün */
+html.theme-neon .pb-card:nth-child(2n) .mode-ring { filter: hue-rotate(150deg) drop-shadow(0 0 4px rgba(45,255,138,.9)); }
