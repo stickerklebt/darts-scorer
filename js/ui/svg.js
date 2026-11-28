@@ -164,7 +164,7 @@ let lineN = 0;
     darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
   const w = opts.size || 200, g = `ti${++starN}`;
-  const d = logoStarPath(100, 56, 1.25); // nach Skizze: gebogenes Feld mit spitzen Ecken (Triple-Feld)
+  const d = chromeStarPath(100, 58, 46, 46, 46, 46); // symmetrischer Stern: alle vier Arme gleich lang
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
     <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
     <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -185,8 +185,8 @@ export function crestLine(opts = {}) {
     <path d="${d}" fill="#fff" opacity=".55" filter="url(#${g}s)"/>
     <path d="${d}" fill="url(#${g}a)" filter="url(#${g}f)"/>
     <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
-    <circle class="brand-core" cx="100" cy="62" r="15" fill="url(#${g}c)"/>
-    <text x="104" y="124" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
+    <circle class="brand-core" cx="100" cy="58" r="22" fill="url(#${g}c)"/>
+    <text x="104" y="134" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
 }
 
 /* ---------- Ornamente ---------- */
