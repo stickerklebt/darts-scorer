@@ -4210,3 +4210,8 @@ body .tabs .tab.noic { --ls: .16em; gap: 0 !important; }
 body .tabs .tab.noic > span { margin: 0 !important; padding-left: var(--ls); }
 body .tabs .tab.noic.on > span::after { left: var(--ls) !important; right: var(--ls) !important; transform-origin: 50% 50% !important; }
 body .tabs .tab.noic.on > span::before { left: -14px !important; right: -14px !important; }
+/* Haupt-Reiter noch näher zusammen: Leiste schmaler, Reiter nur so breit wie nötig */
+body .tabs { width: auto !important; min-width: 0; padding: 0 10px !important; }
+body .tabs .tabs-in { display: flex !important; justify-content: center; gap: 4px; }
+body .tabs .tab { flex: 0 0 auto; padding: 0 16px; }
+@media (max-width: 440px) { body .tabs .tab { padding: 0 13px; } }
