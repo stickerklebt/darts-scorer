@@ -3,6 +3,18 @@
    Aufruf: node tools/mkstar-icon.mjs  → dartvader-180.png, dartvader-512.png, dartvader.svg, favicon.ico */
 import { writeFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
+import { logoStarSegs } from '../js/ui/svg.js';
+
+/** Logo-Form aus svg.js (logoStarSegs) abtasten, skaliert (Arm-Einheiten → Pixel) */
+function logoPoly(cx, cy, scale) {
+  const pts = [];
+  for (const [p0, p1, p2, p3] of logoStarSegs()) for (let i = 0; i < 64; i++) {
+    const t = i / 64, u = 1 - t;
+    const f = (k) => u * u * u * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t * t * t * p3[k];
+    pts.push([cx + f(0) * scale, cy + f(1) * scale]);
+  }
+  return pts;
+}
 
 const BG = [10, 10, 12];
 // Chrom-Verlauf diagonal (wie chromeStar in svg.js)
@@ -51,7 +63,7 @@ const distTo = (pts, x, y) => {
 
 function render(S) {
   const c = S / 2, up = S * 0.33, side = up;
-  const pts = starPoly(c, c, up, side, up, side, 0.16, up * 9 / 46);
+  const pts = logoPoly(c, c + S * 0.04, (S * 0.36) / 46);
   const px = Buffer.alloc(S * S * 3);
   const glowR = S * 0.075;
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
@@ -96,6 +108,6 @@ writeFileSync('dartvader-512.png', render(512));
   h[6] = 64; h[7] = 64; h[8] = 0; h[9] = 0; h.writeUInt16LE(1, 10); h.writeUInt16LE(32, 12); h.writeUInt32LE(p.length, 14); h.writeUInt32LE(22, 18);
   writeFileSync('favicon.ico', Buffer.concat([h, p])); }
 // Favicon als SVG (gleiche Form)
-const pts = starPoly(32, 32, 22, 22, 22, 22, 0.16, 22 * 9 / 46);
+const pts = logoPoly(32, 33.5, 24 / 46);
 writeFileSync('dartvader.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="rgb(${c.join(',')})"/>`).join('')}</linearGradient></defs><defs><radialGradient id="h"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#0a0a0c"/><circle cx="32" cy="32" r="26" fill="url(#h)"/><path d="M${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join('L')}Z" fill="url(#g)" stroke="#fff" stroke-width=".6"/></svg>\n`);
 console.log('dartvader-180.png, dartvader-512.png, dartvader.svg, favicon.ico geschrieben');

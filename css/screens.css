@@ -4188,3 +4188,17 @@ html.theme-neon .game .pips i.w, html.theme-neon .game .sp-sets i.w { box-shadow
 html.theme-neon .key.ok, html.theme-neon .dk.ok { background: #16c46b !important; color: #031208 !important; }
 /* Partyspiel-Kacheln: rotes Randlicht wird abwechselnd grün */
 html.theme-neon .pb-card:nth-child(2n) .mode-ring { filter: hue-rotate(150deg) drop-shadow(0 0 4px rgba(45,255,138,.9)); }
+/* Design 2 – Feinschliff: viel Weiß (Rahmen, Text, Leuchten), Rot und Grün nur als Zweitfarben; Hintergrund einfarbig ohne Verlauf */
+html.theme-neon, html.theme-neon body { background: #050606 !important; background-image: none !important; }
+html.theme-neon .kv-c, html.theme-neon .hero-stat, html.theme-neon .record, html.theme-neon .rlist, html.theme-neon .chart {
+  background: #0b0c0c !important; background-image: none !important; border: 1.5px solid rgba(255,255,255,.85) !important;
+  box-shadow: 0 0 12px rgba(255,255,255,.22), inset 0 0 0 1px rgba(0,0,0,.6) !important; }
+html.theme-neon .kv-c.hot { border-color: var(--neoR) !important; box-shadow: 0 0 14px rgba(255,45,85,.5) !important; }
+html.theme-neon .label, html.theme-neon .bar-title { color: #fff !important; -webkit-text-fill-color: #fff !important; text-shadow: 0 0 8px rgba(255,255,255,.7) !important; }
+html.theme-neon .label::after { background: linear-gradient(90deg, var(--neoR), var(--neoG)) !important; height: 2px !important; opacity: 1 !important; }
+html.theme-neon .tabs, html.theme-neon .subpop { background: #0b0c0c !important; border: 1.5px solid rgba(255,255,255,.9) !important; box-shadow: 0 0 16px rgba(255,255,255,.25), 0 14px 34px rgba(0,0,0,.6) !important; }
+html.theme-neon .tabs .tab > span, html.theme-neon .tabs .tab { color: #fff !important; }
+html.theme-neon .silk-hero { box-shadow: 0 0 22px rgba(255,255,255,.3) !important; }
+html.theme-neon .party-big { background: #050606 !important; box-shadow: 0 0 22px rgba(255,255,255,.25) !important; }
+html.theme-neon .game .sbp { border-color: rgba(255,255,255,.85) !important; }
+html.theme-neon .sheet { border-color: rgba(255,255,255,.85) !important; }
