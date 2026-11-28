@@ -524,3 +524,6 @@ Offen: E-Mail-Bestätigung.
 - **Update 28.11.2026**: App-Icons heißen jetzt `dartvader-180.png`, `dartvader-512.png`, `dartvader.svg` (+ `favicon.ico`) – neue Namen, damit Safari das alte Tab-Symbol nicht weiter aus dem Cache nimmt.
   Doppel-Abfrage: Feld 40 % kleiner, gedrückt halten → DartVader-Stern folgt dem Finger (`dsStar`), loslassen wählt. Eingabe-Scheibe am Handy: `touch-action: none`,
   Checkout-Zeile in der Karte immer reserviert (kein Springen); Lupe erscheint groß oben über den Karten (`.loupe.aim.top`). Reiter Play/Stats ohne Symbol.
+- **Play neu (28.11.2026)**: kein Label „The Game“ mehr – die 501-Kachel trägt „The Game“ als Untertitel (statt Double Out, `metal501('The Game')`), keine Zufallslinien, Titan heller.
+  Darunter EIN breiter Kasten `.party-big` mit dem Wort „Partyspiele“ (füllt den Kasten, SVG `textLength`) → öffnet `partyBrowse`. Dort oben die eigenen Spiele (antippen = spielen,
+  Stift oben rechts = entfernen), silberner Strich `.pb-sep`, darunter alle zum Hinzufügen. Reiter-Leiste ganz ohne Symbole.

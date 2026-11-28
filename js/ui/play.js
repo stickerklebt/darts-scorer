@@ -20,7 +20,7 @@ export function tabsBar() {
     <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#d5d9df"/><stop offset=".46" stop-color="#7f858e"/><stop offset=".56" stop-color="#ffffff"/><stop offset=".74" stop-color="#a9aeb6"/><stop offset="1" stop-color="#f4f6f8"/></linearGradient></defs></svg><div class="tabs-in">
     <button class="tab noic ${i === 0 ? 'on' : ''}" data-act="tab" data-v="play"><span>Play</span></button>
     <button class="tab noic ${i === 1 ? 'on' : ''}" data-act="tab" data-v="stats"><span>Stats</span></button>
-    <button class="tab ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends">${ic('more')}<span>More</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
+    <button class="tab noic ${i === 2 ? 'on' : ''}" data-act="tab" data-v="friends"><span>More</span>${n ? `<i class="tab-badge">${n}</i>` : ''}</button>
     <i class="tabline" style="--i:${ui.tabFrom ?? i}"></i>
   </div></nav>`;
 }
@@ -81,21 +81,15 @@ export function playView() {
   // Bis zu 3 offene Spiele untereinander (das zuletzt gespielte zuerst)
   const open = [...(S.current && !S.current.done ? [S.current] : []), ...(S.parked || []).filter((x) => x && !x.done)];
   // Partyspiele, X01 (andere Startwerte) als letzte Kachel – die große 501-Karte startet direkt 501
-  const others = partyTiles(S.prefs);
   return `<main class="page">
     ${open.length ? `<div class="resume-list">${open.map(resumeRow).join('')}</div>` : ''}
-    <h2 class="label center play-lbl">The Game</h2>
     <section class="hero hero-go silk-hero" data-live="1" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
       <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
-      ${silkLines()}
-      ${metal501()}
+      ${metal501('The Game')}
     </section>
-    <h2 class="label center play-lbl party-lbl">Partyspiele</h2>
-    <div class="modes">${others.map((id, i) => {
-      const p = partyInfo(id), soon = !p.playable;
-      return `<button class="mode ${soon ? 'soon' : ''}" ${soon ? 'disabled' : `data-act="pick" data-v="${id}"`} ${id === 'x01' ? 'data-var="other"' : ''} style="--mc:${soon ? '#232328' : MODE_COLORS[id]};--bi:${i}" aria-label="${p.title}${soon ? ' (bald)' : ''}" title="${p.title}">
-      <span class="mode-art">${tileArt(id, 52)}<i class="mode-ring" aria-hidden="true"></i></span></button>`; // kommende Spiele: gleich aufgebaut, nur nicht antippbar
-    }).join('')}
-      <button class="mode mode-plus" data-act="partyBrowse" style="--mc:#08080a;--bi:${others.length}" aria-label="Partyspiele entdecken" title="Partyspiele entdecken"><span class="mode-art"><span class="badge-mode" style="--badge-bg:#cfd3d9;--badge-ink:#08080a;--badge-line:#08080a;width:52px;height:52px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span></span></button></div>
+    <button class="party-big" data-act="partyBrowse" aria-label="Partyspiele"><span class="pg-ring" aria-hidden="true"></span>
+      <svg viewBox="0 0 1000 170" aria-hidden="true"><defs><linearGradient id="pgChrome" gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="60" y2="160">
+        <stop offset="0" stop-color="#8a8f97"/><stop offset=".22" stop-color="#ffffff"/><stop offset=".4" stop-color="#c9ced5"/><stop offset=".5" stop-color="#6d727a"/><stop offset=".62" stop-color="#f4f6f9"/><stop offset=".8" stop-color="#b4b9c0"/><stop offset="1" stop-color="#eef0f3"/></linearGradient></defs>
+        <text x="500" y="128" text-anchor="middle" textLength="900" lengthAdjust="spacingAndGlyphs" fill="url(#pgChrome)">Partyspiele</text></svg></button>
   </main>`;
 }

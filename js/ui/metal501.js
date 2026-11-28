@@ -7,7 +7,7 @@
 import { TUNE } from '../intro-config.js';
 
 const W = 150, H = 232, SUB_Y = 244, SUB_H = 62; // Ziffernfeld je 150 breit, Untertitel darunter
-const STOPS = [[0, '#5d6168'], [0.1, '#c9ced5'], [0.2, '#fbfcfd'], [0.29, '#dfe3e8'], [0.38, '#9da3ab'], [0.46, '#3a2e33'], [0.5, '#2a2226'],
+const STOPS = [[0, '#8c9199'], [0.1, '#dde1e6'], [0.2, '#ffffff'], [0.29, '#eef0f3'], [0.38, '#b2b7be'], [0.46, '#5b6068'], [0.5, '#4a4e55'],
   [0.56, '#8c9199'], [0.66, '#e9ecf0'], [0.74, '#ffffff'], [0.83, '#bcc1c8'], [0.92, '#6c7078'], [1, '#a7adb5']];
 const grad = (id, y0, y1) => `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${y0}" x2="40" y2="${y1}">${STOPS.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</linearGradient>`;
 

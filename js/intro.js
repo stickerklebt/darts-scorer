@@ -92,7 +92,7 @@ async function runIntroInner({ still = false, kind = null } = {}) {
   drop(sub, P.digits + 2 * P.digitStep, true);
   const land = P.digits + 2 * P.digitStep + P.digitDur * 0.62;
   hero.animate([{ transform: 'none' }, { transform: 'translateY(2px) scale(1.005)', offset: 0.35 }, { transform: 'none' }], { delay: land * 1000, duration: 260, easing: 'ease-out' });
-  const ui = [document.querySelector('.resume-wrap'), ...document.querySelectorAll('#app .page > .label, #app .modes > .mode')].filter(Boolean);
+  const ui = [document.querySelector('.resume-wrap'), ...document.querySelectorAll('#app .page > .label, #app .modes > .mode, #app .party-big')].filter(Boolean);
   ui.forEach((el, i) => anim(el, [{ opacity: 0, transform: 'translateY(24px)', filter: 'blur(6px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], P.ui + i * P.uiStep, P.uiDur));
   const tabs = document.querySelector('.tabs');
   anim(tabs, [{ opacity: 0, transform: 'translateX(-50%) scale(.85)' }, { opacity: 1, transform: 'translateX(-50%) scale(1.04)', offset: 0.6 }, { opacity: 1, transform: 'translateX(-50%) scale(1)' }], P.tabs, P.tabsDur, 'cubic-bezier(.3,1.4,.5,1)');
