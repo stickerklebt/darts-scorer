@@ -97,10 +97,10 @@ function overviewTab(st, pid) {
       <div class="hf-pages kv-pages" data-k="kvPage">${pages.map((list) => `<div class="hf-page kv-page">${cards(list, 'three', pid)}</div>`).join('')}</div>
       ${pages.length > 1 ? `<span class="hf-dots kv-dots">${pages.map((_, k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="kvPage" data-v="${k}" aria-label="Seite ${k + 1}"></button>`).join('')}</span>` : ''}
     </div>
+    <button class="ov-more-btn ${ui.ovMore ? 'on' : ''}" data-act="ovMore">${ui.ovMore ? 'Weniger' : 'Mehr'} ${icon('chevR', 2.4, 16)}</button>
     ${ui.ovMore ? `<div class="ov-more">${rankList('Top 10 Checkouts', st.topCo, pid, true)}
     ${insightsBlock(cachedInsights(pid))}
-    ${hfCard(pid)}</div>
-    <button class="ov-more-btn on" data-act="ovMore">Weniger ${icon('up', 2.2, 16)}</button>` : `<button class="ov-more-btn" data-act="ovMore">Mehr ${icon('chevR', 2.4, 16)}</button>`}`;
+    ${hfCard(pid)}</div>` : ''}`;
 }
 
 /** Unter „Quote nach Bereich“: Break · zuerst im Finish ⇄ Comeback (wischen oder Punkt antippen) · meistgetroffenes Triple im Finish */

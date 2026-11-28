@@ -4135,3 +4135,7 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .ov-more-btn:active { transform: translateY(1px); }
 .ov-more { animation: bFade .35s ease-out; }
 .ov-more > .hf-card { margin-top: 18px; }
+/* „Mehr“/„Weniger“: links, ohne Kasten, an derselben Stelle direkt unter der Karten-Box */
+.ov-more-btn { width: auto !important; min-height: 40px !important; justify-content: flex-start !important; padding: 0 4px !important; border: 0 !important; background: none !important; border-radius: 0 !important; margin: -6px 0 12px !important; }
+.ov-more-btn svg { transition: transform .25s; transform: rotate(90deg); }
+.ov-more-btn.on svg { transform: rotate(-90deg); }
