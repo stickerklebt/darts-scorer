@@ -540,3 +540,4 @@ Offen: E-Mail-Bestätigung.
 - Start-Rahmen (501-Kachel, Partyspiele): halb Bordeaux, halb Silber, dreht sich ständig (`bmSpin`, conic über `--bmA`).
 - **Gestellt** (Überblick, Karten „Quote Rest …“): Antippen zeigt unter „x/y gecheckt“ ab 41 Rest auch „x/y gestellt“ = Aufnahmen, in denen nach Dart 1 oder 2 ein Doppel stand (`isSetUp`, `ranges[].setHits/setTries`); eigene Karte entfällt. Seiten-Punkte mit großer Tippfläche.
 - Logo-Schriftzug „DARTVADER“ (`crestLine`): Silber-Metall wie der Stern – kräftigerer Schnitt, Chrom-Verlauf mit harten Wechseln (wandert langsam), Fase/Glanz über den Stern-Filter.
+- Überblick: Top 10 Checkouts, Auffällig und High Finish erst nach Knopf **Mehr** (`ui.ovMore`, Aktion `ovMore`, „Weniger“ klappt zu).

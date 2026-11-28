@@ -4127,3 +4127,11 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .hf-dots, .kv-carousel .kv-dots { gap: 2px !important; }
 .hf-dots button, .kv-carousel .kv-dots button { box-sizing: content-box !important; padding: 12px !important; background-clip: content-box !important; margin: -8px 0 !important; }
 .hf-dots button.on, .kv-carousel .kv-dots button.on { box-shadow: none !important; filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+/* Überblick: Top 10, Auffällig, High Finish erst nach „Mehr“ */
+.ov-more-btn { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; margin: 4px 0 18px; cursor: pointer;
+  border-radius: 14px; border: 1px solid rgba(220,224,230,.4); background: rgba(16,16,19,.65); font-family: var(--f-num); font-size: 18px; letter-spacing: .22em; text-transform: uppercase; color: #eef0f3;
+  text-shadow: 0 0 8px rgba(255,255,255,.35); -webkit-tap-highlight-color: transparent; }
+.ov-more-btn:not(.on) svg { transform: rotate(90deg); }
+.ov-more-btn:active { transform: translateY(1px); }
+.ov-more { animation: bFade .35s ease-out; }
+.ov-more > .hf-card { margin-top: 18px; }

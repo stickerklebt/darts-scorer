@@ -873,6 +873,7 @@ const actions = {
     S.statsModes = next.length ? next : ['501']; render();
   },
   statsModesReset() { S.statsModes = ['501']; render(); },
+  ovMore() { ui.ovMore = !ui.ovMore; render(); }, // Überblick: Top 10, Auffällig, High Finish erst nach „Mehr“
   statsParty() { // Partyspiele (alle X01-Varianten) an/aus
     const extra = availableModes(S.matches, S.mainId).filter((k) => k !== '501');
     const on = Array.isArray(S.statsModes) && S.statsModes.some((k) => k !== '501');
