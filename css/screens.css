@@ -4202,3 +4202,8 @@ html.theme-neon .silk-hero { box-shadow: 0 0 22px rgba(255,255,255,.3) !importan
 html.theme-neon .party-big { background: #050606 !important; box-shadow: 0 0 22px rgba(255,255,255,.25) !important; }
 html.theme-neon .game .sbp { border-color: rgba(255,255,255,.85) !important; }
 html.theme-neon .sheet { border-color: rgba(255,255,255,.85) !important; }
+/* Reiter: Wort und Leuchtstrich genau mittig – der Buchstabenabstand hängt sonst hinter dem letzten Buchstaben Luft an (Wort + Strich rutschen) */
+body .tabs .tab.noic > span { margin-right: -.16em; }
+@media (max-width: 440px) { body .tabs .tab.noic > span { margin-right: -.1em; } }
+body .tabs .tab.noic.on > span::after { left: 0 !important; right: 0 !important; }
+body .tabs .tab.noic.on > span::before { left: -14px !important; right: -14px !important; }
