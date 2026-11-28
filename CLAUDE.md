@@ -530,3 +530,4 @@ Offen: E-Mail-Bestätigung.
 - Statistik › Scoring: „Average gesamt“ (bzw. First 9) ist kumuliert wie die Doppelquote – Gesamt-Average nach jedem Match (`cumulativeAvg`, Series hat dafür `pts/darts/p9/d9`). Partyspiele-Kasten fast schwarz.
 - **Single Out nur im X01-Modus** (28.11.2026): Die 501-Karte spielt immer Double Out (Setup zeigt keinen Check-Out-Schalter, beim Start erzwungen). Single Out gibt es nur im X01-Modus der Partyspiele;
   Hinweis in „Mehr Optionen“: „Double In? Single Out? Oder X01?“. `modeKey` hängt `-so` an → Single-Out-Spiele zählen nie als 501, nur mit „Partyspiele mitzählen“ (auch alte 501-Single-Out-Spiele).
+- Setup-Spielerliste: Nummernfeld mit treibendem, kräftigem Verlauf wie der Start-Knopf (1/A rot, 2/B weiß, 3/C gold; `.pc.pglow.c0-2`).
