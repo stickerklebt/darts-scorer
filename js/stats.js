@@ -136,7 +136,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
     const mAvg = md ? (mp / md) * 3 : null;
     if (mAvg !== null && (bestMatchAvg === null || mAvg > bestMatchAvg)) { bestMatchAvg = mAvg; bestAvgRef = { mid: m.id }; }
     const dbl = doubleAttempts([m], pid);
-    series.push({ id: m.id, date, avg: mAvg, f9: m9d ? (m9p / m9d) * 3 : null, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, dh: dbl.hits, da: dbl.attempts, won, solo });
+    series.push({ id: m.id, date, avg: mAvg, f9: m9d ? (m9p / m9d) * 3 : null, dbl: dbl.attempts ? dbl.hits / dbl.attempts : null, dh: dbl.hits, da: dbl.attempts, pts: mp, darts: md, p9: m9p, d9: m9d, won, solo });
     if (!solo) { versus++; if (won) { wins++; streak++; bestStreak = Math.max(bestStreak, streak); } else streak = 0; }
     const result = m.opts.mode === 'sets'
       ? m.sides.map((_, i) => setsOf(m, i)).join(' : ') + ' Sets'

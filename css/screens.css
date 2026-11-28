@@ -4073,3 +4073,5 @@ html.no-motion .party-big .pg-ring { animation: none; }
 .party-big text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, serif !important; font-weight: 500; font-size: 104px !important; font-variation-settings: 'opsz' 28; text-transform: uppercase;
   filter: url(#mtlF) !important; } /* CSS-filter würde sonst das SVG-Attribut überschreiben */
 .party-big svg { filter: brightness(1.12) contrast(1.08) drop-shadow(0 6px 8px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(240,244,250,.28)); }
+/* Partyspiele-Kasten: dunkler Grund wie die 501-Kachel (fast schwarz, nur ein Hauch Licht oben) */
+.party-big { background: radial-gradient(90% 70% at 50% 0%, rgba(255,255,255,.05), transparent 60%), #050506 !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 26px rgba(0,0,0,.55) !important; }

@@ -39,15 +39,21 @@ export function pickTitle(id, kinds, kind, label) {
   return `<span class="ch-pick" data-m="${id}" title="Antippen zum Umschalten">${label}<i aria-hidden="true">▾</i></span>${menu}`;
 }
 
-/** Verlauf: ein Kasten „Average pro Match“ – lange auf den Titel drücken → kleines Menü oben links: Average · First 9 Average (Standard: Average) */
-export const AVG_KINDS = [['avg', 'Average pro Match'], ['f9', 'First 9 Average pro Match']];
+/** Verlauf wie bei der Doppelquote: nach jedem Match der Gesamt-Average bis dahin (kumuliert: alle Punkte / alle Darts × 3).
+    Titel antippen → Menü: Average · First 9 Average (Standard: Average) */
+export const AVG_KINDS = [['avg', 'Average gesamt'], ['f9', 'First 9 Average gesamt']];
+export function cumulativeAvg(series, kind = 'avg') {
+  let p = 0, d = 0;
+  return series.map((s) => { p += (kind === 'f9' ? s.p9 : s.pts) || 0; d += (kind === 'f9' ? s.d9 : s.darts) || 0; return d ? (p / d) * 3 : null; });
+}
 export function historyCharts(st, pid = '') {
   const kind = ui.avgKind === 'f9' ? 'f9' : 'avg';
   const taps = pid ? st.series.map((s) => recAttrs({ mid: s.id }, pid)) : null;
-  const vals = st.series.map((s) => (kind === 'f9' ? s.f9 ?? null : s.avg));
+  const vals = cumulativeAvg(st.series, kind);
   const label = AVG_KINDS.find(([k]) => k === kind)[1];
-  return chartBox(pickTitle('avg', AVG_KINDS, kind, label), kind === 'f9' ? 'Ø der ersten drei Aufnahmen jedes Legs' : '',
-    lineChart(vals, movingAvg(vals), { ...ends(st), taps }));
+  return chartBox(pickTitle('avg', AVG_KINDS, kind, label), kind === 'f9' ? 'First-9-Average insgesamt nach jedem Match' : 'Average insgesamt nach jedem Match',
+    lineChart(vals, vals, { ...ends(st), taps,
+      key: `<span><i style="background:var(--red)"></i>${kind === 'f9' ? 'First 9 Average' : 'Average'} insgesamt bis zu diesem Match</span>${taps ? '<span class="ck-tap">Punkt antippen = Match</span>' : ''}` }));
 }
 /** Doppelquote insgesamt im Verlauf: nach jedem Match die Gesamtquote bis dahin (kumuliert, nicht pro Match).
     Die Kurve beginnt erst ab DBL_MIN Doppelversuchen – vorher springt sie zu stark (100 % … 0 %). */

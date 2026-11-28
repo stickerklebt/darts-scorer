@@ -527,3 +527,4 @@ Offen: E-Mail-Bestätigung.
 - **Play neu (28.11.2026)**: kein Label „The Game“ mehr – die 501-Kachel trägt „The Game“ als Untertitel (statt Double Out, `metal501('The Game')`), keine Zufallslinien, Titan heller.
   Darunter EIN breiter Kasten `.party-big` mit dem Wort „Partyspiele“ (füllt den Kasten, SVG `textLength`) → öffnet `partyBrowse`. Dort oben die eigenen Spiele (antippen = spielen,
   Stift oben rechts = entfernen), silberner Strich `.pb-sep`, darunter alle zum Hinzufügen. Reiter-Leiste ganz ohne Symbole.
+- Statistik › Scoring: „Average gesamt“ (bzw. First 9) ist kumuliert wie die Doppelquote – Gesamt-Average nach jedem Match (`cumulativeAvg`, Series hat dafür `pts/darts/p9/d9`). Partyspiele-Kasten fast schwarz.
