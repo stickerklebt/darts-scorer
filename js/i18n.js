@@ -199,6 +199,7 @@ export const DICT = {
 
 /** Texte mit Zahlen/Namen */
 const PATTERNS = [
+  [/^(\d+)\/(\d+) gestellt$/, (m, a, b) => `${a}/${b} set up`],
   [/^(\d+)\/(\d+) Aufnahmen ab 61 Rest – nach Dart 1 oder 2 stand ein Doppel$/, (m, a, b) => `${a}/${b} visits from 61 left – a double was left after dart 1 or 2`],
   [/^Quote Rest (.+)$/, (m, r) => `Rate left ${r}`],
   [/^Seite (\d+)$/, (m, n) => `Page ${n}`],

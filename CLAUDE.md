@@ -538,5 +538,5 @@ Offen: E-Mail-Bestätigung.
   „Quote nach Bereich“-Block und Checkout-Zweispalter entfallen. 501-Kachel: Untertitel wieder „Double Out“.
 - Checkout-Quote nach Rest in 20er-Schritten (`RANGES` in stats.js: 2–40, 41–60 … 141–160, 161–170; auch im Vergleich).
 - Start-Rahmen (501-Kachel, Partyspiele): halb Bordeaux, halb Silber, dreht sich ständig (`bmSpin`, conic über `--bmA`).
-- Karte **Doppel gestellt** (Überblick, Karten-Box): Anteil der Aufnahmen ab 61 Rest (checkbar, mit Einzeldarts), in denen nach Dart 1 oder 2 ein Doppel stand (`isSetUp`, `st.setup`); ob es dann getroffen wird, zählt nicht. Details erst nach Antippen.
+- **Gestellt** (Überblick, Karten „Quote Rest …“): Antippen zeigt unter „x/y gecheckt“ ab 41 Rest auch „x/y gestellt“ = Aufnahmen, in denen nach Dart 1 oder 2 ein Doppel stand (`isSetUp`, `ranges[].setHits/setTries`); eigene Karte entfällt. Seiten-Punkte mit großer Tippfläche.
 - Logo-Schriftzug „DARTVADER“ (`crestLine`): Silber-Metall wie der Stern – kräftigerer Schnitt, Chrom-Verlauf mit harten Wechseln (wandert langsam), Fase/Glanz über den Stern-Filter.

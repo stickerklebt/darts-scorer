@@ -79,8 +79,8 @@ function overviewTab(st, pid) {
     ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
     ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
     ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
-    ...st.ranges.map((r) => [`Quote Rest ${r.name}`, pct(r.rate), rv(`${r.hits}/${r.chances} gecheckt`)]),
-    ['Doppel gestellt', pct(st.setup.rate), rv(`${st.setup.hits}/${st.setup.tries} Aufnahmen ab 61 Rest – nach Dart 1 oder 2 stand ein Doppel`)],
+    // Antippen: gecheckt und – ab 41 Rest – wie oft nach Dart 1 oder 2 ein Doppel stand (gestellt)
+    ...st.ranges.map((r) => [`Quote Rest ${r.name}`, pct(r.rate), rv(`${r.hits}/${r.chances} gecheckt`) + (r.setTries ? `<br>${rv(`${r.setHits}/${r.setTries} gestellt`)}` : '')]),
     ['Break', pct(fx.brk.rate), rv(`${fx.brk.hits}/${fx.brk.tries} gebreakt`)],
     ['Zuerst im Finish', pct(fx.first.rate), rv(`${fx.first.hits}/${fx.first.tries} Legs geholt`)],
     ['Comeback', pct(fx.comeback.rate), rv(`${fx.comeback.hits}/${fx.comeback.tries} Legs geholt`)],

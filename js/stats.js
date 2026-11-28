@@ -99,7 +99,7 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
   let streak = 0, bestStreak = 0, bestMatchAvg = null, nine = 0, le15 = 0;
   const counts = { t180: 0, t140: 0, t100: 0, t60: 0 };
   const buckets = BUCKETS.map(() => 0);
-  const ranges = RANGES.map(() => ({ chances: 0, hits: 0 }));
+  const ranges = RANGES.map(() => ({ chances: 0, hits: 0, setTries: 0, setHits: 0 })); // setHits/setTries: Doppel nach Dart 1 oder 2 gestellt
   const setup = { tries: 0, hits: 0 };
   const top = [], cos = [], legDarts = [], favourite = {}, series = [], list = [], spots = {}; // spots: genaue Trefferstellen im Doppel (throw.spot)
   let bestLegRef = null, bestAvgRef = null, t180Ref = null; // t180Ref: die letzte 180 (Karte „180er“ antippen → Match)
@@ -137,7 +137,12 @@ export function fullStats(matches, pid, period = 'all', now = Date.now()) {
           if (last) { const k = label(last); favourite[k] = (favourite[k] || 0) + 1; if (last.spot) (spots[k] ||= []).push(last.spot); }
         }
         // Doppel stellen: Aufnahme ab 61 Rest (checkbar) – bleibt nach dem 1. oder 2. Dart ein Doppel stehen (2–40 gerade oder 50)?
-        if (m.opts.out === 'double' && t.startRem >= 61 && route(t.startRem, 3) && t.throws?.length) setup.tries++, setup.hits += t.throws.slice(0, 2).some((th) => isSetUp(th)) ? 1 : 0;
+        if (m.opts.out === 'double' && t.startRem > 40 && route(t.startRem, 3) && t.throws?.length) {
+          const ok = t.throws.slice(0, 2).some((th) => isSetUp(th)) ? 1 : 0;
+          if (t.startRem >= 61) { setup.tries++; setup.hits += ok; }
+          const si = RANGES.findIndex(([, lo, hi]) => t.startRem >= lo && t.startRem <= hi);
+          ranges[si].setTries++; ranges[si].setHits += ok;
+        }
         if (m.opts.out === 'double' && route(t.startRem, 3)) {
           const ri = RANGES.findIndex(([, lo, hi]) => t.startRem >= lo && t.startRem <= hi);
           ranges[ri].chances++; if (t.out) ranges[ri].hits++;

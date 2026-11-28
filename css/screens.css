@@ -4123,3 +4123,7 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .brand .brand-name.metal { font-weight: 600 !important; } /* kein CSS-filter hier – sonst fällt das SVG-Metall (Fase/Glanz) weg */
 .splash svg.brand .brand-name.metal, .auth-crest svg.brand .brand-name.metal { paint-order: stroke; stroke: rgba(255,255,255,.18); stroke-width: .4px; }
 .brand { overflow: visible; }
+/* Seiten-Punkte (Karten-Box, High Finish, Comeback): viel größere Tippfläche, der Punkt selbst bleibt klein */
+.hf-dots, .kv-carousel .kv-dots { gap: 2px !important; }
+.hf-dots button, .kv-carousel .kv-dots button { box-sizing: content-box !important; padding: 12px !important; background-clip: content-box !important; margin: -8px 0 !important; }
+.hf-dots button.on, .kv-carousel .kv-dots button.on { box-shadow: none !important; filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 8px rgba(255,255,255,.6)); }
