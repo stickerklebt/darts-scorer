@@ -4139,3 +4139,25 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .ov-more-btn { width: auto !important; min-height: 40px !important; justify-content: flex-start !important; padding: 0 4px !important; border: 0 !important; background: none !important; border-radius: 0 !important; margin: -6px 0 12px !important; }
 .ov-more-btn svg { transition: transform .25s; transform: rotate(90deg); }
 .ov-more-btn.on svg { transform: rotate(-90deg); }
+
+/* ================= DESIGN 2 · NEON (Einstellungen › Design 2, `prefs.neon`, html.theme-neon; Standard bleibt Design 1) =================
+   Bordeaux wird per Farbdrehung zu Neongrün (hue-rotate auf die Bereiche, nicht auf #app – sonst verlieren fixe Elemente ihren Bezug).
+   Silber, Weiß und Schwarz haben keinen Farbton und bleiben genau so. Dazu grünes Leuchten an Rahmen, Strichen und Zahlen. */
+html.theme-neon { background: #030805 !important; }
+html.theme-neon body { background: radial-gradient(90% 50% at 50% 110%, rgba(20,255,120,.07), transparent 70%) fixed, #030805 !important; }
+html.theme-neon .page, html.theme-neon .game, html.theme-neon .tabs, html.theme-neon .subpop, html.theme-neon .sheet, html.theme-neon .bar,
+html.theme-neon .dock, html.theme-neon .dspot-ask, html.theme-neon .splash, html.theme-neon .stage, html.theme-neon .loupe, html.theme-neon .toast {
+  filter: hue-rotate(150deg) saturate(1.7) brightness(1.06); }
+/* Neon-Leuchten (vor der Drehung rot angegeben → erscheint grün) */
+html.theme-neon .silk-hero, html.theme-neon .party-big { box-shadow: 0 0 0 .5px rgba(0,0,0,.8), 0 0 22px rgba(255,40,90,.45), 0 0 60px rgba(255,40,90,.18), 0 14px 34px rgba(0,0,0,.5) !important; }
+html.theme-neon .tabs, html.theme-neon .subpop { box-shadow: 0 0 18px rgba(255,40,90,.35), 0 14px 34px rgba(0,0,0,.55) !important; }
+html.theme-neon .tabs .tab.on > span::after, html.theme-neon .subpop .subtabs.three .sub-line::before {
+  background: linear-gradient(90deg, rgba(255,40,90,0), #ff2a5f 18%, #ff9fb4 50%, #ff2a5f 82%, rgba(255,40,90,0)) !important;
+  box-shadow: 0 0 6px #ff2a5f, 0 0 16px rgba(255,40,90,.9), 0 0 30px rgba(255,40,90,.5) !important; }
+html.theme-neon .tabs .tab.on > span { text-shadow: 0 0 8px rgba(255,60,100,.9), 0 0 18px rgba(255,40,90,.6) !important; }
+html.theme-neon .kv-c, html.theme-neon .hero-stat, html.theme-neon .record, html.theme-neon .rlist { box-shadow: 0 0 0 1px rgba(255,60,100,.35), 0 0 16px rgba(255,40,90,.22), 0 8px 22px rgba(0,0,0,.35) !important; }
+html.theme-neon .hero-stat b, html.theme-neon .record b, html.theme-neon .kv-c.hot b {
+  text-shadow: 0 0 2px #fff, 2px 2px 0 #ff2a5f, 4px 4px 0 #a3203d, 0 0 18px rgba(255,40,90,.85), 0 0 40px rgba(255,40,90,.45) !important; }
+html.theme-neon .label, html.theme-neon .bar-title { text-shadow: 0 0 8px rgba(255,60,100,.7) !important; }
+html.theme-neon .btn.red, html.theme-neon .start-go { box-shadow: 0 0 14px rgba(255,40,90,.6), 0 0 34px rgba(255,40,90,.25) !important; }
+html.theme-neon .game:not(.botturn) .duo .sbp.on { box-shadow: 0 0 0 1px rgba(255,80,120,.8), 0 0 20px rgba(255,40,90,.55), 0 0 44px rgba(255,40,90,.25) !important; }

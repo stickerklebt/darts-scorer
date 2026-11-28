@@ -146,6 +146,7 @@ function render() {
   const root = document.documentElement, lang = S.prefs.lang === 'en' ? 'en' : 'de';
   if (root.lang !== lang) root.lang = lang;
   root.classList.toggle('no-motion', S.prefs.motion === false);
+  root.classList.toggle('theme-neon', S.prefs.neon === true); // Neon-Design (Einstellungen, Standard aus)
   html = translate(html, lang);
   const app = $('#app');
   morph(app, html);
@@ -873,6 +874,7 @@ const actions = {
     S.statsModes = next.length ? next : ['501']; render();
   },
   statsModesReset() { S.statsModes = ['501']; render(); },
+  theme(el) { S.prefs.neon = el.dataset.v === '2'; render(); }, // Einstellungen › Design 1 (Standard) · Design 2 (Neon)
   ovMore() { ui.ovMore = !ui.ovMore; render(); }, // Überblick: Top 10, Auffällig, High Finish erst nach „Mehr“
   statsParty() { // Partyspiele (alle X01-Varianten) an/aus
     const extra = availableModes(S.matches, S.mainId).filter((k) => k !== '501');

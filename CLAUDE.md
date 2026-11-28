@@ -541,3 +541,4 @@ Offen: E-Mail-Bestätigung.
 - **Gestellt** (Überblick, Karten „Quote Rest …“): Antippen zeigt unter „x/y gecheckt“ ab 41 Rest auch „x/y gestellt“ = Aufnahmen, in denen nach Dart 1 oder 2 ein Doppel stand (`isSetUp`, `ranges[].setHits/setTries`); eigene Karte entfällt. Seiten-Punkte mit großer Tippfläche.
 - Logo-Schriftzug „DARTVADER“ (`crestLine`): Silber-Metall wie der Stern – kräftigerer Schnitt, Chrom-Verlauf mit harten Wechseln (wandert langsam), Fase/Glanz über den Stern-Filter.
 - Überblick: Top 10 Checkouts, Auffällig und High Finish erst nach Knopf **Mehr** (`ui.ovMore`, Aktion `ovMore`, „Weniger“ klappt zu).
+- **Design 2 · Neon** (Einstellungen › Design, `prefs.neon`, `html.theme-neon`, Standard Design 1 bleibt): Bordeaux per `hue-rotate(150deg)` auf .page/.game/.tabs/.sheet … → Neongrün, Silber/Weiß bleiben; Leuchten in diesem Block vor der Drehung ROT angeben (wird grün). Filter nie auf #app (fixe Elemente).

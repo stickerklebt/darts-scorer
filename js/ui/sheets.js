@@ -89,6 +89,7 @@ export function sheetView() {
     const u = auth.user;
     inner = `<h3>Einstellungen</h3><p>${S.profiles.length} Spieler · ${S.matches.length} gespeicherte Spiele</p>
       <div class="slist">${tog('voice', 'Ansage')}${tog('hints', 'Checkout-Hilfe')}${tog('showAvg', 'Average im Spiel anzeigen')}${tog('showDbl', 'Doppelquote im Spiel anzeigen')}${tog('quick', 'Zahl-Vorschläge im Spiel', 'deine häufigsten Aufnahmen über der Tastatur')}${tog('camAuto', 'Kamera: Würfe automatisch übernehmen')}${tog('camDebug', 'Kamera: Debug-Ansicht')}${tog('motion', 'Bewegung in den Kästen', 'Lichter, Glanz und Funkeln an Karten, Kacheln und Leisten')}
+        <div class="srow col"><span class="lbl">Design<small>Design 2: Neon – grün leuchtend statt Bordeaux, Silber bleibt</small></span>${seg('theme', 'v', [['1', 'Design 1'], ['2', 'Design 2']], S.prefs.neon === true ? '2' : '1')}</div>
         <div class="srow col"><span class="lbl">Sprache</span>${seg('lang', 'v', [['de', 'Deutsch'], ['en', 'English']], S.prefs.lang === 'en' ? 'en' : 'de')}</div>
         <div class="srow col"><span class="lbl">Lieblingsdoppel<small>Checkout-Vorschläge enden, wenn möglich, auf diesem Doppel</small></span>${seg('favDbl', 'v', [[16, 'D16'], [18, 'D18'], [20, 'D20']], S.prefs.favDbl || 20)}</div>
         <div class="srow col"><span class="lbl">Einzeldart-Eingabe</span>${seg('dartInput', 'v', [['keys', 'Tastatur'], ['board', 'Dartscheibe']], S.prefs.dartInput)}</div>
