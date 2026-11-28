@@ -73,44 +73,42 @@ function overviewTab(st, pid) {
   const rating = doubleRating(st.doubles);
   const favK = Object.keys(rating).find((k) => rating[k].top === 1);
   const favDbl = favK ? { k: favK, ...st.doubles.fields[favK], rate: st.doubles.fields[favK].hits / st.doubles.fields[favK].attempts } : null;
+  // Alle kleinen Karten in EINER Box zum Wischen (je 6 = 3 × 2), Punkte darunter: erst die Kennzahlen, dann die aus dem Checkout-Bereich
+  const fx = finishFx(pid);
+  const small = [
+    ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
+    ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
+    ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
+    ...st.ranges.map((r) => [`Quote Rest ${r.name}`, pct(r.rate), rv(`${r.hits}/${r.chances} gecheckt`)]),
+    ['Break', pct(fx.brk.rate), rv(`${fx.brk.hits}/${fx.brk.tries} gebreakt`)],
+    ['Zuerst im Finish', pct(fx.first.rate), rv(`${fx.first.hits}/${fx.first.tries} Legs geholt`)],
+    ['Comeback', pct(fx.comeback.rate), rv(`${fx.comeback.hits}/${fx.comeback.tries} Legs geholt`)],
+    ['Triple im Finish', fx.triple ? fx.triple.k : '–', rv(fx.triple ? `${fx.triple.n}× getroffen` : 'noch keins')],
+  ];
+  const pages = []; for (let i = 0; i < small.length; i += 6) pages.push(small.slice(i, i + 6));
+  const pg = Math.min(pages.length - 1, ui.kvPage || 0);
   return `<div class="hero-stat hs-epic has-rv">${HS_FX}${fuse(5, 12)}<small>Average</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${fmt(st.avg, 2)}">${fmt(st.avg, 2)}</b>${sparkles(9, 7)}</span><em>${rv('Modus 501')}</em></div>
-    ${cards([
-      ['Lieblingsdoppel', favDbl ? favDbl.k : '–', favDbl ? rv(`${pct(favDbl.rate)} · ${favDbl.hits} / ${favDbl.attempts}`) : `ab ${MIN_ATTEMPTS} Versuchen`], ['First 9', fmt(st.f9, 2)],
-      ['Darts geworfen', st.darts, rv(`${st.points} Punkte`)], ['Ø Darts aufs Doppel', fmt(st.dartsPerCheckout), 'pro Checkout'],
-      ['180er', c.t180, '', st.t180Ref], ['Bestes Leg', st.bestLeg ? `${st.bestLeg} D` : '–', '', st.bestLegRef],
-    ], 'three', pid)}
-    <div class="hero-stat dbl-hero hs-epic has-rv">${HS_FX}${fuse(5, 12)}<small>Doppelquote</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${pct(st.doubles.rate)}">${pct(st.doubles.rate)}</b>${sparkles(7, 6)}</span><em>${rv(`${st.doubles.hits} Treffer / ${st.doubles.attempts} Versuche · Ø ${fmt(st.dartsPerCheckout)} Darts pro Checkout`)}</em></div>
-    ${checkoutTab(st, pid)}
-    ${insightsBlock(cachedInsights(pid))}`;
+    <div class="ov-duo">
+      <div class="hero-stat dbl-hero hs-epic has-rv">${HS_FX}${fuse(5, 12)}<small>Doppelquote</small><span class="glitter">${numRing()}<b class="shimmer" data-t="${pct(st.doubles.rate)}">${pct(st.doubles.rate)}</b>${sparkles(7, 6)}</span><em>${rv(`${st.doubles.hits} / ${st.doubles.attempts}`)}</em></div>
+      ${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))}
+    </div>
+    <div class="kv-carousel">
+      <div class="hf-pages kv-pages" data-k="kvPage">${pages.map((list) => `<div class="hf-page kv-page">${cards(list, 'three', pid)}</div>`).join('')}</div>
+      ${pages.length > 1 ? `<span class="hf-dots kv-dots">${pages.map((_, k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="kvPage" data-v="${k}" aria-label="Seite ${k + 1}"></button>`).join('')}</span>` : ''}
+    </div>
+    ${rankList('Top 10 Checkouts', st.topCo, pid, true)}
+    ${insightsBlock(cachedInsights(pid))}
+    ${hfCard(pid)}`;
 }
-
-/** Quote nach Bereich: Prozent groß; Antippen zeigt darunter in eigener Zeile „gecheckt / versucht“ (daraus ist die Prozentzahl) */
-const rangeCards = (ranges) => `<div class="kv three">${ranges.map((r, i) => `<div class="kv-c glint ${hot(r.name)} has-rv rng" style="--gd:-${(i * 2.3 + 1.1) % 11}s;--i:${i}">
-  <small>Rest ${r.name}</small><b>${pct(r.rate)}</b><em class="rng-n">${rv(`${r.hits}/${r.chances} gecheckt`)}</em></div>`).join('')}</div>`;
 
 /** Unter „Quote nach Bereich“: Break · zuerst im Finish ⇄ Comeback (wischen oder Punkt antippen) · meistgetroffenes Triple im Finish */
 let fxCache = { key: '', r: null };
-function extraCards(pid) {
+function finishFx(pid) {
   const last = S.matches[S.matches.length - 1];
   const key = `${pid}|${S.statsPeriod}|${statsModes().join(',')}|${S.matches.length}|${last?.id ?? ''}|${last?.endedAt ?? ''}`;
   if (fxCache.key !== key) fxCache = { key, r: finishExtras(matchesOf(S.matches, pid, S.statsPeriod), pid) };
-  const r = fxCache.r, pg = ui.fcPage === 1 ? 1 : 0;
-  const box = (title, x, what) => `<div class="hf-page fc-page"><small>${title}</small><b>${pct(x.rate)}</b><em class="rng-n">${rv(`${x.hits}/${x.tries} ${what}`)}</em></div>`;
-  return `<div class="kv three fx-row">
-    <div class="kv-c glint ${hot('brk')} has-rv rng" style="--gd:-2s"><small>Break</small><b>${pct(r.brk.rate)}</b><em class="rng-n">${rv(`${r.brk.hits}/${r.brk.tries} gebreakt`)}</em></div>
-    <div class="kv-c glint ${hot('fc')} has-rv rng fc-card" style="--gd:-5s"><div class="hf-pages" data-k="fcPage">${box('Zuerst im Finish', r.first, 'Legs geholt')}${box('Comeback', r.comeback, 'Legs geholt')}</div>
-      <span class="hf-dots">${[0, 1].map((k) => `<button class="${pg === k ? 'on' : ''}" data-act="hfPage" data-k="fcPage" data-v="${k}" aria-label="${k ? 'Comeback' : 'Zuerst im Finish'}"></button>`).join('')}</span></div>
-    <div class="kv-c glint ${hot('tri')} has-rv rng" style="--gd:-8s"><small>Triple im Finish</small><b>${r.triple ? r.triple.k : '–'}</b><em class="rng-n">${rv(r.triple ? `${r.triple.n}× getroffen` : 'noch keins')}</em></div>
-  </div>`;
+  return fxCache.r;
 }
-
-function checkoutTab(st, pid) {
-  // Breit: links Höchstes Checkout + Quote nach Bereich, rechts Top 5 Checkouts
-  return `<div class="co-layout"><div class="co-left">${record('Höchstes Checkout', st.highestCo ?? '–', '', checkoutHow(st.topCo[0]))
-    + block('Quote nach Bereich', rangeCards(st.ranges) + extraCards(pid))}</div>
-    <div class="co-right"><div class="co-right-in">${rankList('Top 10 Checkouts', st.topCo, pid, true)}${hfCard(pid)}</div></div></div>`;
-}
-
 /** Doppel groß mit einem Punkt je Treffer – erscheint an Stelle der Heatmap-Scheibe (fertige Matches + laufendes Spiel) */
 function spotOverlay(st, key) {
   const dn = /^D(\d+)$/.exec(key || ''), n = dn ? Number(dn[1]) : key === 'Bull' ? 25 : null;

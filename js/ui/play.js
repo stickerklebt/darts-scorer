@@ -85,7 +85,7 @@ export function playView() {
     ${open.length ? `<div class="resume-list">${open.map(resumeRow).join('')}</div>` : ''}
     <section class="hero hero-go silk-hero" data-live="1" data-act="pick" data-v="x01" role="button" tabindex="0" aria-label="501 spielen">
       <div class="silk" aria-hidden="true"><div class="silk-img"></div><div class="silk-vig"></div></div>
-      ${metal501('Das Spiel')}
+      ${metal501()}
     </section>
     <button class="party-big" data-act="partyBrowse" aria-label="Partyspiele"><span class="pg-ring" aria-hidden="true"></span>
       <svg viewBox="0 0 1000 170" aria-hidden="true"><defs><linearGradient id="pgChrome" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="40" y2="150">${METAL_STOPS}</linearGradient></defs>

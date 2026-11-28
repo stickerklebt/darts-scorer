@@ -4092,3 +4092,24 @@ html.no-motion .prow .pc.pglow { animation: none; }
   box-shadow: 0 0 0 .5px rgba(0,0,0,.8), 0 0 16px rgba(196,42,75,.22), 0 14px 34px rgba(0,0,0,.5) !important; }
 .party-big::before { background: var(--bordeaux-metal) !important; padding: 1.6px !important; }
 .party-big { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 16px rgba(196,42,75,.22), 0 10px 26px rgba(0,0,0,.55) !important; }
+
+/* ================= Statistik › Überblick neu (28.11.2026) =================
+   Average oben · darunter links Doppelquote, rechts Höchstes Checkout · alle kleinen Karten in EINER Box zum Wischen (je 3 × 2, Punkte darunter)
+   · Top 10 Checkouts · Auffällig · High Finish ganz unten */
+.ov-duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: stretch; margin: 12px 0 14px; }
+.ov-duo > .hero-stat, .ov-duo > .record { margin: 0 !important; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.ov-duo > .hero-stat.dbl-hero b { font-size: clamp(54px, 11vw, 112px) !important; }
+.ov-duo > .record b { font-size: clamp(54px, 11vw, 112px) !important; }
+@media (max-width: 600px) { .ov-duo { gap: 8px; } .ov-duo .hs-star { width: 14px !important; height: 14px !important; } }
+.kv-carousel { margin: 0 0 18px; }
+.kv-carousel .kv-pages { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; gap: 0; }
+.kv-carousel .kv-pages::-webkit-scrollbar { display: none; }
+.kv-carousel .kv-page { flex: 0 0 100%; scroll-snap-align: start; min-width: 0; padding: 2px 1px 4px; box-sizing: border-box; }
+.kv-carousel .kv-page > .kv { margin: 0; }
+.kv-carousel .kv-dots { display: flex; justify-content: center; gap: 9px; margin-top: 10px; }
+.kv-carousel .kv-dots button { width: 7px; height: 7px; border-radius: 50%; padding: 0; background: rgba(255,255,255,.3); transition: all .25s; }
+.kv-carousel .kv-dots button.on { background: #fff; box-shadow: 0 0 6px #fff, 0 0 12px rgba(255,255,255,.6); transform: scale(1.25); }
+.sub-overview > .rlist { margin-top: 0; }
+.sub-overview > .hf-card { margin-top: 18px; }
+/* Startbildschirm: Rahmen nur noch zur Hälfte Bordeaux-Metall, zur anderen Hälfte Chrom-Silber */
+:root { --bordeaux-metal: linear-gradient(135deg, #ffffff 0%, #9aa0a8 12%, #e9ecf0 24%, #6b1226 38%, #e05a78 46%, #3d0714 54%, #c42a4b 62%, #f2f4f7 74%, #7d838d 86%, #dfe3e8 100%); }

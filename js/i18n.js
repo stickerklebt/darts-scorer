@@ -55,7 +55,7 @@ export const DICT = {
   'Solo starten': 'Start solo', 'Spieler hinzufügen': 'Add player', 'Wer wirft heute mit?': 'Who is playing today?', 'Freunde': 'Friends', 'Gast': 'Guest', 'Bot': 'Bot',
   'spielt schon mit': 'already playing', 'Du hast noch keine Freunde – füge sie unter „More“ hinzu.': 'You have no friends yet – add them under “More”.',
   'Lade Freunde …': 'Loading friends …', 'Alle Bots spielen schon mit.': 'All bots are already playing.', 'Noch keine Spieler ausgewählt.': 'No players selected yet.',
-  'Reihenfolge mischen': 'Shuffle order', 'Das Spiel': 'The Game', 'Partyspiele mitzählen': 'Include party games', 'Noch keine X01-Partyspiele gespielt': 'No X01 party games played yet',
+  'Reihenfolge mischen': 'Shuffle order', 'Das Spiel': 'The Game', 'Zuerst im Finish': 'First in the finish', 'Comeback': 'Comeback', 'Break': 'Break', 'Triple im Finish': 'Triple in the finish', 'Partyspiele mitzählen': 'Include party games', 'Noch keine X01-Partyspiele gespielt': 'No X01 party games played yet',
   'X01-Varianten aus den Partyspielen (z. B. 301, Double In) zusätzlich zu 501': 'X01 variants from the party games (e.g. 301, Double In) in addition to 501', 'Antippen zum Umschalten': 'Tap to switch', 'Mikrofon': 'Microphone', 'Punkte ansagen statt tippen': 'Call scores instead of typing', 'an – Punkte ansagen': 'on – call your scores',
   'Darts per Kamera erkennen': 'Detect darts by camera', 'erkennt die Darts': 'detecting darts', 'An': 'On', 'Aus': 'Off', 'Mikrofon aus': 'Microphone off', 'Nutzer simulieren': 'Simulate a player', 'Zahlen selbst einsprechen': 'Record your own calls',
   'Ein Spieler mit einem Jahr Spielen und Ø 70 – so siehst du, was die App alles kann. Nur auf diesem Gerät, ohne Konto.': 'A player with a year of games and a 70 average – see everything the app can do. Only on this device, no account.',
@@ -199,6 +199,8 @@ export const DICT = {
 
 /** Texte mit Zahlen/Namen */
 const PATTERNS = [
+  [/^Quote Rest (.+)$/, (m, r) => `Rate left ${r}`],
+  [/^Seite (\d+)$/, (m, n) => `Page ${n}`],
   [/^([SDT]\d{1,2}) gibt es nicht$/, (m, d) => `${d} does not exist`],
   [/^(\d+) Spiele? · zuletzt (heute|gestern)$/, (m, n, d) => `${n} game${n === '1' ? '' : 's'} · last played ${d === 'heute' ? 'today' : 'yesterday'}`],
   [/^(\d+) Spiele? · zuletzt vor (\d+) Tag(en)?$/, (m, n, d) => `${n} game${n === '1' ? '' : 's'} · last played ${d} day${d === '1' ? '' : 's'} ago`],

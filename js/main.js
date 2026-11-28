@@ -117,7 +117,7 @@ function fitCoRight() {
 document.addEventListener('scroll', (e) => {
   const el = e.target;
   if (!el?.classList?.contains('hf-pages')) return;
-  const pg = el.scrollLeft > el.clientWidth / 2 ? 1 : 0;
+  const pg = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
   const k = el.dataset.k || 'hfPage';
   if (pg !== ui[k]) { ui[k] = pg; const d = el.parentElement.querySelectorAll('.hf-dots button'); d.forEach((x, i) => x.classList.toggle('on', i === pg)); }
 }, true);
@@ -823,7 +823,7 @@ const actions = {
   tab(el) {
     if (el.dataset.v === 'stats' && S.tab !== 'stats') { S.statsPeriod = 'all'; S.statsSub = 'doubles'; } // Statistik startet immer mit „Gesamt“ und im Reiter Doppel
     S.tab = el.dataset.v; S.screen = 'home'; if (S.current && S.current.done) S.current = null;
-    ui.ovSeed = Math.random(); // Überblick: andere kleine Karten leuchten rot
+    ui.ovSeed = Math.random(); ui.kvPage = 0; // Überblick: andere kleine Karten leuchten rot, Karten-Box auf Seite 1
     render(); window.scrollTo(0, 0);
     if (S.tab === 'friends') { loadFriends(); loadConfirms(); }
   },
@@ -879,7 +879,7 @@ const actions = {
     S.statsModes = on ? ['501'] : ['501', ...extra]; render();
   },
   statsFold(el) { ui.statsOpen ??= new Set(); const k = el.dataset.v; if (ui.statsOpen.has(k)) ui.statsOpen.delete(k); else ui.statsOpen.add(k); render(); },
-  statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; ui.ovSeed = Math.random(); render(); window.scrollTo(0, 0); },
+  statsSub(el) { S.statsSub = el.dataset.v; ui.heatSel = null; ui.ovSeed = Math.random(); ui.kvPage = 0; render(); window.scrollTo(0, 0); },
   heat(el) { ui.heatSel = ui.heatSel === el.dataset.v ? null : el.dataset.v; ui.dblCurve = null; render(); },
   openMatch(el) { ui.openMatch = ui.openMatch === el.dataset.v ? null : el.dataset.v; render(); },
   compare() { const [a, b] = comparePair(); S.cmpA = a; S.cmpB = b; S.screen = 'compare'; render(); window.scrollTo(0, 0); },
@@ -1173,7 +1173,7 @@ const actions = {
   boDone() { finishBulloff(); },
   boTie() { clearTimeout(boTimer); ui.boResult = null; render(); },
   dblCurve(el) { ui.dblCurve = ui.dblCurve === el.dataset.v ? null : el.dataset.v; render(); },
-  hfPage(el) { const k = Number(el.dataset.v); ui[el.dataset.k || 'hfPage'] = k; const p = el.closest('.hf-card, .fc-card')?.querySelector('.hf-pages'); p?.scrollTo({ left: k * p.clientWidth, behavior: 'smooth' }); render(); },
+  hfPage(el) { const k = Number(el.dataset.v); ui[el.dataset.k || 'hfPage'] = k; const p = el.closest('.hf-card, .fc-card, .kv-carousel')?.querySelector('.hf-pages'); p?.scrollTo({ left: k * p.clientWidth, behavior: 'smooth' }); render(); },
   /* Spiel: Kamera und Mikrofon erscheinen erst nach Tipp auf den leeren Bereich oben (blenden ein, nach 6 s wieder aus) */
   gbarTap() { ui.gbarOpen = Date.now(); render(); clearTimeout(gbarTimer); gbarTimer = setTimeout(() => { ui.gbarOpen = 0; render(); }, 6000); },
   momentClose() { ui.moment = null; clearTimeout(momentTimer); render(); },

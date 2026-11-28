@@ -533,3 +533,6 @@ Offen: E-Mail-Bestätigung.
 - Setup-Spielerliste: Nummernfeld mit treibendem, kräftigem Verlauf wie der Start-Knopf (1/A rot, 2/B weiß, 3/C gold; `.pc.pglow.c0-2`).
 - Partyspiele-Seite: kein Stift/Plus mehr – alle Spiele zu sehen: oben alle spielbaren (antippen = spielen), silberner Strich, darunter die kommenden (antippen = Erklärung).
 - 501-Kachel und Partyspiele-Kasten: Rahmen aus Bordeaux-Metall (`--bordeaux-metal`).
+- **Statistik › Überblick neu (28.11.2026)**: Average · darunter `.ov-duo` (links Doppelquote, rechts Höchstes Checkout) · alle kleinen Karten in EINER wischbaren Box `.kv-carousel`
+  (je 6, Punkte, `ui.kvPage`): Kennzahlen, Quote je Rest-Bereich, Break, Zuerst im Finish, Comeback, Triple im Finish · Top 10 Checkouts · Auffällig · High Finish ganz unten.
+  „Quote nach Bereich“-Block und Checkout-Zweispalter entfallen. 501-Kachel: Untertitel wieder „Double Out“.
