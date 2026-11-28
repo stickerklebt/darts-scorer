@@ -152,10 +152,20 @@ export function aimLoupe(svg, x, y, clientX, clientY) {
     lp.querySelectorAll('.amark').forEach((n) => n.remove());
     document.body.appendChild(lp);
   }
-  const size = 156, above = clientY - size - 70 > 0;
-  lp.style.left = `${Math.min(window.innerWidth - size - 6, Math.max(6, clientX - size / 2))}px`;
-  lp.style.top = `${above ? clientY - size - 70 : clientY + 56}px`;
-  lp.querySelector('svg').setAttribute('viewBox', `${x - ZOOM / 2} ${y - ZOOM / 2} ${ZOOM} ${ZOOM}`);
+  // Handy: die Lupe steht groß oben über dem Bereich mit Rest und Karten (dort wird gerade nichts gebraucht) – stärker vergrößert
+  const top = matchMedia('(pointer: coarse)').matches && document.querySelector('.game .duo, .game .rows');
+  if (top) {
+    const r = top.getBoundingClientRect(), size = Math.round(Math.max(170, Math.min(r.height + 40, window.innerWidth - 32, 300)));
+    lp.classList.add('top'); lp.style.width = lp.style.height = `${size}px`;
+    lp.style.left = `${Math.round((window.innerWidth - size) / 2)}px`;
+    lp.style.top = `${Math.max(8, Math.round(r.top + r.height / 2 - size / 2))}px`;
+  } else {
+    const size = 156, above = clientY - size - 70 > 0;
+    lp.style.left = `${Math.min(window.innerWidth - size - 6, Math.max(6, clientX - size / 2))}px`;
+    lp.style.top = `${above ? clientY - size - 70 : clientY + 56}px`;
+  }
+  const z = top ? ZOOM * 0.8 : ZOOM;
+  lp.querySelector('svg').setAttribute('viewBox', `${x - z / 2} ${y - z / 2} ${z} ${z}`);
   const d = fieldAt(x, y);
   const t = lp.querySelector('.lp-t');
   t.textContent = fieldName(d);

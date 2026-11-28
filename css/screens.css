@@ -4026,3 +4026,22 @@ html.no-motion .hero-stat.hs-epic > .hs-star { animation: none; }
   filter: drop-shadow(0 0 4px rgba(224,49,90,.9)); animation: modeRed 9s linear infinite; animation-delay: calc(var(--bi, 0) * -3.1s); }
 @keyframes modeRed { 0%, 70% { opacity: 0; --mrA: 0deg; } 74% { opacity: 1; } 94% { opacity: 1; } 100% { opacity: 0; --mrA: 360deg; } }
 html.no-motion .mode-ring { animation: none; opacity: 0; }
+
+/* ================= UPDATE 28.11.2026 ================= */
+/* Doppel-Abfrage: Feld 40 % kleiner; gedrückt halten → DartVader-Stern als Zeiger (Maus: Stern-Cursor) */
+.dspot-ask .dspot.tap { width: min(336px, 60%) !important; touch-action: none; }
+.dspot-ask .dspot.tap.bull { width: min(156px, 42%) !important; }
+.dspot-ask .dspot.tap { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='-16 -16 32 32'%3E%3Ccircle r='9' fill='white' opacity='.18'/%3E%3Cpath d='M0 -13C1.3 -3 3 -1.3 13 0 3 1.3 1.3 3 0 13 -1.3 3 -3 1.3 -13 0 -3 -1.3 -1.3 -3 0 -13Z' fill='%23f4f6f9' stroke='%23111' stroke-width='.8'/%3E%3Ccircle r='1.4' fill='white'/%3E%3C/svg%3E") 16 16, crosshair !important; }
+.dspot .ds-aim { pointer-events: none; filter: drop-shadow(0 0 6px rgba(255,255,255,.8)); }
+@media (hover: hover) and (pointer: fine) { .dspot .ds-aim { display: none; } } /* Maus: der Cursor ist schon der Stern */
+/* Eingabe-Scheibe am Handy: nichts verschiebt sich beim Antippen (kein Scrollen/Wackeln, Checkout-Zeile immer reserviert) */
+.aimbox, .aimbox .aimboard { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.game { overscroll-behavior: none; }
+.game .sbp-co.empty { visibility: hidden; }
+.ahits { flex: none; } .ahit { flex: none; overflow: hidden; }
+/* Lupe am Handy groß oben über den Karten */
+.loupe.aim.top .lp-dart { width: 80px; height: 80px; margin: -40px 0 0 -40px; }
+.loupe.aim.top .lp-glass { box-shadow: 0 0 0 1.5px rgba(242,244,247,.8), 0 14px 40px rgba(0,0,0,.75) !important; }
+.loupe.aim.top .lp-t { top: auto; bottom: 14px; font-size: 24px; }
+/* Reiter-Leiste: Play und Stats ohne Symbol (Strich nur unter dem Wort) */
+body .tabs .tab.noic { --tic: 0px; --tgap: 0px; }

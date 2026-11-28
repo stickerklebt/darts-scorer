@@ -40,7 +40,7 @@ GitHub Pages reicht nicht mehr (kein Server → keine Anmeldung). Betrieb/Backup
   (nur geänderte Texte/Attribute/Kinder). Elemente bleiben stehen, Einblend-Animationen starten nicht bei jedem Neuzeichnen neu.
 - Bei jeder Dateiänderung: `CACHE` in `sw.js` hochzählen, neue Dateien in `ASSETS` aufnehmen.
 - Logik-Tests: `node tests/run.mjs` (ohne Abhängigkeiten). Vor jedem Commit grün. Neue Logik bekommt eigene Tests. `syntax.test.mjs` parst jede App-Datei (`node --check`) – ein Syntaxfehler in einem Modul macht sonst die ganze App schwarz (25.11.2026 passiert). Das Intro hat ein Sicherheitsnetz: nach spätestens 8 s oder bei Fehler wird die App freigegeben.
-- App-Icon (Tab, Home-Bildschirm, Favicon) = Start-Logo: symmetrischer Chrom-Stern auf fast Schwarz mit leichtem Schein. Erzeugt ohne Grafikprogramm mit `node tools/mkstar-icon.mjs` → `icon-180.png`, `icon-512.png`, `favicon.svg` (danach Version in sw.js hochzählen). Das alte `tools/mkicon.mjs` (Zielscheibe) wird nicht mehr benutzt.
+- App-Icon (Tab, Home-Bildschirm, Favicon) = Start-Logo: symmetrischer Chrom-Stern auf fast Schwarz mit leichtem Schein. Erzeugt ohne Grafikprogramm mit `node tools/mkstar-icon.mjs` → `dartvader-180.png`, `dartvader-512.png`, `dartvader.svg`, `favicon.ico` (danach Version in sw.js hochzählen). Das alte `tools/mkicon.mjs` (Zielscheibe) wird nicht mehr benutzt.
 - Service Worker nur unter HTTPS (nicht auf localhost), damit lokale Tests frische Dateien sehen. `/api/` wird nie gecacht.
   Neue Version (`controllerchange`) → App lädt sich einmal selbst neu, aber nie mitten im laufenden Spiel; beim Zurückholen
   der App (`visibilitychange`) wird nach Updates gesucht.
@@ -105,7 +105,7 @@ js/
       bulloff-view.js · moments.js (Leg-Info) · result.js · stats-view.js (Unter-Reiter) · stats-extra.js ·
       compare.js · sheets.js · auth.js (Anmeldung) · friends.js (Reiter Freunde, Freundesprofil) · history.js (Spielhistorie) · aimboard.js (Eingabe-Scheibe mit Lupe) · caller.js (Screen Eigener Caller) · avatar.js (Bot-Bilder/Platzhalter) · common.js ·
       fx.js · fx-core.js (Ebene, Partikel, Wackeln) · fx-anims.js (17 Animationen) · fx-art.js (Comic-SVGs)
-sw.js, manifest.webmanifest, icon-180.png, icon-512.png, Darts starten.command (lokaler Start per Doppelklick)
+sw.js, manifest.webmanifest, dartvader-180.png, dartvader-512.png, dartvader.svg, favicon.ico, Darts starten.command (lokaler Start per Doppelklick)
 tools/  mkicon.mjs (Icon), calibrate-bots.mjs (sigma + dsigma per Simulation)
 tests/  run.mjs + situations · football · insights · dartscan · dblspot · board-geometry · detect · bruch · checkout · x01 · party · stats · bulloff · fx · bots · demo · cricket · server · history · aimboard · caller
 ```
@@ -521,3 +521,6 @@ Offen: E-Mail-Bestätigung.
 - **Update 26.11.2026 (11)**: Nirgends Rot unten an Karten. Doppel-Farbskala läuft an den Enden weich aus (mask). Umschalt-Titel (Average/First 9, Verteilung/Aufnahmen im Leg):
   einmal antippen öffnet das Menü. Lange auf „Stats“: nur noch der Schalter **Partyspiele mitzählen** (`statsParty`: X01-Varianten an/aus, Zeitraum-Auswahl entfällt).
   „Partyspiele“ ohne rote Striche. Kommende Partyspiele auf Play genau wie Cricket/Fußball (ohne Namensstreifen). Partyspiel-Kacheln: ab und zu huscht ein rotes Licht um den Rand (`modeRed`).
+- **Update 28.11.2026**: App-Icons heißen jetzt `dartvader-180.png`, `dartvader-512.png`, `dartvader.svg` (+ `favicon.ico`) – neue Namen, damit Safari das alte Tab-Symbol nicht weiter aus dem Cache nimmt.
+  Doppel-Abfrage: Feld 40 % kleiner, gedrückt halten → DartVader-Stern folgt dem Finger (`dsStar`), loslassen wählt. Eingabe-Scheibe am Handy: `touch-action: none`,
+  Checkout-Zeile in der Karte immer reserviert (kein Springen); Lupe erscheint groß oben über den Karten (`.loupe.aim.top`). Reiter Play/Stats ohne Symbol.

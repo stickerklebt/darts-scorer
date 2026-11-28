@@ -266,8 +266,31 @@ function spotNeeded(m, t, res) {
 let spotNext = null;
 function askSpot(sp, next) { spotNext = next; ui.dblSpot = { n: sp.n, dart: sp.dart, picked: null }; render(); }
 function spotDone() { const next = spotNext; spotNext = null; ui.dblSpot = null; render(); next?.(); }
-document.addEventListener('pointerup', (e) => {
+/* Gedrückt halten: der DartVader-Stern folgt dem Finger/der Maus, loslassen wählt die Stelle */
+const DS_STAR = 'M0 -1C.1 -.23 .23 -.1 1 0 .23 .1 .1 .23 0 1 -.1 .23 -.23 .1 -1 0 -.23 -.1 -.1 -.23 0 -1Z';
+function dsStar(svg, e) {
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  const q = p.matrixTransform(svg.getScreenCTM().inverse());
+  const vb = svg.viewBox.baseVal, k = Math.max(vb.width, vb.height) * 0.06;
+  let g = svg.querySelector('.ds-aim');
+  if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'ds-aim'); g.innerHTML = `<circle r=".7" fill="#fff" opacity=".22"/><path d="${DS_STAR}" fill="#f4f6f9" stroke="#111" stroke-width=".06"/><circle r=".12" fill="#fff"/>`; svg.appendChild(g); }
+  g.setAttribute('transform', `translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) scale(${k.toFixed(1)})`);
+}
+let dsDrag = null;
+document.addEventListener('pointerdown', (e) => {
   const svg = e.target.closest?.('svg[data-dspot]');
+  if (!svg || !ui.dblSpot || ui.dblSpot.picked) return;
+  e.preventDefault(); try { svg.setPointerCapture(e.pointerId); } catch (err) { /* */ }
+  dsDrag = svg; dsStar(svg, e);
+});
+document.addEventListener('pointermove', (e) => {
+  if (!dsDrag || !ui.dblSpot || ui.dblSpot.picked || !dsDrag.isConnected) return;
+  e.preventDefault(); dsStar(dsDrag, e);
+}, { passive: false });
+document.addEventListener('pointercancel', () => { dsDrag = null; });
+document.addEventListener('pointerup', (e) => {
+  const svg = dsDrag && dsDrag.isConnected ? dsDrag : e.target.closest?.('svg[data-dspot]');
+  dsDrag = null;
   if (!svg || !ui.dblSpot || ui.dblSpot.picked) return;
   const p = spotFromEvent(svg, e);
   ui.dblSpot.picked = p; ui.dblSpot.dart.spot = p;

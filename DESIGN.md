@@ -91,7 +91,7 @@ kleinen Dartpfeil (`dartGlyph()` in `ui/aimboard.js`: Creme-Barrel, rote Flights
 
 ## Icon
 App-Icon bewusst schlicht: Zielscheibe (Goldring, Rot, Schwarz, Creme, rotes Bull) auf dunklem Grund – `tools/mkicon.mjs`.
-Browser-Tab-Symbol: `favicon.svg` = einfacher Dartpfeil (Creme, rote Flights) auf dunklem Grund. Das Wappen bleibt in der App (Splash, Anmeldung).
+Browser-Tab-Symbol: `dartvader.svg` / `dartvader-180.png` / `favicon.ico` = DartVader-Stern (Chrom) auf fast Schwarz. Das Wappen bleibt in der App (Splash, Anmeldung).
 
 ## Spieler-Banner
 Spiel-Banner ohne Figuren: Band links gerade, rechts Kerbe (Schwalbenschwanz), 3 px Goldrand (Verlauf hell → dunkel), darunter eine dunkle

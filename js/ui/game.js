@@ -35,7 +35,7 @@ function scoreboard(items, cur, swap) {
     return `<div class="duo ${items.length === 1 ? 'solo' : ''}">${items.map((it, s) => `<div class="sbp ${s === cur ? 'on' : 'off'} ${anim(s)}" style="${pcVars(s)}">
       <div class="sbp-head"><span class="sbp-name">${esc(it.name)}</span>${it.extra || ''}<span class="sbp-gap"></span>${it.right}</div>
       ${it.team ? `<div class="sbp-team">${it.team}</div>` : ''}
-      <div class="sbp-rem"><span>${it.big}</span>${it.co ? `<div class="sbp-co">${it.co}</div>` : ''}</div>
+      <div class="sbp-rem"><span>${it.big}</span><div class="sbp-co ${it.co ? '' : 'empty'}">${it.co || '&nbsp;'}</div></div>
       <div class="sbp-stats">${it.stats.map(([k, v]) => `<span><small>${k}</small><b>${v}</b></span>`).join('')}</div>
     </div>`).join('')}</div>`;
   }
