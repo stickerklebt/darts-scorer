@@ -164,7 +164,7 @@ let lineN = 0;
     darunter „DARTVADER“ clean im selben Titan. */
 export function crestLine(opts = {}) {
   const w = opts.size || 200, g = `ti${++starN}`;
-  const d = logoStarPath(100, 58); // oben kürzer, Seitenarme erst waagerecht, dann nach unten (wie ein Triple-Feld)
+  const d = logoStarPath(100, 66, 1.25); // nach Skizze: kleiner Stern mit langen, gebogenen Flügeln (Triple-Feld)
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
     <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
     <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -185,8 +185,7 @@ export function crestLine(opts = {}) {
     <path d="${d}" fill="#fff" opacity=".55" filter="url(#${g}s)"/>
     <path d="${d}" fill="url(#${g}a)" filter="url(#${g}f)"/>
     <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
-    <path d="${d}" transform="translate(100 58) scale(.9) translate(-100 -58)" fill="none" stroke="#1d1f23" stroke-opacity=".35" stroke-width=".7"/>
-    <circle class="brand-core" cx="100" cy="58" r="22" fill="url(#${g}c)"/>
+    <circle class="brand-core" cx="100" cy="64" r="15" fill="url(#${g}c)"/>
     <text x="104" y="134" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
 }
 
@@ -409,22 +408,21 @@ export const fuse = (inset = 6, secs = 24, rx = 3) => {
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 /** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
 /** Lang gezogener 4-Zack-Stern aus Chrom/Glas (konkave Flanken, spitze Enden) */
-/** Logo-Stern (DartVader): oberer Arm kürzer, Seitenarme laufen erst waagerecht aus der Mitte und biegen dann nach unten ab
-    (wie ein gebogenes Triple-Feld), unterer Arm lang. Liefert kubische Segmente [p0, p1, p2, p3] relativ zur Mitte –
-    dieselbe Form nutzt tools/mkstar-icon.mjs für die App-Icons. */
-export function logoStarSegs(up = 32, side = 46, down = 46, droop = 13) {
-  const k = Math.min(up, side) * 0.16, h = 2.4; // h: halbe Armdicke in der Mitte des Seitenarms
+/** Logo (DartVader, nach Skizze): kleiner Stern in der Mitte (kurze Spitze oben, etwas kürzere unten) mit langen, schmalen Flügeln,
+    die als Bogen nach außen laufen und an den Spitzen tiefer als die Mitte enden – wie ein gebogenes Triple-Feld.
+    Kubische Segmente [p0, p1, p2, p3] relativ zur Mitte (Einheiten: Flügel-Halbbreite 72); dieselbe Form nutzt tools/mkstar-icon.mjs. */
+export function logoStarSegs() {
   const R = [
-    [[0, -up], [k * 0.25, -k * 1.2], [k * 1.1, -h], [side * 0.45, -h]],
-    [[side * 0.45, -h], [side * 0.72, -h], [side * 0.9, droop * 0.3], [side, droop]],
-    [[side, droop], [side * 0.86, droop * 0.62 + h * 0.6], [side * 0.7, h + droop * 0.18], [side * 0.45, h]],
-    [[side * 0.45, h], [k * 1.1, h], [k * 0.25, k * 1.2], [0, down]],
+    [[0, -28], [0.6, -17], [2.5, -9], [7, -8]],     // obere Spitze → Flügelansatz oben
+    [[7, -8], [30, -14], [58, -6], [72, 18]],       // Oberkante des Flügels (Bogen) → Flügelspitze
+    [[72, 18], [56, 2], [28, -2], [7, 3]],          // Unterkante zurück zur Mitte
+    [[7, 3], [2.5, 4], [0.6, 12], [0, 22]],         // untere Spitze
   ];
   const mir = (sg) => sg.slice().reverse().map(([x, y]) => [-x, y]);
   return [...R, ...R.slice().reverse().map(mir)];
 }
-export function logoStarPath(cx, cy, ...a) {
-  const segs = logoStarSegs(...a), P = ([x, y]) => `${r2(cx + x)} ${r2(cy + y)}`;
+export function logoStarPath(cx, cy, k = 1) {
+  const segs = logoStarSegs(), P = ([x, y]) => `${r2(cx + x * k)} ${r2(cy + y * k)}`;
   return `M${P(segs[0][0])}` + segs.map(([, a1, a2, b]) => ` C${P(a1)} ${P(a2)} ${P(b)}`).join('') + 'Z';
 }
 /** tilt: linke/rechte Spitze so weit nach unten gekippt (Logo: leicht, wie ein gebogenes Triple-Feld) */

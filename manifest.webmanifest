@@ -8,7 +8,7 @@
   "background_color": "#08080a",
   "theme_color": "#08080a",
   "icons": [
-    { "src": "dartvader-180.png?v=t2", "sizes": "180x180", "type": "image/png" },
-    { "src": "dartvader-512.png?v=t2", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "dartvader-180.png?v=t3", "sizes": "180x180", "type": "image/png" },
+    { "src": "dartvader-512.png?v=t3", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
