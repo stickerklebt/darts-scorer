@@ -4113,3 +4113,9 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .sub-overview > .hf-card { margin-top: 18px; }
 /* Startbildschirm: Rahmen nur noch zur Hälfte Bordeaux-Metall, zur anderen Hälfte Chrom-Silber */
 :root { --bordeaux-metal: linear-gradient(135deg, #ffffff 0%, #9aa0a8 12%, #e9ecf0 24%, #6b1226 38%, #e05a78 46%, #3d0714 54%, #c42a4b 62%, #f2f4f7 74%, #7d838d 86%, #dfe3e8 100%); }
+/* Startbildschirm: Rahmen (halb Bordeaux, halb Silber) dreht sich ständig langsam um die Kachel – nie still */
+@property --bmA { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+/* (Verlauf direkt in den Regeln – eine Variable auf :root würde den Winkel dort festfrieren) */
+.silk-hero { background: linear-gradient(#070104, #070104) padding-box, conic-gradient(from var(--bmA), #ffffff 0deg, #9aa0a8 40deg, #e9ecf0 80deg, #6b1226 130deg, #e05a78 165deg, #3d0714 195deg, #c42a4b 225deg, #f2f4f7 270deg, #7d838d 310deg, #dfe3e8 360deg) border-box !important; animation: bmSpin 7s linear infinite; }
+.party-big::before { background: conic-gradient(from var(--bmA), #ffffff 0deg, #9aa0a8 40deg, #e9ecf0 80deg, #6b1226 130deg, #e05a78 165deg, #3d0714 195deg, #c42a4b 225deg, #f2f4f7 270deg, #7d838d 310deg, #dfe3e8 360deg) !important; animation: bmSpin 7s linear infinite; animation-delay: -3.5s; }
+@keyframes bmSpin { to { --bmA: 360deg; } }

@@ -537,3 +537,4 @@ Offen: E-Mail-Bestätigung.
   (je 6, Punkte, `ui.kvPage`): Kennzahlen, Quote je Rest-Bereich, Break, Zuerst im Finish, Comeback, Triple im Finish · Top 10 Checkouts · Auffällig · High Finish ganz unten.
   „Quote nach Bereich“-Block und Checkout-Zweispalter entfallen. 501-Kachel: Untertitel wieder „Double Out“.
 - Checkout-Quote nach Rest in 20er-Schritten (`RANGES` in stats.js: 2–40, 41–60 … 141–160, 161–170; auch im Vergleich).
+- Start-Rahmen (501-Kachel, Partyspiele): halb Bordeaux, halb Silber, dreht sich ständig (`bmSpin`, conic über `--bmA`).
