@@ -4203,7 +4203,10 @@ html.theme-neon .party-big { background: #050606 !important; box-shadow: 0 0 22p
 html.theme-neon .game .sbp { border-color: rgba(255,255,255,.85) !important; }
 html.theme-neon .sheet { border-color: rgba(255,255,255,.85) !important; }
 /* Reiter: Wort und Leuchtstrich genau mittig – der Buchstabenabstand hängt sonst hinter dem letzten Buchstaben Luft an (Wort + Strich rutschen) */
-body .tabs .tab.noic > span { margin-right: -.16em; }
-@media (max-width: 440px) { body .tabs .tab.noic > span { margin-right: -.1em; } }
-body .tabs .tab.noic.on > span::after { left: 0 !important; right: 0 !important; }
+body .tabs .tab.noic { --ls: .16em; gap: 0 !important; }
+@media (max-width: 440px) { body .tabs .tab.noic { --ls: .1em; } }
+/* Wortkasten symmetrisch machen (links so viel Luft wie der Abstand hinter dem letzten Buchstaben) → Wort exakt mittig im Reiter;
+   der Strich sitzt genau unter den Buchstaben (ohne die Luft links/rechts) und ist damit ebenfalls mittig */
+body .tabs .tab.noic > span { margin: 0 !important; padding-left: var(--ls); }
+body .tabs .tab.noic.on > span::after { left: var(--ls) !important; right: var(--ls) !important; transform-origin: 50% 50% !important; }
 body .tabs .tab.noic.on > span::before { left: -14px !important; right: -14px !important; }
