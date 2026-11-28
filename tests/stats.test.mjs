@@ -83,8 +83,8 @@ test('fullStats: Überblick, Serie, Scoring, Checkout, Legs', () => {
   assert.deepEqual(a.top5.map((t) => t.score), [180, 180, 141, 100, 45]);
   assert.equal(a.highestCo, 141); assert.equal(a.nine, 1); assert.equal(a.bestLeg, 9);
   assert.equal(a.favourite.field, 'D12');
-  // Checkout-Chance: a hatte in M1 141 Rest (101–170) und checkte; in M2 keine checkbare Aufnahme
-  assert.deepEqual(a.ranges.map((r) => [r.chances, r.hits]), [[0, 0], [0, 0], [1, 1]]);
+  // Checkout-Chance: a hatte in M1 141 Rest (141–160) und checkte; in M2 keine checkbare Aufnahme
+  assert.deepEqual(a.ranges.map((r) => [r.chances, r.hits]), [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [0, 0]]);
   assert.equal(a.dartsPerCheckout, 1);
   assert.equal(a.list[0].won, false); // neueste zuerst
   assert.equal(a.list[0].result, '0 : 1 Legs');

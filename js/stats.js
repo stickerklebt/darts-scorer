@@ -74,7 +74,8 @@ export function overview(matches, pid, period = 'all', now = Date.now()) {
 
 /* ---------------- Vollständige Statistik eines Profils ---------------- */
 export const BUCKETS = [['0–19', 0, 19], ['20–39', 20, 39], ['40–59', 40, 59], ['60–79', 60, 79], ['80–99', 80, 99], ['100–139', 100, 139], ['140–179', 140, 179], ['180', 180, 180]];
-export const RANGES = [['2–40', 2, 40], ['41–100', 41, 100], ['101–170', 101, 170]];
+// Checkout-Quote nach Rest in 20er-Schritten (bis 40 zusammen, oben 161–170)
+export const RANGES = [['2–40', 2, 40], ['41–60', 41, 60], ['61–80', 61, 80], ['81–100', 81, 100], ['101–120', 101, 120], ['121–140', 121, 140], ['141–160', 141, 160], ['161–170', 161, 170]];
 const when = (m) => m.endedAt ?? m.startedAt;
 const byScoreThenDate = (a, b) => b.score - a.score || b.date - a.date;
 

@@ -1,6 +1,6 @@
 /* Vergleichsansicht im Pop-Art-Stil: zwei Spieler als Farbblöcke, Werte mittig */
 import { S, nameOf, profile } from '../store.js';
-import { fullStats, is501 } from '../stats.js';
+import { fullStats, is501, RANGES } from '../stats.js';
 import { esc, fmt, seg, pcVars } from './common.js';
 import { icon } from './svg.js';
 import { PERIOD_OPTS, pct, statsPid, doublesBlock } from './stats-view.js';
@@ -33,9 +33,7 @@ const METRICS = [
   ['Höchstes Checkout', (s) => s.highestCo, (v) => v ?? '–', 'max'],
   ['Doppelquote', (s) => s.doubles.rate, pct, 'max'],
   ['Darts aufs Doppel', (s) => s.dartsPerCheckout, (v) => fmt(v), 'min'],
-  ['Checkout 2–40', (s) => s.ranges[0].rate, pct, 'max'],
-  ['Checkout 41–100', (s) => s.ranges[1].rate, pct, 'max'],
-  ['Checkout 101–170', (s) => s.ranges[2].rate, pct, 'max'],
+  ...RANGES.map(([name], i) => [`Checkout ${name}`, (s) => s.ranges[i].rate, pct, 'max']),
   ['Legs'],
   ['Bestes Leg', (s) => s.bestLeg, (v) => (v ? `${v} D` : '–'), 'min'],
   ['Ø Darts/Leg', (s) => s.avgLegDarts, (v) => fmt(v), 'min'],
