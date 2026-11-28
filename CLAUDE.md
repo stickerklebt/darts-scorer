@@ -532,3 +532,4 @@ Offen: E-Mail-Bestätigung.
   Hinweis in „Mehr Optionen“: „Double In? Single Out? Oder X01?“. `modeKey` hängt `-so` an → Single-Out-Spiele zählen nie als 501, nur mit „Partyspiele mitzählen“ (auch alte 501-Single-Out-Spiele).
 - Setup-Spielerliste: Nummernfeld mit treibendem, kräftigem Verlauf wie der Start-Knopf (1/A rot, 2/B weiß, 3/C gold; `.pc.pglow.c0-2`).
 - Partyspiele-Seite: kein Stift/Plus mehr – alle Spiele zu sehen: oben alle spielbaren (antippen = spielen), silberner Strich, darunter die kommenden (antippen = Erklärung).
+- 501-Kachel und Partyspiele-Kasten: Rahmen aus Bordeaux-Metall (`--bordeaux-metal`).

@@ -4086,3 +4086,9 @@ html.no-motion .party-big .pg-ring { animation: none; }
 .prow:nth-child(2n) .pc.pglow { animation-delay: -2.5s; }
 @keyframes pgDrift { 0% { background-position: 10% 20%, 80% 70%, 50% 50%; } 50% { background-position: 70% 40%, 20% 30%, 40% 70%; } 100% { background-position: 40% 90%, 60% 10%, 60% 30%; } }
 html.no-motion .prow .pc.pglow { animation: none; }
+/* 501-Kachel und Partyspiele-Kasten: Rahmen aus Bordeaux-Metall (dunkles Weinrot mit harten hellen Glanzkanten) */
+:root { --bordeaux-metal: linear-gradient(135deg, #ff9fb4 0%, #8c1a36 16%, #e05a78 30%, #3d0714 48%, #c42a4b 62%, #ffc2cf 72%, #6b1226 86%, #d64a69 100%); }
+.silk-hero { background: linear-gradient(#070104, #070104) padding-box, var(--bordeaux-metal) border-box !important;
+  box-shadow: 0 0 0 .5px rgba(0,0,0,.8), 0 0 16px rgba(196,42,75,.22), 0 14px 34px rgba(0,0,0,.5) !important; }
+.party-big::before { background: var(--bordeaux-metal) !important; padding: 1.6px !important; }
+.party-big { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 16px rgba(196,42,75,.22), 0 10px 26px rgba(0,0,0,.55) !important; }
