@@ -408,22 +408,30 @@ export const fuse = (inset = 6, secs = 24, rx = 3) => {
 /* ---------- Hero-Kulisse: feiner Strahlenkranz, Lorbeer, Sterne, Bogen-Inschrift (Kupferstich-Linien) ---------- */
 /** Hintergrund der Hero-Karte: goldener Strahlenkranz, Punktkreis, Lorbeer und Sterne (ruhig, ohne Bildmotiv). */
 /** Lang gezogener 4-Zack-Stern aus Chrom/Glas (konkave Flanken, spitze Enden) */
-/** Logo (DartVader, nach Skizze): kleiner Stern in der Mitte (kurze Spitze oben, etwas kürzere unten) mit langen, schmalen Flügeln,
-    die als Bogen nach außen laufen und an den Spitzen tiefer als die Mitte enden – wie ein gebogenes Triple-Feld.
-    Kubische Segmente [p0, p1, p2, p3] relativ zur Mitte (Einheiten: Flügel-Halbbreite 72); dieselbe Form nutzt tools/mkstar-icon.mjs. */
-export function logoStarSegs() {
-  const R = [
-    [[0, -28], [0.6, -17], [2.5, -9], [7, -8]],     // obere Spitze → Flügelansatz oben
-    [[7, -8], [30, -14], [58, -6], [72, 18]],       // Oberkante des Flügels (Bogen) → Flügelspitze
-    [[72, 18], [56, 2], [28, -2], [7, 3]],          // Unterkante zurück zur Mitte
-    [[7, 3], [2.5, 4], [0.6, 12], [0, 22]],         // untere Spitze
-  ];
-  const mir = (sg) => sg.slice().reverse().map(([x, y]) => [-x, y]);
-  return [...R, ...R.slice().reverse().map(mir)];
+/** Logo (DartVader): ein Triple-Feld – Ringstück mit gleichmäßiger Dicke auf einem echten Kreisbogen (Mittelpunkt tief darunter),
+    Enden gerade zum Mittelpunkt hin abgeschnitten – und darauf ein kleiner Stern (kurze Spitze oben, etwas kürzere unten).
+    Ein einziger Umriss als Punktliste (Einheiten: halbe Breite ≈ 68); dieselbe Form nutzt tools/mkstar-icon.mjs. */
+export function logoPoints() {
+  const R = 110, t = 10, rU = R + t / 2, rL = R - t / 2, A = 37, sU = 4.2, sL = 3.6;
+  const arc = (r, a) => [r * Math.sin((a * Math.PI) / 180), R - r * Math.cos((a * Math.PI) / 180)];
+  const pts = [];
+  const curve = (p0, c, p1, n = 14) => { for (let i = 1; i <= n; i++) { const u = i / n, v = 1 - u; pts.push([v * v * p0[0] + 2 * v * u * c[0] + u * u * p1[0], v * v * p0[1] + 2 * v * u * c[1] + u * u * p1[1]]); } };
+  const sweep = (r, a0, a1, n = 40) => { for (let i = 1; i <= n; i++) pts.push(arc(r, a0 + ((a1 - a0) * i) / n)); };
+  const top = [0, -28], bot = [0, 20];
+  pts.push(top);
+  const uR = arc(rU, sU); curve(top, [uR[0] * 0.12, uR[1] - 3], uR);           // obere Spitze, rechte Flanke (nach innen gewölbt)
+  sweep(rU, sU, A);                                                         // Oberkante des Feldes nach rechts
+  pts.push(arc(rL, A));                                                     // gerader Schnitt am rechten Ende
+  const lR = arc(rL, sL); sweep(rL, A, sL);                                 // Unterkante zurück
+  curve(lR, [lR[0] * 0.12, lR[1] + 3], bot);                                // untere Spitze
+  const lL = arc(rL, -sL); curve(bot, [lL[0] * 0.12, lL[1] + 3], lL);
+  sweep(rL, -sL, -A); pts.push(arc(rU, -A));                                // Unterkante nach links, Schnitt
+  const uL = arc(rU, -sU); sweep(rU, -A, -sU);
+  curve(uL, [uL[0] * 0.12, uL[1] - 3], top, 13);
+  return pts;
 }
 export function logoStarPath(cx, cy, k = 1) {
-  const segs = logoStarSegs(), P = ([x, y]) => `${r2(cx + x * k)} ${r2(cy + y * k)}`;
-  return `M${P(segs[0][0])}` + segs.map(([, a1, a2, b]) => ` C${P(a1)} ${P(a2)} ${P(b)}`).join('') + 'Z';
+  return 'M' + logoPoints().map(([x, y]) => `${r2(cx + x * k)} ${r2(cy + y * k)}`).join('L') + 'Z';
 }
 /** tilt: linke/rechte Spitze so weit nach unten gekippt (Logo: leicht, wie ein gebogenes Triple-Feld) */
 export function chromeStarPath(cx, cy, up, right, down, left, w = 0.16, tilt = 0) {
