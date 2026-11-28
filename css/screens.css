@@ -4119,3 +4119,7 @@ html.no-motion .prow .pc.pglow { animation: none; }
 .silk-hero { background: linear-gradient(#070104, #070104) padding-box, conic-gradient(from var(--bmA), #ffffff 0deg, #9aa0a8 40deg, #e9ecf0 80deg, #6b1226 130deg, #e05a78 165deg, #3d0714 195deg, #c42a4b 225deg, #f2f4f7 270deg, #7d838d 310deg, #dfe3e8 360deg) border-box !important; animation: bmSpin 7s linear infinite; }
 .party-big::before { background: conic-gradient(from var(--bmA), #ffffff 0deg, #9aa0a8 40deg, #e9ecf0 80deg, #6b1226 130deg, #e05a78 165deg, #3d0714 195deg, #c42a4b 225deg, #f2f4f7 270deg, #7d838d 310deg, #dfe3e8 360deg) !important; animation: bmSpin 7s linear infinite; animation-delay: -3.5s; }
 @keyframes bmSpin { to { --bmA: 360deg; } }
+/* Logo-Schriftzug „DARTVADER“ aus Silber-Metall wie der Stern: kräftiger, Chrom-Verlauf mit harten Hell/Dunkel-Wechseln (wandert langsam), Fase + Glanz, leuchtet */
+.brand .brand-name.metal { font-weight: 600 !important; } /* kein CSS-filter hier – sonst fällt das SVG-Metall (Fase/Glanz) weg */
+.splash svg.brand .brand-name.metal, .auth-crest svg.brand .brand-name.metal { paint-order: stroke; stroke: rgba(255,255,255,.18); stroke-width: .4px; }
+.brand { overflow: visible; }

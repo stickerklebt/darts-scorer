@@ -168,7 +168,7 @@ export function crestLine(opts = {}) {
   return `<svg class="brand" viewBox="0 0 200 150" width="${w}" aria-label="DartVader"><defs>
     <linearGradient id="${g}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#e4e7ec"/><stop offset=".36" stop-color="#a9aeb6"/><stop offset=".47" stop-color="#7c818a"/><stop offset=".56" stop-color="#d3d7dd"/><stop offset=".68" stop-color="#ffffff"/><stop offset=".84" stop-color="#c3c7ce"/><stop offset="1" stop-color="#8d929a"/></linearGradient>
     <radialGradient id="${g}c"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <linearGradient id="${g}t" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a9ea5"/><stop offset=".3" stop-color="#f1f2f4"/><stop offset=".5" stop-color="#7d8188"/><stop offset=".72" stop-color="#e6e8eb"/><stop offset="1" stop-color="#8a8e95"/></linearGradient>
+    <linearGradient id="${g}t" gradientUnits="userSpaceOnUse" x1="40" y1="120" x2="70" y2="140"><stop offset="0" stop-color="#ffffff"/><stop offset=".22" stop-color="#e4e7ec"/><stop offset=".42" stop-color="#8a9099"/><stop offset=".5" stop-color="#4e535b"/><stop offset=".58" stop-color="#f4f6f9"/><stop offset=".78" stop-color="#b3b8c0"/><stop offset="1" stop-color="#ffffff"/><animateTransform attributeName="gradientTransform" type="translate" values="-60 0;60 0;-60 0" dur="9s" repeatCount="indefinite"/></linearGradient>
     <filter id="${g}f" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="11" result="n"/>
       <feColorMatrix in="n" type="matrix" values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  .9 .9 .9 0 -1.1" result="grain"/>
@@ -187,7 +187,7 @@ export function crestLine(opts = {}) {
     <path d="${d}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".9"/>
     <path d="${d}" transform="translate(100 58) scale(.9) translate(-100 -58)" fill="none" stroke="#1d1f23" stroke-opacity=".35" stroke-width=".7"/>
     <circle class="brand-core" cx="100" cy="58" r="22" fill="url(#${g}c)"/>
-    <text x="104" y="134" text-anchor="middle" class="brand-name" style="fill:url(#${g}t)">DARTVADER</text></svg>`;
+    <text x="104" y="134" text-anchor="middle" class="brand-name metal" style="fill:url(#${g}t)" filter="url(#${g}f)">DARTVADER</text></svg>`;
 }
 
 /* ---------- Ornamente ---------- */
